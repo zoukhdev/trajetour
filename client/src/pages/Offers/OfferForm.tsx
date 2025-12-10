@@ -67,18 +67,14 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         e.preventDefault();
 
         try {
-            let offerId = '';
-
             if (initialData) {
                 await updateOffer({ ...initialData, ...formData } as Offer);
-                offerId = initialData.id;
             } else {
                 const newOffer: Offer = {
                     id: Math.random().toString(36).substr(2, 9),
                     ...formData as Omit<Offer, 'id'>
                 };
-                const createdOffer = await addOffer(newOffer);
-                offerId = createdOffer.id;
+                await addOffer(newOffer);
             }
 
             onClose();
