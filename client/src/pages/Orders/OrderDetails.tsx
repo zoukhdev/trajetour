@@ -39,12 +39,45 @@ const OrderDetails = () => {
         }
     }, [paymentCurrency, getRateForDate, getLatestRate]);
 
-    const order = orders.find(o => o.id === id);
+    const [fetchedOrder, setFetchedOrder] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+
+    // Find in context first
+    const contextOrder = orders.find(o => o.id === id);
+    const order = contextOrder || fetchedOrder;
+
+    // Fetch if not in context
+    useEffect(() => {
+        if (!contextOrder && id) {
+            setLoading(true);
+            // We need to import ordersAPI here or expose getById in DataContext
+            // For now, let's use the API directly (we need to import it)
+            import('../../services/api').then(({ ordersAPI }) => {
+                ordersAPI.getById(id)
+                    .then(setFetchedOrder)
+                    .catch(err => console.error("Failed to fetch order:", err))
+                    .finally(() => setLoading(false));
+            });
+        }
+    }, [id, contextOrder]);
+
     const client = order ? clients.find(c => c.id === order.clientId) : undefined;
+
+    // Also fetch client if missing (unlikely if getAll fetches all, but safe)
+    // Actually, clients.getAll(1, 1000) is called. 
+    // If client is missing, we might need to fetch it too.
+
+    if (loading) return <div className="p-6">Chargement...</div>;
+
     const agency = order?.agencyId ? agencies.find(a => a.id === order.agencyId) : undefined;
 
-    if (!order || !client) {
-        return <div className="p-6">Commande non trouvée</div>;
+    if (!order) {
+        return <div className="p-6">Commande non trouvée (ID: {id})</div>;
+    }
+
+    if (!client) {
+        // Fallback if client is missing from context list
+        return <div className="p-6">Client non trouvé pour cette commande (ID Client: {order.clientId})</div>;
     }
 
     // Only count validated payments
