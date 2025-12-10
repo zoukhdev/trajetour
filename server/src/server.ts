@@ -161,6 +161,17 @@ app.listen(PORT, async () => {
     console.log(`🔑 JWT Secret Present: ${!!config.jwt.secret}`);
     console.log(`💾 Database URL Present: ${!!config.databaseUrl}`);
 
+    try {
+        if (config.databaseUrl) {
+            const url = new URL(config.databaseUrl);
+            console.log(`🔍 Debug: DB Hostname detected as: '${url.hostname}'`);
+        } else {
+            console.log('⚠️ Debug: DATABASE_URL is empty.');
+        }
+    } catch (e) {
+        console.error('❌ Debug: Could not parse DATABASE_URL. Is it a valid URI?');
+    }
+
     const dbConnected = await testConnection();
     if (!dbConnected) {
         console.error('⚠️  Database connection failed!');
