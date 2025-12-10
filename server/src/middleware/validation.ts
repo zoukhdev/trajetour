@@ -18,15 +18,17 @@ export const clientSchema = z.object({
 
 export const orderSchema = z.object({
     clientId: z.string().uuid(),
-    agencyId: z.string().uuid().optional(),
+    agencyId: z.string().uuid().optional().or(z.literal('')),
     items: z.array(z.object({
         id: z.string(),
         description: z.string(),
-        quantity: z.number().positive(),
-        unitPrice: z.number().positive(),
-        amount: z.number().positive()
+        quantity: z.number(),
+        unitPrice: z.number(),
+        amount: z.number()
     })).optional(),
-    totalAmount: z.number().positive(),
+    passengers: z.array(z.any()).optional(), // Helper validation happens in controller
+    hotels: z.array(z.any()).optional(),
+    totalAmount: z.number(), // Allow 0 if needed (e.g. quote only) or make strict if business rule requires
     notes: z.string().optional()
 });
 
@@ -89,6 +91,7 @@ export function validate(schema: z.ZodSchema) {
             next();
         } catch (error) {
             if (error instanceof z.ZodError) {
+                console.error('❌ Validation Failed:', JSON.stringify(error.errors, null, 2));
                 res.status(400).json({
                     error: 'Validation failed',
                     details: error.errors
