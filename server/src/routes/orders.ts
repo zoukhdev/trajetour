@@ -111,7 +111,8 @@ router.get('/',
                                     'exchangeRateUsed', p.exchange_rate::float8,
                                     'method', p.method,
                                     'isValidated', p.is_validated,
-                                    'paymentDate', p.payment_date
+                                    'paymentDate', p.payment_date,
+                                    'accountId', p.account_id
                                 )
                             ) FILTER (WHERE p.id IS NOT NULL), 
                             '[]'
@@ -159,7 +160,8 @@ router.get('/:id',
                                     'exchangeRateUsed', p.exchange_rate::float8,
                                     'method', p.method,
                                     'isValidated', p.is_validated,
-                                    'paymentDate', p.payment_date
+                                    'paymentDate', p.payment_date,
+                                    'accountId', p.account_id
                                 )
                             ) FILTER (WHERE p.id IS NOT NULL), 
                             '[]'
@@ -176,12 +178,40 @@ router.get('/:id',
                 return res.status(404).json({ error: 'Order not found' });
             }
 
-            res.json(mapOrderResponse(result.rows[0]));
+            const orderRow = result.rows[0];
+
+            // Fetch related room details for passengers
+            let relatedRooms: any[] = [];
+            const passengers = orderRow.passengers || [];
+            const roomIds = passengers
+                .map((p: any) => p.assignedRoomId)
+                .filter((id: string) => id); // Filter valid IDs
+
+            if (roomIds.length > 0) {
+                const uniqueIds = [...new Set(roomIds)];
+                // Create placeholders like $1, $2 for the IN clause
+                const placeholders = uniqueIds.map((_, i) => `$${i + 1}`).join(',');
+                const roomsQuery = `SELECT id, room_number, hotel_name, gender, price FROM rooms WHERE id IN (${placeholders})`;
+                const roomsRes = await pool.query(roomsQuery, uniqueIds);
+                relatedRooms = roomsRes.rows;
+            }
+
+            // Enrich response
+            const response = {
+                ...mapOrderResponse(orderRow),
+                relatedRooms // Send map or array
+            };
+
+            res.json(response);
+            return; // Return early since we handled response
         } catch (error) {
             next(error);
         }
     }
 );
+/*
+            res.json(mapOrderResponse(result.rows[0]));
+*/
 
 // Create order
 router.post('/',

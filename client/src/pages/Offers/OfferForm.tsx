@@ -206,18 +206,6 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Prix (DZD)</label>
-                            <input
-                                type="number"
-                                name="price"
-                                required
-                                min="0"
-                                value={formData.price}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                            />
-                        </div>
-                        <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Disponibilité</label>
                             <input
                                 type="number"
@@ -234,34 +222,9 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                            <select
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                            >
-                                <option value="Active">Active</option>
-                                <option value="Draft">Brouillon</option>
-                                <option value="Archived">Archivée</option>
-                            </select>
-                        </div>
-                    </div>
+
 
                     <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Hôtel (Optionnel)</label>
-                            <input
-                                type="text"
-                                name="hotel"
-                                value={formData.hotel}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                placeholder="Nom de l'hôtel"
-                            />
-                        </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Transport</label>
                             <select

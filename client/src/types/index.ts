@@ -71,6 +71,18 @@ export interface Hotel {
     name: string;
 }
 
+export interface Room {
+    id: string;
+    offerId?: string;
+    hotelName: string;
+    roomNumber: string;
+    capacity: number;
+    gender: 'MEN' | 'WOMEN' | 'MIXED';
+    status: 'ACTIVE' | 'OUT_OF_SERVICE';
+    price: number;
+    occupiedCount?: number; // From backend
+}
+
 export interface OrderItem {
     id: string;
     description: string;

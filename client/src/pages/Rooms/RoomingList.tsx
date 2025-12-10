@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
-import { Plus, Hotel, Users, Trash2 } from 'lucide-react';
+import { Plus, Hotel, Users, Trash2, ArrowRightLeft, User } from 'lucide-react';
 import Modal from '../../components/Modal';
 
-// Define Room Interface here since it's new
+// Define Room Interface here (should match types/index.ts eventually)
 interface Room {
     id: string;
     offer_id: string;
@@ -13,61 +13,134 @@ interface Room {
     capacity: number;
     gender: 'MEN' | 'WOMEN' | 'MIXED';
     status: 'ACTIVE' | 'OUT_OF_SERVICE';
+    price: number;
     occupied_count?: number; // Calculated field
 }
 
+interface Occupant {
+    first_name: string;
+    last_name: string;
+    passport_number: string;
+    gender: string;
+    order_id: string;
+    // We need passengerId to identify them within the order
+    // But getOccupants only returns fields. I need to make sure backend returns passengerId?
+    // Backend returns: p->>'firstName'..., and order_id. 
+    // It does NOT return passenger_id currently?
+    // Let's check backend... "SELECT ... p->>'firstName' ... o.id as order_id FROM ..."
+    // The JSONB object p typically has `id` if I generated it.
+    // In `orders.ts` creating order: `passengers: row.passengers || []`
+    // In `OrderFormV2`, I generate `id: Math.random()`.
+    // So yes, `p->>'id'` should exist. 
+    // I need to update backend to return it? 
+    // Actually, I can fetch it in `POST /transfer` but I need to send it.
+    // I should check backend response for occupants. 
+    // Wait, backend `rooms.ts` query:
+    /*
+            SELECT 
+                p->>'firstName' as first_name,
+                p->>'lastName' as last_name,
+                p->>'passportNumber' as passport_number,
+                p->>'gender' as gender,
+                o.id as order_id
+            FROM ...
+    */
+    // It is MISSING `p->>'id'`. I must fix backend first?
+    // I will fix `rooms.ts` blindly in a separate step or just assume I can find by passport number?
+    // Passport number is unique enough for now?
+    // Or I find by index? Indices change.
+    // Relying on `id` is better.
+    // I will use `p->>'id'` as passenger_id.
+}
+
 const RoomingList = () => {
-    const { offers } = useData();
+    // const { offers } = useData(); // Not needed anymore
     const { user } = useAuth(); // for permissions
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // Modal
+    // Modal Add
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [newRoom, setNewRoom] = useState({
-        offerId: '',
+        offerId: '', // kept for compatibility
         roomNumber: '',
         capacity: 4,
-        gender: 'MIXED',
-        hotelName: ''
+        gender: 'MIXED' as 'MEN' | 'WOMEN' | 'MIXED',
+        hotelName: '',
+        price: 0
     });
+
+    // Modal Details
+    const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [occupants, setOccupants] = useState<any[]>([]);
+    const [loadingOccupants, setLoadingOccupants] = useState(false);
+
+    // Transfer State
+    const [transferTargetRoomId, setTransferTargetRoomId] = useState('');
+    const [passengerToTransfer, setPassengerToTransfer] = useState<{ orderId: string, id: string } | null>(null);
+
 
     // Valid role check for modifications
     const canManageRooms = user?.role === 'admin' || user?.role === 'staff';
 
     // 1. Fetch Rooms (All)
-    useEffect(() => {
-        const fetchRooms = async () => {
-            setLoading(true);
-            try {
-                // Fetch all rooms (no filters)
-                const res = await fetch('/api/rooms');
-                if (res.ok) {
-                    const data = await res.json();
-                    setRooms(data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch rooms", err);
-            } finally {
-                setLoading(false);
+    const fetchRooms = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/rooms');
+            if (res.ok) {
+                const data = await res.json();
+                setRooms(data);
             }
-        };
+        } catch (err) {
+            console.error("Failed to fetch rooms", err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchRooms();
     }, []);
 
-    // 2. Handle Add Room
+    // 2. Fetch Occupants
+    const fetchOccupants = async (room: Room) => {
+        setLoadingOccupants(true);
+        try {
+            const res = await fetch(`/api/rooms/${room.id}/occupants`);
+            if (res.ok) {
+                const data = await res.json();
+                setOccupants(data);
+            }
+        } catch (err) {
+            console.error("Failed to fetch occupants", err);
+        } finally {
+            setLoadingOccupants(false);
+        }
+    };
+
+    const handleOpenDetails = (room: Room) => {
+        setSelectedRoom(room);
+        setIsDetailsModalOpen(true);
+        fetchOccupants(room);
+        setPassengerToTransfer(null);
+        setTransferTargetRoomId('');
+    };
+
+    // 3. Handle Add Room
     const handleAddRoom = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newRoom.offerId) return alert("Veuillez sélectionner une offre.");
         if (!newRoom.hotelName) return alert("Veuillez entrer le nom de l'hôtel.");
+        if (newRoom.price < 0) return alert("Le prix ne peut pas être négatif.");
 
         try {
             const res = await fetch('/api/rooms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    ...newRoom
+                    ...newRoom,
+                    offerId: newRoom.offerId || null
                 })
             });
 
@@ -84,7 +157,7 @@ const RoomingList = () => {
         }
     };
 
-    // 3. Handle Delete (Soft)
+    // 4. Handle Delete (Soft)
     const handleDelete = async (id: string) => {
         if (!confirm("Voulez-vous vraiment supprimer cette chambre ?")) return;
         try {
@@ -96,6 +169,39 @@ const RoomingList = () => {
             console.error(err);
         }
     };
+
+    // 5. Handle Transfer
+    const handleTransfer = async () => {
+        if (!passengerToTransfer || !transferTargetRoomId) return;
+
+        try {
+            const res = await fetch('/api/rooms/transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: passengerToTransfer.orderId,
+                    passengerId: passengerToTransfer.id,
+                    newRoomId: transferTargetRoomId
+                })
+            });
+
+            if (res.ok) {
+                alert('Transfert réussi !');
+                // Refresh occupants and rooms (occupancy counts changed)
+                if (selectedRoom) fetchOccupants(selectedRoom);
+                fetchRooms();
+                setPassengerToTransfer(null);
+                setTransferTargetRoomId('');
+            } else {
+                const err = await res.json();
+                alert(`Erreur: ${err.message}`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Erreur de connexion.");
+        }
+    };
+
 
     return (
         <div className="space-y-6">
@@ -137,7 +243,11 @@ const RoomingList = () => {
                                 const occupancyRate = (occupancy / room.capacity) * 100;
 
                                 return (
-                                    <div key={room.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                                    <div
+                                        key={room.id}
+                                        className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group cursor-pointer"
+                                        onClick={() => handleOpenDetails(room)}
+                                    >
                                         {/* Header */}
                                         <div className={`p-3 border-b border-gray-50 flex justify-between items-start ${room.gender === 'MEN' ? 'bg-blue-50/30' : room.gender === 'WOMEN' ? 'bg-pink-50/30' : 'bg-purple-50/30'
                                             }`}>
@@ -148,8 +258,8 @@ const RoomingList = () => {
                                                 </p>
                                             </div>
                                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${room.gender === 'MEN' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                                                room.gender === 'WOMEN' ? 'bg-pink-100 text-pink-700 border-pink-200' :
-                                                    'bg-purple-100 text-purple-700 border-purple-200'
+                                                    room.gender === 'WOMEN' ? 'bg-pink-100 text-pink-700 border-pink-200' :
+                                                        'bg-purple-100 text-purple-700 border-purple-200'
                                                 }`}>
                                                 {room.gender}
                                             </span>
@@ -174,11 +284,16 @@ const RoomingList = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Placeholders for occupants (Visual Only for now) */}
-                                            <div className="flex items-center gap-1 text-gray-400">
-                                                <Users size={14} />
-                                                <span className="text-xs">
-                                                    {occupancy === 0 ? "Vide" : `${occupancy} pèlerins assignés`}
+                                            {/* Information */}
+                                            <div className="flex justify-between items-center text-sm">
+                                                <div className="flex items-center gap-1 text-gray-400">
+                                                    <Users size={14} />
+                                                    <span className="text-xs">
+                                                        {occupancy === 0 ? "Vide" : `${occupancy} pèlerins`}
+                                                    </span>
+                                                </div>
+                                                <span className="font-bold text-gray-900">
+                                                    {room.price ? `${room.price.toLocaleString()} DZD` : '0 DZD'}
                                                 </span>
                                             </div>
                                         </div>
@@ -187,7 +302,10 @@ const RoomingList = () => {
                                         {canManageRooms && (
                                             <div className="px-4 py-2 border-t border-gray-50 bg-gray-50/50 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <button
-                                                    onClick={() => handleDelete(room.id)}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent card click
+                                                        handleDelete(room.id);
+                                                    }}
                                                     className="text-gray-400 hover:text-red-500 transition-colors p-1"
                                                     title="Supprimer la chambre"
                                                 >
@@ -203,29 +321,13 @@ const RoomingList = () => {
                 </div>
             )}
 
-            {/* ADD MODAL */}
+            {/* ADD ROOM MODAL */}
             <Modal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 title="Ajouter une nouvelle chambre"
             >
                 <form onSubmit={handleAddRoom} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Offre (Voyage)</label>
-                        <select
-                            required
-                            value={newRoom.offerId}
-                            onChange={(e) => setNewRoom({ ...newRoom, offerId: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none"
-                        >
-                            <option value="">-- Sélectionner une offre --</option>
-                            {offers.map(offer => (
-                                <option key={offer.id} value={offer.id}>
-                                    {offer.title}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Hôtel</label>
                         <input
@@ -263,6 +365,18 @@ const RoomingList = () => {
                         </div>
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Prix par Personne (DZD)</label>
+                        <input
+                            type="number"
+                            required
+                            min="0"
+                            step="100"
+                            value={newRoom.price}
+                            onChange={(e) => setNewRoom({ ...newRoom, price: Number(e.target.value) })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none"
+                        />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Genre / Restriction</label>
                         <div className="grid grid-cols-3 gap-2">
                             {(['MEN', 'WOMEN', 'MIXED'] as const).map(g => (
@@ -297,6 +411,90 @@ const RoomingList = () => {
                         </button>
                     </div>
                 </form>
+            </Modal>
+
+            {/* ROOM DETAILS MODAL */}
+            <Modal
+                isOpen={isDetailsModalOpen}
+                onClose={() => setIsDetailsModalOpen(false)}
+                title={`Détails Chambre ${selectedRoom?.room_number}`}
+            >
+                <div className="space-y-6">
+                    <div className="bg-gray-50 p-4 rounded-lg flex justify-between items-center text-sm">
+                        <span>Hôtel: <strong>{selectedRoom?.hotel_name}</strong></span>
+                        <span>Type: <strong>{selectedRoom?.gender}</strong></span>
+                        <span>Prix: <strong>{selectedRoom?.price} DZD</strong></span>
+                    </div>
+
+                    {loadingOccupants ? (
+                        <div className="text-center py-4">Chargement...</div>
+                    ) : (
+                        <div className="space-y-2">
+                            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+                                <Users size={18} /> Occupants ({occupants.length} / {selectedRoom?.capacity})
+                            </h3>
+
+                            {occupants.length === 0 ? (
+                                <p className="text-gray-400 italic text-sm">Aucun occupant.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {occupants.map((occ, idx) => (
+                                        <div key={idx} className="flex justify-between items-center p-3 border rounded-lg bg-white">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-gray-100 p-2 rounded-full">
+                                                    <User size={16} className="text-gray-600" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-sm">{occ.first_name} {occ.last_name}</p>
+                                                    <p className="text-xs text-gray-500">{occ.passport_number}</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Transfer Checkbox Logic */}
+                                            {passengerToTransfer?.id === occ.passenger_id ? ( // Need passenger_id from backend
+                                                <div className="flex items-center gap-2 animate-fadeIn">
+                                                    <select
+                                                        className="text-xs p-1 border rounded max-w-[150px]"
+                                                        onChange={(e) => setTransferTargetRoomId(e.target.value)}
+                                                        value={transferTargetRoomId}
+                                                    >
+                                                        <option value="">Vers...</option>
+                                                        {rooms
+                                                            .filter(r => r.hotel_name === selectedRoom?.hotel_name && r.id !== selectedRoom?.id && (r.occupied_count || 0) < r.capacity)
+                                                            .map(r => (
+                                                                <option key={r.id} value={r.id}>{r.room_number} ({r.gender})</option>
+                                                            ))
+                                                        }
+                                                    </select>
+                                                    <button
+                                                        onClick={handleTransfer}
+                                                        disabled={!transferTargetRoomId}
+                                                        className="bg-green-600 text-white p-1 rounded hover:bg-green-700 disabled:opacity-50"
+                                                    >
+                                                        <ArrowRightLeft size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setPassengerToTransfer(null)}
+                                                        className="text-gray-400 hover:text-red-500 ml-1"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => setPassengerToTransfer({ orderId: occ.order_id, id: occ.passenger_id })}
+                                                    className="text-blue-600 hover:underline text-xs"
+                                                >
+                                                    Transférer
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
             </Modal>
         </div>
     );

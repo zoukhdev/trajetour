@@ -45,13 +45,13 @@ router.get('/', authMiddleware, async (req, res) => {
 // Create a new room
 router.post('/', authMiddleware, requireRole('staff'), async (req, res) => {
     try {
-        const { offerId, hotelName, roomNumber, capacity, gender } = req.body;
+        const { offerId, hotelName, roomNumber, capacity, gender, price } = req.body;
 
         const result = await pool.query(
-            `INSERT INTO rooms (offer_id, hotel_name, room_number, capacity, gender)
-             VALUES ($1, $2, $3, $4, $5)
+            `INSERT INTO rooms (offer_id, hotel_name, room_number, capacity, gender, price)
+             VALUES ($1, $2, $3, $4, $5, $6)
              RETURNING *`,
-            [offerId, hotelName, roomNumber, capacity, gender]
+            [offerId || null, hotelName, roomNumber, capacity, gender, price || 0]
         );
 
         res.status(201).json(result.rows[0]);
@@ -65,17 +65,18 @@ router.post('/', authMiddleware, requireRole('staff'), async (req, res) => {
 router.put('/:id', authMiddleware, requireRole('staff'), async (req, res) => {
     try {
         const { id } = req.params;
-        const { roomNumber, capacity, gender, status } = req.body;
+        const { roomNumber, capacity, gender, status, price } = req.body;
 
         const result = await pool.query(
             `UPDATE rooms 
              SET room_number = COALESCE($1, room_number),
                  capacity = COALESCE($2, capacity),
                  gender = COALESCE($3, gender),
-                 status = COALESCE($4, status)
-             WHERE id = $5
+                 status = COALESCE($4, status),
+                 price = COALESCE($5, price)
+             WHERE id = $6
              RETURNING *`,
-            [roomNumber, capacity, gender, status, id]
+            [roomNumber, capacity, gender, status, price, id]
         );
 
         if (result.rows.length === 0) {
@@ -157,6 +158,7 @@ router.get('/:id/occupants', authMiddleware, async (req, res) => {
                 p->>'lastName' as last_name,
                 p->>'passportNumber' as passport_number,
                 p->>'gender' as gender,
+                p->>'id' as passenger_id,
                 o.id as order_id
             FROM orders o, jsonb_array_elements(o.passengers) p
             WHERE (p->>'assignedRoomId')::uuid = $1
@@ -168,6 +170,73 @@ router.get('/:id/occupants', authMiddleware, async (req, res) => {
     } catch (error: any) {
         console.error('Error fetching occupants:', error);
         res.status(500).json({ message: 'Error fetching occupants' });
+    }
+});
+
+// Transfer passenger to another room
+router.post('/transfer', authMiddleware, requireRole('staff'), async (req, res) => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        const { orderId, passengerId, newRoomId } = req.body;
+
+        // 1. Get Order
+        const orderRes = await client.query('SELECT passengers FROM orders WHERE id = $1', [orderId]);
+        if (orderRes.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        let passengers = orderRes.rows[0].passengers;
+        const passengerIndex = passengers.findIndex((p: any) => p.id === passengerId);
+
+        if (passengerIndex === -1) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ message: 'Passenger not found in order' });
+        }
+
+        // 2. Check New Room Capacity
+        if (newRoomId) {
+            const roomRes = await client.query('SELECT capacity, room_number FROM rooms WHERE id = $1', [newRoomId]);
+            if (roomRes.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return res.status(404).json({ message: 'Target room not found' });
+            }
+            const room = roomRes.rows[0];
+
+            const occupancyRes = await client.query(`
+                SELECT COUNT(*) 
+                FROM orders o, jsonb_array_elements(o.passengers) p
+                WHERE (p->>'assignedRoomId')::uuid = $1
+                AND o.status != 'Cancelled'
+            `, [newRoomId]);
+
+            const currentOccupied = parseInt(occupancyRes.rows[0].count);
+            // Note: If we are just moving someone IN, we check capacity. 
+            // If they were already in this room (idempotent), count is included.
+            // But usually we transfer FROM one TO another.
+            // We should check if currentOccupied < capacity.
+
+            if (currentOccupied >= room.capacity) {
+                await client.query('ROLLBACK');
+                return res.status(400).json({ message: `Room ${room.room_number} is full` });
+            }
+        }
+
+        // 3. Update Passenger
+        passengers[passengerIndex].assignedRoomId = newRoomId;
+
+        // 4. Save Order
+        await client.query('UPDATE orders SET passengers = $1 WHERE id = $2', [JSON.stringify(passengers), orderId]);
+
+        await client.query('COMMIT');
+        res.json({ message: 'Transfer successful' });
+    } catch (error: any) {
+        await client.query('ROLLBACK');
+        console.error('Error transferring passenger:', error);
+        res.status(500).json({ message: 'Error transferring passenger' });
+    } finally {
+        client.release();
     }
 });
 

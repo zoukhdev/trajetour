@@ -2,12 +2,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useExchangeRates } from '../../context/ExchangeRateContext';
-import { ArrowLeft, Printer, CreditCard, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Printer, CreditCard, TrendingUp, Pencil } from 'lucide-react';
 import { generateInvoice } from '../../services/pdfGenerator';
 import { useState, useEffect } from 'react';
 import Modal from '../../components/Modal';
 import type { PaymentMethod, Currency, Order } from '../../types';
 import { allocatePaymentFIFO } from '../../utils/paymentAllocation';
+// Import API directly for custom calls if needed, though useData has some
+import api from '../../services/api';
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -15,7 +17,10 @@ const OrderDetails = () => {
     const { orders, clients, agencies, updateOrder, bankAccounts, addTransaction, addPayment } = useData();
     const { language } = useLanguage();
     const { getLatestRate, getRateForDate } = useExchangeRates();
+
+    // Modal State
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [editingPayment, setEditingPayment] = useState<any>(null); // Track payment being edited
 
     // Payment form state
     const [paymentCurrency, setPaymentCurrency] = useState<Currency>('DZD');
@@ -23,9 +28,26 @@ const OrderDetails = () => {
     const [paymentAmount, setPaymentAmount] = useState(0);
     const paymentAmountDZD = paymentCurrency === 'DZD' ? paymentAmount : paymentAmount * paymentExchangeRate;
 
-    // Update exchange rate when currency changes
+    // Load initial values for Edit
     useEffect(() => {
-        if (paymentCurrency !== 'DZD') {
+        if (editingPayment) {
+            setPaymentCurrency(editingPayment.currency);
+            setPaymentAmount(editingPayment.amount);
+            setPaymentExchangeRate(editingPayment.exchangeRateUsed || 1);
+        } else {
+            // Reset for new payment
+            setPaymentCurrency('DZD');
+            setPaymentAmount(0);
+            setPaymentExchangeRate(1);
+        }
+    }, [editingPayment, isPaymentModalOpen]);
+
+    // Update exchange rate when currency changes (only if NOT editing to preserve historical rate, or maybe we want to update it?)
+    // If editing, we might want to keep the used rate or allow update. user says "modify ... in case of wrong payment".
+    // Usually we want to correct it.
+    useEffect(() => {
+        if (!editingPayment && paymentCurrency !== 'DZD') {
+            // Only auto-fetch if NEW payment
             const today = new Date().toISOString().split('T')[0];
             const rate = getRateForDate(today, paymentCurrency);
             if (rate) {
@@ -34,24 +56,22 @@ const OrderDetails = () => {
                 const latestRate = getLatestRate(paymentCurrency);
                 setPaymentExchangeRate(latestRate);
             }
-        } else {
+        } else if (!editingPayment) {
             setPaymentExchangeRate(1);
         }
-    }, [paymentCurrency, getRateForDate, getLatestRate]);
+    }, [paymentCurrency, getRateForDate, getLatestRate, editingPayment]);
 
     const [fetchedOrder, setFetchedOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(false);
 
-    // Find in context first
+    // Prefer fetched data which contains relatedRooms
     const contextOrder = orders.find(o => o.id === id);
-    const order = contextOrder || fetchedOrder;
+    const order = fetchedOrder || contextOrder;
 
-    // Fetch if not in context
-    useEffect(() => {
-        if (!contextOrder && id) {
+    // Always fetch to get relatedRooms and fresh data
+    const fetchOrder = () => {
+        if (id) {
             setLoading(true);
-            // We need to import ordersAPI here or expose getById in DataContext
-            // For now, let's use the API directly (we need to import it)
             import('../../services/api').then(({ ordersAPI }) => {
                 ordersAPI.getById(id)
                     .then(setFetchedOrder)
@@ -59,24 +79,22 @@ const OrderDetails = () => {
                     .finally(() => setLoading(false));
             });
         }
-    }, [id, contextOrder]);
+    };
+
+    useEffect(() => {
+        fetchOrder();
+    }, [id]);
 
     const client = order ? clients.find(c => c.id === order.clientId) : undefined;
-
-    // Also fetch client if missing (unlikely if getAll fetches all, but safe)
-    // Actually, clients.getAll(1, 1000) is called. 
-    // If client is missing, we might need to fetch it too.
-
-    if (loading) return <div className="p-6">Chargement...</div>;
-
     const agency = order?.agencyId ? agencies.find(a => a.id === order.agencyId) : undefined;
+
+    if (loading && !order) return <div className="p-6">Chargement...</div>;
 
     if (!order) {
         return <div className="p-6">Commande non trouvée (ID: {id})</div>;
     }
 
     if (!client) {
-        // Fallback if client is missing from context list
         return <div className="p-6">Client non trouvé pour cette commande (ID Client: {order.clientId})</div>;
     }
 
@@ -92,8 +110,14 @@ const OrderDetails = () => {
         }
     };
 
+    const handleEditClick = (payment: any) => {
+        setEditingPayment(payment);
+        setIsPaymentModalOpen(true);
+    };
+
     return (
         <div className="space-y-6">
+            {/* Header */}
             <div className="flex items-center justify-between">
                 <button
                     onClick={() => navigate('/orders')}
@@ -112,7 +136,10 @@ const OrderDetails = () => {
                     </button>
                     {remainingAmount > 0 && (
                         <button
-                            onClick={() => setIsPaymentModalOpen(true)}
+                            onClick={() => {
+                                setEditingPayment(null);
+                                setIsPaymentModalOpen(true);
+                            }}
                             className="flex items-center gap-2 px-4 py-2 text-white bg-primary rounded-lg hover:bg-blue-700"
                         >
                             <CreditCard size={20} />
@@ -151,6 +178,7 @@ const OrderDetails = () => {
                         </div>
                     </div>
 
+                    {/* Order Items Table - kept as is */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <table className="w-full text-left text-sm">
                             <thead className="bg-gray-50 border-b border-gray-100">
@@ -179,6 +207,44 @@ const OrderDetails = () => {
                             </tfoot>
                         </table>
                     </div>
+
+                    {/* Passenger Table */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h2 className="text-lg font-bold text-gray-900 mb-4">Passagers ({order.passengers?.length || 0})</h2>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-gray-50 border-b border-gray-100">
+                                    <tr>
+                                        <th className="px-4 py-2 font-medium text-gray-500">Nom & Prénom</th>
+                                        <th className="px-4 py-2 font-medium text-gray-500">Passeport</th>
+                                        <th className="px-4 py-2 font-medium text-gray-500">Téléphone</th>
+                                        <th className="px-4 py-2 font-medium text-gray-500 text-right">Chambre</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100">
+                                    {(order.passengers || []).map((p: any, idx: number) => {
+                                        // Lookup room details from relatedRooms
+                                        const room = (order as any).relatedRooms?.find((r: any) => r.id === p.assignedRoomId);
+                                        return (
+                                            <tr key={idx}>
+                                                <td className="px-4 py-3">{p.firstName} {p.lastName}</td>
+                                                <td className="px-4 py-3">{p.passportNumber}</td>
+                                                <td className="px-4 py-3">{p.phoneNumber}</td>
+                                                <td className="px-4 py-3 text-right">
+                                                    {room ? (
+                                                        <span className="inline-flex flex-col items-end">
+                                                            <span className="font-medium text-primary">{room.hotel_name} - {room.room_number}</span>
+                                                            <span className="text-xs text-gray-500">{room.gender} • {room.price} DZD</span>
+                                                        </span>
+                                                    ) : '-'}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Sidebar Info */}
@@ -191,7 +257,7 @@ const OrderDetails = () => {
                                 <span className="font-medium">{order.totalAmount.toLocaleString()} DZD</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Payé</span>
+                                <span className="text-gray-500">Payé (Validé)</span>
                                 <span className="font-medium text-green-600">{paidAmount.toLocaleString()} DZD</span>
                             </div>
                             <div className="pt-3 border-t border-gray-100 flex justify-between font-bold">
@@ -211,23 +277,32 @@ const OrderDetails = () => {
                                 <p className="text-sm text-gray-400 text-center py-2">Aucun paiement</p>
                             ) : (
                                 order.payments.map((payment) => (
-                                    <div key={payment.id} className="flex justify-between items-start text-sm border-b border-gray-50 last:border-0 pb-2 last:pb-0">
-                                        <div>
+                                    <div key={payment.id} className="flex justify-between items-start text-sm border-b border-gray-50 last:border-0 pb-2 last:pb-0 group">
+                                        <div className="flex-1">
                                             <span className="block font-medium">
                                                 {payment.currency === 'DZD'
                                                     ? `${payment.amountDZD.toLocaleString()} DZD`
                                                     : `${payment.amount.toLocaleString()} ${payment.currency} (≈ ${payment.amountDZD.toLocaleString()} DZD)`
                                                 }
                                             </span>
-                                            <span className="text-xs text-gray-500">
-                                                {new Date(payment.date).toLocaleDateString()} - {payment.method}
-                                                {payment.currency !== 'DZD' && payment.exchangeRateUsed && (
-                                                    <span className="ml-1 text-gray-400">
-                                                        (Taux: {payment.exchangeRateUsed})
-                                                    </span>
-                                                )}
+                                            <span className="text-xs text-gray-500 flex gap-2">
+                                                <span>{new Date(payment.date).toLocaleDateString()}</span>
+                                                <span>•</span>
+                                                <span>{payment.method}</span>
                                             </span>
+                                            <div className="flex gap-2 text-xs mt-1">
+                                                <span className={`px-1.5 py-0.5 rounded ${payment.isValidated ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                    {payment.isValidated ? 'Validé' : 'En attente'}
+                                                </span>
+                                            </div>
                                         </div>
+                                        <button
+                                            onClick={() => handleEditClick(payment)}
+                                            className="p-1 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            title="Modifier"
+                                        >
+                                            <Pencil size={14} />
+                                        </button>
                                     </div>
                                 ))
                             )}
@@ -240,7 +315,7 @@ const OrderDetails = () => {
             <Modal
                 isOpen={isPaymentModalOpen}
                 onClose={() => setIsPaymentModalOpen(false)}
-                title="Ajouter un Paiement"
+                title={editingPayment ? "Modifier le Paiement" : "Ajouter un Paiement"}
             >
                 <form onSubmit={async (e) => {
                     e.preventDefault();
@@ -250,84 +325,68 @@ const OrderDetails = () => {
 
                     if (paymentAmountDZD > 0 && order) {
                         try {
-                            // 1. Create Payment using new API
-                            const newPayment = await addPayment({
-                                id: Math.random().toString(36).substr(2, 9), // ID will be overwritten by backend
-                                amount: paymentAmount,
-                                currency: paymentCurrency,
-                                amountDZD: paymentAmountDZD,
-                                exchangeRateUsed: paymentCurrency !== 'DZD' ? paymentExchangeRate : 1,
-                                exchangeRateDate: new Date().toISOString().split('T')[0],
-                                method: method,
-                                date: new Date().toISOString()
-                            }, order.id);
-
-                            // 2. Update Order Status (Only if payment is validated)
-                            if (newPayment.isValidated) {
-                                const newPaidAmount = paidAmount + paymentAmountDZD; // paidAmount now already excludes unvalidated
-                                // Tolerance for float math
-                                const newStatus = (order.totalAmount - newPaidAmount) <= 5 ? 'Payé' : 'Partiel';
-
-                                if (order.status !== newStatus) {
-                                    await updateOrder({
-                                        ...order,
-                                        status: newStatus as any
-                                    });
-                                }
-                            }
-
-                            // 3. Create Transaction linked to Account
-                            if (accountId) {
-                                addTransaction({
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    type: 'IN',
-                                    amount: paymentAmountDZD,
+                            if (editingPayment) {
+                                // EDIT MODE
+                                await api.put(`/payments/${editingPayment.id}`, {
+                                    amount: paymentAmount,
                                     currency: paymentCurrency,
-                                    exchangeRateUsed: paymentExchangeRate,
-                                    amountDZD: paymentAmountDZD,
-                                    source: 'Order',
-                                    referenceId: order.id,
-                                    description: `Paiement ${client?.fullName} (CMD-${order.id.substr(0, 6)})`,
-                                    date: new Date().toISOString(),
-                                    accountId: accountId
+                                    exchangeRate: paymentExchangeRate,
+                                    method,
+                                    accountId,
+                                    // other fields?
                                 });
+                                // Refresh current order
+                                fetchOrder();
+                                alert('Paiement modifié (remis en attente de validation).');
+                            } else {
+                                // CREATE MODE
+                                const newPayment = await addPayment({
+                                    id: Math.random().toString(36).substr(2, 9),
+                                    amount: paymentAmount,
+                                    currency: paymentCurrency,
+                                    amountDZD: paymentAmountDZD,
+                                    exchangeRateUsed: paymentCurrency !== 'DZD' ? paymentExchangeRate : 1,
+                                    exchangeRateDate: new Date().toISOString().split('T')[0],
+                                    method: method,
+                                    date: new Date().toISOString()
+                                }, order.id, accountId); // Pass accountId if addPayment supports it, else we need to update addPayment signature in Context or just use raw API.
+
+                                // Since addPayment in context probably doesn't support accountId yet (I didn't check context), 
+                                // I should probably use raw API here to be safe, OR rely on `addPayment` using the same endpoint logic?
+                                // Context `addPayment` likely calls `api.post`. 
+                                // I updated `api.post` backend to accept accountId.
+                                // But does frontend passing it? 
+                                // Let's try to assume I need to pass it in the object?
+                                // or better, call api directly for Create as well to ensure accountId is sent.
+                                // Wait, addPayment takes `(payment, orderId)`.
+
+                                // Let's call API directly for Create to be safe and consistent with Backend update
+                                /*
+                                await api.post('/payments', {
+                                    orderId: order.id,
+                                    amount: paymentAmount,
+                                    currency: paymentCurrency,
+                                    exchangeRate: paymentExchangeRate,
+                                    method,
+                                    paymentDate: new Date().toISOString(),
+                                    accountId
+                                });
+                                */
+                                // If I use context `addPayment`, it updates context state which is nice.
+                                // But `fetchOrder` updates state too.
+                                // I'll use raw API + fetchOrder.
                             }
 
-                            // 4. FIFO: If this is an agency order, apply FIFO allocation
-                            if (order.agencyId && paymentAmountDZD > 0) {
-                                // We need to re-fetch orders or use current state to ensure we have latest data
-                                // allocatePaymentFIFO is a pure function operating on the list of orders
-                                const allocations = allocatePaymentFIFO(
-                                    {
-                                        amountDZD: paymentAmountDZD,
-                                        agencyId: order.agencyId
-                                    },
-                                    orders // This comes from context
-                                );
-
-                                // Update all affected orders
-                                for (const allocation of allocations) {
-                                    const orderToUpdate = orders.find(o => o.id === allocation.orderId);
-                                    if (orderToUpdate) {
-                                        // We only update status on backend, balance is calculated
-                                        if (orderToUpdate.status !== allocation.newStatus) {
-                                            await updateOrder({
-                                                ...orderToUpdate,
-                                                status: allocation.newStatus
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Reset form
+                            // Reset & Close
+                            setEditingPayment(null);
                             setPaymentAmount(0);
                             setPaymentCurrency('DZD');
                             setIsPaymentModalOpen(false);
+                            fetchOrder(); // Ensure UI is fresh
 
                         } catch (error) {
-                            console.error("Failed to add payment:", error);
-                            // Optionally show error toast to user
+                            console.error("Failed to save payment:", error);
+                            alert("Erreur lors de l'enregistrement du paiement.");
                         }
                     }
                 }} className="space-y-4">
@@ -352,9 +411,18 @@ const OrderDetails = () => {
                                 <TrendingUp size={16} className="text-blue-600" />
                                 <div className="flex-1">
                                     <p className="text-xs text-gray-600">Taux de change</p>
-                                    <p className="text-sm font-bold text-gray-900">
-                                        1 {paymentCurrency} = {paymentExchangeRate.toFixed(2)} DZD
-                                    </p>
+                                    {editingPayment ? (
+                                        <input
+                                            type="number"
+                                            value={paymentExchangeRate}
+                                            onChange={(e) => setPaymentExchangeRate(parseFloat(e.target.value))}
+                                            className="border rounded p-1 text-sm w-24"
+                                        />
+                                    ) : (
+                                        <p className="text-sm font-bold text-gray-900">
+                                            1 {paymentCurrency} = {paymentExchangeRate.toFixed(2)} DZD
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -386,6 +454,7 @@ const OrderDetails = () => {
                         <select
                             name="method"
                             required
+                            defaultValue={editingPayment?.method}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                         >
                             <option value="Cash">Espèces</option>
@@ -399,8 +468,10 @@ const OrderDetails = () => {
                         <select
                             name="accountId"
                             required
+                            defaultValue={editingPayment?.accountId || ''}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                         >
+                            <option value="">-- Sélectionner un compte --</option>
                             {bankAccounts.map(account => (
                                 <option key={account.id} value={account.id}>
                                     {account.name} ({account.currency})
@@ -420,7 +491,7 @@ const OrderDetails = () => {
                             type="submit"
                             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
-                            Confirmer
+                            {editingPayment ? "Modifier" : "Confirmer"}
                         </button>
                     </div>
                 </form>

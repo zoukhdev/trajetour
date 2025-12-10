@@ -72,6 +72,15 @@ const OrderFormV2 = () => {
             .catch(console.error);
     }, [selectedOfferId]);
 
+    // Auto-calculate Total Amount based on Room Prices
+    useEffect(() => {
+        const calculatedTotal = passengers.reduce((sum, p) => {
+            const room = availableRooms.find(r => r.id === (p as any).assignedRoomId);
+            return sum + (room ? Number(room.price || 0) : 0);
+        }, 0);
+        setTotalAmount(calculatedTotal);
+    }, [passengers, availableRooms]);
+
 
     // Handlers
     const updatePassenger = (index: number, field: string, value: any) => {
@@ -111,7 +120,8 @@ const OrderFormV2 = () => {
                 items: [], // Legacy items field, can default to empty or structured
                 passengers,
                 totalAmount, // Assuming entered or calculated
-                notes
+                notes,
+                status: 'Non payé' // Default status for new order
             };
 
             await api.post('/orders', orderData);
@@ -284,7 +294,7 @@ const OrderFormV2 = () => {
 
                                                             return (
                                                                 <option key={room.id} value={room.id}>
-                                                                    {room.hotel_name} - {room.room_number} ({room.gender}) - {occupied}/{room.capacity}
+                                                                    {room.hotel_name} - {room.room_number} ({room.gender}) - {occupied}/{room.capacity} - {room.price} DZD
                                                                 </option>
                                                             );
                                                         })}
@@ -320,15 +330,14 @@ const OrderFormV2 = () => {
                 </div>
 
                 {/* Totals */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex justify-end items-center gap-4">
-                    <span className="text-lg font-bold">Total DZD:</span>
-                    <input
-                        type="number"
-                        value={totalAmount}
-                        onChange={e => setTotalAmount(Number(e.target.value))}
-                        className="w-48 p-2 border rounded-lg text-right font-bold text-xl"
-                        placeholder="0.00"
-                    />
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-end gap-2">
+                    <div className="flex items-center gap-4">
+                        <span className="text-lg font-bold text-gray-700">Total Calculé (DZD):</span>
+                        <div className="text-2xl font-bold text-primary">
+                            {totalAmount.toLocaleString()} DZD
+                        </div>
+                    </div>
+                    <p className="text-xs text-gray-500">Calculé automatiquement selon les chambres assignées.</p>
                 </div>
 
                 <div className="flex justify-end gap-4">

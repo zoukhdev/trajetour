@@ -194,24 +194,28 @@ app.listen(PORT, async () => {
         // Auto-run migrations (Inline for reliability)
         try {
             console.log('🔄 Auto-running database migrations...');
-            // 1. Force Reset Rooms Table (since it's new and causing schema issues)
-            await pool.query('DROP TABLE IF EXISTS rooms CASCADE');
-            console.log('🗑️ Dropped existing rooms table.');
-
-            // 2. Create Rooms Table with VARCHAR offer_id
+            // 1. Ensure Rooms Table Exists and has columns
             await pool.query(`
-                CREATE TABLE rooms (
-                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                    offer_id VARCHAR(255),
-                    hotel_name VARCHAR(255) NOT NULL,
-                    room_number VARCHAR(50) NOT NULL,
-                    capacity INTEGER NOT NULL DEFAULT 4,
-                    gender VARCHAR(20) CHECK (gender IN ('MEN', 'WOMEN', 'MIXED')) NOT NULL,
-                    status VARCHAR(20) DEFAULT 'ACTIVE',
-                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-                );
-            `);
-            console.log('✅ Rooms table recreated with VARCHAR offer_id.');
+                    CREATE TABLE IF NOT EXISTS rooms (
+                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                        offer_id VARCHAR(255),
+                        hotel_name VARCHAR(255) NOT NULL,
+                        room_number VARCHAR(50) NOT NULL,
+                        capacity INTEGER NOT NULL DEFAULT 4,
+                        gender VARCHAR(20) CHECK (gender IN ('MEN', 'WOMEN', 'MIXED')) NOT NULL,
+                        status VARCHAR(20) DEFAULT 'ACTIVE',
+                        price DECIMAL(12,2) DEFAULT 0,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    );
+                `);
+
+            // Add columns safely if they miss
+            await pool.query(`
+                    ALTER TABLE rooms 
+                    ADD COLUMN IF NOT EXISTS price DECIMAL(12,2) DEFAULT 0,
+                    ADD COLUMN IF NOT EXISTS offer_id VARCHAR(255);
+                `);
+            console.log('✅ Rooms table schema verified (price column added).');
 
             // 3. Update Orders Table columns check
             await pool.query(`
@@ -253,6 +257,24 @@ app.listen(PORT, async () => {
             console.log('✅ Offers table columns verified.');
         } catch (err) {
             console.error('❌ Offers table migration failed:', err);
+        }
+
+        // 6. Update Payments Table checks
+        try {
+            await pool.query(`
+                ALTER TABLE payments 
+                ADD COLUMN IF NOT EXISTS account_id UUID REFERENCES bank_accounts(id);
+            `);
+            console.log('✅ Payments table columns verified (account_id).');
+
+            // 7. Update Transactions Table
+            await pool.query(`
+                ALTER TABLE transactions 
+                ADD COLUMN IF NOT EXISTS payment_id UUID REFERENCES payments(id) ON DELETE SET NULL;
+            `);
+            console.log('✅ Transactions table columns verified (payment_id).');
+        } catch (err) {
+            console.error('❌ Payments/Transactions table migration failed:', err);
         }
     }
 
