@@ -1,0 +1,101 @@
+# 🚀 Wahat Alrajaa TMS - Feature Implementation Prompt (V2)
+
+## Goal
+
+Implement the following critical operational and financial features to support B2B, Group Leader commissions, multi-currency accounting with manual exchange rates, and the **FIFO Payment Allocation Logic** for agency orders.
+
+## I. Operational & Commission Requirements (B2B & Group Leader)
+
+**Reference Files:**
+* **Order Form:** `[client/src/pages/Orders/OrderForm.tsx]`
+* **Order Controller:** `server/src/controllers/OrderController.ts` (Conceptual)
+* **Types/Interfaces:** `[client/src/types/index.ts]`
+* **Agency Management:** `[client/src/pages/Agencies/AgencyForm.tsx]`
+
+### 1. Data Model Changes
+
+Modify the following interfaces in `[client/src/types/index.ts]`:
+
+| Interface | Field Name | Type | Description |
+| :--- | :--- | :--- | :--- |
+| **Offer** | `defaultAgencyCommission` | `number \| null` | The suggested commission amount (in DZD) to be pre-populated when an Order is created for an Agency. |
+| **Order** | `agencyId` | `string \| null` | Existing field. Ensure it links to the Agency or Group Leader profile. |
+| **Order** | `commissionPerPassengerDZD` | `number \| null` | **Manual Input:** The final agreed commission (in DZD) per passenger for this specific B2B/Group Leader booking. |
+| **Order** | `remainingBalanceDZD` | `number` | **New Field:** Tracks the outstanding amount owed for the order in DZD. |
+| **Agency** | `type` | `'Agency' \| 'GroupLeader'` | Update the existing Agency model to distinguish between formal agencies and individual commission-based agents ("Rabbateur"). |
+
+### 2. Controller & Business Logic
+
+Implement the following in the Order Controller (conceptual `server/src/controllers/OrderController.ts`):
+
+* **Commission Calculation Logic:**
+    * When saving an Order where `agencyId` is present:
+        * Calculate the total commission payable:
+            $$\text{Total Commission Payable (DZD)} = \text{Number of Passengers} \times \text{Order.commissionPerPassengerDZD}$$
+        * Store this amount in a new financial liability record, linked to the `agencyId` profile, categorized as `Commission Payable (Out)` or `Commission Payable (In)`.
+* **Offer Capacity Management:**
+    * Ensure that when an Order is successfully created, the system deducts the number of passengers from the corresponding **Offer**'s `availability`.
+
+## II. Financial & Multi-Currency Requirements
+
+**Reference Files:**
+* **Exchange Rate Context:** `[client/src/context/ExchangeRateContext.tsx]`
+* **Caisse/Accounts Page:** `[client/src/pages/Caisse/CaissePage.tsx]`
+* **Payment List:** `[client/src/pages/Payments/PaymentList.tsx]`
+* **Payment Model:** **Payment** interface
+
+### 1. Exchange Rate Management (Manual Input)
+
+* **Action:** In `[client/src/context/ExchangeRateContext.tsx]`, disable any "Real-time rate updates" functionality.
+* **Implementation:** Ensure the system forces **manual, daily configuration** of the SAR/DZD and EURO/DZD rates via the Exchange Rate Management interface.
+
+### 2. Payment Processing and Conversion
+
+* **Payment Conversion:** When a **Payment** is recorded in a foreign currency (SAR or EURO):
+    * The system must retrieve the **manually configured exchange rate** valid for the **Payment Date**.
+    * The DZD equivalent must be calculated and stored in the **Payment** record for reconciliation purposes.
+    * **Payment Fields Update (in `Payment` interface):** Add `DZDequivalent: number` and `exchangeRateUsed: number`.
+
+## III. Caisse/Main NET Total Consolidation
+
+* **Account Structure:** Ensure the **BankAccount** model supports the following accounts: `SAR Account`, `EURO Account`, `Current Account`, `Ramadan Treasury`, `Office Account`, `Safe Account`, and `Bank Account`.
+* **Implementation:** In the **Cash Register (Caisse)** component (`[client/src/pages/Caisse/CaissePage.tsx]`), calculate the **Main NET Total (DZD)** using the following logic:
+
+    * All DZD-based accounts are summed directly.
+    * Foreign currency accounts (SAR, EURO) are aggregated using the **Current Day's manually configured exchange rate** from the `ExchangeRateContext`.
+
+    $$\text{NET Total (DZD)} = \sum \text{DZD Accounts} + \left( \text{SAR Balance} \times \text{Current SAR/DZD Rate} \right) + \left( \text{EURO Balance} \times \text{Current EURO/DZD Rate} \right)$$
+
+## IV. Payment Resolution Logic (FIFO)
+
+This is a new critical service in the backend for processing agency payments.
+
+### 1. Payment Allocation Service
+
+Implement a service (or logic within the Payment Controller) that runs immediately after an agency payment is recorded (using the payment's `DZDequivalent`).
+
+* **Logic:**
+    1.  Fetch all Orders for the payment's `agencyId` where `status` is not **Paid**.
+    2.  Sort these Orders by `createdAt` date, ascending (oldest first).
+    3.  Iterate through the sorted Orders, applying the payment amount to the oldest one first, until the payment amount is exhausted.
+    4.  Update the `remainingBalanceDZD` for each affected Order.
+
+### 2. Order Status Update
+
+* **Status Rules:** Update the **Order**'s `status` field based on the allocation:
+    * If $\text{remainingBalanceDZD} = 0$: Set $\text{status} = \text{'Paid'}$.
+    * If $0 < \text{remainingBalanceDZD} < \text{Total Order Amount}$: Set $\text{status} = \text{'Partial'}$.
+    * If $\text{remainingBalanceDZD} = \text{Total Order Amount}$: Set $\text{status} = \text{'Unpaid'}$.
+
+### 3. Frontend Visualization
+
+* **Display:** In the Order List component (`[client/src/pages/Orders/OrderList.tsx]`), render the `status` using color-coded labels: **Paid (Green)**, **Partial (Yellow)**, and **Unpaid (Red)**.
+
+## V. Security & Development Pre-requisites
+
+* **Production Readiness:** Ensure all implemented features are tested with the authentication system *re-enabled*. The temporary development bypass must be removed before deployment.
+* **Zod Validation:** Apply Zod validation to the new `commissionPerPassengerDZD` field to ensure it is a valid positive number.
+
+---
+
+**Output Requirement:** Provide the modified code snippets for the interfaces, the core logic within the Order Controller, the calculation in the Caisse component, and the pseudocode for the FIFO Payment Allocation Service.
