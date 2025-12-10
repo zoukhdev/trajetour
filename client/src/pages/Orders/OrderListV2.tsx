@@ -87,7 +87,7 @@ const OrderListV2 = () => {
                 </div>
                 <div className="flex gap-2">
                     <Link
-                        to="/orders-v2/new"
+                        to="/orders/new"
                         className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                     >
                         <Plus size={20} />
