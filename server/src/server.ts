@@ -192,6 +192,24 @@ app.listen(PORT, async () => {
                 ADD COLUMN IF NOT EXISTS hotels JSONB DEFAULT '[]'::jsonb;
             `);
             console.log('✅ Orders table columns verified.');
+
+            // 4. Ensure Admin User Exists
+            try {
+                const bcrypt = (await import('bcrypt')).default;
+                const hashedPassword = await bcrypt.hash('Aimen@2025', 10);
+                const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
+
+                await pool.query(
+                    `INSERT INTO users (email, password_hash, username, role, permissions) 
+                     VALUES ($1, $2, $3, $4, $5::jsonb)
+                     ON CONFLICT (email) 
+                     DO UPDATE SET password_hash = EXCLUDED.password_hash, permissions = EXCLUDED.permissions`,
+                    ['aimen@wrtour.com', hashedPassword, 'Aimen', 'admin', permissions]
+                );
+                console.log('✅ Admin user verified/created (aimen@wrtour.com).');
+            } catch (authErr) {
+                console.error('⚠️ Failed to create admin user:', authErr);
+            }
         } catch (err) {
             console.error('❌ Database migration failed:', err);
         }
