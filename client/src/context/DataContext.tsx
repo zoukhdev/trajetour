@@ -27,7 +27,7 @@ interface DataContextType {
     addSupplier: (supplier: Supplier) => void;
     updateSupplier: (supplier: Supplier) => void;
     deleteSupplier: (id: string) => void;
-    addOffer: (offer: Offer) => void;
+    addOffer: (offer: Offer) => Promise<Offer>;
     updateOffer: (offer: Offer) => void;
     deleteOffer: (id: string) => void;
     addGuideExpense: (expense: GuideExpense) => void;
@@ -271,10 +271,11 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const updateSupplier = (updatedSupplier: Supplier) => setSuppliers(prev => prev.map(s => s.id === updatedSupplier.id ? updatedSupplier : s));
     const deleteSupplier = (id: string) => setSuppliers(prev => prev.filter(s => s.id !== id));
 
-    const addOffer = async (offer: Offer) => {
+    const addOffer = async (offer: Offer): Promise<Offer> => {
         try {
             const newOffer = await offersAPI.create(offer);
             setOffers(prev => [newOffer, ...prev]);
+            return newOffer;
         } catch (error) {
             console.error('❌ Error adding offer:', error);
             throw error;

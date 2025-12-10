@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
-import { Plus, Hotel, Users, Trash2, Filter } from 'lucide-react';
+import { Plus, Hotel, Users, Trash2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 
 // Define Room Interface here since it's new
@@ -159,30 +159,32 @@ const RoomingList = () => {
 
                     <div className="flex-1 w-full">
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Filtrer par Hôtel
+                            Sélectionner un Hôtel
                         </label>
-                        <div className="relative">
-                            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                            <input
-                                type="text"
-                                list="hotel-suggestions"
-                                placeholder="Tous les hôtels"
-                                value={selectedHotel}
-                                onChange={(e) => setSelectedHotel(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none"
-                            />
-                            {/* Auto-suggest based on current rooms */}
-                            <datalist id="hotel-suggestions">
-                                {Array.from(new Set(rooms.map(r => r.hotel_name))).map(h => (
-                                    <option key={h} value={h} />
-                                ))}
-                            </datalist>
-                        </div>
+                        <select
+                            value={selectedHotel}
+                            onChange={(e) => {
+                                if (e.target.value === 'NEW') {
+                                    const name = prompt("Entrez le nom du nouvel hôtel :");
+                                    if (name) setSelectedHotel(name);
+                                } else {
+                                    setSelectedHotel(e.target.value);
+                                }
+                            }}
+                            disabled={!selectedOfferId}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none"
+                        >
+                            <option value="">-- Tous les hôtels --</option>
+                            {Array.from(new Set(rooms.map(r => r.hotel_name).filter(Boolean))).map(h => (
+                                <option key={h} value={h}>{h}</option>
+                            ))}
+                            <option value="NEW" className="font-bold text-primary">+ Ajouter un hôtel</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            {/* Room Grid */}
+            {/* Room Content */}
             {!selectedOfferId ? (
                 <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-xl border-dashed border-2 border-gray-200">
                     <Hotel size={48} className="mx-auto mb-3 opacity-20" />
@@ -190,80 +192,109 @@ const RoomingList = () => {
                 </div>
             ) : loading ? (
                 <div className="text-center py-12">Chargement...</div>
-            ) : rooms.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                    Aucune chambre configurée pour cette offre/hôtel.
-                </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {rooms.map(room => {
-                        const occupancy = room.occupied_count || 0;
-                        const isFull = occupancy >= room.capacity;
-                        const occupancyRate = (occupancy / room.capacity) * 100;
-
-                        return (
-                            <div key={room.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-                                {/* Header */}
-                                <div className={`p-3 border-b border-gray-50 flex justify-between items-start ${room.gender === 'MEN' ? 'bg-blue-50/30' : room.gender === 'WOMEN' ? 'bg-pink-50/30' : 'bg-purple-50/30'
-                                    }`}>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 text-lg">Room {room.room_number}</h3>
-                                        <p className="text-xs text-gray-500 font-medium truncate max-w-[150px]" title={room.hotel_name}>
-                                            {room.hotel_name}
-                                        </p>
-                                    </div>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${room.gender === 'MEN' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                                        room.gender === 'WOMEN' ? 'bg-pink-100 text-pink-700 border-pink-200' :
-                                            'bg-purple-100 text-purple-700 border-purple-200'
-                                        }`}>
-                                        {room.gender}
-                                    </span>
-                                </div>
-
-                                {/* Body */}
-                                <div className="p-4 space-y-3">
-                                    {/* Occupancy Bar */}
-                                    <div>
-                                        <div className="flex justify-between text-xs mb-1">
-                                            <span className="text-gray-600 font-medium">{occupancy} / {room.capacity} Occupés</span>
-                                            <span className={`${isFull ? 'text-red-500' : 'text-green-500'}`}>
-                                                {isFull ? 'COMPLET' : 'DISPONIBLE'}
-                                            </span>
-                                        </div>
-                                        <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                                            <div
-                                                className={`h-full transition-all duration-500 ${isFull ? 'bg-red-500' : occupancyRate > 50 ? 'bg-yellow-500' : 'bg-green-500'
-                                                    }`}
-                                                style={{ width: `${Math.min(occupancyRate, 100)}%` }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Placeholders for occupants (Visual Only for now) */}
-                                    <div className="flex items-center gap-1 text-gray-400">
-                                        <Users size={14} />
-                                        <span className="text-xs">
-                                            {occupancy === 0 ? "Vide" : `${occupancy} pèlerins assignés`}
-                                        </span>
-                                        {/* TODO: Add 'View Occupants' button/modal later */}
-                                    </div>
-                                </div>
-
-                                {/* Footer / Actions */}
-                                {canManageRooms && (
-                                    <div className="px-4 py-2 border-t border-gray-50 bg-gray-50/50 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                            onClick={() => handleDelete(room.id)}
-                                            className="text-gray-400 hover:text-red-500 transition-colors p-1"
-                                            title="Supprimer la chambre"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </div>
-                                )}
+                <div className="space-y-6">
+                    {/* Contextual Add Button */}
+                    {canManageRooms && selectedHotel && (
+                        <div className="flex justify-between items-center bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <div>
+                                <h3 className="font-bold text-lg text-blue-900">{selectedHotel}</h3>
+                                <p className="text-sm text-blue-600">
+                                    {rooms.filter(r => r.hotel_name === selectedHotel).length} chambres configurées
+                                </p>
                             </div>
-                        );
-                    })}
+                            <button
+                                onClick={() => {
+                                    setNewRoom(prev => ({ ...prev, hotelName: selectedHotel }));
+                                    setIsAddModalOpen(true);
+                                }}
+                                className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                            >
+                                <Plus size={20} />
+                                <span>Ajouter une chambre à {selectedHotel}</span>
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Room Grid */}
+                    {rooms.filter(r => !selectedHotel || r.hotel_name === selectedHotel).length === 0 ? (
+                        <div className="text-center py-12 text-gray-500">
+                            {selectedHotel ? "Aucune chambre dans cet hôtel." : "Aucune chambre configurée pour cette offre."}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {rooms
+                                .filter(r => !selectedHotel || r.hotel_name === selectedHotel)
+                                .map(room => {
+                                    const occupancy = room.occupied_count || 0;
+                                    const isFull = occupancy >= room.capacity;
+                                    const occupancyRate = (occupancy / room.capacity) * 100;
+
+                                    return (
+                                        <div key={room.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                                            {/* Header */}
+                                            <div className={`p-3 border-b border-gray-50 flex justify-between items-start ${room.gender === 'MEN' ? 'bg-blue-50/30' : room.gender === 'WOMEN' ? 'bg-pink-50/30' : 'bg-purple-50/30'
+                                                }`}>
+                                                <div>
+                                                    <h3 className="font-bold text-gray-900 text-lg">Room {room.room_number}</h3>
+                                                    <p className="text-xs text-gray-500 font-medium truncate max-w-[150px]" title={room.hotel_name}>
+                                                        {room.hotel_name}
+                                                    </p>
+                                                </div>
+                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${room.gender === 'MEN' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                                    room.gender === 'WOMEN' ? 'bg-pink-100 text-pink-700 border-pink-200' :
+                                                        'bg-purple-100 text-purple-700 border-purple-200'
+                                                    }`}>
+                                                    {room.gender}
+                                                </span>
+                                            </div>
+
+                                            {/* Body */}
+                                            <div className="p-4 space-y-3">
+                                                {/* Occupancy Bar */}
+                                                <div>
+                                                    <div className="flex justify-between text-xs mb-1">
+                                                        <span className="text-gray-600 font-medium">{occupancy} / {room.capacity} Occupés</span>
+                                                        <span className={`${isFull ? 'text-red-500' : 'text-green-500'}`}>
+                                                            {isFull ? 'COMPLET' : 'DISPONIBLE'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                                        <div
+                                                            className={`h-full transition-all duration-500 ${isFull ? 'bg-red-500' : occupancyRate > 50 ? 'bg-yellow-500' : 'bg-green-500'
+                                                                }`}
+                                                            style={{ width: `${Math.min(occupancyRate, 100)}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Placeholders for occupants (Visual Only for now) */}
+                                                <div className="flex items-center gap-1 text-gray-400">
+                                                    <Users size={14} />
+                                                    <span className="text-xs">
+                                                        {occupancy === 0 ? "Vide" : `${occupancy} pèlerins assignés`}
+                                                    </span>
+                                                    {/* TODO: Add 'View Occupants' button/modal later */}
+                                                </div>
+                                            </div>
+
+                                            {/* Footer / Actions */}
+                                            {canManageRooms && (
+                                                <div className="px-4 py-2 border-t border-gray-50 bg-gray-50/50 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button
+                                                        onClick={() => handleDelete(room.id)}
+                                                        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+                                                        title="Supprimer la chambre"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    )}
                 </div>
             )}
 
