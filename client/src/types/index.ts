@@ -206,13 +206,6 @@ export interface Offer {
         diner: boolean;
         bagages: boolean;
     };
-
-    // Room pricing configurations (Step 2 - Section B)
-    roomPricing?: Array<{
-        id: string;
-        description: string;
-        price: number;
-    }>;
 }
 
 export interface GuideExpense {

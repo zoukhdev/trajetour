@@ -161,7 +161,9 @@ const OrderListV2 = () => {
                                     // Logic Check: Order total is usually fixed in DZD at creation or follows currency. 
                                     // For now, assume order.totalAmount is the main value.
 
-                                    const paidAmountDZD = order.payments.reduce((sum: number, p: any) => sum + Number(p.amountDZD), 0);
+                                    const paidAmountDZD = order.payments
+                                        .filter((p: any) => p.isValidated)
+                                        .reduce((sum: number, p: any) => sum + Number(p.amountDZD), 0);
                                     const remainingDZD = totalDZD - paidAmountDZD;
 
                                     return (

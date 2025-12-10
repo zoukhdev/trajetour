@@ -12,9 +12,7 @@ const AgencyForm = ({ onClose, initialData }: AgencyFormProps) => {
     const [formData, setFormData] = useState<Partial<Agency>>(
         initialData || {
             type: 'Agence',
-            name: '',
-            creditStart: 0,
-            currentCredit: 0
+            name: ''
         }
     );
 
@@ -31,9 +29,9 @@ const AgencyForm = ({ onClose, initialData }: AgencyFormProps) => {
             logo: formData.logo,
             invoicePrefix: formData.invoicePrefix,
             invoiceFooter: formData.invoiceFooter,
-            subscription: formData.subscription as any,
-            creditStart: Number(formData.creditStart),
-            currentCredit: Number(formData.creditStart) // Initial credit is current credit at start
+            subscription: 'Standard',
+            creditStart: 0,
+            currentCredit: 0
         };
 
         // Note: Update logic for agencies is not explicitly in DataContext yet, but addAgency works for new ones.
@@ -164,29 +162,7 @@ const AgencyForm = ({ onClose, initialData }: AgencyFormProps) => {
                     />
                 </div>
 
-                <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Abonnement</label>
-                    <select
-                        value={formData.subscription || 'Standard'}
-                        onChange={e => setFormData({ ...formData, subscription: e.target.value as any })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                    >
-                        <option value="Standard">Standard</option>
-                        <option value="Premium">Premium</option>
-                        <option value="Gold">Gold</option>
-                    </select>
-                </div>
 
-                <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Crédit de Départ (DZD)</label>
-                    <input
-                        type="number"
-                        required
-                        value={formData.creditStart}
-                        onChange={e => setFormData({ ...formData, creditStart: Number(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                    />
-                </div>
             </div>
 
             <div className="flex justify-end gap-3 mt-6">

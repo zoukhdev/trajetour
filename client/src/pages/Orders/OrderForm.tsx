@@ -20,7 +20,7 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
     const [clientId, setClientId] = useState('');
     const [agencyId, setAgencyId] = useState('');
     const [selectedOfferId, setSelectedOfferId] = useState('');
-    const [selectedRoomId, setSelectedRoomId] = useState('');
+
     const [orderDate, setOrderDate] = useState(new Date().toISOString().split('T')[0]);
     const [notes, setNotes] = useState('');
     const [items, setItems] = useState<OrderItem[]>([
@@ -40,7 +40,7 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
     const [commissionType, setCommissionType] = useState<'none' | 'tax' | 'reduction'>('none');
     const [commissionAmount, setCommissionAmount] = useState<number>(0);
 
-    const selectedOffer = offers.find(offer => offer.id === selectedOfferId);
+
     const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
     const totalAmountDZD = orderCurrency === 'DZD' ? totalAmount : totalAmount * exchangeRate;
 
@@ -109,30 +109,12 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
     const handleOfferChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const offerId = e.target.value;
         setSelectedOfferId(offerId);
-        setSelectedRoomId(''); // Reset room selection when offer changes
 
         // Clear existing items when offer changes
         setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0, amount: 0 }]);
     };
 
-    const handleRoomChange = (roomId: string) => {
-        setSelectedRoomId(roomId);
 
-        if (selectedOffer && roomId) {
-            const selectedRoom = selectedOffer.roomPricing?.find(room => room.id === roomId);
-            if (selectedRoom) {
-                // Auto-populate the first order item with offer and room details
-                const newItem: OrderItem = {
-                    id: '1',
-                    description: `${selectedOffer.title} - ${selectedRoom.description}`,
-                    quantity: 1,
-                    unitPrice: selectedRoom.price,
-                    amount: selectedRoom.price
-                };
-                setItems([newItem]);
-            }
-        }
-    };
 
     const handleAddPassenger = () => {
         setEditingPassenger(undefined);
@@ -336,36 +318,7 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                     </div>
                 </div>
 
-                {/* Room Configuration Selection */}
-                {selectedOffer && selectedOffer.roomPricing && selectedOffer.roomPricing.length > 0 && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 className="text-sm font-semibold text-gray-800 mb-3">Sélectionner une configuration de chambre</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {selectedOffer.roomPricing.map(room => (
-                                <label
-                                    key={room.id}
-                                    className={`flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer transition-all ${selectedRoomId === room.id
-                                        ? 'border-primary bg-primary/5 shadow-sm'
-                                        : 'border-gray-200 bg-white hover:border-primary/50 hover:bg-gray-50'
-                                        }`}
-                                >
-                                    <input
-                                        type="radio"
-                                        name="room"
-                                        value={room.id}
-                                        checked={selectedRoomId === room.id}
-                                        onChange={() => handleRoomChange(room.id)}
-                                        className="w-4 h-4 text-primary focus:ring-primary"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-medium text-gray-900 text-sm">{room.description}</div>
-                                        <div className="text-primary font-semibold text-sm">{room.price.toLocaleString()} DZD</div>
-                                    </div>
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                )}
+
 
                 {/* Passengers Section */}
                 <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">

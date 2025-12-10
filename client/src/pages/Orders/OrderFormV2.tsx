@@ -58,7 +58,7 @@ const OrderFormV2 = () => {
         // Fetch clients for dropdown
         api.get('/clients').then(res => setClients(res.data.data || res.data)).catch(console.error); // Handle paginated or direct array
         // Fetch active offers
-        api.get('/offers?status=active').then(res => setOffers(res.data)).catch(console.error);
+        api.get('/offers').then(res => setOffers(res.data)).catch(console.error);
     }, []);
 
     // Fetch rooms when offer changes

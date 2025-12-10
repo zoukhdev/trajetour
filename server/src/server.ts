@@ -14,7 +14,14 @@ import paymentsRoutes from './routes/payments.js';
 import roomsRoutes from './routes/rooms.js';
 import offersRoutes from './routes/offers.js';
 
+import suppliersRouter from './routes/suppliers.js';
+
 const app = express();
+
+// ...
+
+app.use('/api/suppliers', suppliersRouter);
+
 
 // Security middleware
 app.use(helmet({

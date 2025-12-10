@@ -108,6 +108,11 @@ export const paymentsAPI = {
     create: async (data: any) => {
         const response = await api.post('/payments', data);
         return response.data;
+    },
+
+    validate: async (id: string, isValidated: boolean) => {
+        const response = await api.patch(`/payments/${id}/validate`, { isValidated });
+        return response.data;
     }
 };
 
@@ -134,6 +139,28 @@ export const offersAPI = {
 
     delete: async (id: string) => {
         const response = await api.delete(`/offers/${id}`);
+        return response.data;
+    }
+};
+
+export const suppliersAPI = {
+    getAll: async () => {
+        const response = await api.get('/suppliers');
+        return response.data;
+    },
+
+    create: async (data: any) => {
+        const response = await api.post('/suppliers', data);
+        return response.data;
+    },
+
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/suppliers/${id}`, data);
+        return response.data;
+    },
+
+    delete: async (id: string) => {
+        const response = await api.delete(`/suppliers/${id}`);
         return response.data;
     }
 };

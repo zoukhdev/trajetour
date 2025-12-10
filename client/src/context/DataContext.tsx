@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Client, Agency, Order, Expense, Transaction, User, Supplier, Offer, GuideExpense, Discount, Tax, BankAccount, Payment } from '../types';
-import { clientsAPI, ordersAPI, paymentsAPI, offersAPI } from '../services/api';
+import { clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI } from '../services/api';
 
 interface DataContextType {
     clients: Client[];
@@ -24,9 +24,9 @@ interface DataContextType {
     addUser: (user: User) => void;
     updateUser: (user: User) => void;
     deleteUser: (id: string) => void;
-    addSupplier: (supplier: Supplier) => void;
-    updateSupplier: (supplier: Supplier) => void;
-    deleteSupplier: (id: string) => void;
+    addSupplier: (supplier: Supplier) => Promise<Supplier>;
+    updateSupplier: (supplier: Supplier) => Promise<void>;
+    deleteSupplier: (id: string) => Promise<void>;
     addOffer: (offer: Offer) => Promise<Offer>;
     updateOffer: (offer: Offer) => void;
     deleteOffer: (id: string) => void;
@@ -44,6 +44,7 @@ interface DataContextType {
     updateBankAccount: (account: BankAccount) => void;
     deleteBankAccount: (id: string) => void;
     addPayment: (payment: Payment, orderId: string) => Promise<Payment>;
+    validatePayment: (paymentId: string, orderId: string, isValidated: boolean) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -78,6 +79,21 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 // Load offers from backend
                 const offersData = await offersAPI.getAll();
                 setOffers(offersData || []);
+
+                // Load suppliers from backend
+                const suppliersData = await suppliersAPI.getAll();
+                // Map API (snake_case) to Frontend (camelCase)
+                const mappedSuppliers = suppliersData.map((s: any) => ({
+                    id: s.id,
+                    name: s.name,
+                    contactPerson: s.contact_person,
+                    phone: s.phone,
+                    email: s.email,
+                    address: s.address,
+                    serviceType: s.service_type,
+                    createdAt: s.created_at
+                }));
+                setSuppliers(mappedSuppliers);
             } catch (error) {
                 console.error('❌ Error loading clients/orders from backend:', error);
                 // Show user-visible error
@@ -96,7 +112,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const storedExpenses = localStorage.getItem('expenses');
         const storedTransactions = localStorage.getItem('transactions');
         const storedUsers = localStorage.getItem('users');
-        const storedSuppliers = localStorage.getItem('suppliers');
+        // Suppliers removed (now fetched from API)
         const storedGuideExpenses = localStorage.getItem('guideExpenses');
         const storedDiscounts = localStorage.getItem('discounts');
         const storedTaxes = localStorage.getItem('taxes');
@@ -105,7 +121,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         if (storedAgencies) setAgencies(JSON.parse(storedAgencies));
         if (storedExpenses) setExpenses(JSON.parse(storedExpenses));
         if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
-        if (storedSuppliers) setSuppliers(JSON.parse(storedSuppliers));
+
         if (storedGuideExpenses) setGuideExpenses(JSON.parse(storedGuideExpenses));
         if (storedDiscounts) setDiscounts(JSON.parse(storedDiscounts));
         if (storedTaxes) setTaxes(JSON.parse(storedTaxes));
@@ -161,7 +177,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => { localStorage.setItem('expenses', JSON.stringify(expenses)); }, [expenses]);
     useEffect(() => { localStorage.setItem('transactions', JSON.stringify(transactions)); }, [transactions]);
     useEffect(() => { localStorage.setItem('users', JSON.stringify(users)); }, [users]);
-    useEffect(() => { localStorage.setItem('suppliers', JSON.stringify(suppliers)); }, [suppliers]);
+    // Suppliers removed
     useEffect(() => { localStorage.setItem('guideExpenses', JSON.stringify(guideExpenses)); }, [guideExpenses]);
     useEffect(() => { localStorage.setItem('discounts', JSON.stringify(discounts)); }, [discounts]);
     useEffect(() => { localStorage.setItem('taxes', JSON.stringify(taxes)); }, [taxes]);
@@ -267,9 +283,74 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const updateUser = (updatedUser: User) => setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
     const deleteUser = (id: string) => setUsers(prev => prev.filter(u => u.id !== id));
 
-    const addSupplier = (supplier: Supplier) => setSuppliers(prev => [...prev, supplier]);
-    const updateSupplier = (updatedSupplier: Supplier) => setSuppliers(prev => prev.map(s => s.id === updatedSupplier.id ? updatedSupplier : s));
-    const deleteSupplier = (id: string) => setSuppliers(prev => prev.filter(s => s.id !== id));
+    const addSupplier = async (supplier: Supplier) => {
+        try {
+            // Map Frontend (camelCase) to API (snake_case)
+            const apiData = {
+                name: supplier.name,
+                contact_person: supplier.contactPerson,
+                phone: supplier.phone,
+                email: supplier.email,
+                address: supplier.address,
+                service_type: supplier.serviceType
+            };
+            const newSupplier = await suppliersAPI.create(apiData);
+            // Map back to Frontend
+            const mappedSupplier = {
+                id: newSupplier.id,
+                name: newSupplier.name,
+                contactPerson: newSupplier.contact_person,
+                phone: newSupplier.phone,
+                email: newSupplier.email,
+                address: newSupplier.address,
+                serviceType: newSupplier.service_type,
+                createdAt: newSupplier.created_at
+            };
+            setSuppliers(prev => [...prev, mappedSupplier]);
+            return mappedSupplier;
+        } catch (error) {
+            console.error('❌ Error adding supplier:', error);
+            throw error;
+        }
+    };
+
+    const updateSupplier = async (updatedSupplier: Supplier) => {
+        try {
+            const apiData = {
+                name: updatedSupplier.name,
+                contact_person: updatedSupplier.contactPerson,
+                phone: updatedSupplier.phone,
+                email: updatedSupplier.email,
+                address: updatedSupplier.address,
+                service_type: updatedSupplier.serviceType
+            };
+            const saved = await suppliersAPI.update(updatedSupplier.id, apiData);
+            const mapped = {
+                id: saved.id,
+                name: saved.name,
+                contactPerson: saved.contact_person,
+                phone: saved.phone,
+                email: saved.email,
+                address: saved.address,
+                serviceType: saved.service_type,
+                createdAt: saved.created_at
+            };
+            setSuppliers(prev => prev.map(s => s.id === saved.id ? mapped : s));
+        } catch (error) {
+            console.error('❌ Error updating supplier:', error);
+            throw error;
+        }
+    };
+
+    const deleteSupplier = async (id: string) => {
+        try {
+            await suppliersAPI.delete(id);
+            setSuppliers(prev => prev.filter(s => s.id !== id));
+        } catch (error) {
+            console.error('❌ Error deleting supplier:', error);
+            throw error;
+        }
+    };
 
     const addOffer = async (offer: Offer): Promise<Offer> => {
         try {
@@ -400,6 +481,25 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                     return newPayment;
                 } catch (error) {
                     console.error('❌ Error adding payment:', error);
+                    throw error;
+                }
+            },
+            validatePayment: async (paymentId: string, orderId: string, isValidated: boolean) => {
+                try {
+                    await paymentsAPI.validate(paymentId, isValidated);
+                    setOrders(prev => prev.map(o => {
+                        if (o.id === orderId) {
+                            return {
+                                ...o,
+                                payments: o.payments.map(p =>
+                                    p.id === paymentId ? { ...p, isValidated } : p
+                                )
+                            };
+                        }
+                        return o;
+                    }));
+                } catch (error) {
+                    console.error('❌ Error validating payment:', error);
                     throw error;
                 }
             }

@@ -47,7 +47,8 @@ const OrderDetails = () => {
         return <div className="p-6">Commande non trouvée</div>;
     }
 
-    const paidAmount = order.payments.reduce((sum, p) => sum + Number(p.amountDZD), 0);
+    // Only count validated payments
+    const paidAmount = order.payments.filter(p => p.isValidated).reduce((sum, p) => sum + Number(p.amountDZD), 0);
     const remainingAmount = order.totalAmount - paidAmount;
 
     const handlePrint = async () => {
@@ -217,7 +218,7 @@ const OrderDetails = () => {
                     if (paymentAmountDZD > 0 && order) {
                         try {
                             // 1. Create Payment using new API
-                            await addPayment({
+                            const newPayment = await addPayment({
                                 id: Math.random().toString(36).substr(2, 9), // ID will be overwritten by backend
                                 amount: paymentAmount,
                                 currency: paymentCurrency,
@@ -228,18 +229,18 @@ const OrderDetails = () => {
                                 date: new Date().toISOString()
                             }, order.id);
 
-                            // 2. Update Order Status
-                            // Calculate new status locally for immediate feedback
-                            // (In a full backend implementation, the backend would trigger this, but we keep frontend logic for now)
-                            const newPaidAmount = paidAmount + paymentAmountDZD;
-                            // Tolerance for float math
-                            const newStatus = (order.totalAmount - newPaidAmount) <= 5 ? 'Payé' : 'Partiel';
+                            // 2. Update Order Status (Only if payment is validated)
+                            if (newPayment.isValidated) {
+                                const newPaidAmount = paidAmount + paymentAmountDZD; // paidAmount now already excludes unvalidated
+                                // Tolerance for float math
+                                const newStatus = (order.totalAmount - newPaidAmount) <= 5 ? 'Payé' : 'Partiel';
 
-                            if (order.status !== newStatus) {
-                                await updateOrder({
-                                    ...order,
-                                    status: newStatus as any
-                                });
+                                if (order.status !== newStatus) {
+                                    await updateOrder({
+                                        ...order,
+                                        status: newStatus as any
+                                    });
+                                }
                             }
 
                             // 3. Create Transaction linked to Account

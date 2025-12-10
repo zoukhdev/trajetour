@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
-import { Plus, X } from 'lucide-react';
+
 import type { Offer } from '../../types';
 
 interface OfferFormProps {
@@ -36,7 +36,6 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
             diner: false,
             bagages: false,
         },
-        roomPricing: [],
     });
 
     useEffect(() => {
@@ -55,7 +54,6 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                     diner: false,
                     bagages: false,
                 },
-                roomPricing: initialData.roomPricing || [],
             });
         }
     }, [initialData]);
@@ -102,35 +100,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         }));
     };
 
-    const addRoomPricing = () => {
-        setFormData(prev => ({
-            ...prev,
-            roomPricing: [
-                ...(prev.roomPricing || []),
-                {
-                    id: Math.random().toString(36).substr(2, 9),
-                    description: '',
-                    price: 0,
-                }
-            ]
-        }));
-    };
 
-    const removeRoomPricing = (id: string) => {
-        setFormData(prev => ({
-            ...prev,
-            roomPricing: prev.roomPricing?.filter(room => room.id !== id) || []
-        }));
-    };
-
-    const updateRoomPricing = (id: string, field: 'description' | 'price', value: string | number) => {
-        setFormData(prev => ({
-            ...prev,
-            roomPricing: prev.roomPricing?.map(room =>
-                room.id === id ? { ...room, [field]: field === 'price' ? Number(value) : value } : room
-            ) || []
-        }));
-    };
 
     const goToNextStep = (e?: React.MouseEvent<HTMLButtonElement>) => {
         e?.preventDefault();
@@ -355,64 +325,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                         </div>
                     </div>
 
-                    {/* Section B: Room Pricing */}
-                    <div>
-                        <div className="flex items-center justify-between mb-3">
-                            <h4 className="text-md font-medium text-gray-800">Tarification des Chambres (Types)</h4>
-                            <button
-                                type="button"
-                                onClick={addRoomPricing}
-                                className="flex items-center gap-1 text-sm bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                <Plus size={16} />
-                                <span>Ajouter</span>
-                            </button>
-                        </div>
 
-                        <div className="space-y-3">
-                            {formData.roomPricing && formData.roomPricing.length > 0 ? (
-                                formData.roomPricing.map((room) => (
-                                    <div key={room.id} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
-                                                <input
-                                                    type="text"
-                                                    value={room.description}
-                                                    onChange={(e) => updateRoomPricing(room.id, 'description', e.target.value)}
-                                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                                    placeholder="Ex: Chambre 3 lits"
-                                                />
-                                            </div>
-                                            <div className="flex items-end gap-2">
-                                                <div className="flex-1">
-                                                    <label className="block text-xs font-medium text-gray-600 mb-1">Prix (DZD)</label>
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        value={room.price}
-                                                        onChange={(e) => updateRoomPricing(room.id, 'price', e.target.value)}
-                                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                                        placeholder="150000"
-                                                    />
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeRoomPricing(room.id)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Supprimer"
-                                                >
-                                                    <X size={18} />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-sm text-gray-500 text-center py-4">Aucune configuration de chambre. Cliquez sur "Ajouter" pour commencer.</p>
-                            )}
-                        </div>
-                    </div>
                 </div>
             )}
 

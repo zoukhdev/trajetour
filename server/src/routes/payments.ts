@@ -77,4 +77,59 @@ router.post('/',
     }
 );
 
+// Validate payment
+router.patch('/:id/validate',
+    authMiddleware,
+    requirePermission('manage_financials'),
+    async (req: AuthRequest, res, next) => {
+        const client = await pool.connect();
+        try {
+            const { id } = req.params;
+            const { isValidated } = req.body;
+
+            const result = await client.query(
+                `UPDATE payments
+                 SET is_validated = $1
+                 WHERE id = $2
+                 RETURNING *`,
+                [isValidated, id]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: "Payment not found" });
+            }
+
+            const updatedPayment = result.rows[0];
+
+            // Helper to map snake_case to camelCase
+            const mapPaymentResponse = (row: any) => ({
+                id: row.id,
+                orderId: row.order_id,
+                amount: row.amount,
+                currency: row.currency,
+                amountDZD: row.amount_dzd,
+                exchangeRateUsed: row.exchange_rate,
+                method: row.method,
+                paymentDate: row.payment_date,
+                isValidated: row.is_validated
+            });
+
+            await logAudit(client, {
+                userId: req.user!.id,
+                action: 'UPDATE',
+                entityType: 'payment',
+                entityId: updatedPayment.id,
+                changes: { isValidated },
+                ipAddress: req.ip
+            });
+
+            res.json(mapPaymentResponse(updatedPayment));
+        } catch (error) {
+            next(error);
+        } finally {
+            client.release();
+        }
+    }
+);
+
 export default router;

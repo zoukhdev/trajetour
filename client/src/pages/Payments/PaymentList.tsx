@@ -4,7 +4,7 @@ import { Search, Filter, Trash2, Eye, Calendar, CheckCircle, XCircle } from 'luc
 import Modal from '../../components/Modal';
 
 const PaymentList = () => {
-    const { orders, clients, updateOrder } = useData();
+    const { orders, clients, updateOrder, validatePayment } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [viewingPayment, setViewingPayment] = useState<any | undefined>(undefined);
 
@@ -35,7 +35,7 @@ const PaymentList = () => {
                 const updatedPayments = order.payments.filter(p => p.id !== paymentId);
 
                 // Recalculate status
-                const totalPaid = updatedPayments.reduce((sum, p) => sum + p.amountDZD, 0);
+                const totalPaid = updatedPayments.filter(p => p.isValidated).reduce((sum, p) => sum + p.amountDZD, 0);
                 let newStatus: 'Payé' | 'Non payé' | 'Partiel' = 'Non payé';
                 if (totalPaid >= order.totalAmount) newStatus = 'Payé';
                 else if (totalPaid > 0) newStatus = 'Partiel';
@@ -49,17 +49,13 @@ const PaymentList = () => {
         }
     };
 
-    const handleValidate = (paymentId: string, orderId: string, isValidated: boolean) => {
-        const order = orders.find(o => o.id === orderId);
-        if (order) {
-            const updatedPayments = order.payments.map(p =>
-                p.id === paymentId ? { ...p, isValidated } : p
-            );
-
-            updateOrder({
-                ...order,
-                payments: updatedPayments
-            });
+    const handleValidate = async (paymentId: string, orderId: string, isValidated: boolean) => {
+        if (confirm(`Voulez-vous vraiment ${isValidated ? 'valider' : 'invalider'} ce paiement ?`)) {
+            try {
+                await validatePayment(paymentId, orderId, isValidated);
+            } catch (error) {
+                alert("Erreur lors de la validation du paiement");
+            }
         }
     };
 
@@ -139,10 +135,10 @@ const PaymentList = () => {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${payment.isValidated === undefined
-                                                    ? 'bg-gray-50 text-gray-700 border-gray-200'
-                                                    : payment.isValidated
-                                                        ? 'bg-green-50 text-green-700 border-green-100'
-                                                        : 'bg-red-50 text-red-700 border-red-100'
+                                                ? 'bg-gray-50 text-gray-700 border-gray-200'
+                                                : payment.isValidated
+                                                    ? 'bg-green-50 text-green-700 border-green-100'
+                                                    : 'bg-red-50 text-red-700 border-red-100'
                                                 }`}>
                                                 {payment.isValidated === undefined ? 'En Attente' : payment.isValidated ? 'Validé' : 'Non Validé'}
                                             </span>
@@ -224,10 +220,10 @@ const PaymentList = () => {
                             <div className="p-3 bg-gray-50 rounded-lg">
                                 <span className="block text-gray-500 mb-1">Statut de Validation</span>
                                 <span className={`font-semibold ${viewingPayment.isValidated === undefined
-                                        ? 'text-gray-600'
-                                        : viewingPayment.isValidated
-                                            ? 'text-green-600'
-                                            : 'text-red-600'
+                                    ? 'text-gray-600'
+                                    : viewingPayment.isValidated
+                                        ? 'text-green-600'
+                                        : 'text-red-600'
                                     }`}>
                                     {viewingPayment.isValidated === undefined ? 'En Attente' : viewingPayment.isValidated ? 'Validé' : 'Non Validé'}
                                 </span>
