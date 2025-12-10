@@ -60,19 +60,24 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         }
     }, [initialData]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (initialData) {
-            updateOffer({ ...initialData, ...formData } as Offer);
-        } else {
-            const newOffer: Offer = {
-                id: Math.random().toString(36).substr(2, 9),
-                ...formData as Omit<Offer, 'id'>
-            };
-            addOffer(newOffer);
+        try {
+            if (initialData) {
+                await updateOffer({ ...initialData, ...formData } as Offer);
+            } else {
+                const newOffer: Offer = {
+                    id: Math.random().toString(36).substr(2, 9), // Temp ID, backend generates real one
+                    ...formData as Omit<Offer, 'id'>
+                };
+                await addOffer(newOffer);
+            }
+            onClose();
+        } catch (error) {
+            console.error('Failed to save offer:', error);
+            alert('Erreur lors de l\'enregistrement de l\'offre. Veuillez vérifier les champs et réessayer.');
         }
-        onClose();
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

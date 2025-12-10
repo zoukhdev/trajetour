@@ -226,6 +226,19 @@ app.listen(PORT, async () => {
         } catch (err) {
             console.error('❌ Database migration failed:', err);
         }
+
+        // 5. Update Offers Table columns check
+        try {
+            await pool.query(`
+                ALTER TABLE offers 
+                ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
+                ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
+                ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb;
+            `);
+            console.log('✅ Offers table columns verified.');
+        } catch (err) {
+            console.error('❌ Offers table migration failed:', err);
+        }
     }
 
     // Debug Static Files

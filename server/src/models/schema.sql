@@ -143,6 +143,9 @@ CREATE TABLE offers (
     transport VARCHAR(50) CHECK (transport IN ('Avion', 'Bus', 'Sans Transport')),
     description TEXT,
     status VARCHAR(20) DEFAULT 'Draft' CHECK (status IN ('Active', 'Draft', 'Archived')),
+    capacity INTEGER DEFAULT 0,
+    inclusions JSONB DEFAULT '{}'::jsonb,
+    room_pricing JSONB DEFAULT '[]'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
