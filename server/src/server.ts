@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 
 // ...
 
-app.use('/api/suppliers', suppliersRouter);
+
 
 
 // Security middleware
@@ -106,6 +106,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/rooms', roomsRoutes);
 app.use('/api/offers', offersRoutes);
+app.use('/api/suppliers', suppliersRouter);
 
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
 // They need to be created following the clients.ts template
