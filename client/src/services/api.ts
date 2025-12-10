@@ -16,6 +16,12 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
+            // Ignore 401 for initial auth check to avoid infinite redirect loops
+            // The AuthContext handles this gracefully
+            if (error.config.url?.includes('/auth/me')) {
+                return Promise.reject(error);
+            }
+
             // Only redirect if not already on login page
             if (!window.location.pathname.includes('/login')) {
                 window.location.href = '/login';
