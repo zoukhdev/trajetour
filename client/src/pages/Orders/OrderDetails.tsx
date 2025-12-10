@@ -6,7 +6,7 @@ import { ArrowLeft, Printer, CreditCard, TrendingUp } from 'lucide-react';
 import { generateInvoice } from '../../services/pdfGenerator';
 import { useState, useEffect } from 'react';
 import Modal from '../../components/Modal';
-import type { PaymentMethod, Currency } from '../../types';
+import type { PaymentMethod, Currency, Order } from '../../types';
 import { allocatePaymentFIFO } from '../../utils/paymentAllocation';
 
 const OrderDetails = () => {
@@ -39,7 +39,7 @@ const OrderDetails = () => {
         }
     }, [paymentCurrency, getRateForDate, getLatestRate]);
 
-    const [fetchedOrder, setFetchedOrder] = useState<any>(null);
+    const [fetchedOrder, setFetchedOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(false);
 
     // Find in context first
