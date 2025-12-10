@@ -158,7 +158,7 @@ app.listen(PORT, async () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📍 Environment: ${config.nodeEnv}`);
     console.log(`🌐 Client URL: ${config.clientUrl}`);
-    console.log(`🔑 JWT Secret Present: ${!!config.jwtSecret}`);
+    console.log(`🔑 JWT Secret Present: ${!!config.jwt.secret}`);
     console.log(`💾 Database URL Present: ${!!config.databaseUrl}`);
 
     const dbConnected = await testConnection();
