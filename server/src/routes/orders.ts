@@ -3,8 +3,67 @@ import { pool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { validate, orderSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
+import { AppError } from '../middleware/errorHandler.js';
 
 const router = express.Router();
+
+// Helper Validation Function
+const validateRoomAssignments = async (client: any, passengers: any[], ignoreOrderId?: string) => {
+    const roomCounts: Record<string, number> = {};
+    const passengerGenders: Record<string, string[]> = {};
+
+    for (const p of passengers) {
+        if (p.assignedRoomId) {
+            roomCounts[p.assignedRoomId] = (roomCounts[p.assignedRoomId] || 0) + 1;
+            if (p.gender) {
+                if (!passengerGenders[p.assignedRoomId]) passengerGenders[p.assignedRoomId] = [];
+                passengerGenders[p.assignedRoomId].push(p.gender);
+            }
+        }
+    }
+
+    for (const [roomId, count] of Object.entries(roomCounts)) {
+        // Fetch room details
+        const roomRes = await client.query('SELECT * FROM rooms WHERE id = $1', [roomId]);
+        if (roomRes.rows.length === 0) throw new AppError(400, `Room ID ${roomId} not found`);
+        const room = roomRes.rows[0];
+
+        if (room.status !== 'ACTIVE') throw new AppError(400, `Room ${room.room_number} is not active`);
+
+        // Gender Check
+        // Passenger gender: 'Homme' | 'Femme'
+        // Room gender: 'MEN' | 'WOMEN' | 'MIXED'
+        const genders = passengerGenders[roomId] || [];
+        for (const g of genders) {
+            if (room.gender === 'MEN' && g === 'Femme') {
+                throw new AppError(400, `Room ${room.room_number} is MEN only, but passenger is Femme`);
+            }
+            if (room.gender === 'WOMEN' && g === 'Homme') {
+                throw new AppError(400, `Room ${room.room_number} is WOMEN only, but passenger is Homme`);
+            }
+        }
+
+        // Capacity Check
+        let query = `
+            SELECT COUNT(*) 
+            FROM orders o, jsonb_array_elements(o.passengers) p
+            WHERE (p->>'assignedRoomId')::uuid = $1
+            AND o.status != 'Cancelled'
+        `;
+        const params: any[] = [roomId];
+        if (ignoreOrderId) {
+            query += ` AND o.id != $2`;
+            params.push(ignoreOrderId);
+        }
+
+        const occupancyRes = await client.query(query, params);
+        const currentOccupied = parseInt(occupancyRes.rows[0].count);
+
+        if (currentOccupied + count > room.capacity) {
+            throw new AppError(400, `Room ${room.room_number} is full. Capacity: ${room.capacity}, Occupied: ${currentOccupied}, New: ${count}`);
+        }
+    }
+};
 
 // Helper to map DB columns (snake_case) to API model (camelCase)
 const mapOrderResponse = (row: any) => ({
@@ -136,6 +195,8 @@ router.post('/',
 
             const { clientId, agencyId, items, passengers, hotels, totalAmount, notes } = req.body;
 
+            console.log('📦 Create Order Request:', JSON.stringify({ clientId, agencyId, totalAmount, passengersCount: passengers?.length, hotelCount: hotels?.length }, null, 2));
+
             // Validate Room Assignments
             if (passengers && passengers.length > 0) {
                 await validateRoomAssignments(client, passengers);
@@ -243,63 +304,5 @@ router.put('/:id',
         }
     }
 );
-
-// Helper Validation Function
-const validateRoomAssignments = async (client: any, passengers: any[], ignoreOrderId?: string) => {
-    const roomCounts: Record<string, number> = {};
-    const passengerGenders: Record<string, string[]> = {};
-
-    for (const p of passengers) {
-        if (p.assignedRoomId) {
-            roomCounts[p.assignedRoomId] = (roomCounts[p.assignedRoomId] || 0) + 1;
-            if (p.gender) {
-                if (!passengerGenders[p.assignedRoomId]) passengerGenders[p.assignedRoomId] = [];
-                passengerGenders[p.assignedRoomId].push(p.gender);
-            }
-        }
-    }
-
-    for (const [roomId, count] of Object.entries(roomCounts)) {
-        // Fetch room details
-        const roomRes = await client.query('SELECT * FROM rooms WHERE id = $1', [roomId]);
-        if (roomRes.rows.length === 0) throw new Error(`Room ID ${roomId} not found`);
-        const room = roomRes.rows[0];
-
-        if (room.status !== 'ACTIVE') throw new Error(`Room ${room.room_number} is not active`);
-
-        // Gender Check
-        // Passenger gender: 'Homme' | 'Femme'
-        // Room gender: 'MEN' | 'WOMEN' | 'MIXED'
-        const genders = passengerGenders[roomId] || [];
-        for (const g of genders) {
-            if (room.gender === 'MEN' && g === 'Femme') {
-                throw new Error(`Room ${room.room_number} is MEN only, but passenger is Femme`);
-            }
-            if (room.gender === 'WOMEN' && g === 'Homme') {
-                throw new Error(`Room ${room.room_number} is WOMEN only, but passenger is Homme`);
-            }
-        }
-
-        // Capacity Check
-        let query = `
-            SELECT COUNT(*) 
-            FROM orders o, jsonb_array_elements(o.passengers) p
-            WHERE (p->>'assignedRoomId')::uuid = $1
-            AND o.status != 'Cancelled'
-        `;
-        const params: any[] = [roomId];
-        if (ignoreOrderId) {
-            query += ` AND o.id != $2`;
-            params.push(ignoreOrderId);
-        }
-
-        const occupancyRes = await client.query(query, params);
-        const currentOccupied = parseInt(occupancyRes.rows[0].count);
-
-        if (currentOccupied + count > room.capacity) {
-            throw new Error(`Room ${room.room_number} is full. Capacity: ${room.capacity}, Occupied: ${currentOccupied}, New: ${count}`);
-        }
-    }
-};
 
 export default router;

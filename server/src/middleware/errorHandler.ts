@@ -30,7 +30,8 @@ export function errorHandler(
 
     // Database errors
     if (err.name === 'QueryFailedError' || (err as any).code?.startsWith('23')) {
-        res.status(400).json({ error: 'Database operation failed' });
+        console.error('❌ Database Error (400):', err); // DEBUG LOG
+        res.status(400).json({ error: 'Database operation failed', details: err.message });
         return;
     }
 
