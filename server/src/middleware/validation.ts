@@ -18,7 +18,7 @@ export const clientSchema = z.object({
 
 export const orderSchema = z.object({
     clientId: z.string().uuid(),
-    agencyId: z.string().uuid().optional().or(z.literal('')),
+    agencyId: z.string().uuid().optional().or(z.literal('')).nullable(),
     items: z.array(z.object({
         id: z.string(),
         description: z.string(),
