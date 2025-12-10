@@ -60,29 +60,8 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         }
     }, [initialData]);
 
-    const [hotels, setHotels] = useState<{ name: string; rooms: { number: string; capacity: number; gender: string }[] }[]>([]);
-    const [tempHotel, setTempHotel] = useState('');
-    const [tempRoom, setTempRoom] = useState({ number: '', capacity: 4, gender: 'MIXED' });
+    // Hotels state removed
 
-    const addHotel = () => {
-        if (!tempHotel) return alert("Nom de l'hôtel requis");
-        setHotels([...hotels, { name: tempHotel, rooms: [] }]);
-        setTempHotel('');
-    };
-
-    const addRoomToHotel = (hotelIndex: number) => {
-        if (!tempRoom.number) return alert("Numéro de chambre requis");
-        const updatedHotels = [...hotels];
-        updatedHotels[hotelIndex].rooms.push({ ...tempRoom });
-        setHotels(updatedHotels);
-        setTempRoom({ ...tempRoom, number: '' }); // Keep capacity/gender for quick entry
-    };
-
-    const removeRoomFromHotel = (hotelIndex: number, roomIndex: number) => {
-        const updatedHotels = [...hotels];
-        updatedHotels[hotelIndex].rooms.splice(roomIndex, 1);
-        setHotels(updatedHotels);
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -100,25 +79,6 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 };
                 const createdOffer = await addOffer(newOffer);
                 offerId = createdOffer.id;
-            }
-
-            // Create Rooms
-            if (hotels.length > 0) {
-                for (const hotel of hotels) {
-                    for (const room of hotel.rooms) {
-                        await fetch('/api/rooms', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                offerId: offerId,
-                                hotelName: hotel.name,
-                                roomNumber: room.number,
-                                capacity: room.capacity,
-                                gender: room.gender,
-                            })
-                        });
-                    }
-                }
             }
 
             onClose();
@@ -184,8 +144,6 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 return;
             }
             setCurrentStep(2);
-        } else if (currentStep === 2) {
-            setCurrentStep(3);
         }
     };
 
@@ -204,8 +162,6 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                     <div className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold ${currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500'}`}>1</div>
                     <div className={`h-1 w-10 ${currentStep >= 2 ? 'bg-primary' : 'bg-gray-200'}`}></div>
                     <div className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold ${currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500'}`}>2</div>
-                    <div className={`h-1 w-10 ${currentStep >= 3 ? 'bg-primary' : 'bg-gray-200'}`}></div>
-                    <div className={`flex items-center justify-center w-10 h-10 rounded-full font-semibold ${currentStep >= 3 ? 'bg-primary text-white' : 'bg-gray-200 text-gray-500'}`}>3</div>
                 </div>
             </div>
 
@@ -369,7 +325,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 </div>
             )}
 
-            {/* Step 2: Inclusions and Room Pricing */}
+            {/* Step 2: Inclusions, Room Pricing, and Hotel & Rooms Inventory */}
             {currentStep === 2 && (
                 <div className="space-y-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Options et configurations</h3>
@@ -464,155 +420,42 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 </div>
             )}
 
-            {/* Step 3: Hotel & Rooms Inventory */}
-            {currentStep === 3 && (
-                <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuration de l'Hôtel et des Chambres</h3>
-                    <p className="text-sm text-gray-500 mb-4">Ajoutez ici les chambres réelles qui seront disponibles pour l'assignation.</p>
-
-                    <div className="flex items-end gap-2 mb-6">
-                        <div className="flex-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Ajouter un Hôtel</label>
-                            <input
-                                type="text"
-                                value={tempHotel}
-                                onChange={(e) => setTempHotel(e.target.value)}
-                                placeholder="Nom de l'hôtel (ex: Hilton)"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                            />
-                        </div>
-                        <button
-                            type="button"
-                            onClick={addHotel}
-                            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            Ajouter Hôtel
-                        </button>
-                    </div>
-
-                    <div className="space-y-4">
-                        {hotels.map((hotel, hotelIndex) => (
-                            <div key={hotelIndex} className="border border-gray-200 rounded-xl p-4 bg-gray-50">
-                                <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                    <span>🏨 {hotel.name}</span>
-                                    <span className="text-sm font-normal text-gray-500">({hotel.rooms.length} chambres)</span>
-                                </h4>
-
-                                {/* Add Room Form */}
-                                <div className="bg-white p-3 rounded-lg border border-gray-200 mb-3 grid grid-cols-4 gap-2 items-end">
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Numéro</label>
-                                        <input
-                                            type="text"
-                                            value={tempRoom.number}
-                                            onChange={(e) => setTempRoom({ ...tempRoom, number: e.target.value })}
-                                            placeholder="Ex: 101"
-                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded outline-none"
-                                        />
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Capacité</label>
-                                        <input
-                                            type="number"
-                                            value={tempRoom.capacity}
-                                            onChange={(e) => setTempRoom({ ...tempRoom, capacity: Number(e.target.value) })}
-                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded outline-none"
-                                        />
-                                    </div>
-                                    <div className="col-span-1">
-                                        <label className="block text-xs font-medium text-gray-600 mb-1">Genre</label>
-                                        <select
-                                            value={tempRoom.gender}
-                                            onChange={(e) => setTempRoom({ ...tempRoom, gender: e.target.value as any })}
-                                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded outline-none"
-                                        >
-                                            <option value="MIXED">Mixte</option>
-                                            <option value="MEN">Hommes</option>
-                                            <option value="WOMEN">Femmes</option>
-                                        </select>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => addRoomToHotel(hotelIndex)}
-                                        className="col-span-1 px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
-                                    >
-                                        + Ajouter
-                                    </button>
-                                </div>
-
-                                {/* Room List */}
-                                <div className="grid grid-cols-4 gap-2">
-                                    {hotel.rooms.map((room, roomIndex) => (
-                                        <div key={roomIndex} className="bg-white px-3 py-2 rounded border border-gray-200 flex justify-between items-center text-sm shadow-sm">
-                                            <div>
-                                                <span className="font-bold">#{room.number}</span>
-                                                <span className="text-xs text-gray-500 ml-1">({room.capacity} pers)</span>
-                                            </div>
-                                            <button
-                                                type="button"
-                                                onClick={() => removeRoomFromHotel(hotelIndex, roomIndex)}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                <X size={14} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    {hotel.rooms.length === 0 && (
-                                        <p className="col-span-4 text-center text-xs text-gray-400 py-1">Aucune chambre ajoutée.</p>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
             {/* Navigation Buttons */}
             <div className="flex justify-between gap-3 pt-4 border-t">
-                {currentStep === 1 ? (
-                    <>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                        >
-                            Annuler
-                        </button>
-                        <button
-                            type="button"
-                            onClick={goToNextStep}
-                            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                            Suivant
-                        </button>
-                    </>
-                ) : (
-                    <>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-6 py-2 border rounded-lg hover:bg-gray-50 font-medium text-gray-700"
+                >
+                    Annuler
+                </button>
+                <div className="flex gap-3">
+                    {currentStep > 1 && (
                         <button
                             type="button"
                             onClick={goToPreviousStep}
-                            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            className="px-6 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 font-medium"
                         >
                             Précédent
                         </button>
-                        {currentStep < 3 ? (
-                            <button
-                                type="button"
-                                onClick={goToNextStep}
-                                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                Suivant
-                            </button>
-                        ) : (
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                                {initialData ? 'Modifier' : 'Créer Offre et Chambres'}
-                            </button>
-                        )}
-                    </>
-                )}
+                    )}
+                    {currentStep < 2 ? (
+                        <button
+                            type="button"
+                            onClick={goToNextStep}
+                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                        >
+                            Suivant
+                        </button>
+                    ) : (
+                        <button
+                            type="submit"
+                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
+                        >
+                            {initialData ? 'Mettre à jour' : 'Créer l\'Offre'}
+                        </button>
+                    )}
+                </div>
             </div>
         </form>
     );

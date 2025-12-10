@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api'; // Use configured API instance
 import { Plus, Trash2, User as UserIcon, AlertCircle, Building2 } from 'lucide-react';
-import type { Passenger, Hotel } from '../../types';
+import type { Passenger } from '../../types';
 
 // Helper to calculate age category
 const calculateAgeCategory = (birthDateString?: string): 'ADT' | 'CHD' | 'INF' => {
@@ -37,10 +37,6 @@ const OrderFormV2 = () => {
     const [agencyId, setAgencyId] = useState('');
     const [notes, setNotes] = useState('');
 
-    // Hotels
-    const [hotels, setHotels] = useState<Hotel[]>([]);
-    const [newHotelName, setNewHotelName] = useState('');
-
     // Room Allocation
     const [offers, setOffers] = useState<any[]>([]);
     const [selectedOfferId, setSelectedOfferId] = useState('');
@@ -60,9 +56,9 @@ const OrderFormV2 = () => {
     const [clients, setClients] = useState<any[]>([]);
     useEffect(() => {
         // Fetch clients for dropdown
-        axios.get('/api/clients').then(res => setClients(res.data.data)).catch(console.error);
+        api.get('/clients').then(res => setClients(res.data.data || res.data)).catch(console.error); // Handle paginated or direct array
         // Fetch active offers
-        axios.get('/api/offers?status=active').then(res => setOffers(res.data)).catch(console.error);
+        api.get('/offers?status=active').then(res => setOffers(res.data)).catch(console.error);
     }, []);
 
     // Fetch rooms when offer changes
@@ -71,25 +67,14 @@ const OrderFormV2 = () => {
             setAvailableRooms([]);
             return;
         }
-        axios.get(`/api/rooms?offerId=${selectedOfferId}`)
+        api.get(`/rooms?offerId=${selectedOfferId}`)
             .then(res => setAvailableRooms(res.data))
             .catch(console.error);
     }, [selectedOfferId]);
 
 
     // Handlers
-    const addHotel = () => {
-        if (newHotelName.trim()) {
-            setHotels([...hotels, { name: newHotelName.trim() }]);
-            setNewHotelName('');
-        }
-    };
-
-    const removeHotel = (index: number) => {
-        setHotels(hotels.filter((_, i) => i !== index));
-    };
-
-    const updatePassenger = (index: number, field: keyof Passenger, value: any) => {
+    const updatePassenger = (index: number, field: string, value: any) => {
         const newPassengers = [...passengers];
         newPassengers[index] = { ...newPassengers[index], [field]: value };
         setPassengers(newPassengers);
@@ -125,13 +110,12 @@ const OrderFormV2 = () => {
                 agencyId: agencyId || null,
                 items: [], // Legacy items field, can default to empty or structured
                 passengers,
-                hotels, // Sending raw hotels array
                 totalAmount, // Assuming entered or calculated
                 notes
             };
 
-            await axios.post('/api/orders', orderData);
-            navigate('/orders-v2');
+            await api.post('/orders', orderData);
+            navigate('/orders'); // Navigate to main orders list
         } catch (err) {
             console.error(err);
             alert('Erreur lors de la création de la commande');
@@ -213,39 +197,6 @@ const OrderFormV2 = () => {
                     </div>
                 </div>
 
-                {/* Hotels Section */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-                    <h2 className="text-lg font-semibold flex items-center gap-2">
-                        <Building2 size={20} /> Hôtels
-                    </h2>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Nom de l'hôtel"
-                            value={newHotelName}
-                            onChange={e => setNewHotelName(e.target.value)}
-                            className="flex-1 p-2 border rounded-lg"
-                        />
-                        <button
-                            type="button"
-                            onClick={addHotel}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                        >
-                            Ajouter
-                        </button>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                        {hotels.map((hotel, index) => (
-                            <div key={index} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
-                                <span>{hotel.name}</span>
-                                <button type="button" onClick={() => removeHotel(index)} className="text-red-500 hover:text-red-700">
-                                    &times;
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Passengers Section */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
                     <div className="flex justify-between items-center">
@@ -262,86 +213,109 @@ const OrderFormV2 = () => {
                     </div>
 
                     <div className="space-y-4">
-                        {passengers.map((p, index) => (
-                            <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
-                                <div className="absolute top-2 right-2 flex gap-2">
-                                    {/* Badge Age Category */}
-                                    <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold">
-                                        {calculateAgeCategory(p.birthDate)}
-                                    </span>
-                                    {passengers.length > 1 && (
-                                        <button type="button" onClick={() => removePassenger(index)} className="text-red-500 hover:bg-red-50 p-1 rounded">
-                                            <Trash2 size={16} />
-                                        </button>
-                                    )}
-                                </div>
+                        {passengers.map((p, index) => {
+                            // Derive unique hotels from availableRooms
+                            const uniqueHotels = Array.from(new Set(availableRooms.map(r => r.hotel_name))).filter(Boolean);
+                            const passengerHotel = (p as any).selectedHotel || '';
+                            const filteredRooms = availableRooms.filter(r => r.hotel_name === passengerHotel);
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                                    <div>
-                                        <label className="text-xs text-gray-500 block">Prénom *</label>
-                                        <input type="text" value={p.firstName} onChange={e => updatePassenger(index, 'firstName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block">Nom *</label>
-                                        <input type="text" value={p.lastName} onChange={e => updatePassenger(index, 'lastName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block">Chambre (Type)</label>
-                                        <select value={p.roomType} onChange={e => updatePassenger(index, 'roomType', e.target.value)} className="w-full p-2 border rounded text-sm">
-                                            <option value="Single">Single</option>
-                                            <option value="Double">Double</option>
-                                            <option value="Triple">Triple</option>
-                                            <option value="Quad">Quad</option>
-                                        </select>
+                            return (
+                                <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
+                                    <div className="absolute top-2 right-2 flex gap-2">
+                                        {/* Badge Age Category */}
+                                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold">
+                                            {calculateAgeCategory(p.birthDate)}
+                                        </span>
+                                        {passengers.length > 1 && (
+                                            <button type="button" onClick={() => removePassenger(index)} className="text-red-500 hover:bg-red-50 p-1 rounded">
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
                                     </div>
 
-                                    {selectedOfferId && (
-                                        <div className="col-span-1 md:col-span-2">
-                                            <label className="text-xs text-gray-500 block font-bold text-blue-600">Assigner Chambre (Optionnel)</label>
-                                            <select
-                                                value={(p as any).assignedRoomId || ''}
-                                                onChange={e => updatePassenger(index, 'assignedRoomId', e.target.value)}
-                                                className="w-full p-2 border rounded text-sm border-blue-200 bg-blue-50"
-                                            >
-                                                <option value="">-- Non assigné --</option>
-                                                {availableRooms.map(room => {
-                                                    const occupied = parseInt(room.occupied_count || '0');
-                                                    const isFull = occupied >= room.capacity;
-                                                    // Allow selecting if not full OR if it's the already selected room (to keep selection)
-                                                    if (isFull && (p as any).assignedRoomId !== room.id) return null;
-
-                                                    return (
-                                                        <option key={room.id} value={room.id}>
-                                                            {room.hotel_name} - {room.room_number} ({room.gender}) - {occupied}/{room.capacity}
-                                                        </option>
-                                                    );
-                                                })}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                        <div>
+                                            <label className="text-xs text-gray-500 block">Prénom *</label>
+                                            <input type="text" value={p.firstName} onChange={e => updatePassenger(index, 'firstName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 block">Nom *</label>
+                                            <input type="text" value={p.lastName} onChange={e => updatePassenger(index, 'lastName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 block">Chambre (Type)</label>
+                                            <select value={p.roomType} onChange={e => updatePassenger(index, 'roomType', e.target.value)} className="w-full p-2 border rounded text-sm">
+                                                <option value="Single">Single</option>
+                                                <option value="Double">Double</option>
+                                                <option value="Triple">Triple</option>
+                                                <option value="Quad">Quad</option>
                                             </select>
                                         </div>
-                                    )}
+
+                                        {selectedOfferId && (
+                                            <div className="col-span-1 md:col-span-2 grid grid-cols-2 gap-2 bg-blue-50 p-2 rounded-lg border border-blue-100">
+                                                <div>
+                                                    <label className="text-xs text-gray-500 block font-bold text-blue-800 mb-1">1. Filtrer par Hôtel</label>
+                                                    <select
+                                                        value={passengerHotel}
+                                                        onChange={e => updatePassenger(index, 'selectedHotel', e.target.value)}
+                                                        className="w-full p-2 border rounded text-sm bg-white"
+                                                    >
+                                                        <option value="">-- Tous les Hôtels --</option>
+                                                        {uniqueHotels.map(hotel => (
+                                                            <option key={hotel} value={hotel}>{hotel}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-gray-500 block font-bold text-blue-800 mb-1">2. Assigner Chambre</label>
+                                                    <select
+                                                        value={(p as any).assignedRoomId || ''}
+                                                        onChange={e => updatePassenger(index, 'assignedRoomId', e.target.value)}
+                                                        className="w-full p-2 border rounded text-sm bg-white"
+                                                        disabled={!passengerHotel && uniqueHotels.length > 0} // Optional: force hotel selection
+                                                    >
+                                                        <option value="">-- Non assigné --</option>
+                                                        {(passengerHotel ? filteredRooms : availableRooms).map(room => {
+                                                            const occupied = parseInt(room.occupied_count || '0');
+                                                            const isFull = occupied >= room.capacity;
+                                                            // Allow selecting if not full OR if it's the already selected room (to keep selection)
+                                                            if (isFull && (p as any).assignedRoomId !== room.id) return null;
+
+                                                            return (
+                                                                <option key={room.id} value={room.id}>
+                                                                    {room.hotel_name} - {room.room_number} ({room.gender}) - {occupied}/{room.capacity}
+                                                                </option>
+                                                            );
+                                                        })}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        )}
 
 
-                                    <div>
-                                        <label className="text-xs text-gray-500 block">Passeport *</label>
-                                        <input type="text" value={p.passportNumber} onChange={e => updatePassenger(index, 'passportNumber', e.target.value)} className="w-full p-2 border rounded text-sm" required />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block">Expiration Passeport</label>
-                                        <input type="date" value={p.passportExpiry} onChange={e => updatePassenger(index, 'passportExpiry', e.target.value)} className={`w-full p-2 border rounded text-sm ${isPassportExpiringSoon(p.passportExpiry) ? 'border-red-500 text-red-600' : ''}`} />
-                                        {isPassportExpiringSoon(p.passportExpiry) && <span className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={10} /> Expire bientôt (&lt; 6 mois)</span>}
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block">Date de Naissance</label>
-                                        <input type="date" value={p.birthDate} onChange={e => updatePassenger(index, 'birthDate', e.target.value)} className="w-full p-2 border rounded text-sm" />
-                                    </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 block">Passeport *</label>
+                                            <input type="text" value={p.passportNumber} onChange={e => updatePassenger(index, 'passportNumber', e.target.value)} className="w-full p-2 border rounded text-sm" required />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 block">Expiration Passeport</label>
+                                            <input type="date" value={p.passportExpiry} onChange={e => updatePassenger(index, 'passportExpiry', e.target.value)} className={`w-full p-2 border rounded text-sm ${isPassportExpiringSoon(p.passportExpiry) ? 'border-red-500 text-red-600' : ''}`} />
+                                            {isPassportExpiringSoon(p.passportExpiry) && <span className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={10} /> Expire bientôt (&lt; 6 mois)</span>}
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 block">Date de Naissance</label>
+                                            <input type="date" value={p.birthDate} onChange={e => updatePassenger(index, 'birthDate', e.target.value)} className="w-full p-2 border rounded text-sm" />
+                                        </div>
 
-                                    <div className="col-span-1 md:col-span-3">
-                                        <label className="text-xs text-gray-500 block">Téléphone *</label>
-                                        <input type="tel" value={p.phoneNumber} onChange={e => updatePassenger(index, 'phoneNumber', e.target.value)} className="w-full p-2 border rounded text-sm" required placeholder="05..." />
+                                        <div className="col-span-1 md:col-span-3">
+                                            <label className="text-xs text-gray-500 block">Téléphone *</label>
+                                            <input type="tel" value={p.phoneNumber} onChange={e => updatePassenger(index, 'phoneNumber', e.target.value)} className="w-full p-2 border rounded text-sm" required placeholder="05..." />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
 
