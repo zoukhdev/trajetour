@@ -9,7 +9,19 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ permission, redirectPath = '/login', children }: ProtectedRouteProps) => {
-    const { isAuthenticated, hasPermission } = useAuth();
+    const { isAuthenticated, hasPermission, loading } = useAuth();
+
+    // Show loading spinner while checking auth status
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+                    <p className="mt-4 text-gray-600">Chargement...</p>
+                </div>
+            </div>
+        );
+    }
 
     // Check if user is authenticated
     if (!isAuthenticated) {
