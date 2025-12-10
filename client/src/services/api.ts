@@ -24,6 +24,7 @@ api.interceptors.response.use(
 
             // Only redirect if not already on login page
             if (!window.location.pathname.includes('/login')) {
+                console.error(`🚫 401 Unauthorized from: ${error.config.url}. Redirecting to login.`);
                 window.location.href = '/login';
             }
         }

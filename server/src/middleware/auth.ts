@@ -13,6 +13,12 @@ export async function authMiddleware(
     try {
         const token = req.cookies.token;
 
+        // DEBUG LOGGING
+        console.log(`🔒 Auth Check [${req.method} ${req.path}]`);
+        console.log('   Cookies:', req.cookies ? 'Present' : 'Missing');
+        console.log('   Token:', token ? 'Found' : 'Missing');
+
+
         if (!token) {
             res.status(401).json({ error: 'Authentication required' });
             return;
