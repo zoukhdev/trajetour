@@ -29,7 +29,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             try {
                 const userData = await authAPI.getCurrentUser();
                 setUser(userData);
-            } catch (error) {
+            } catch (error: any) {
+                console.error('❌ CheckAuth Failed:', {
+                    message: error.message,
+                    status: error.response?.status,
+                    url: window.location.href
+                });
                 // User not authenticated - silently fail
                 setUser(null);
             } finally {

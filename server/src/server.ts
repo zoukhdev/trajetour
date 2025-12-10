@@ -18,6 +18,13 @@ import suppliersRouter from './routes/suppliers.js';
 
 const app = express();
 
+// Debug Middleware: Log Origin
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    console.log(`📨 Request from Origin: ${origin || 'Unknown'} -> ${req.method} ${req.path}`);
+    next();
+});
+
 // ...
 
 app.use('/api/suppliers', suppliersRouter);
