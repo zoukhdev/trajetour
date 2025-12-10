@@ -49,6 +49,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
             permissions: Array.isArray(user.permissions) ? user.permissions : []
         });
     } catch (error) {
+        console.error('❌ Login Error Details:', error);
         next(error);
     }
 });
