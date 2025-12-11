@@ -138,9 +138,7 @@ if (config.nodeEnv === 'production') {
     // Catch-all for client-side routing
     app.get('*', (req, res, next) => {
         // Log all requests hitting catch-all to debug static files
-        if (req.path.includes('assets') || req.path.includes('.css') || req.path.includes('.js')) {
-            console.log(`⚠️ Catch-all hit for asset: ${req.path}`);
-        }
+        // console.log(`⚠️ Catch-all hit: ${req.method} ${req.path}`);
 
         // Skip API routes
         if (req.path.startsWith('/api/')) {
@@ -148,15 +146,21 @@ if (config.nodeEnv === 'production') {
         }
 
         // STATIC ASSET FALLBACK: 
-        // If request is for /assets/ and wasn't handled by express.static, 
-        // it means the file is missing. Return 404 immediately.
-        // This prevents returning index.html for missing CSS/JS, which causes MIME Type errors.
-        if (req.path.startsWith('/assets/')) {
-            return res.status(404).send('Asset not found');
-        }
+        // Logic to prevent returning HTML for missing assets
+        const isAsset = req.path.startsWith('/assets/') ||
+            req.path.includes('.css') ||
+            req.path.includes('.js') ||
+            req.path.includes('.png') ||
+            req.path.includes('.jpg') ||
+            req.path.includes('.ico');
 
-        // Asset check extension heuristic (backup)
-        if (req.path.includes('.') && !req.path.endsWith('.html')) {
+        if (isAsset) {
+            console.error(`❌ 404 Asset Not Found (Fallthrough): ${req.path}`);
+            // define path to requested file
+            // const requestedFile = path.join(clientBuildPath, req.path);
+            // console.log(`   -> Looked for: ${requestedFile}`);
+            // console.log(`   -> Exists? ${fs.existsSync(requestedFile)}`);
+
             return res.status(404).send('Asset not found');
         }
 
@@ -166,6 +170,7 @@ if (config.nodeEnv === 'production') {
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
 
+        console.log(`📄 Serving index.html for: ${req.path}`);
         res.sendFile(path.join(clientBuildPath, 'index.html'));
     });
 } else {
