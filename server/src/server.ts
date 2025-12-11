@@ -114,10 +114,20 @@ app.use('/api/suppliers', suppliersRouter);
 // Serve static files from React build (production only)
 if (config.nodeEnv === 'production') {
     const path = await import('path');
-    const { fileURLToPath } = await import('url');
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    const clientBuildPath = path.join(__dirname, '../../client/dist');
-    console.log('📂 Serving static files from:', clientBuildPath);
+    const fs = await import('fs');
+
+    // Safer path resolution for Render/Container environments
+    // Assumes server is started from the 'server' directory
+    const clientBuildPath = path.join(process.cwd(), '../client/dist');
+
+    console.log(`📂 Resolved Client Build Path: ${clientBuildPath}`);
+    if (fs.existsSync(clientBuildPath)) {
+        console.log('✅ Client dist folder found.');
+    } else {
+        console.error('❌ Client dist folder NOT found at:', clientBuildPath);
+        // Fallback or attempt to find it 
+        // console.log('Current CWD:', process.cwd());
+    }
 
     // Serve static files with proper caching
     app.use(express.static(clientBuildPath, {
