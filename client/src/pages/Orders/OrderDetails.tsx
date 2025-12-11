@@ -7,14 +7,14 @@ import { generateInvoice } from '../../services/pdfGenerator';
 import { useState, useEffect } from 'react';
 import Modal from '../../components/Modal';
 import type { PaymentMethod, Currency, Order } from '../../types';
-import { allocatePaymentFIFO } from '../../utils/paymentAllocation';
+
 // Import API directly for custom calls if needed, though useData has some
 import api from '../../services/api';
 
 const OrderDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { orders, clients, agencies, updateOrder, bankAccounts, addTransaction, addPayment } = useData();
+    const { orders, clients, agencies, bankAccounts } = useData();
     const { language } = useLanguage();
     const { getLatestRate, getRateForDate } = useExchangeRates();
 
@@ -340,28 +340,6 @@ const OrderDetails = () => {
                                 alert('Paiement modifié (remis en attente de validation).');
                             } else {
                                 // CREATE MODE
-                                const newPayment = await addPayment({
-                                    id: Math.random().toString(36).substr(2, 9),
-                                    amount: paymentAmount,
-                                    currency: paymentCurrency,
-                                    amountDZD: paymentAmountDZD,
-                                    exchangeRateUsed: paymentCurrency !== 'DZD' ? paymentExchangeRate : 1,
-                                    exchangeRateDate: new Date().toISOString().split('T')[0],
-                                    method: method,
-                                    date: new Date().toISOString()
-                                }, order.id, accountId); // Pass accountId if addPayment supports it, else we need to update addPayment signature in Context or just use raw API.
-
-                                // Since addPayment in context probably doesn't support accountId yet (I didn't check context), 
-                                // I should probably use raw API here to be safe, OR rely on `addPayment` using the same endpoint logic?
-                                // Context `addPayment` likely calls `api.post`. 
-                                // I updated `api.post` backend to accept accountId.
-                                // But does frontend passing it? 
-                                // Let's try to assume I need to pass it in the object?
-                                // or better, call api directly for Create as well to ensure accountId is sent.
-                                // Wait, addPayment takes `(payment, orderId)`.
-
-                                // Let's call API directly for Create to be safe and consistent with Backend update
-                                /*
                                 await api.post('/payments', {
                                     orderId: order.id,
                                     amount: paymentAmount,
@@ -371,10 +349,9 @@ const OrderDetails = () => {
                                     paymentDate: new Date().toISOString(),
                                     accountId
                                 });
-                                */
-                                // If I use context `addPayment`, it updates context state which is nice.
-                                // But `fetchOrder` updates state too.
-                                // I'll use raw API + fetchOrder.
+                                // Refresh current order
+                                fetchOrder();
+                                alert('Paiement ajouté (en attente de validation).');
                             }
 
                             // Reset & Close

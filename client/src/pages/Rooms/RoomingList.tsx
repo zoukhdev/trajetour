@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useData } from '../../context/DataContext';
+
 import { useAuth } from '../../context/AuthContext';
 import { Plus, Hotel, Users, Trash2, ArrowRightLeft, User } from 'lucide-react';
 import Modal from '../../components/Modal';
@@ -17,41 +17,7 @@ interface Room {
     occupied_count?: number; // Calculated field
 }
 
-interface Occupant {
-    first_name: string;
-    last_name: string;
-    passport_number: string;
-    gender: string;
-    order_id: string;
-    // We need passengerId to identify them within the order
-    // But getOccupants only returns fields. I need to make sure backend returns passengerId?
-    // Backend returns: p->>'firstName'..., and order_id. 
-    // It does NOT return passenger_id currently?
-    // Let's check backend... "SELECT ... p->>'firstName' ... o.id as order_id FROM ..."
-    // The JSONB object p typically has `id` if I generated it.
-    // In `orders.ts` creating order: `passengers: row.passengers || []`
-    // In `OrderFormV2`, I generate `id: Math.random()`.
-    // So yes, `p->>'id'` should exist. 
-    // I need to update backend to return it? 
-    // Actually, I can fetch it in `POST /transfer` but I need to send it.
-    // I should check backend response for occupants. 
-    // Wait, backend `rooms.ts` query:
-    /*
-            SELECT 
-                p->>'firstName' as first_name,
-                p->>'lastName' as last_name,
-                p->>'passportNumber' as passport_number,
-                p->>'gender' as gender,
-                o.id as order_id
-            FROM ...
-    */
-    // It is MISSING `p->>'id'`. I must fix backend first?
-    // I will fix `rooms.ts` blindly in a separate step or just assume I can find by passport number?
-    // Passport number is unique enough for now?
-    // Or I find by index? Indices change.
-    // Relying on `id` is better.
-    // I will use `p->>'id'` as passenger_id.
-}
+
 
 const RoomingList = () => {
     // const { offers } = useData(); // Not needed anymore
@@ -258,8 +224,8 @@ const RoomingList = () => {
                                                 </p>
                                             </div>
                                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${room.gender === 'MEN' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                                                    room.gender === 'WOMEN' ? 'bg-pink-100 text-pink-700 border-pink-200' :
-                                                        'bg-purple-100 text-purple-700 border-purple-200'
+                                                room.gender === 'WOMEN' ? 'bg-pink-100 text-pink-700 border-pink-200' :
+                                                    'bg-purple-100 text-purple-700 border-purple-200'
                                                 }`}>
                                                 {room.gender}
                                             </span>
