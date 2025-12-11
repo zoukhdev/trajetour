@@ -174,6 +174,13 @@ if (config.nodeEnv === 'production') {
                     } else {
                         console.log('   ⚠️ No "assets" folder in dist root.');
                     }
+
+                    // DEBUG: Check what index.html contains
+                    const indexPath = path.join(clientBuildPath, 'index.html');
+                    if (fs.existsSync(indexPath)) {
+                        const indexContent = fs.readFileSync(indexPath, 'utf-8');
+                        console.log(`   index.html content (preview): ${indexContent.substring(0, 500)}`);
+                    }
                 } else {
                     console.log('   ⚠️ Configured Build Path does not exist!');
                 }
