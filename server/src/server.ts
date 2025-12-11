@@ -278,39 +278,7 @@ app.listen(PORT, async () => {
         }
     }
 
-    // Debug Static Files
-    if (config.nodeEnv === 'production') {
-        const path = await import('path');
-        const { fileURLToPath } = await import('url');
-        const fs = await import('fs');
 
-        // Resolve paths
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        // Assuming server is running from /dist/server.js, we need to go up to root then into client/dist
-        const clientBuildPath = path.resolve(__dirname, '../../client/dist');
-
-        console.log(`📂 Resolved Client Build Path: ${clientBuildPath}`);
-
-        if (fs.existsSync(clientBuildPath)) {
-            console.log('✅ Client dist folder found.');
-            console.log('📂 Contents of dist:', fs.readdirSync(clientBuildPath));
-            const assetsPath = path.join(clientBuildPath, 'assets');
-            if (fs.existsSync(assetsPath)) {
-                console.log('📂 Contents of dist/assets:', fs.readdirSync(assetsPath));
-            } else {
-                console.error('⚠️ assets folder NOT found in dist');
-            }
-        } else {
-            console.error('❌ Client Build Path DOES NOT EXIST at:', clientBuildPath);
-        }
-
-        // Serve static files
-        app.use(express.static(clientBuildPath, {
-            maxAge: '1y',
-            etag: true
-        }));
-    }
 });
 
 export default app;
