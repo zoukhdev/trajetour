@@ -45,6 +45,7 @@ const RoomingList = () => {
     // Transfer State
     const [transferTargetRoomId, setTransferTargetRoomId] = useState('');
     const [passengerToTransfer, setPassengerToTransfer] = useState<{ orderId: string, id: string } | null>(null);
+    const [transferTargetHotel, setTransferTargetHotel] = useState('');
 
 
     // Valid role check for modifications
@@ -418,37 +419,56 @@ const RoomingList = () => {
 
                                             {/* Transfer Checkbox Logic */}
                                             {passengerToTransfer?.id === occ.passenger_id ? ( // Need passenger_id from backend
-                                                <div className="flex items-center gap-2 animate-fadeIn">
+                                                <div className="flex flex-col gap-2 animate-fadeIn bg-gray-50 p-2 rounded border border-blue-200">
                                                     <select
-                                                        className="text-xs p-1 border rounded max-w-[150px]"
-                                                        onChange={(e) => setTransferTargetRoomId(e.target.value)}
-                                                        value={transferTargetRoomId}
+                                                        className="text-xs p-1 border rounded w-full"
+                                                        onChange={(e) => {
+                                                            setTransferTargetHotel(e.target.value);
+                                                            setTransferTargetRoomId(''); // Reset room when hotel changes
+                                                        }}
+                                                        value={transferTargetHotel}
                                                     >
-                                                        <option value="">Vers...</option>
-                                                        {rooms
-                                                            .filter(r => r.hotel_name === selectedRoom?.hotel_name && r.id !== selectedRoom?.id && (r.occupied_count || 0) < r.capacity)
-                                                            .map(r => (
-                                                                <option key={r.id} value={r.id}>{r.room_number} ({r.gender})</option>
-                                                            ))
-                                                        }
+                                                        <option value="">-- Hôtel --</option>
+                                                        {Array.from(new Set(rooms.map(r => r.hotel_name))).map(h => (
+                                                            <option key={h} value={h}>{h}</option>
+                                                        ))}
                                                     </select>
-                                                    <button
-                                                        onClick={handleTransfer}
-                                                        disabled={!transferTargetRoomId}
-                                                        className="bg-green-600 text-white p-1 rounded hover:bg-green-700 disabled:opacity-50"
-                                                    >
-                                                        <ArrowRightLeft size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setPassengerToTransfer(null)}
-                                                        className="text-gray-400 hover:text-red-500 ml-1"
-                                                    >
-                                                        ✕
-                                                    </button>
+                                                    <div className="flex gap-2">
+                                                        <select
+                                                            className="text-xs p-1 border rounded w-full"
+                                                            onChange={(e) => setTransferTargetRoomId(e.target.value)}
+                                                            value={transferTargetRoomId}
+                                                            disabled={!transferTargetHotel}
+                                                        >
+                                                            <option value="">-- Vers Chambre --</option>
+                                                            {rooms
+                                                                .filter(r => r.hotel_name === transferTargetHotel && r.id !== selectedRoom?.id && (r.occupied_count || 0) < r.capacity)
+                                                                .map(r => (
+                                                                    <option key={r.id} value={r.id}>{r.room_number} ({r.gender})</option>
+                                                                ))
+                                                            }
+                                                        </select>
+                                                        <button
+                                                            onClick={handleTransfer}
+                                                            disabled={!transferTargetRoomId}
+                                                            className="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 disabled:opacity-50"
+                                                        >
+                                                            <ArrowRightLeft size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setPassengerToTransfer(null)}
+                                                            className="text-gray-400 hover:text-red-500 px-1"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <button
-                                                    onClick={() => setPassengerToTransfer({ orderId: occ.order_id, id: occ.passenger_id })}
+                                                    onClick={() => {
+                                                        setPassengerToTransfer({ orderId: occ.order_id, id: occ.passenger_id });
+                                                        setTransferTargetHotel(selectedRoom?.hotel_name || '');
+                                                    }}
                                                     className="text-blue-600 hover:underline text-xs"
                                                 >
                                                     Transférer

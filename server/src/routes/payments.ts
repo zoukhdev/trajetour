@@ -37,7 +37,7 @@ router.post('/',
                     exchangeRate,
                     method,
                     paymentDate,
-                    false, // Default to FALSE (requires validation)
+                    null, // Default to NULL (Pending) requires validation
                     accountId || null
                 ]
             );
@@ -222,9 +222,9 @@ router.put('/:id',
 
             const updatedPayment = result.rows[0];
 
-            // Auto-invalidate when modified
-            await client.query('UPDATE payments SET is_validated = false WHERE id = $1', [id]);
-            updatedPayment.is_validated = false;
+            // Auto-invalidate when modified (Set to Pending)
+            await client.query('UPDATE payments SET is_validated = NULL WHERE id = $1', [id]);
+            updatedPayment.is_validated = null;
 
             // Remove any existing transaction since we invalidated it (and details changed)
             await client.query('DELETE FROM transactions WHERE payment_id = $1', [id]);

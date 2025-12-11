@@ -41,6 +41,7 @@ const OrderFormV2 = () => {
     const [offers, setOffers] = useState<any[]>([]);
     const [selectedOfferId, setSelectedOfferId] = useState('');
     const [availableRooms, setAvailableRooms] = useState<any[]>([]);
+    const [selectedHotel, setSelectedHotel] = useState('');
 
 
     // Passengers
@@ -183,12 +184,12 @@ const OrderFormV2 = () => {
                     </div>
                 </div>
 
-                {/* Offer Selection (Context for Rooms) */}
+                {/* Offer & Hotel Selection */}
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
                     <h2 className="text-lg font-semibold flex items-center gap-2">
                         <Building2 size={20} /> Allocation & Offre
                     </h2>
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Offre (Voyage) *</label>
                             <select
@@ -202,8 +203,23 @@ const OrderFormV2 = () => {
                                     <option key={o.id} value={o.id}>{o.title}</option>
                                 ))}
                             </select>
-                            <p className="text-xs text-gray-500 mt-1">Sélectionnez une offre pour voir les chambres disponibles.</p>
                         </div>
+                        {selectedOfferId && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Hôtel (Global) *</label>
+                                <select
+                                    value={selectedHotel}
+                                    onChange={e => setSelectedHotel(e.target.value)}
+                                    className="w-full p-2 border rounded-lg"
+                                    required
+                                >
+                                    <option value="">-- Sélectionner l'hôtel --</option>
+                                    {Array.from(new Set(availableRooms.map(r => r.hotel_name))).filter(Boolean).map(h => (
+                                        <option key={h} value={h}>{h}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -224,15 +240,12 @@ const OrderFormV2 = () => {
 
                     <div className="space-y-4">
                         {passengers.map((p, index) => {
-                            // Derive unique hotels from availableRooms
-                            const uniqueHotels = Array.from(new Set(availableRooms.map(r => r.hotel_name))).filter(Boolean);
-                            const passengerHotel = (p as any).selectedHotel || '';
-                            const filteredRooms = availableRooms.filter(r => r.hotel_name === passengerHotel);
+                            // Filter rooms by Global Hotel
+                            const filteredRooms = availableRooms.filter(r => !selectedHotel || r.hotel_name === selectedHotel);
 
                             return (
                                 <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
                                     <div className="absolute top-2 right-2 flex gap-2">
-                                        {/* Badge Age Category */}
                                         <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full font-bold">
                                             {calculateAgeCategory(p.birthDate)}
                                         </span>
@@ -243,7 +256,7 @@ const OrderFormV2 = () => {
                                         )}
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                                         <div>
                                             <label className="text-xs text-gray-500 block">Prénom *</label>
                                             <input type="text" value={p.firstName} onChange={e => updatePassenger(index, 'firstName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
@@ -252,57 +265,36 @@ const OrderFormV2 = () => {
                                             <label className="text-xs text-gray-500 block">Nom *</label>
                                             <input type="text" value={p.lastName} onChange={e => updatePassenger(index, 'lastName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
                                         </div>
-                                        <div>
-                                            <label className="text-xs text-gray-500 block">Chambre (Type)</label>
-                                            <select value={p.roomType} onChange={e => updatePassenger(index, 'roomType', e.target.value)} className="w-full p-2 border rounded text-sm">
-                                                <option value="Single">Single</option>
-                                                <option value="Double">Double</option>
-                                                <option value="Triple">Triple</option>
-                                                <option value="Quad">Quad</option>
-                                            </select>
-                                        </div>
 
+                                        {/* Room Assignment */}
                                         {selectedOfferId && (
-                                            <div className="col-span-1 md:col-span-2 grid grid-cols-2 gap-2 bg-blue-50 p-2 rounded-lg border border-blue-100">
-                                                <div>
-                                                    <label className="text-xs text-gray-500 block font-bold text-blue-800 mb-1">1. Filtrer par Hôtel</label>
-                                                    <select
-                                                        value={passengerHotel}
-                                                        onChange={e => updatePassenger(index, 'selectedHotel', e.target.value)}
-                                                        className="w-full p-2 border rounded text-sm bg-white"
-                                                    >
-                                                        <option value="">-- Tous les Hôtels --</option>
-                                                        {uniqueHotels.map(hotel => (
-                                                            <option key={hotel} value={hotel}>{hotel}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="text-xs text-gray-500 block font-bold text-blue-800 mb-1">2. Assigner Chambre</label>
-                                                    <select
-                                                        value={(p as any).assignedRoomId || ''}
-                                                        onChange={e => updatePassenger(index, 'assignedRoomId', e.target.value)}
-                                                        className="w-full p-2 border rounded text-sm bg-white"
-                                                        disabled={!passengerHotel && uniqueHotels.length > 0} // Optional: force hotel selection
-                                                    >
-                                                        <option value="">-- Non assigné --</option>
-                                                        {(passengerHotel ? filteredRooms : availableRooms).map(room => {
-                                                            const occupied = parseInt(room.occupied_count || '0');
-                                                            const isFull = occupied >= room.capacity;
-                                                            // Allow selecting if not full OR if it's the already selected room (to keep selection)
-                                                            if (isFull && (p as any).assignedRoomId !== room.id) return null;
+                                            <div className="col-span-1 md:col-span-2 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                                <label className="text-xs text-gray-500 block font-bold text-blue-800 mb-1">
+                                                    Assigner Chambre {selectedHotel ? `(${selectedHotel})` : ''}
+                                                </label>
+                                                <select
+                                                    value={(p as any).assignedRoomId || ''}
+                                                    onChange={e => updatePassenger(index, 'assignedRoomId', e.target.value)}
+                                                    className="w-full p-2 border rounded text-sm bg-white"
+                                                    disabled={!selectedHotel}
+                                                >
+                                                    <option value="">-- Choisir une chambre --</option>
+                                                    {filteredRooms.map(room => {
+                                                        const occupied = parseInt(room.occupied_count || '0');
+                                                        const isFull = occupied >= room.capacity;
 
-                                                            return (
-                                                                <option key={room.id} value={room.id}>
-                                                                    {room.hotel_name} - {room.room_number} ({room.gender}) - {occupied}/{room.capacity} - {room.price} DZD
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </select>
-                                                </div>
+                                                        if (isFull && (p as any).assignedRoomId !== room.id) return null;
+
+                                                        return (
+                                                            <option key={room.id} value={room.id}>
+                                                                {room.room_number} ({room.gender}) - {occupied}/{room.capacity} - {room.price} DZD
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </select>
+                                                {!selectedHotel && <p className="text-xs text-red-500 mt-1">Veuillez sélectionner un hôtel ci-dessus.</p>}
                                             </div>
                                         )}
-
 
                                         <div>
                                             <label className="text-xs text-gray-500 block">Passeport *</label>

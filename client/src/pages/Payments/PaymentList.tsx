@@ -134,13 +134,13 @@ const PaymentList = () => {
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${payment.isValidated === undefined
+                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${(payment.isValidated === null || payment.isValidated === undefined)
                                                 ? 'bg-gray-50 text-gray-700 border-gray-200'
                                                 : payment.isValidated
                                                     ? 'bg-green-50 text-green-700 border-green-100'
                                                     : 'bg-red-50 text-red-700 border-red-100'
                                                 }`}>
-                                                {payment.isValidated === undefined ? 'En Attente' : payment.isValidated ? 'Validé' : 'Non Validé'}
+                                                {(payment.isValidated === null || payment.isValidated === undefined) ? 'En Attente' : payment.isValidated ? 'Validé' : 'Non Validé'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -159,7 +159,7 @@ const PaymentList = () => {
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
-                                                {payment.isValidated === undefined && (
+                                                {(payment.isValidated === null || payment.isValidated === undefined) && (
                                                     <>
                                                         <button
                                                             onClick={() => handleValidate(payment.id, payment.orderId, true)}
@@ -171,7 +171,7 @@ const PaymentList = () => {
                                                         <button
                                                             onClick={() => handleValidate(payment.id, payment.orderId, false)}
                                                             className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                                                            title="Invalider"
+                                                            title="Rejeter"
                                                         >
                                                             <XCircle size={18} />
                                                         </button>
@@ -219,13 +219,13 @@ const PaymentList = () => {
                             </div>
                             <div className="p-3 bg-gray-50 rounded-lg">
                                 <span className="block text-gray-500 mb-1">Statut de Validation</span>
-                                <span className={`font-semibold ${viewingPayment.isValidated === undefined
-                                    ? 'text-gray-600'
-                                    : viewingPayment.isValidated
-                                        ? 'text-green-600'
-                                        : 'text-red-600'
+                                <span className={`font-semibold ${(viewingPayment.isValidated === null || viewingPayment.isValidated === undefined)
+                                        ? 'text-gray-600'
+                                        : viewingPayment.isValidated
+                                            ? 'text-green-600'
+                                            : 'text-red-600'
                                     }`}>
-                                    {viewingPayment.isValidated === undefined ? 'En Attente' : viewingPayment.isValidated ? 'Validé' : 'Non Validé'}
+                                    {(viewingPayment.isValidated === null || viewingPayment.isValidated === undefined) ? 'En Attente' : viewingPayment.isValidated ? 'Validé' : 'Non Validé'}
                                 </span>
                             </div>
                             <div className="p-3 bg-gray-50 rounded-lg">
