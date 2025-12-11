@@ -18,17 +18,15 @@ export const clientSchema = z.object({
 
 export const orderSchema = z.object({
     clientId: z.string().uuid(),
-    agencyId: z.string().uuid().optional().or(z.literal('')).nullable(),
+    agencyId: z.string().uuid().optional(),
     items: z.array(z.object({
         id: z.string(),
         description: z.string(),
-        quantity: z.number(),
-        unitPrice: z.number(),
-        amount: z.number()
-    })).optional(),
-    passengers: z.array(z.any()).optional(), // Helper validation happens in controller
-    hotels: z.array(z.any()).optional(),
-    totalAmount: z.number(), // Allow 0 if needed (e.g. quote only) or make strict if business rule requires
+        quantity: z.number().positive(),
+        unitPrice: z.number().positive(),
+        amount: z.number().positive()
+    })).min(1),
+    totalAmount: z.number().positive(),
     notes: z.string().optional()
 });
 
@@ -71,16 +69,23 @@ export const agencySchema = z.object({
 });
 
 export const offerSchema = z.object({
-    title: z.string().min(1).max(255),
-    type: z.enum(['Omra', 'Haj', 'Voyage Organisé', 'Visa', 'Autre']),
-    destination: z.string().min(1).max(255),
+    title: z.string().min(2).max(255),
+    type: z.enum(['Omra', 'Hajj', 'Voyage Organisé', 'Vols', 'Visa']),
+    destination: z.string().min(2),
     price: z.number().positive(),
     startDate: z.string(),
     endDate: z.string(),
     hotel: z.string().optional(),
-    transport: z.enum(['Avion', 'Bus', 'Sans Transport']).optional(),
+    transport: z.string().optional(),
     description: z.string().optional(),
-    status: z.enum(['Active', 'Draft', 'Archived']).default('Draft')
+    status: z.enum(['Active', 'Draft', 'Archived']).optional(),
+    disponibilite: z.number().int().nonnegative().optional(),
+    inclusions: z.record(z.boolean()).optional(),
+    roomPricing: z.array(z.object({
+        roomType: z.string(),
+        price: z.number().positive(),
+        capacity: z.number().int().positive()
+    })).optional()
 });
 
 // Validation Middleware
