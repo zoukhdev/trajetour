@@ -53,25 +53,27 @@ const OrderFormV2 = () => {
     const [totalAmount, setTotalAmount] = useState<number>(0);
     const [loading, setLoading] = useState(false);
 
-    // Mock Client Fetch (Replace with real selector)
+    // Clients State
     const [clients, setClients] = useState<any[]>([]);
-    useEffect(() => {
-        // Fetch clients for dropdown
-        api.get('/clients').then(res => setClients(res.data.data || res.data)).catch(console.error); // Handle paginated or direct array
-        // Fetch active offers
-        api.get('/offers').then(res => setOffers(res.data)).catch(console.error);
-    }, []);
 
-    // Fetch rooms when offer changes
+    // Fetch data on mount
     useEffect(() => {
-        if (!selectedOfferId) {
-            setAvailableRooms([]);
-            return;
-        }
-        api.get(`/rooms?offerId=${selectedOfferId}`)
-            .then(res => setAvailableRooms(res.data))
-            .catch(console.error);
-    }, [selectedOfferId]);
+        const loadData = async () => {
+            try {
+                const [clientsRes, offersRes, roomsRes] = await Promise.all([
+                    api.get('/clients'),
+                    api.get('/offers'),
+                    api.get('/rooms') // Fetch ALL rooms
+                ]);
+                setClients(clientsRes.data.data || clientsRes.data);
+                setOffers(offersRes.data);
+                setAvailableRooms(roomsRes.data);
+            } catch (err) {
+                console.error("Error loading initial data", err);
+            }
+        };
+        loadData();
+    }, []);
 
     // Auto-calculate Total Amount based on Room Prices
     useEffect(() => {
@@ -134,6 +136,9 @@ const OrderFormV2 = () => {
             setLoading(false);
         }
     };
+
+    // Derive unique hotels from ALL rooms
+    const allHotels = Array.from(new Set(availableRooms.map(r => r.hotel_name))).filter(Boolean);
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-20">
@@ -204,22 +209,20 @@ const OrderFormV2 = () => {
                                 ))}
                             </select>
                         </div>
-                        {selectedOfferId && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Hôtel (Global) *</label>
-                                <select
-                                    value={selectedHotel}
-                                    onChange={e => setSelectedHotel(e.target.value)}
-                                    className="w-full p-2 border rounded-lg"
-                                    required
-                                >
-                                    <option value="">-- Sélectionner l'hôtel --</option>
-                                    {Array.from(new Set(availableRooms.map(r => r.hotel_name))).filter(Boolean).map(h => (
-                                        <option key={h} value={h}>{h}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        )}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Hôtel (Global) *</label>
+                            <select
+                                value={selectedHotel}
+                                onChange={e => setSelectedHotel(e.target.value)}
+                                className="w-full p-2 border rounded-lg"
+                                required
+                            >
+                                <option value="">-- Sélectionner l'hôtel --</option>
+                                {allHotels.map(h => (
+                                    <option key={h} value={h}>{h}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -240,8 +243,11 @@ const OrderFormV2 = () => {
 
                     <div className="space-y-4">
                         {passengers.map((p, index) => {
-                            // Filter rooms by Global Hotel
-                            const filteredRooms = availableRooms.filter(r => !selectedHotel || r.hotel_name === selectedHotel);
+                            // Filter rooms by Global Hotel AND Selected Offer (if any)
+                            const filteredRooms = availableRooms.filter(r =>
+                                (!selectedHotel || r.hotel_name === selectedHotel) &&
+                                (!selectedOfferId || r.offer_id === selectedOfferId)
+                            );
 
                             return (
                                 <div key={index} className="p-4 border border-gray-200 rounded-lg relative">
