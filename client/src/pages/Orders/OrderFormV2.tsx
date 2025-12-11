@@ -1,4 +1,3 @@
-```typescript
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -76,12 +75,12 @@ const OrderFormV2 = () => {
         if (!selectedHotelName) {
             // Fetch all rooms if no hotel selected
             axios.get('/api/rooms')
-            .then(res => setAvailableRooms(res.data))
-            .catch(console.error);
+                .then(res => setAvailableRooms(res.data))
+                .catch(console.error);
             return;
         }
         // Fetch rooms filtered by hotel name
-        axios.get(`/ api / rooms ? hotelName = ${ encodeURIComponent(selectedHotelName) } `)
+        axios.get(`/api/rooms?hotelName=${encodeURIComponent(selectedHotelName)}`)
             .then(res => setAvailableRooms(res.data))
             .catch(console.error);
     }, [selectedHotelName]);
@@ -329,7 +328,7 @@ const OrderFormV2 = () => {
                                     </div>
                                     <div>
                                         <label className="text-xs text-gray-500 block">Expiration Passeport</label>
-                                        <input type="date" value={p.passportExpiry} onChange={e => updatePassenger(index, 'passportExpiry', e.target.value)} className={`w - full p - 2 border rounded text - sm ${ isPassportExpiringSoon(p.passportExpiry) ? 'border-red-500 text-red-600' : '' } `} />
+                                        <input type="date" value={p.passportExpiry} onChange={e => updatePassenger(index, 'passportExpiry', e.target.value)} className={`w-full p-2 border rounded text-sm ${isPassportExpiringSoon(p.passportExpiry) ? 'border-red-500 text-red-600' : ''}`} />
                                         {isPassportExpiringSoon(p.passportExpiry) && <span className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={10} /> Expire bientôt (&lt; 6 mois)</span>}
                                     </div>
                                     <div>
