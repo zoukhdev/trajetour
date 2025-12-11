@@ -159,35 +159,6 @@ if (config.nodeEnv === 'production') {
 
         if (isAsset) {
             console.error(`❌ 404 Asset Not Found (Fallthrough): ${req.path}`);
-
-            // Runtime Debugging for 404
-            try {
-                // const fs = await import('fs'); // fs is already imported above
-                console.log(`   PWD: ${process.cwd()}`);
-                console.log(`   Configured Build Path: ${clientBuildPath}`);
-                if (fs.existsSync(clientBuildPath)) {
-                    const files = fs.readdirSync(clientBuildPath);
-                    console.log(`   Dist Root Files: ${files.join(', ')}`);
-                    if (files.includes('assets')) {
-                        const assetFiles = fs.readdirSync(path.join(clientBuildPath, 'assets'));
-                        console.log(`   Assets Files: ${assetFiles.join(', ')}`);
-                    } else {
-                        console.log('   ⚠️ No "assets" folder in dist root.');
-                    }
-
-                    // DEBUG: Check what index.html contains
-                    const indexPath = path.join(clientBuildPath, 'index.html');
-                    if (fs.existsSync(indexPath)) {
-                        const indexContent = fs.readFileSync(indexPath, 'utf-8');
-                        console.log(`   index.html content (preview): ${indexContent.substring(0, 500)}`);
-                    }
-                } else {
-                    console.log('   ⚠️ Configured Build Path does not exist!');
-                }
-            } catch (err) {
-                console.error('   Debug logging failed:', err);
-            }
-
             return res.status(404).send('Asset not found');
         }
 
