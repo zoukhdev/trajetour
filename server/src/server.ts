@@ -130,9 +130,12 @@ if (config.nodeEnv === 'production') {
     }
 
     // Serve static files with proper caching
+    // disable 'index' so that requests to / fall through to the catch-all
+    // where we explicitly set no-cache headers for index.html
     app.use(express.static(clientBuildPath, {
         maxAge: '1y',
-        etag: true
+        etag: true,
+        index: false
     }));
 
     // Catch-all for client-side routing
