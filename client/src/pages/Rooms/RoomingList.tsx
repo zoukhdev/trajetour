@@ -14,6 +14,11 @@ interface Room {
     gender: 'MEN' | 'WOMEN' | 'MIXED';
     status: 'ACTIVE' | 'OUT_OF_SERVICE';
     price: number;
+    pricing?: {
+        adult: number;
+        child: number;
+        infant: number;
+    };
     occupied_count?: number; // Calculated field
 }
 
@@ -33,7 +38,12 @@ const RoomingList = () => {
         capacity: 4,
         gender: 'MIXED' as 'MEN' | 'WOMEN' | 'MIXED',
         hotelName: '',
-        price: 0
+        price: 0,
+        pricing: {
+            adult: 0,
+            child: 0,
+            infant: 0
+        }
     });
 
     // Modal Details
@@ -331,17 +341,58 @@ const RoomingList = () => {
                             />
                         </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Prix par Personne (DZD)</label>
-                        <input
-                            type="number"
-                            required
-                            min="0"
-                            step="100"
-                            value={newRoom.price}
-                            onChange={(e) => setNewRoom({ ...newRoom, price: Number(e.target.value) })}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none"
-                        />
+                    {/* Age-Based Pricing */}
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label className="block text-sm font-semibold text-gray-800 mb-3">Prix par Catégorie d'Âge (DZD)</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Adulte (ADT)</label>
+                                <input
+                                    type="number"
+                                    required
+                                    min="0"
+                                    step="100"
+                                    value={newRoom.pricing.adult}
+                                    onChange={(e) => setNewRoom({
+                                        ...newRoom,
+                                        price: Number(e.target.value), // Keep price synced with adult
+                                        pricing: { ...newRoom.pricing, adult: Number(e.target.value) }
+                                    })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Enfant (CHD)</label>
+                                <input
+                                    type="number"
+                                    required
+                                    min="0"
+                                    step="100"
+                                    value={newRoom.pricing.child}
+                                    onChange={(e) => setNewRoom({
+                                        ...newRoom,
+                                        pricing: { ...newRoom.pricing, child: Number(e.target.value) }
+                                    })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none text-sm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Bébé (INF)</label>
+                                <input
+                                    type="number"
+                                    required
+                                    min="0"
+                                    step="100"
+                                    value={newRoom.pricing.infant}
+                                    onChange={(e) => setNewRoom({
+                                        ...newRoom,
+                                        pricing: { ...newRoom.pricing, infant: Number(e.target.value) }
+                                    })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 outline-none text-sm"
+                                />
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">Enfant: 2-11 ans • Bébé: 0-1 an</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Genre / Restriction</label>

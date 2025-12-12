@@ -45,13 +45,21 @@ router.get('/', authMiddleware, async (req, res) => {
 // Create a new room
 router.post('/', authMiddleware, requireRole('staff'), async (req, res) => {
     try {
-        const { offerId, hotelName, roomNumber, capacity, gender, price } = req.body;
+        const { offerId, hotelName, roomNumber, capacity, gender, price, pricing } = req.body;
 
         const result = await pool.query(
-            `INSERT INTO rooms (offer_id, hotel_name, room_number, capacity, gender, price)
-             VALUES ($1, $2, $3, $4, $5, $6)
+            `INSERT INTO rooms (offer_id, hotel_name, room_number, capacity, gender, price, pricing)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING *`,
-            [offerId || null, hotelName, roomNumber, capacity, gender, price || 0]
+            [
+                offerId || null,
+                hotelName,
+                roomNumber,
+                capacity,
+                gender,
+                price || 0,
+                pricing ? JSON.stringify(pricing) : JSON.stringify({ adult: price || 0, child: 0, infant: 0 })
+            ]
         );
 
         res.status(201).json(result.rows[0]);
@@ -65,7 +73,7 @@ router.post('/', authMiddleware, requireRole('staff'), async (req, res) => {
 router.put('/:id', authMiddleware, requireRole('staff'), async (req, res) => {
     try {
         const { id } = req.params;
-        const { roomNumber, capacity, gender, status, price } = req.body;
+        const { roomNumber, capacity, gender, status, price, pricing } = req.body;
 
         const result = await pool.query(
             `UPDATE rooms 
@@ -73,10 +81,11 @@ router.put('/:id', authMiddleware, requireRole('staff'), async (req, res) => {
                  capacity = COALESCE($2, capacity),
                  gender = COALESCE($3, gender),
                  status = COALESCE($4, status),
-                 price = COALESCE($5, price)
-             WHERE id = $6
+                 price = COALESCE($5, price),
+                 pricing = COALESCE($6::jsonb, pricing)
+             WHERE id = $7
              RETURNING *`,
-            [roomNumber, capacity, gender, status, price, id]
+            [roomNumber, capacity, gender, status, price, pricing ? JSON.stringify(pricing) : null, id]
         );
 
         if (result.rows.length === 0) {

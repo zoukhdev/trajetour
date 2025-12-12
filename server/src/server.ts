@@ -226,9 +226,23 @@ app.listen(PORT, async () => {
             await pool.query(`
                     ALTER TABLE rooms 
                     ADD COLUMN IF NOT EXISTS price DECIMAL(12,2) DEFAULT 0,
-                    ADD COLUMN IF NOT EXISTS offer_id VARCHAR(255);
+                    ADD COLUMN IF NOT EXISTS offer_id VARCHAR(255),
+                    ADD COLUMN IF NOT EXISTS pricing JSONB DEFAULT '{"adult": 0, "child": 0, "infant": 0}'::jsonb;
                 `);
-            console.log('✅ Rooms table schema verified (price column added).');
+
+            // Migrate existing price to adult price in pricing JSONB
+            await pool.query(`
+                    UPDATE rooms 
+                    SET pricing = jsonb_build_object(
+                        'adult', COALESCE(price, 0), 
+                        'child', 0, 
+                        'infant', 0
+                    )
+                    WHERE pricing IS NULL 
+                       OR pricing = '{}'::jsonb 
+                       OR NOT (pricing ? 'adult' AND pricing ? 'child' AND pricing ? 'infant');
+                `);
+            console.log('✅ Rooms table schema verified (price and pricing columns added).');
 
             // 3. Update Orders Table columns check
             await pool.query(`
