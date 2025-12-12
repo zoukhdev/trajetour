@@ -1,5 +1,5 @@
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
 import type { Client, Agency, Order, Expense, Transaction, User, Supplier, Offer, GuideExpense, Discount, Tax, BankAccount, Payment } from '../types';
 import {
     clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI,
@@ -87,6 +87,26 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const [discounts, setDiscounts] = useState<Discount[]>([]);
     const [taxes, setTaxes] = useState<Tax[]>([]);
     const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+
+    // Calculate bank account balances dynamically from transactions
+    const bankAccountsWithBalances = useMemo(() => {
+        return bankAccounts.map(account => {
+            // Find all transactions for this account
+            const accountTransactions = transactions.filter(t => t.accountId === account.id);
+
+            // Calculate balance: IN transactions add, OUT transactions subtract
+            const calculatedBalance = accountTransactions.reduce((sum, t) => {
+                const transactionAmount = t.amountDZD || t.amount;
+                return sum + (t.type === 'IN' ? transactionAmount : -transactionAmount);
+            }, 0);
+
+            return {
+                ...account,
+                balance: calculatedBalance,
+                balanceDZD: calculatedBalance // For consistency
+            };
+        });
+    }, [bankAccounts, transactions]);
 
     const loadData = async () => {
         try {
@@ -242,18 +262,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const newTrans = await transactionsAPI.create(transaction);
         setTransactions(prev => [newTrans, ...prev]);
 
-        // Update Bank Account Balance Locally (Optimistic UI)
-        if (newTrans.accountId) {
-            setBankAccounts(prev => prev.map(account => {
-                if (account.id === newTrans.accountId) {
-                    const amount = newTrans.type === 'IN' ? newTrans.amount : -newTrans.amount;
-                    return { ...account, balance: account.balance + amount };
-                }
-                return account;
-            }));
-            // NOTE: We are syncing bankAccounts to LocalStorage still. 
-            // Ideally BankAccounts should be in DB too.
-        }
+        // Note: Bank account balances are now calculated automatically via useMemo
+        // No need to manually update balance here
     };
     const deleteTransaction = async (id: string) => {
         await transactionsAPI.delete(id);
@@ -395,7 +405,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     return (
         <DataContext.Provider value={{
             clients, agencies, orders, expenses, transactions, users, suppliers,
-            offers, guideExpenses, discounts, taxes, bankAccounts,
+            offers, guideExpenses, discounts, taxes, bankAccounts: bankAccountsWithBalances,
             addClient, updateClient,
             addAgency, updateAgency, deleteAgency,
             addOrder, updateOrder,
