@@ -1,9 +1,9 @@
-```typescript
+
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Client, Agency, Order, Expense, Transaction, User, Supplier, Offer, GuideExpense, Discount, Tax, BankAccount, Payment } from '../types';
 import {
     clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI,
-    agenciesAPI, expensesAPI, usersAPI, transactionsAPI, bankAccountsAPI 
+    agenciesAPI, expensesAPI, usersAPI, transactionsAPI, bankAccountsAPI
 } from '../services/api';
 
 interface DataContextType {
@@ -207,7 +207,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             currency: expense.currency || 'DZD',
             source: 'Expense',
             referenceId: newExpense.id,
-            description: `Charge: ${ expense.designation } `,
+            description: `Charge: ${expense.designation} `,
             date: expense.date,
             accountId: expense.accountId
         };
@@ -279,7 +279,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                     currency: payment.currency || 'DZD',
                     source: 'Order',
                     referenceId: newOrder.id,
-                    description: `Paiement Commande #${ newOrder.id.substring(0, 6) } `,
+                    description: `Paiement Commande #${newOrder.id.substring(0, 6)} `,
                     date: payment.date,
                 };
                 await addTransaction(transaction);
@@ -372,7 +372,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             currency: 'DZD',
             source: 'Expense',
             referenceId: expense.id,
-            description: `Guide: ${ expense.guideName } `,
+            description: `Guide: ${expense.guideName} `,
             date: expense.date
         };
         addTransaction(transaction); // This will now go to DB!
@@ -435,7 +435,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                         currency: newPayment.currency || 'DZD',
                         source: 'Order',
                         referenceId: orderId,
-                        description: `Paiement Supplémentaire Commande #${ orderId.substring(0, 6) } `,
+                        description: `Paiement Supplémentaire Commande #${orderId.substring(0, 6)} `,
                         date: newPayment.paymentDate,
                         accountId: payment.accountId
                     };
