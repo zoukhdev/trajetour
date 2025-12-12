@@ -111,10 +111,11 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/rooms', roomsRoutes);
 app.use('/api/offers', offersRoutes);
-app.use('/api/agencies', agenciesRoutes);
-app.use('/api/expenses', expensesRoutes);
-app.use('/api/users', usersRoutes);
-app.use('/api/transactions', transactionsRoutes);
+app.use('/api/agencies', agencyRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/bank-accounts', bankAccountRoutes);
 app.use('/api/suppliers', suppliersRouter);
 
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
