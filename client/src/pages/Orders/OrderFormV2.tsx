@@ -253,7 +253,18 @@ const OrderFormV2 = () => {
                     <div className="flex gap-2">
                         <select
                             value={newHotelName}
-                            onChange={e => setNewHotelName(e.target.value)}
+                            onChange={(e) => {
+                                const selected = e.target.value;
+                                setNewHotelName(selected);
+                                if (selected) {
+                                    // Auto-add to hotels list if not present
+                                    if (!hotels.some(h => h.name === selected)) {
+                                        setHotels(prev => [...prev, { name: selected }]);
+                                    }
+                                    // Auto-select as filter
+                                    setSelectedHotelName(selected);
+                                }
+                            }}
                             className="flex-1 p-2 border rounded-lg"
                         >
                             <option value="">Sélectionner un hôtel</option>
