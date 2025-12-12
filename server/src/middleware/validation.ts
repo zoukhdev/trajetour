@@ -18,15 +18,15 @@ export const clientSchema = z.object({
 
 export const orderSchema = z.object({
     clientId: z.string().uuid(),
-    agencyId: z.string().uuid().optional(),
+    agencyId: z.string().uuid().nullable().optional(),
     items: z.array(z.object({
         id: z.string(),
         description: z.string(),
-        quantity: z.number().positive(),
-        unitPrice: z.number().positive(),
-        amount: z.number().positive()
-    })).min(1),
-    totalAmount: z.number().positive(),
+        quantity: z.number().nonnegative(),
+        unitPrice: z.number().nonnegative(),
+        amount: z.number().nonnegative()
+    })).optional().default([]),
+    totalAmount: z.number().nonnegative(),
     notes: z.string().optional()
 });
 
@@ -72,7 +72,7 @@ export const offerSchema = z.object({
     title: z.string().min(2).max(255),
     type: z.enum(['Omra', 'Hajj', 'Voyage Organisé', 'Vols', 'Visa']),
     destination: z.string().min(2),
-    price: z.number().positive(),
+    price: z.number().nonnegative().default(0),
     startDate: z.string(),
     endDate: z.string(),
     hotel: z.string().optional(),
