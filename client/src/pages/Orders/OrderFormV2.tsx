@@ -41,6 +41,7 @@ const OrderFormV2 = () => {
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [newHotelName, setNewHotelName] = useState('');
     const [selectedHotelName, setSelectedHotelName] = useState('');
+    const [uniqueSystemHotels, setUniqueSystemHotels] = useState<string[]>([]);
 
     // Room Allocation
     const [availableRooms, setAvailableRooms] = useState<any[]>([]);
@@ -67,7 +68,11 @@ const OrderFormV2 = () => {
         // Fetch active offers
         axios.get('/api/offers?status=active').then(res => setOffers(res.data)).catch(console.error);
         // Fetch all active rooms on mount
-        axios.get('/api/rooms').then(res => setAvailableRooms(res.data)).catch(console.error);
+        axios.get('/api/rooms').then(res => {
+            setAvailableRooms(res.data);
+            const unique = [...new Set(res.data.map((r: any) => r.hotel_name))].filter(Boolean).sort() as string[];
+            setUniqueSystemHotels(unique);
+        }).catch(console.error);
     }, []);
 
     // Fetch rooms when hotel selection changes
@@ -246,13 +251,16 @@ const OrderFormV2 = () => {
                         <Building2 size={20} /> Hôtels
                     </h2>
                     <div className="flex gap-2">
-                        <input
-                            type="text"
-                            placeholder="Nom de l'hôtel"
+                        <select
                             value={newHotelName}
                             onChange={e => setNewHotelName(e.target.value)}
                             className="flex-1 p-2 border rounded-lg"
-                        />
+                        >
+                            <option value="">Sélectionner un hôtel</option>
+                            {uniqueSystemHotels.map(hotel => (
+                                <option key={hotel} value={hotel}>{hotel}</option>
+                            ))}
+                        </select>
                         <button
                             type="button"
                             onClick={addHotel}
