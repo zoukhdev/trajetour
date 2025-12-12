@@ -85,6 +85,17 @@ const OrderFormV2 = () => {
             .catch(console.error);
     }, [selectedHotelName]);
 
+    // Auto-calculate total from passenger prices
+    useEffect(() => {
+        const total = passengers.reduce((sum, p) => {
+            const finalPrice = (p as any).finalPrice || 0;
+            return sum + finalPrice;
+        }, 0);
+        setTotalAmount(total);
+    }, [passengers]);
+
+    // State for price editing
+    const [editingPriceFor, setEditingPriceFor] = useState<string | null>(null);
 
     // Handlers
     const addHotel = () => {
@@ -101,6 +112,35 @@ const OrderFormV2 = () => {
     const updatePassenger = (index: number, field: keyof Passenger, value: any) => {
         const newPassengers = [...passengers];
         newPassengers[index] = { ...newPassengers[index], [field]: value };
+
+        // Auto-pricing: When room is assigned, calculate price based on age
+        if (field === 'assignedRoomId' && value) {
+            const passenger = newPassengers[index];
+            const room = availableRooms.find(r => r.id === value);
+
+            if (room && passenger.birthDate) {
+                const ageCategory = calculateAgeCategory(passenger.birthDate);
+                let suggestedPrice = room.price || 0;
+
+                // Use age-based pricing if available
+                if (room.pricing) {
+                    const categoryMap: Record<string, keyof typeof room.pricing> = {
+                        'ADT': 'adult',
+                        'CHD': 'child',
+                        'INF': 'infant'
+                    };
+                    const priceKey = categoryMap[ageCategory];
+                    suggestedPrice = room.pricing[priceKey] || room.price || 0;
+                }
+
+                // Set pricing fields
+                (newPassengers[index] as any).ageCategory = ageCategory;
+                (newPassengers[index] as any).suggestedPrice = suggestedPrice;
+                (newPassengers[index] as any).finalPrice = suggestedPrice;
+                (newPassengers[index] as any).priceOverridden = false;
+            }
+        }
+
         setPassengers(newPassengers);
     };
 
@@ -321,6 +361,55 @@ const OrderFormV2 = () => {
                                         </select>
                                     </div>
 
+                                    {/* Price Display & Override */}
+                                    {(p as any).assignedRoomId && (p as any).finalPrice !== undefined && (
+                                        <div className="col-span-1 md:col-span-2 bg-green-50 border border-green-200 p-3 rounded-lg">
+                                            <label className="text-xs font-medium text-green-800 block mb-2">
+                                                Prix de la Chambre {(p as any).priceOverridden && <span className="text-orange-600 text-xs">⚠️ Modifié</span>}
+                                            </label>
+                                            {editingPriceFor === p.id ? (
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="number"
+                                                        value={(p as any).finalPrice}
+                                                        onChange={e => {
+                                                            const newPrice = Number(e.target.value);
+                                                            const updated = [...passengers];
+                                                            (updated[index] as any).finalPrice = newPrice;
+                                                            (updated[index] as any).priceOverridden = true;
+                                                            setPassengers(updated);
+                                                        }}
+                                                        className="flex-1 px-2 py-1 border border-green-400 rounded text-sm"
+                                                        step="100"
+                                                        min="0"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setEditingPriceFor(null)}
+                                                        className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700"
+                                                    >
+                                                        ✓
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex justify-between items-center">
+                                                    <span className="text-lg font-bold text-green-900">
+                                                        {(p as any).finalPrice.toLocaleString()} DZD
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setEditingPriceFor(p.id)}
+                                                        className="text-xs text-blue-600 hover:text-blue-800 underline"
+                                                    >
+                                                        ✏️ Modifier
+                                                    </button>
+                                                </div>
+                                            )}
+                                            <p className="text-xs text-gray-600 mt-1">
+                                                Catégorie: <strong>{(p as any).ageCategory || 'ADT'}</strong> • Suggéré: {(p as any).suggestedPrice || 0} DZD
+                                            </p>
+                                        </div>
+                                    )}
 
                                     <div>
                                         <label className="text-xs text-gray-500 block">Passeport *</label>
@@ -371,15 +460,21 @@ const OrderFormV2 = () => {
 
 
                 {/* Totals */}
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex justify-end items-center gap-4">
-                    <span className="text-lg font-bold">Total DZD:</span>
-                    <input
-                        type="number"
-                        value={totalAmount}
-                        onChange={e => setTotalAmount(Number(e.target.value))}
-                        className="w-48 p-2 border rounded-lg text-right font-bold text-xl"
-                        placeholder="0.00"
-                    />
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl shadow-sm border-2 border-green-300">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p className="text-sm text-gray-600 mb-1">Total de la Commande (Auto-calculé)</p>
+                            <p className="text-xs text-gray-500">Somme des prix des chambres assignées</p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-3xl font-bold text-green-700">
+                                {totalAmount.toLocaleString()} DZD
+                            </div>
+                            <p className="text-xs text-gray-600 mt-1">
+                                {passengers.filter(p => (p as any).finalPrice).length} passager(s) avec chambres
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="flex justify-end gap-4">
