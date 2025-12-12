@@ -250,36 +250,7 @@ const OrderFormV2 = () => {
                     <h2 className="text-lg font-semibold flex items-center gap-2">
                         <Building2 size={20} /> Hôtels
                     </h2>
-                    <div className="flex gap-2">
-                        <select
-                            value={newHotelName}
-                            onChange={(e) => {
-                                const selected = e.target.value;
-                                setNewHotelName(selected);
-                                if (selected) {
-                                    // Auto-add to hotels list if not present
-                                    if (!hotels.some(h => h.name === selected)) {
-                                        setHotels(prev => [...prev, { name: selected }]);
-                                    }
-                                    // Auto-select as filter
-                                    setSelectedHotelName(selected);
-                                }
-                            }}
-                            className="flex-1 p-2 border rounded-lg"
-                        >
-                            <option value="">Sélectionner un hôtel</option>
-                            {uniqueSystemHotels.map(hotel => (
-                                <option key={hotel} value={hotel}>{hotel}</option>
-                            ))}
-                        </select>
-                        <button
-                            type="button"
-                            onClick={addHotel}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                        >
-                            Ajouter
-                        </button>
-                    </div>
+
                     <div className="flex flex-wrap gap-2">
                         {hotels.map((hotel, index) => (
                             <div key={index} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
@@ -290,22 +261,30 @@ const OrderFormV2 = () => {
                             </div>
                         ))}
                     </div>
-                    {hotels.length > 0 && (
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Filtrer chambres par hôtel</label>
-                            <select
-                                value={selectedHotelName}
-                                onChange={e => setSelectedHotelName(e.target.value)}
-                                className="w-full p-2 border rounded-lg"
-                            >
-                                <option value="">Tous les hôtels</option>
-                                {hotels.map((hotel, index) => (
-                                    <option key={index} value={hotel.name}>{hotel.name}</option>
-                                ))}
-                            </select>
-                            <p className="text-xs text-gray-500 mt-1">Sélectionnez un hôtel pour filtrer les chambres disponibles.</p>
-                        </div>
-                    )}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Filtrer chambres par hôtel</label>
+                        <select
+                            value={selectedHotelName}
+                            onChange={(e) => {
+                                const selected = e.target.value;
+                                if (selected) {
+                                    if (!hotels.some(h => h.name === selected)) {
+                                        setHotels(prev => [...prev, { name: selected }]);
+                                    }
+                                    setSelectedHotelName(selected);
+                                } else {
+                                    setSelectedHotelName('');
+                                }
+                            }}
+                            className="w-full p-2 border rounded-lg"
+                        >
+                            <option value="">Tous les hôtels</option>
+                            {uniqueSystemHotels.map((hotel) => (
+                                <option key={hotel} value={hotel}>{hotel}</option>
+                            ))}
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Sélectionnez un hôtel pour filtrer les chambres disponibles.</p>
+                    </div>
                 </div>
 
                 {/* Passengers Section */}
