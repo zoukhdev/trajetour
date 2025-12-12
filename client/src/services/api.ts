@@ -32,6 +32,8 @@ api.interceptors.response.use(
     }
 );
 
+export default api; // Default Export for use in components like DataMigration
+
 // Authentication API
 export const authAPI = {
     login: async (email: string, password: string) => {
@@ -151,8 +153,8 @@ export const offersAPI = {
 };
 
 export const suppliersAPI = {
-    getAll: async () => {
-        const response = await api.get('/suppliers');
+    getAll: async (page = 1, limit = 100) => {
+        const response = await api.get(`/suppliers?page=${page}&limit=${limit}`);
         return response.data;
     },
 
@@ -172,27 +174,82 @@ export const suppliersAPI = {
     }
 };
 
-// Generic API for other endpoints (when routes are created)
-export const genericAPI = {
-    get: async (endpoint: string) => {
-        const response = await api.get(endpoint);
+// --- NEW BACKEND SERVICES ---
+
+// Agencies API
+export const agenciesAPI = {
+    getAll: async (page = 1, limit = 100) => {
+        const response = await api.get(`/agencies?page=${page}&limit=${limit}`);
+        return response.data; // { data: [], pagination: {} }
+    },
+    create: async (data: any) => {
+        const response = await api.post('/agencies', data);
         return response.data;
     },
-
-    post: async (endpoint: string, data: any) => {
-        const response = await api.post(endpoint, data);
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/agencies/${id}`, data);
         return response.data;
     },
-
-    put: async (endpoint: string, data: any) => {
-        const response = await api.put(endpoint, data);
-        return response.data;
-    },
-
-    delete: async (endpoint: string) => {
-        const response = await api.delete(endpoint);
+    delete: async (id: string) => {
+        const response = await api.delete(`/agencies/${id}`);
         return response.data;
     }
 };
 
-export default api;
+// Expenses API
+export const expensesAPI = {
+    getAll: async (page = 1, limit = 100) => {
+        const response = await api.get(`/expenses?page=${page}&limit=${limit}`);
+        return response.data;
+    },
+    create: async (data: any) => {
+        const response = await api.post('/expenses', data);
+        return response.data;
+    },
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/expenses/${id}`, data);
+        return response.data;
+    },
+    delete: async (id: string) => {
+        const response = await api.delete(`/expenses/${id}`);
+        return response.data;
+    }
+};
+
+// Users API
+export const usersAPI = {
+    getAll: async (page = 1, limit = 100) => {
+        const response = await api.get(`/users?page=${page}&limit=${limit}`);
+        return response.data;
+    },
+    create: async (data: any) => {
+        const response = await api.post('/users', data);
+        return response.data;
+    },
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/users/${id}`, data);
+        return response.data;
+    },
+    delete: async (id: string) => {
+        const response = await api.delete(`/users/${id}`);
+        return response.data;
+    }
+};
+
+// Transactions (Financial) API
+export const transactionsAPI = {
+    getAll: async (page = 1, limit = 50, accountId?: string) => {
+        const query = accountId ? `?accountId=${accountId}&page=${page}&limit=${limit}` : `?page=${page}&limit=${limit}`;
+        const response = await api.get(`/transactions${query}`);
+        return response.data;
+    },
+    create: async (data: any) => {
+        const response = await api.post('/transactions', data);
+        return response.data;
+    },
+    // No update for transactions (Audit Log principle), only void/delete
+    delete: async (id: string) => {
+        const response = await api.delete(`/transactions/${id}`);
+        return response.data;
+    }
+};
