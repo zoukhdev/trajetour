@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../services/api';
+import api from '../services/api';
 import { CheckCircle, AlertTriangle, Loader, Server, Database } from 'lucide-react';
 
 const DataMigration: React.FC = () => {
     const { user } = useAuth();
     const [status, setStatus] = useState<'idle' | 'scanning' | 'migrating' | 'completed' | 'error'>('idle');
-    const [progress, setProgress] = useState<string>('');
+
     const [logs, setLogs] = useState<string[]>([]);
 
     const addLog = (msg: string) => setLogs(prev => [...prev, msg]);
