@@ -65,8 +65,8 @@ const OrderFormV2 = () => {
     useEffect(() => {
         // Fetch clients for dropdown
         axios.get('/api/clients').then(res => setClients(res.data.data)).catch(console.error);
-        // Fetch active offers
-        axios.get('/api/offers?status=active').then(res => setOffers(res.data)).catch(console.error);
+        // Fetch active offers (Capitalized 'Active')
+        axios.get('/api/offers?status=Active').then(res => setOffers(res.data)).catch(console.error);
         // Fetch all active rooms on mount
         axios.get('/api/rooms').then(res => {
             setAvailableRooms(res.data);
@@ -93,7 +93,7 @@ const OrderFormV2 = () => {
     // Auto-calculate total from passenger prices
     useEffect(() => {
         const total = passengers.reduce((sum, p) => {
-            const finalPrice = (p as any).finalPrice || 0;
+            const finalPrice = Number((p as any).finalPrice || 0);
             return sum + finalPrice;
         }, 0);
         setTotalAmount(total);
@@ -131,7 +131,9 @@ const OrderFormV2 = () => {
                         'INF': 'infant'
                     };
                     const priceKey = categoryMap[ageCategory];
-                    suggestedPrice = room.pricing[priceKey] || room.price || 0;
+                    suggestedPrice = Number(room.pricing[priceKey] || room.price || 0);
+                } else {
+                    suggestedPrice = Number(room.price || 0);
                 }
 
                 // Set pricing fields
