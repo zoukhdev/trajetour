@@ -29,6 +29,24 @@ const isPassportExpiringSoon = (expiryDateString?: string): boolean => {
     return expiryDate < sixMonthsFromNow;
 };
 
+// Helper to validate room gender against passenger gender
+const validateRoomGender = (room: any, passengerGender: string): { isValid: boolean; message?: string } => {
+    if (!room || room.gender === 'MIXED') return { isValid: true };
+
+    const genderMap: Record<string, string> = { 'Homme': 'MEN', 'Femme': 'WOMEN' };
+    const expectedRoomGender = genderMap[passengerGender];
+
+    if (room.gender !== expectedRoomGender) {
+        const genderLabel = room.gender === 'MEN' ? 'Hommes' : 'Femmes';
+        return {
+            isValid: false,
+            message: `⚠️ Cette chambre est réservée aux ${genderLabel} uniquement`
+        };
+    }
+
+    return { isValid: true };
+};
+
 const OrderFormV2 = () => {
     const navigate = useNavigate();
 
@@ -359,6 +377,20 @@ const OrderFormV2 = () => {
                                                 );
                                             })}
                                         </select>
+                                        {/* Gender Validation Error */}
+                                        {(p as any).assignedRoomId && (() => {
+                                            const selectedRoom = availableRooms.find(r => r.id === (p as any).assignedRoomId);
+                                            const validation = validateRoomGender(selectedRoom, (p as any).gender || 'Homme');
+                                            if (!validation.isValid) {
+                                                return (
+                                                    <div className="mt-1 text-red-600 text-xs font-medium flex items-center gap-1">
+                                                        <AlertCircle className="w-4 h-4" />
+                                                        {validation.message}
+                                                    </div>
+                                                );
+                                            }
+                                            return null;
+                                        })()}
                                     </div>
 
                                     {/* Price Display & Override */}
