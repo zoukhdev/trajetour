@@ -53,7 +53,7 @@ const OrderFormV2 = () => {
 
     // Passengers
     const [passengers, setPassengers] = useState<Passenger[]>([
-        { id: '1', firstName: '', lastName: '', passportNumber: '', phoneNumber: '', roomType: 'Double' }
+        { id: '1', firstName: '', lastName: '', passportNumber: '', phoneNumber: '', gender: 'Male' }
     ]);
 
     // Financials
@@ -113,10 +113,11 @@ const OrderFormV2 = () => {
         const newPassengers = [...passengers];
         newPassengers[index] = { ...newPassengers[index], [field]: value };
 
-        // Auto-pricing: When room is assigned, calculate price based on age
-        if (field === 'assignedRoomId' && value) {
+        // Auto-pricing Trigger: When room is assigned OR birthDate changes (if room assigned)
+        if (field === 'assignedRoomId' || (field === 'birthDate' && newPassengers[index].assignedRoomId)) {
             const passenger = newPassengers[index];
-            const room = availableRooms.find(r => r.id === value);
+            const roomId = passenger.assignedRoomId;
+            const room = availableRooms.find(r => r.id === roomId);
 
             if (room && passenger.birthDate) {
                 const ageCategory = calculateAgeCategory(passenger.birthDate);
@@ -136,6 +137,12 @@ const OrderFormV2 = () => {
                 // Set pricing fields
                 (newPassengers[index] as any).ageCategory = ageCategory;
                 (newPassengers[index] as any).suggestedPrice = suggestedPrice;
+                // Only overwrite finalPrice if not overridden manually OR if changing room/category implies reset? 
+                // Let's reset it to suggested if we are auto-calculating to ensure accuracy, unless user locked it?
+                // For now, update it always to fix "not showing" issue. User can override again.
+                // But wait, if user manually edited, we might annoy them. 
+                // But the requirement is "total price based on rooms prices NOT SHOWING". 
+                // So I should ensure it shows.
                 (newPassengers[index] as any).finalPrice = suggestedPrice;
                 (newPassengers[index] as any).priceOverridden = false;
             }
@@ -148,7 +155,7 @@ const OrderFormV2 = () => {
         setPassengers([...passengers, {
             id: Math.random().toString(36).substr(2, 9),
             firstName: '', lastName: '',
-            passportNumber: '', phoneNumber: '', roomType: 'Double'
+            passportNumber: '', phoneNumber: '', gender: 'Male'
         }]);
     };
 
@@ -180,7 +187,7 @@ const OrderFormV2 = () => {
             };
 
             await axios.post('/api/orders', orderData);
-            navigate('/orders-v2');
+            navigate('/orders');
         } catch (err) {
             console.error(err);
             alert('Erreur lors de la création de la commande');
@@ -322,12 +329,10 @@ const OrderFormV2 = () => {
                                         <input type="text" value={p.lastName} onChange={e => updatePassenger(index, 'lastName', e.target.value)} className="w-full p-2 border rounded text-sm" required />
                                     </div>
                                     <div>
-                                        <label className="text-xs text-gray-500 block">Chambre (Type)</label>
-                                        <select value={p.roomType} onChange={e => updatePassenger(index, 'roomType', e.target.value)} className="w-full p-2 border rounded text-sm">
-                                            <option value="Single">Single</option>
-                                            <option value="Double">Double</option>
-                                            <option value="Triple">Triple</option>
-                                            <option value="Quad">Quad</option>
+                                        <label className="text-xs text-gray-500 block">Sexe</label>
+                                        <select value={(p as any).gender || 'Male'} onChange={e => updatePassenger(index, 'gender', e.target.value)} className="w-full p-2 border rounded text-sm">
+                                            <option value="Male">Homme</option>
+                                            <option value="Female">Femme</option>
                                         </select>
                                     </div>
 
@@ -471,7 +476,7 @@ const OrderFormV2 = () => {
                 </div>
 
                 <div className="flex justify-end gap-4">
-                    <button type="button" onClick={() => navigate('/orders-v2')} className="px-6 py-2 border rounded-lg hover:bg-gray-50">Annuler</button>
+                    <button type="button" onClick={() => navigate('/orders')} className="px-6 py-2 border rounded-lg hover:bg-gray-50">Annuler</button>
                     <button type="submit" disabled={loading} className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium">
                         {loading ? 'Création...' : 'Créer Commande'}
                     </button>

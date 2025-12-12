@@ -57,6 +57,17 @@ const RoomingList = () => {
     const [passengerToTransfer, setPassengerToTransfer] = useState<{ orderId: string, id: string } | null>(null);
     const [transferTargetHotel, setTransferTargetHotel] = useState('');
 
+    // Filter State
+    const [selectedHotel, setSelectedHotel] = useState('');
+
+    // Unique Hotels
+    const uniqueHotels = Array.from(new Set(rooms.map(r => r.hotel_name || ''))).filter(Boolean).sort();
+
+    // Filtered Rooms
+    const filteredRooms = selectedHotel
+        ? rooms.filter(r => r.hotel_name === selectedHotel)
+        : rooms;
+
 
     // Valid role check for modifications
     const canManageRooms = user?.role === 'admin' || user?.role === 'staff';
@@ -183,17 +194,37 @@ const RoomingList = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-900 font-display flex items-center gap-2">
-                    <Hotel className="text-primary" />
-                    Rooming List
-                </h1>
+                <div className="flex items-center gap-4 flex-wrap">
+                    <h1 className="text-2xl font-bold text-gray-900 font-display flex items-center gap-2">
+                        <Hotel className="text-primary" />
+                        Rooming List
+                    </h1>
+
+                    {/* Hotel Filter Dropdown */}
+                    <div className="relative">
+                        <select
+                            value={selectedHotel}
+                            onChange={(e) => setSelectedHotel(e.target.value)}
+                            className="appearance-none bg-white border border-gray-200 text-gray-700 py-2 pl-3 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer hover:border-gray-300 transition-colors shadow-sm"
+                        >
+                            <option value="">Tous les hôtels</option>
+                            {uniqueHotels.map(h => (
+                                <option key={h} value={h}>{h}</option>
+                            ))}
+                        </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                        </div>
+                    </div>
+                </div>
+
                 {canManageRooms && (
                     <button
                         onClick={() => {
                             setNewRoom(prev => ({ ...prev, hotelName: '' }));
                             setIsAddModalOpen(true);
                         }}
-                        className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
                     >
                         <Plus size={20} />
                         <span>Ajouter un Hôtel / Chambre</span>
@@ -207,14 +238,19 @@ const RoomingList = () => {
             ) : (
                 <div className="space-y-6">
                     {/* Room Grid */}
-                    {rooms.length === 0 ? (
+                    {filteredRooms.length === 0 ? (
                         <div className="text-center py-12 text-gray-500 bg-gray-50 rounded-xl border-dashed border-2 border-gray-200">
                             <Hotel size={48} className="mx-auto mb-3 opacity-20" />
-                            <p>Aucune chambre configurée.</p>
+                            <p>Aucune chambre trouvée{selectedHotel ? ` pour l'hôtel "${selectedHotel}"` : ''}.</p>
+                            {selectedHotel && (
+                                <button onClick={() => setSelectedHotel('')} className="mt-2 text-primary hover:underline text-sm font-medium">
+                                    Voir toutes les chambres
+                                </button>
+                            )}
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {rooms.map(room => {
+                            {filteredRooms.map(room => {
                                 const occupancy = room.occupied_count || 0;
                                 const isFull = occupancy >= room.capacity;
                                 const occupancyRate = (occupancy / room.capacity) * 100;

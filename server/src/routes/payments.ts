@@ -21,6 +21,9 @@ router.post('/',
             // Calculate DZD amount (backend validation/calculation)
             const amountDZD = currency === 'DZD' ? amount : amount * exchangeRate;
 
+            // Sanitize accountId
+            const sanitizedAccountId = (accountId && accountId.trim() !== '') ? accountId : null;
+
             const result = await client.query(
                 `INSERT INTO payments (
                     order_id, amount, currency, amount_dzd, 
@@ -38,7 +41,7 @@ router.post('/',
                     method,
                     paymentDate,
                     null, // Default to NULL (Pending) requires validation
-                    accountId || null
+                    sanitizedAccountId
                 ]
             );
 
