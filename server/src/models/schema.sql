@@ -110,11 +110,14 @@ CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     type VARCHAR(10) NOT NULL CHECK (type IN ('IN', 'OUT')),
     amount DECIMAL(12,2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'DZD',
+    amount_dzd DECIMAL(12,2) NOT NULL,
     source VARCHAR(50) NOT NULL CHECK (source IN ('Order', 'Expense')),
     reference_id UUID NOT NULL,
     description TEXT NOT NULL,
     transaction_date DATE NOT NULL,
     account_id UUID REFERENCES bank_accounts(id),
+    payment_id UUID REFERENCES payments(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

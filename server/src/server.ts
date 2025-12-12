@@ -104,6 +104,34 @@ app.get('/api/migrate-rooms', async (req, res) => {
     }
 });
 
+// TEMPORARY: Migration Route for Transactions Table
+app.get('/api/migrate-transactions', async (req, res) => {
+    try {
+        console.log('🔄 Starting Transactions migration from API...');
+        const client = await pool.connect();
+        try {
+            await client.query(`
+                ALTER TABLE transactions 
+                ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'DZD',
+                ADD COLUMN IF NOT EXISTS amount_dzd DECIMAL(12,2),
+                ADD COLUMN IF NOT EXISTS payment_id UUID REFERENCES payments(id) ON DELETE CASCADE;
+                
+                -- Update existing rows: set amount_dzd = amount if null
+                UPDATE transactions SET amount_dzd = amount WHERE amount_dzd IS NULL;
+                
+                -- Now make amount_dzd NOT NULL
+                ALTER TABLE transactions ALTER COLUMN amount_dzd SET NOT NULL;
+            `);
+            res.send('✅ Transactions table updated successfully: Added currency, amount_dzd, and payment_id columns.');
+        } finally {
+            client.release();
+        }
+    } catch (error: any) {
+        console.error('❌ Migration failed:', error);
+        res.status(500).send('Migration failed: ' + error.message);
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/clients', clientsRoutes);
