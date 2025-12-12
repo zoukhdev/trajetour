@@ -80,6 +80,11 @@ export interface Room {
     gender: 'MEN' | 'WOMEN' | 'MIXED';
     status: 'ACTIVE' | 'OUT_OF_SERVICE';
     price: number;
+    pricing?: {
+        adult: number;
+        child: number;
+        infant: number;
+    };
     occupiedCount?: number; // From backend
 }
 

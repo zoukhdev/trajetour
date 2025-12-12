@@ -119,9 +119,9 @@ const OrderFormV2 = () => {
             const roomId = passenger.assignedRoomId;
             const room = availableRooms.find(r => r.id === roomId);
 
-            if (room && passenger.birthDate) {
+            if (room) {
                 const ageCategory = calculateAgeCategory(passenger.birthDate);
-                let suggestedPrice = room.price || 0;
+                let suggestedPrice = Number(room.price || 0);
 
                 // Use age-based pricing if available
                 if (room.pricing) {
