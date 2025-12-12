@@ -53,7 +53,7 @@ const OrderFormV2 = () => {
 
     // Passengers
     const [passengers, setPassengers] = useState<Passenger[]>([
-        { id: '1', firstName: '', lastName: '', passportNumber: '', phoneNumber: '', gender: 'Male' }
+        { id: '1', firstName: '', lastName: '', passportNumber: '', phoneNumber: '', gender: 'Homme' }
     ]);
 
     // Financials
@@ -155,7 +155,7 @@ const OrderFormV2 = () => {
         setPassengers([...passengers, {
             id: Math.random().toString(36).substr(2, 9),
             firstName: '', lastName: '',
-            passportNumber: '', phoneNumber: '', gender: 'Male'
+            passportNumber: '', phoneNumber: '', gender: 'Homme'
         }]);
     };
 
@@ -330,9 +330,9 @@ const OrderFormV2 = () => {
                                     </div>
                                     <div>
                                         <label className="text-xs text-gray-500 block">Sexe</label>
-                                        <select value={(p as any).gender || 'Male'} onChange={e => updatePassenger(index, 'gender', e.target.value)} className="w-full p-2 border rounded text-sm">
-                                            <option value="Male">Homme</option>
-                                            <option value="Female">Femme</option>
+                                        <select value={(p as any).gender || 'Homme'} onChange={e => updatePassenger(index, 'gender', e.target.value)} className="w-full p-2 border rounded text-sm">
+                                            <option value="Homme">Homme</option>
+                                            <option value="Femme">Femme</option>
                                         </select>
                                     </div>
 
