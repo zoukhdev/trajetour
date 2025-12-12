@@ -39,7 +39,7 @@ const OrderFormV2 = () => {
 
     // Hotels
     const [hotels, setHotels] = useState<Hotel[]>([]);
-    const [newHotelName, setNewHotelName] = useState('');
+
     const [selectedHotelName, setSelectedHotelName] = useState('');
     const [uniqueSystemHotels, setUniqueSystemHotels] = useState<string[]>([]);
 
@@ -103,12 +103,7 @@ const OrderFormV2 = () => {
     const [editingPriceFor, setEditingPriceFor] = useState<string | null>(null);
 
     // Handlers
-    const addHotel = () => {
-        if (newHotelName.trim()) {
-            setHotels([...hotels, { name: newHotelName.trim() }]);
-            setNewHotelName('');
-        }
-    };
+
 
     const removeHotel = (index: number) => {
         setHotels(hotels.filter((_, i) => i !== index));
