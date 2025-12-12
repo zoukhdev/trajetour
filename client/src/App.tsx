@@ -27,6 +27,8 @@ import PaymentList from './pages/Payments/PaymentList';
 import CommissionReport from './pages/Reports/CommissionReport';
 import RevenueReport from './pages/Reports/RevenueReport';
 
+import DataMigration from './components/DataMigration';
+
 function App() {
   return (
     <Router>
@@ -39,6 +41,7 @@ function App() {
 
                 <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
                   <Route index element={<Dashboard />} />
+                  <Route path="migration" element={<DataMigration />} />
 
                   {/* Business Modules */}
                   <Route element={<ProtectedRoute permission="manage_business" />}>

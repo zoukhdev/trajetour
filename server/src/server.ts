@@ -13,6 +13,10 @@ import ordersRoutes from './routes/orders.js';
 import paymentsRoutes from './routes/payments.js';
 import roomsRoutes from './routes/rooms.js';
 import offersRoutes from './routes/offers.js';
+import agenciesRoutes from './routes/agencies.js';
+import expensesRoutes from './routes/expenses.js';
+import usersRoutes from './routes/users.js';
+import transactionsRoutes from './routes/transactions.js';
 
 import suppliersRouter from './routes/suppliers.js';
 
@@ -106,6 +110,10 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/rooms', roomsRoutes);
 app.use('/api/offers', offersRoutes);
+app.use('/api/agencies', agenciesRoutes);
+app.use('/api/expenses', expensesRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/transactions', transactionsRoutes);
 app.use('/api/suppliers', suppliersRouter);
 
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
