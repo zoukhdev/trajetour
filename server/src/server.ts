@@ -13,10 +13,11 @@ import ordersRoutes from './routes/orders.js';
 import paymentsRoutes from './routes/payments.js';
 import roomsRoutes from './routes/rooms.js';
 import offersRoutes from './routes/offers.js';
-import agenciesRoutes from './routes/agencies.js';
-import expensesRoutes from './routes/expenses.js';
-import usersRoutes from './routes/users.js';
-import transactionsRoutes from './routes/transactions.js';
+import agencyRoutes from './routes/agencies.js';
+import expenseRoutes from './routes/expenses.js';
+import userRoutes from './routes/users.js';
+import transactionRoutes from './routes/transactions.js';
+import bankAccountRoutes from './routes/bankAccounts.js';
 
 import suppliersRouter from './routes/suppliers.js';
 

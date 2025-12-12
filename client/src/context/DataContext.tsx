@@ -1,8 +1,9 @@
+```typescript
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Client, Agency, Order, Expense, Transaction, User, Supplier, Offer, GuideExpense, Discount, Tax, BankAccount, Payment } from '../types';
 import {
     clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI,
-    agenciesAPI, expensesAPI, usersAPI, transactionsAPI
+    agenciesAPI, expensesAPI, usersAPI, transactionsAPI, bankAccountsAPI 
 } from '../services/api';
 
 interface DataContextType {
@@ -92,7 +93,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             // Parallel Fetching for Performance
             const [
                 clientsData, ordersData, offersData, suppliersData,
-                agenciesData, expensesData, usersData, transactionsData
+                agenciesData, expensesData, usersData, transactionsData, bankAccountsData
             ] = await Promise.all([
                 clientsAPI.getAll(1, 1000),
                 ordersAPI.getAll(1, 1000),
@@ -101,7 +102,8 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 agenciesAPI.getAll(1, 1000),
                 expensesAPI.getAll(1, 1000),
                 usersAPI.getAll(1, 1000),
-                transactionsAPI.getAll(1, 100) // Limit transactions init load
+                transactionsAPI.getAll(1, 100), // Limit transactions init load
+                bankAccountsAPI.getAll()
             ]);
 
             setClients(clientsData.data || []);
@@ -126,6 +128,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             // Users mapping (if needed, or backend sends correct shape)
             setUsers(usersData.data || []);
             setTransactions(transactionsData.data || []);
+            setBankAccounts(bankAccountsData || []);
 
         } catch (error) {
             console.error('❌ Error loading data from backend:', error);
@@ -139,26 +142,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const storedGuideExpenses = localStorage.getItem('guideExpenses');
         const storedDiscounts = localStorage.getItem('discounts');
         const storedTaxes = localStorage.getItem('taxes');
-        const storedBankAccounts = localStorage.getItem('bankAccounts');
 
         if (storedGuideExpenses) setGuideExpenses(JSON.parse(storedGuideExpenses));
         if (storedDiscounts) setDiscounts(JSON.parse(storedDiscounts));
         if (storedTaxes) setTaxes(JSON.parse(storedTaxes));
-
-        if (storedBankAccounts) {
-            setBankAccounts(JSON.parse(storedBankAccounts));
-        } else {
-            // Init default accounts
-            const defaultAccounts: BankAccount[] = [
-                { id: '1', name: 'Caisse Principale', type: 'Caisse', balance: 0, currency: 'DZD', isDefault: true, icon: 'Wallet' },
-                { id: '2', name: 'Compte CPA', type: 'Bank', balance: 0, currency: 'DZD', accountNumber: '00400123456789', icon: 'CreditCard' },
-                { id: '3', name: 'Compte BADR', type: 'Bank', balance: 0, currency: 'DZD', accountNumber: '00300987654321', icon: 'Landmark' },
-                { id: '4', name: 'Caisse Euro', type: 'Caisse', balance: 0, currency: 'EUR', icon: 'Euro' },
-                { id: '5', name: 'Caisse Dollar', type: 'Caisse', balance: 0, currency: 'USD', icon: 'DollarSign' },
-                { id: '6', name: 'Baridimob', type: 'Bank', balance: 0, currency: 'DZD', accountNumber: '00799999000000', icon: 'Smartphone' },
-            ];
-            setBankAccounts(defaultAccounts);
-        }
 
     }, []);
 
@@ -166,7 +153,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => { localStorage.setItem('guideExpenses', JSON.stringify(guideExpenses)); }, [guideExpenses]);
     useEffect(() => { localStorage.setItem('discounts', JSON.stringify(discounts)); }, [discounts]);
     useEffect(() => { localStorage.setItem('taxes', JSON.stringify(taxes)); }, [taxes]);
-    useEffect(() => { localStorage.setItem('bankAccounts', JSON.stringify(bankAccounts)); }, [bankAccounts]);
+    // REMOVED: useEffect(() => { localStorage.setItem('bankAccounts', ...); }); -> Now in DB
 
 
     // --- DATA MUTATION METHODS (Now Async) ---
@@ -220,7 +207,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             currency: expense.currency || 'DZD',
             source: 'Expense',
             referenceId: newExpense.id,
-            description: `Charge: ${expense.designation}`,
+            description: `Charge: ${ expense.designation } `,
             date: expense.date,
             accountId: expense.accountId
         };
@@ -292,7 +279,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                     currency: payment.currency || 'DZD',
                     source: 'Order',
                     referenceId: newOrder.id,
-                    description: `Paiement Commande #${newOrder.id.substring(0, 6)}`,
+                    description: `Paiement Commande #${ newOrder.id.substring(0, 6) } `,
                     date: payment.date,
                 };
                 await addTransaction(transaction);
@@ -385,7 +372,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             currency: 'DZD',
             source: 'Expense',
             referenceId: expense.id,
-            description: `Guide: ${expense.guideName}`,
+            description: `Guide: ${ expense.guideName } `,
             date: expense.date
         };
         addTransaction(transaction); // This will now go to DB!
@@ -448,7 +435,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                         currency: newPayment.currency || 'DZD',
                         source: 'Order',
                         referenceId: orderId,
-                        description: `Paiement Supplémentaire Commande #${orderId.substring(0, 6)}`,
+                        description: `Paiement Supplémentaire Commande #${ orderId.substring(0, 6) } `,
                         date: newPayment.paymentDate,
                         accountId: payment.accountId
                     };

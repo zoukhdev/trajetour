@@ -1,4 +1,5 @@
 import axios from 'axios';
+import type { BankAccount } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
@@ -250,6 +251,26 @@ export const transactionsAPI = {
     // No update for transactions (Audit Log principle), only void/delete
     delete: async (id: string) => {
         const response = await api.delete(`/transactions/${id}`);
+        return response.data;
+    }
+};
+
+// Bank Accounts API
+export const bankAccountsAPI = {
+    getAll: async () => {
+        const response = await api.get('/bank-accounts');
+        return response.data;
+    },
+    create: async (data: any) => {
+        const response = await api.post('/bank-accounts', data);
+        return response.data;
+    },
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/bank-accounts/${id}`, data);
+        return response.data;
+    },
+    delete: async (id: string) => {
+        const response = await api.delete(`/bank-accounts/${id}`);
         return response.data;
     }
 };
