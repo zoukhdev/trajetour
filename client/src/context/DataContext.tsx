@@ -94,16 +94,23 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             // Find all transactions for this account
             const accountTransactions = transactions.filter(t => t.accountId === account.id);
 
-            // Calculate balance: IN transactions add, OUT transactions subtract
-            const calculatedBalance = accountTransactions.reduce((sum, t) => {
-                const transactionAmount = t.amountDZD || t.amount;
+            // Calculate balance in account's native currency (EUR, DZD, SAR)
+            const nativeBalance = accountTransactions.reduce((sum, t) => {
+                // Use transaction's amount in its original currency
+                const transactionAmount = t.amount;
                 return sum + (t.type === 'IN' ? transactionAmount : -transactionAmount);
+            }, 0);
+
+            // Calculate balance in DZD for Total NET calculation
+            const balanceDZD = accountTransactions.reduce((sum, t) => {
+                const transactionAmountDZD = t.amountDZD || t.amount;
+                return sum + (t.type === 'IN' ? transactionAmountDZD : -transactionAmountDZD);
             }, 0);
 
             return {
                 ...account,
-                balance: calculatedBalance,
-                balanceDZD: calculatedBalance // For consistency
+                balance: nativeBalance,        // Native currency (EUR for EUR account)
+                balanceDZD: balanceDZD        // DZD equivalent for totals
             };
         });
     }, [bankAccounts, transactions]);
