@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
-import { Download, TrendingUp, DollarSign, Calendar, PieChart } from 'lucide-react';
+import { Download, TrendingUp, DollarSign, Calendar, PieChart, AlertTriangle } from 'lucide-react';
 
 const RevenueReport = () => {
     const { orders } = useData();
@@ -182,13 +182,18 @@ const RevenueReport = () => {
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-orange-500 to-orange-600 p-6 rounded-xl shadow-lg text-white">
+                <div className={`p-6 rounded-xl shadow-lg text-white ${paymentStats.pending < 0
+                    ? 'bg-gradient-to-br from-red-500 to-red-600'
+                    : 'bg-gradient-to-br from-orange-500 to-orange-600'
+                    }`}>
                     <div className="flex items-center gap-3">
                         <div className="p-3 bg-white/20 rounded-lg">
-                            <PieChart size={24} />
+                            {paymentStats.pending < 0 ? <AlertTriangle size={24} /> : <PieChart size={24} />}
                         </div>
                         <div>
-                            <p className="text-sm opacity-90">En Attente</p>
+                            <p className="text-sm opacity-90">
+                                {paymentStats.pending < 0 ? 'Montant Incorrect' : 'En Attente'}
+                            </p>
                             <p className="text-xl font-bold">
                                 {paymentStats.pending.toLocaleString()} DZD
                             </p>
