@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
-import { Search, Plus, Edit2, Trash2, Phone, Mail, MapPin, Building2 } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Phone, Mail, MapPin, Building2, Package } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import SupplierForm from './SupplierForm';
 import type { Supplier } from '../../types';
@@ -8,6 +9,7 @@ import type { Supplier } from '../../types';
 const SupplierList = () => {
     const { suppliers, addSupplier, updateSupplier, deleteSupplier } = useData();
     const { t, language } = useLanguage();
+    const navigate = useNavigate();
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingSupplier, setEditingSupplier] = useState<Supplier | undefined>(undefined);
     const [searchTerm, setSearchTerm] = useState('');
@@ -137,6 +139,15 @@ const SupplierList = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* View Contracts Button */}
+                        <button
+                            onClick={() => navigate(`/suppliers/${supplier.id}/contracts`)}
+                            className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-medium"
+                        >
+                            <Package size={16} />
+                            <span>Voir les contrats</span>
+                        </button>
                     </div>
                 ))}
             </div>

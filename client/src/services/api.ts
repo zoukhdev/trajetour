@@ -274,3 +274,67 @@ export const bankAccountsAPI = {
         return response.data;
     }
 };
+
+// Supplier Contracts API
+export const supplierContractsAPI = {
+    getAll: async (page = 1, limit = 50, supplierId?: string, type?: string) => {
+        const params = new URLSearchParams();
+        params.append('page', page.toString());
+        params.append('limit', limit.toString());
+        if (supplierId) params.append('supplierId', supplierId);
+        if (type) params.append('type', type);
+
+        const response = await api.get(`/supplier-contracts?${params.toString()}`);
+        return response.data; // { data: [], pagination: {} }
+    },
+
+    getBySupplier: async (supplierId: string, type?: string) => {
+        const query = type ? `?type=${type}` : '';
+        const response = await api.get(`/suppliers/${supplierId}/contracts${query}`);
+        return response.data; // Returns array directly
+    },
+
+    getById: async (id: string) => {
+        const response = await api.get(`/supplier-contracts/${id}`);
+        return response.data;
+    },
+
+    create: async (supplierId: string, data: any) => {
+        const response = await api.post(`/suppliers/${supplierId}/contracts`, data);
+        return response.data;
+    },
+
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/supplier-contracts/${id}`, data);
+        return response.data;
+    },
+
+    delete: async (id: string) => {
+        const response = await api.delete(`/supplier-contracts/${id}`);
+        return response.data;
+    }
+};
+
+// Rooms API  
+export const roomsAPI = {
+    getAll: async (offerId?: string) => {
+        const query = offerId ? `?offerId=${offerId}` : '';
+        const response = await api.get(`/rooms${query}`);
+        return response.data;
+    },
+
+    create: async (data: any) => {
+        const response = await api.post('/rooms', data);
+        return response.data;
+    },
+
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/rooms/${id}`, data);
+        return response.data;
+    },
+
+    delete: async (id: string) => {
+        const response = await api.delete(`/rooms/${id}`);
+        return response.data;
+    }
+};

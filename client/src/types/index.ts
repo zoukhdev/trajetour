@@ -283,3 +283,83 @@ export interface Commission {
     paidAt?: string;
     notes?: string;
 }
+
+// Supplier Contracts
+export type ContractType = 'Rooms' | 'Visa' | 'Transportation' | 'Flight' | 'Food';
+
+export interface RoomsDetails {
+    quantity: number;
+    pricePerPersonDzd: number;
+    dateIn: string;
+    dateOut: string;
+    cityIn: string;
+    hotelName: string;
+    roomType?: 'Single' | 'Double' | 'Triple' | 'Quad';
+    mealsIncluded?: boolean;
+}
+
+export interface VisaDetails {
+    quantity: number;
+    pricePerVisa: number;
+    visaType: string;
+    processingDays?: number;
+    country: string;
+}
+
+export interface TransportationDetails {
+    vehicleType: 'Bus' | 'Van' | 'Car' | 'Minibus';
+    quantity: number;
+    pricePerUnit: number;
+    route: string;
+    dateFrom: string;
+    dateTo: string;
+    capacity?: number;
+}
+
+export interface FlightDetails {
+    airline: string;
+    ticketQuantity: number;
+    pricePerTicket: number;
+    departure: {
+        airport: string;
+        date: string;
+    };
+    arrival: {
+        airport: string;
+        date: string;
+    };
+    flightNumber?: string;
+    class?: 'Economy' | 'Business' | 'First';
+}
+
+export interface FoodDetails {
+    mealType: 'Breakfast' | 'Lunch' | 'Dinner' | 'Catering' | 'All Inclusive';
+    quantity: number;
+    pricePerMeal: number;
+    dateFrom: string;
+    dateTo: string;
+    location: string;
+    dietaryNotes?: string;
+}
+
+export type ContractDetails = RoomsDetails | VisaDetails | TransportationDetails | FlightDetails | FoodDetails;
+
+export interface SupplierContract {
+    id: string;
+    supplierId: string;
+    contractType: ContractType;
+    datePurchased: string;
+    contractValue: number;
+    paymentCurrency: Currency;
+    exchangeRate: number;
+    contractValueDzd: number;
+    details: ContractDetails;
+    notes?: string;
+    createdAt: string;
+    updatedAt?: string;
+
+    // Joined fields from API
+    supplierName?: string;
+    contactPerson?: string;
+    phone?: string;
+}

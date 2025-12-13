@@ -20,6 +20,7 @@ import transactionRoutes from './routes/transactions.js';
 import bankAccountRoutes from './routes/bankAccounts.js';
 
 import suppliersRouter from './routes/suppliers.js';
+import supplierContractsRoutes from './routes/supplierContracts.js';
 
 const app = express();
 
@@ -145,6 +146,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/bank-accounts', bankAccountRoutes);
 app.use('/api/suppliers', suppliersRouter);
+app.use('/api/supplier-contracts', supplierContractsRoutes);
 
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
 // They need to be created following the clients.ts template
@@ -340,6 +342,37 @@ app.listen(PORT, async () => {
             console.log('✅ Transactions table columns verified (payment_id).');
         } catch (err) {
             console.error('❌ Payments/Transactions table migration failed:', err);
+        }
+
+        // 8. Create supplier_contracts table
+        try {
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS supplier_contracts (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    supplier_id UUID REFERENCES suppliers(id) ON DELETE CASCADE,
+                    contract_type VARCHAR(50) NOT NULL CHECK (contract_type IN ('Rooms', 'Visa', 'Transportation', 'Flight', 'Food')),
+                    date_purchased DATE NOT NULL DEFAULT CURRENT_DATE,
+                    contract_value DECIMAL(12,2) NOT NULL,
+                    payment_currency VARCHAR(3) NOT NULL CHECK (payment_currency IN ('DZD', 'EUR', 'USD', 'SAR')),
+                    exchange_rate DECIMAL(10,4) NOT NULL DEFAULT 1.0,
+                    contract_value_dzd DECIMAL(12,2) NOT NULL,
+                    details JSONB NOT NULL,
+                    notes TEXT,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+            `);
+
+            // Create indexes if they don't exist
+            await pool.query(`
+                CREATE INDEX IF NOT EXISTS idx_supplier_contracts_supplier ON supplier_contracts(supplier_id);
+                CREATE INDEX IF NOT EXISTS idx_supplier_contracts_type ON supplier_contracts(contract_type);
+                CREATE INDEX IF NOT EXISTS idx_supplier_contracts_date ON supplier_contracts(date_purchased DESC);
+            `);
+
+            console.log('✅ Supplier contracts table and indexes verified.');
+        } catch (err) {
+            console.error('❌ Supplier contracts table migration failed:', err);
         }
     }
 

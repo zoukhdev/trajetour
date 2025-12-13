@@ -26,6 +26,7 @@ import TaxList from './pages/Taxes/TaxList';
 import PaymentList from './pages/Payments/PaymentList';
 import CommissionReport from './pages/Reports/CommissionReport';
 import RevenueReport from './pages/Reports/RevenueReport';
+import SupplierContracts from './pages/Suppliers/SupplierContracts';
 
 import DataMigration from './components/DataMigration';
 
@@ -52,6 +53,7 @@ function App() {
                     <Route path="agencies" element={<AgencyList />} />
                     <Route path="agencies/:id" element={<AgencyDetails />} />
                     <Route path="suppliers" element={<SupplierList />} />
+                    <Route path="suppliers/:id/contracts" element={<SupplierContracts />} />
                     <Route path="offers" element={<OfferList />} />
                   </Route>
 
