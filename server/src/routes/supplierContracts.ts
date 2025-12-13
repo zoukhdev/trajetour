@@ -27,7 +27,19 @@ router.post('/:supplierId/contracts', authMiddleware, requirePermission('admin')
             `INSERT INTO supplier_contracts 
              (supplier_id, contract_type, date_purchased, contract_value, payment_currency, exchange_rate, contract_value_dzd, details, notes)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-             RETURNING *`,
+             RETURNING 
+                id,
+                supplier_id as "supplierId",
+                contract_type as "contractType",
+                date_purchased as "datePurchased",
+                contract_value as "contractValue",
+                payment_currency as "paymentCurrency",
+                exchange_rate as "exchangeRate",
+                contract_value_dzd as "contractValueDzd",
+                details,
+                notes,
+                created_at as "createdAt",
+                updated_at as "updatedAt"`,
             [
                 supplierId,
                 contractType,
@@ -82,7 +94,23 @@ router.get('/:supplierId/contracts', authMiddleware, async (req, res, next) => {
         const { supplierId } = req.params;
         const { type } = req.query;
 
-        let query = 'SELECT * FROM supplier_contracts WHERE supplier_id = $1';
+        let query = `
+            SELECT 
+                id,
+                supplier_id as "supplierId",
+                contract_type as "contractType",
+                date_purchased as "datePurchased",
+                contract_value as "contractValue",
+                payment_currency as "paymentCurrency",
+                exchange_rate as "exchangeRate",
+                contract_value_dzd as "contractValueDzd",
+                details,
+                notes,
+                created_at as "createdAt",
+                updated_at as "updatedAt"
+            FROM supplier_contracts 
+            WHERE supplier_id = $1
+        `;
         const params: any[] = [supplierId];
 
         if (type) {
@@ -106,7 +134,20 @@ router.get('/', authMiddleware, async (req, res, next) => {
         const offset = (parseInt(page as string) - 1) * parseInt(limit as string);
 
         let query = `
-            SELECT sc.*, s.name as supplier_name
+            SELECT 
+                sc.id,
+                sc.supplier_id as "supplierId",
+                sc.contract_type as "contractType",
+                sc.date_purchased as "datePurchased",
+                sc.contract_value as "contractValue",
+                sc.payment_currency as "paymentCurrency",
+                sc.exchange_rate as "exchangeRate",
+                sc.contract_value_dzd as "contractValueDzd",
+                sc.details,
+                sc.notes,
+                sc.created_at as "createdAt",
+                sc.updated_at as "updatedAt",
+                s.name as "supplierName"
             FROM supplier_contracts sc
             LEFT JOIN suppliers s ON sc.supplier_id = s.id
             WHERE 1=1
@@ -171,7 +212,22 @@ router.get('/:id', authMiddleware, async (req, res, next) => {
         const { id } = req.params;
 
         const result = await pool.query(
-            `SELECT sc.*, s.name as supplier_name, s.contact_person, s.phone
+            `SELECT 
+                sc.id,
+                sc.supplier_id as "supplierId",
+                sc.contract_type as "contractType",
+                sc.date_purchased as "datePurchased",
+                sc.contract_value as "contractValue",
+                sc.payment_currency as "paymentCurrency",
+                sc.exchange_rate as "exchangeRate",
+                sc.contract_value_dzd as "contractValueDzd",
+                sc.details,
+                sc.notes,
+                sc.created_at as "createdAt",
+                sc.updated_at as "updatedAt",
+                s.name as "supplierName", 
+                s.contact_person as "contactPerson", 
+                s.phone
              FROM supplier_contracts sc
              LEFT JOIN suppliers s ON sc.supplier_id = s.id
              WHERE sc.id = $1`,
@@ -265,7 +321,19 @@ router.put('/:id', authMiddleware, requirePermission('admin'), async (req, res, 
             UPDATE supplier_contracts
             SET ${updates.join(', ')}
             WHERE id = $${paramIndex}
-            RETURNING *
+            RETURNING 
+                id,
+                supplier_id as "supplierId",
+                contract_type as "contractType",
+                date_purchased as "datePurchased",
+                contract_value as "contractValue",
+                payment_currency as "paymentCurrency",
+                exchange_rate as "exchangeRate",
+                contract_value_dzd as "contractValueDzd",
+                details,
+                notes,
+                created_at as "createdAt",
+                updated_at as "updatedAt"
         `;
 
         const result = await pool.query(query, values);
