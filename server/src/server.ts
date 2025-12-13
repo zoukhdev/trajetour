@@ -146,6 +146,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/bank-accounts', bankAccountRoutes);
 app.use('/api/suppliers', suppliersRouter);
+app.use('/api/suppliers', supplierContractsRoutes); // Handle /api/suppliers/:id/contracts
 app.use('/api/supplier-contracts', supplierContractsRoutes);
 
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
