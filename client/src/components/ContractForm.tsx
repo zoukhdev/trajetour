@@ -17,7 +17,7 @@ interface ContractFormProps {
 }
 
 export const ContractForm: React.FC<ContractFormProps> = ({ supplierId, contract, onSuccess, onCancel }) => {
-    const exchangeRates = useExchangeRates();
+    const { currentRates } = useExchangeRates();
     const { bankAccounts } = useData();
 
     const [contractType, setContractType] = useState<ContractType>(contract?.contractType || 'Rooms');
@@ -34,13 +34,13 @@ export const ContractForm: React.FC<ContractFormProps> = ({ supplierId, contract
     React.useEffect(() => {
         if (currency === 'DZD') {
             setExchangeRate(1.0);
-        } else {
-            const rate = currency === 'EUR' ? exchangeRates.eurToDzd :
-                currency === 'USD' ? (exchangeRates.usdToDzd || 140) :
-                    exchangeRates.sarToDzd;
+        } else if (currentRates) {
+            const rate = currency === 'EUR' ? currentRates.EUR :
+                currency === 'USD' ? currentRates.USD :
+                    currentRates.SAR;
             setExchangeRate(rate);
         }
-    }, [currency, exchangeRates]);
+    }, [currency, currentRates]);
 
     const calculateContractValue = () => {
         switch (contractType) {
