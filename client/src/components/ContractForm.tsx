@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { X } from 'lucide-react';
-import { ContractType, Currency, SupplierContract } from '../types';
+import type { ContractType, Currency, SupplierContract } from '../types';
 import { RoomsFields } from './ContractFields/RoomsFields';
 import { VisaFields } from './ContractFields/VisaFields';
 import { TransportationFields } from './ContractFields/TransportationFields';
 import { FlightFields } from './ContractFields/FlightFields';
 import { FoodFields } from './ContractFields/FoodFields';
-import { ExchangeRateContext } from '../context/ExchangeRateContext';
-import { DataContext } from '../context/DataContext';
+import { useExchangeRates } from '../context/ExchangeRateContext';
+import { useData } from '../context/DataContext';
 
 interface ContractFormProps {
     supplierId: string;
@@ -17,8 +17,8 @@ interface ContractFormProps {
 }
 
 export const ContractForm: React.FC<ContractFormProps> = ({ supplierId, contract, onSuccess, onCancel }) => {
-    const { exchangeRates } = useContext(ExchangeRateContext);
-    const { bankAccounts } = useContext(DataContext);
+    const exchangeRates = useExchangeRates();
+    const { bankAccounts } = useData();
 
     const [contractType, setContractType] = useState<ContractType>(contract?.contractType || 'Rooms');
     const [currency, setCurrency] = useState<Currency>(contract?.paymentCurrency || 'DZD');

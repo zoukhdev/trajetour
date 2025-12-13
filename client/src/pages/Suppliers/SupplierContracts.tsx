@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Package, Plus, Pencil, Trash2, ArrowLeft, ChevronDown, ChevronUp, Hotel, FileText, Bus, Plane, Utensils } from 'lucide-react';
-import { SupplierContract, ContractType } from '../../types';
+import type { SupplierContract, ContractType } from '../../types';
 import { supplierContractsAPI, suppliersAPI } from '../../services/api';
 import { ContractForm } from '../../components/ContractForm';
 
