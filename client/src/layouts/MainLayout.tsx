@@ -3,8 +3,12 @@ import { Outlet } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 
+import { useData } from '../context/DataContext';
+import PullToRefresh from '../components/PullToRefresh';
+
 const MainLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const { refreshData } = useData();
 
     return (
         <div className="flex min-h-screen bg-gray-50 w-full overflow-x-hidden">
@@ -15,7 +19,7 @@ const MainLayout = () => {
                 <div
                     className="md:hidden bg-white border-b border-gray-100 flex items-center justify-between sticky top-0 z-30 shadow-sm"
                     style={{
-                        paddingTop: 'max(env(safe-area-inset-top), 2rem)',
+                        paddingTop: 'max(env(safe-area-inset-top), 3.5rem)',
                         paddingLeft: 'max(env(safe-area-inset-left), 1rem)',
                         paddingRight: 'max(env(safe-area-inset-right), 1rem)',
                         paddingBottom: '1rem'
@@ -30,14 +34,16 @@ const MainLayout = () => {
                     </button>
                 </div>
 
-                <div
-                    className="p-4 md:p-8 w-full max-w-7xl mx-auto overflow-x-hidden"
-                    style={{
-                        paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)'
-                    }}
-                >
-                    <Outlet />
-                </div>
+                <PullToRefresh onRefresh={refreshData}>
+                    <div
+                        className="p-4 md:p-8 w-full max-w-7xl mx-auto overflow-x-hidden"
+                        style={{
+                            paddingBottom: 'max(env(safe-area-inset-bottom), 1rem)'
+                        }}
+                    >
+                        <Outlet />
+                    </div>
+                </PullToRefresh>
             </main>
         </div>
     );

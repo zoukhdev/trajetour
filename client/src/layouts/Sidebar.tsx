@@ -22,7 +22,8 @@ import {
     HelpCircle,
     List,
     Receipt,
-    BarChart
+    BarChart,
+    Activity
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -65,6 +66,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 { icon: Percent, label: t('common.discounts'), path: '/discounts', permission: 'manage_business' },
                 { icon: Percent, label: t('common.tax'), path: '/tax', permission: 'manage_business' },
                 { icon: UserCircle, label: t('common.users'), path: '/users', permission: 'manage_users' },
+                { icon: Activity, label: "Journal d'activité", path: '/logs', permission: 'manage_users' },
                 { icon: HelpCircle, label: t('common.support'), path: '/support', permission: 'manage_business' },
                 { icon: Receipt, label: t('common.payments'), path: '/payments', permission: 'manage_business' },
                 { icon: List, label: t('common.rooming_list'), path: '/rooming-list', permission: 'manage_business' },

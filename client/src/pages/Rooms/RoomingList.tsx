@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Plus, Hotel, Users, Trash2, ArrowRightLeft, User } from 'lucide-react';
 import Modal from '../../components/Modal';
+import api from '../../services/api';
 
 // Define Room Interface here (should match types/index.ts eventually)
 interface Room {
@@ -76,11 +77,8 @@ const RoomingList = () => {
     const fetchRooms = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/rooms');
-            if (res.ok) {
-                const data = await res.json();
-                setRooms(data);
-            }
+            const res = await api.get('/rooms');
+            setRooms(res.data);
         } catch (err) {
             console.error("Failed to fetch rooms", err);
         } finally {
@@ -96,11 +94,8 @@ const RoomingList = () => {
     const fetchOccupants = async (room: Room) => {
         setLoadingOccupants(true);
         try {
-            const res = await fetch(`/api/rooms/${room.id}/occupants`);
-            if (res.ok) {
-                const data = await res.json();
-                setOccupants(data);
-            }
+            const res = await api.get(`/rooms/${room.id}/occupants`);
+            setOccupants(res.data);
         } catch (err) {
             console.error("Failed to fetch occupants", err);
         } finally {
@@ -123,18 +118,13 @@ const RoomingList = () => {
         if (newRoom.price < 0) return alert("Le prix ne peut pas être négatif.");
 
         try {
-            const res = await fetch('/api/rooms', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...newRoom,
-                    offerId: newRoom.offerId || null
-                })
+            const res = await api.post('/rooms', {
+                ...newRoom,
+                offerId: newRoom.offerId || null
             });
 
-            if (res.ok) {
-                const createdRoom = await res.json();
-                setRooms([createdRoom, ...rooms]); // Prepend
+            if (res.status === 200 || res.status === 201) {
+                setRooms([res.data, ...rooms]); // Prepend
                 setIsAddModalOpen(false);
                 setNewRoom({ ...newRoom, roomNumber: '' }); // Reset number
             } else {
@@ -142,6 +132,7 @@ const RoomingList = () => {
             }
         } catch (err) {
             console.error(err);
+            alert("Erreur lors de la création.");
         }
     };
 
@@ -149,10 +140,8 @@ const RoomingList = () => {
     const handleDelete = async (id: string) => {
         if (!confirm("Voulez-vous vraiment supprimer cette chambre ?")) return;
         try {
-            const res = await fetch(`/api/rooms/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                setRooms(rooms.filter(r => r.id !== id));
-            }
+            await api.delete(`/rooms/${id}`);
+            setRooms(rooms.filter(r => r.id !== id));
         } catch (err) {
             console.error(err);
         }
@@ -163,30 +152,22 @@ const RoomingList = () => {
         if (!passengerToTransfer || !transferTargetRoomId) return;
 
         try {
-            const res = await fetch('/api/rooms/transfer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    orderId: passengerToTransfer.orderId,
-                    passengerId: passengerToTransfer.id,
-                    newRoomId: transferTargetRoomId
-                })
+            await api.post('/rooms/transfer', {
+                orderId: passengerToTransfer.orderId,
+                passengerId: passengerToTransfer.id,
+                newRoomId: transferTargetRoomId
             });
 
-            if (res.ok) {
-                alert('Transfert réussi !');
-                // Refresh occupants and rooms (occupancy counts changed)
-                if (selectedRoom) fetchOccupants(selectedRoom);
-                fetchRooms();
-                setPassengerToTransfer(null);
-                setTransferTargetRoomId('');
-            } else {
-                const err = await res.json();
-                alert(`Erreur: ${err.message}`);
-            }
-        } catch (err) {
+            alert('Transfert réussi !');
+            // Refresh occupants and rooms (occupancy counts changed)
+            if (selectedRoom) fetchOccupants(selectedRoom);
+            fetchRooms();
+            setPassengerToTransfer(null);
+            setTransferTargetRoomId('');
+
+        } catch (err: any) {
             console.error(err);
-            alert("Erreur de connexion.");
+            alert(`Erreur: ${err.response?.data?.message || err.message || "Erreur de connexion."}`);
         }
     };
 

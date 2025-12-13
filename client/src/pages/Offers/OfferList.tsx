@@ -59,24 +59,25 @@ const OfferList = () => {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Desktop/Tablet Table View */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50/50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
                             <tr>
                                 <th className="px-6 py-4">Titre</th>
-                                <th className="hidden md:table-cell px-6 py-4">Destination</th>
+                                <th className="px-6 py-4">Destination</th>
                                 <th className="hidden lg:table-cell px-6 py-4">Type</th>
                                 <th className="hidden lg:table-cell px-6 py-4">Dates</th>
                                 <th className="px-6 py-4">Prix</th>
                                 <th className="hidden xl:table-cell px-6 py-4">Disponibilité</th>
-                                <th className="hidden md:table-cell px-6 py-4">Statut</th>
+                                <th className="px-6 py-4">Statut</th>
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {filteredOffers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                                         <div className="flex flex-col items-center justify-center gap-3">
                                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
                                                 <Tag size={24} />
@@ -89,7 +90,7 @@ const OfferList = () => {
                                 filteredOffers.map((offer) => (
                                     <tr key={offer.id} className="hover:bg-gray-50/80 transition-colors group">
                                         <td className="px-6 py-4 font-medium text-gray-900">{offer.title}</td>
-                                        <td className="hidden md:table-cell px-6 py-4 text-gray-600">
+                                        <td className="px-6 py-4 text-gray-600">
                                             <div className="flex items-center gap-2">
                                                 <MapPin size={14} className="text-gray-400" />
                                                 <span>{offer.destination}</span>
@@ -114,7 +115,7 @@ const OfferList = () => {
                                                 {offer.disponibilite} {offer.disponibilite === 1 ? 'place' : 'places'}
                                             </span>
                                         </td>
-                                        <td className="hidden md:table-cell px-6 py-4">
+                                        <td className="px-6 py-4">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${offer.status === 'Active'
                                                 ? 'bg-green-50 text-green-700 border-green-100'
                                                 : offer.status === 'Draft'
@@ -145,6 +146,62 @@ const OfferList = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-gray-100">
+                    {filteredOffers.length === 0 ? (
+                        <div className="px-6 py-12 text-center text-gray-500">
+                            <div className="flex flex-col items-center justify-center gap-3">
+                                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                                    <Tag size={24} />
+                                </div>
+                                <p className="font-medium">Aucune offre trouvée</p>
+                            </div>
+                        </div>
+                    ) : (
+                        filteredOffers.map((offer) => (
+                            <div key={offer.id} className="p-4 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-bold text-gray-900">{offer.title}</h3>
+                                        <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                                            <MapPin size={14} />
+                                            <span>{offer.destination}</span>
+                                        </div>
+                                    </div>
+                                    <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-bold uppercase tracking-wide border ${offer.status === 'Active' ? 'bg-green-50 text-green-700 border-green-100' :
+                                            offer.status === 'Draft' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' :
+                                                'bg-gray-50 text-gray-700 border-gray-100'
+                                        }`}>
+                                        {offer.status === 'Active' ? 'Act' : offer.status === 'Draft' ? 'Br' : 'Arch'}
+                                    </span>
+                                </div>
+
+                                <div className="flex items-center justify-between text-sm">
+                                    <div className="flex items-center gap-2 text-gray-600">
+                                        <Calendar size={14} className="text-gray-400" />
+                                        <span>{new Date(offer.startDate).toLocaleDateString()}</span>
+                                    </div>
+                                    <span className="font-mono font-bold text-primary">{offer.price.toLocaleString()} DZD</span>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-2 border-t border-gray-50 bg-gray-50/50 -mx-4 -mb-4 px-4 py-3 mt-3">
+                                    <span className="text-xs font-medium text-purple-700 bg-purple-50 px-2 py-1 rounded-full border border-purple-100">
+                                        {offer.disponibilite} places
+                                    </span>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => handleEdit(offer)} className="text-blue-600 font-medium text-sm flex items-center gap-1">
+                                            <Edit size={16} /> Modifier
+                                        </button>
+                                        <button onClick={() => handleDelete(offer.id)} className="text-red-600 font-medium text-sm flex items-center gap-1">
+                                            <Trash2 size={16} /> Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 

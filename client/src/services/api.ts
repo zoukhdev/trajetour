@@ -16,6 +16,14 @@ const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        console.error('❌ API Request Failed:', {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            message: error.message,
+            data: error.response?.data
+        });
+
         if (error.response?.status === 401) {
             // Ignore 401 for initial auth check to avoid infinite redirect loops
             // The AuthContext handles this gracefully
@@ -335,6 +343,23 @@ export const roomsAPI = {
 
     delete: async (id: string) => {
         const response = await api.delete(`/rooms/${id}`);
+        return response.data;
+    }
+};
+
+// Audit Logs API
+export const auditLogsAPI = {
+    getAll: async (params: { page: number; limit: number; userId?: string; action?: string; entityType?: string; startDate?: string; endDate?: string }) => {
+        const urlParams = new URLSearchParams();
+        urlParams.append('page', params.page.toString());
+        urlParams.append('limit', params.limit.toString());
+        if (params.userId) urlParams.append('userId', params.userId);
+        if (params.action) urlParams.append('action', params.action);
+        if (params.entityType) urlParams.append('entityType', params.entityType);
+        if (params.startDate) urlParams.append('startDate', params.startDate);
+        if (params.endDate) urlParams.append('endDate', params.endDate);
+
+        const response = await api.get(`/audit-logs?${urlParams.toString()}`);
         return response.data;
     }
 };

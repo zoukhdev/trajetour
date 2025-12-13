@@ -21,6 +21,7 @@ import bankAccountRoutes from './routes/bankAccounts.js';
 
 import suppliersRouter from './routes/suppliers.js';
 import supplierContractsRoutes from './routes/supplierContracts.js';
+import auditLogsRouter from './routes/auditLogs.js';
 
 const app = express();
 
@@ -148,7 +149,7 @@ app.use('/api/bank-accounts', bankAccountRoutes);
 app.use('/api/suppliers', suppliersRouter);
 app.use('/api/suppliers', supplierContractsRoutes); // Handle /api/suppliers/:id/contracts
 app.use('/api/supplier-contracts', supplierContractsRoutes);
-
+app.use('/api/audit-logs', auditLogsRouter);
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
 // They need to be created following the clients.ts template
 

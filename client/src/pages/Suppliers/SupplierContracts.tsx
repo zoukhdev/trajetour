@@ -218,99 +218,173 @@ export default function SupplierContracts() {
             </div>
 
             {/* Contracts Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                {contracts.length === 0 ? (
-                    <div className="text-center py-12">
-                        <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600">Aucun contrat trouvé</p>
-                        <button
-                            onClick={() => setShowForm(true)}
-                            className="mt-4 text-blue-600 hover:text-blue-700"
-                        >
-                            Créer le premier contrat
-                        </button>
-                    </div>
-                ) : (
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valeur</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valeur DZD</th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {contracts.map((contract) => (
-                                <React.Fragment key={contract.id}>
-                                    <tr className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center gap-2">
-                                                {contractIcons[contract.contractType]}
-                                                <span className="font-medium">{contract.contractType}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                            {new Date(contract.datePurchased).toLocaleDateString('fr-FR')}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {contract.contractValue.toLocaleString('fr-DZ')} {contract.paymentCurrency}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            {contract.contractValueDzd.toLocaleString('fr-DZ')} DA
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button
-                                                    onClick={() => setExpandedRow(expandedRow === contract.id ? null : contract.id)}
-                                                    className="text-gray-600 hover:text-gray-900"
-                                                    title="Voir détails"
-                                                >
-                                                    {expandedRow === contract.id ? (
-                                                        <ChevronUp className="w-5 h-5" />
-                                                    ) : (
-                                                        <ChevronDown className="w-5 h-5" />
-                                                    )}
-                                                </button>
-                                                <button
-                                                    onClick={() => handleEdit(contract)}
-                                                    className="text-blue-600 hover:text-blue-900"
-                                                    title="Modifier"
-                                                >
-                                                    <Pencil className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(contract.id)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                    title="Supprimer"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    {expandedRow === contract.id && (
-                                        <tr>
-                                            <td colSpan={5} className="px-6 py-4 bg-gray-50">
-                                                <div className="space-y-3">
-                                                    <h4 className="font-semibold text-gray-900">Détails du contrat</h4>
-                                                    {renderDetails(contract)}
-                                                    {contract.notes && (
-                                                        <div className="mt-3 pt-3 border-t">
-                                                            <span className="font-medium">Notes:</span> {contract.notes}
-                                                        </div>
-                                                    )}
+            {contracts.length === 0 ? (
+                <div className="text-center py-12 bg-white rounded-lg shadow">
+                    <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600">Aucun contrat trouvé</p>
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                        Créer le premier contrat
+                    </button>
+                </div>
+            ) : (
+                <>
+                    {/* Desktop view */}
+                    <div className="hidden md:block overflow-x-auto bg-white rounded-lg shadow">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valeur</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valeur DZD</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {contracts.map((contract) => (
+                                    <React.Fragment key={contract.id}>
+                                        <tr className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    {contractIcons[contract.contractType]}
+                                                    <span className="font-medium">{contract.contractType}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                {new Date(contract.datePurchased).toLocaleDateString('fr-FR')}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {contract.contractValue.toLocaleString('fr-DZ')} {contract.paymentCurrency}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                                {contract.contractValueDzd.toLocaleString('fr-DZ')} DA
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button
+                                                        onClick={() => setExpandedRow(expandedRow === contract.id ? null : contract.id)}
+                                                        className="text-gray-600 hover:text-gray-900"
+                                                        title="Voir détails"
+                                                    >
+                                                        {expandedRow === contract.id ? (
+                                                            <ChevronUp className="w-5 h-5" />
+                                                        ) : (
+                                                            <ChevronDown className="w-5 h-5" />
+                                                        )}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleEdit(contract)}
+                                                        className="text-blue-600 hover:text-blue-900"
+                                                        title="Modifier"
+                                                    >
+                                                        <Pencil className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(contract.id)}
+                                                        className="text-red-600 hover:text-red-900"
+                                                        title="Supprimer"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
-                                    )}
-                                </React.Fragment>
-                            ))}
-                        </tbody>
-                    </table>
-                )}
-            </div>
+                                        {expandedRow === contract.id && (
+                                            <tr>
+                                                <td colSpan={5} className="px-6 py-4 bg-gray-50">
+                                                    <div className="space-y-3">
+                                                        <h4 className="font-semibold text-gray-900">Détails du contrat</h4>
+                                                        {renderDetails(contract)}
+                                                        {contract.notes && (
+                                                            <div className="mt-3 pt-3 border-t">
+                                                                <span className="font-medium">Notes:</span> {contract.notes}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-4">
+                        {contracts.map((contract) => (
+                            <div
+                                key={contract.id}
+                                className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden"
+                            >
+                                <div
+                                    className="p-4 flex items-center justify-between cursor-pointer active:bg-gray-50"
+                                    onClick={() => setExpandedRow(expandedRow === contract.id ? null : contract.id)}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
+                                            {contractIcons[contract.contractType]}
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold text-gray-900">{contract.contractType}</div>
+                                            <div className="text-sm text-gray-500">
+                                                {new Date(contract.datePurchased).toLocaleDateString('fr-FR')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="font-bold text-gray-900">
+                                            {contract.contractValueDzd.toLocaleString('fr-DZ', { maximumFractionDigits: 0 })} DA
+                                        </div>
+                                        <div className="text-xs text-gray-500">
+                                            {expandedRow === contract.id ? 'Masquer' : 'Voir détails'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {expandedRow === contract.id && (
+                                    <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50/50 pt-4">
+                                        <div className="text-sm space-y-3">
+                                            {renderDetails(contract)}
+
+                                            <div className="flex items-center justify-between pt-4 border-t border-gray-200 mt-4">
+                                                <div className="text-xs text-gray-500">
+                                                    Valeur: {contract.contractValue.toLocaleString('fr-DZ')} {contract.paymentCurrency}
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleEdit(contract);
+                                                        }}
+                                                        className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                                    >
+                                                        <Pencil className="w-3.5 h-3.5" />
+                                                        Modifier
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDelete(contract.id);
+                                                        }}
+                                                        className="flex items-center gap-1 px-3 py-1.5 bg-red-50 border border-red-200 rounded text-sm font-medium text-red-600 hover:bg-red-100"
+                                                    >
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                        Supprimer
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
 
             {/* Contract Form Modal */}
             {showForm && supplierId && (

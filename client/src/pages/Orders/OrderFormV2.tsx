@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api, { ordersAPI } from '../../services/api';
 import { Plus, Trash2, User as UserIcon, AlertCircle, Building2, DollarSign } from 'lucide-react';
 import type { Passenger, Hotel } from '../../types';
 
@@ -99,11 +99,11 @@ const OrderFormV2 = () => {
     const [clients, setClients] = useState<any[]>([]);
     useEffect(() => {
         // Fetch clients for dropdown
-        axios.get('/api/clients').then(res => setClients(res.data.data)).catch(console.error);
+        api.get('/clients').then(res => setClients(res.data.data)).catch(console.error);
         // Fetch active offers (Capitalized 'Active')
-        axios.get('/api/offers?status=Active').then(res => setOffers(res.data)).catch(console.error);
+        api.get('/offers?status=Active').then(res => setOffers(res.data)).catch(console.error);
         // Fetch all active rooms on mount
-        axios.get('/api/rooms').then(res => {
+        api.get('/rooms').then(res => {
             setAvailableRooms(res.data);
             const unique = [...new Set(res.data.map((r: any) => r.hotel_name))].filter(Boolean).sort() as string[];
             setUniqueSystemHotels(unique);
@@ -114,13 +114,13 @@ const OrderFormV2 = () => {
     useEffect(() => {
         if (!selectedHotelName) {
             // Fetch all rooms if no hotel selected
-            axios.get('/api/rooms')
+            api.get('/rooms')
                 .then(res => setAvailableRooms(res.data))
                 .catch(console.error);
             return;
         }
         // Fetch rooms filtered by hotel name
-        axios.get(`/api/rooms?hotelName=${encodeURIComponent(selectedHotelName)}`)
+        api.get(`/rooms?hotelName=${encodeURIComponent(selectedHotelName)}`)
             .then(res => setAvailableRooms(res.data))
             .catch(console.error);
     }, [selectedHotelName]);
@@ -234,7 +234,7 @@ const OrderFormV2 = () => {
                 notes
             };
 
-            await axios.post('/api/orders', orderData);
+            await ordersAPI.create(orderData);
             navigate('/orders');
         } catch (err) {
             console.error(err);

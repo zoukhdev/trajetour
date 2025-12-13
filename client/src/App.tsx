@@ -27,6 +27,7 @@ import PaymentList from './pages/Payments/PaymentList';
 import CommissionReport from './pages/Reports/CommissionReport';
 import RevenueReport from './pages/Reports/RevenueReport';
 import SupplierContracts from './pages/Suppliers/SupplierContracts';
+import LogsPage from './pages/Logs/LogsPage';
 
 import DataMigration from './components/DataMigration';
 
@@ -73,6 +74,7 @@ function App() {
                     <Route path="discounts" element={<DiscountList />} />
                     <Route path="tax" element={<TaxList />} />
                     <Route path="users" element={<UserList />} />
+                    <Route path="logs" element={<LogsPage />} />
                     <Route path="support" element={<div className="text-gray-500">Support & Videos</div>} />
                     <Route path="payments" element={<PaymentList />} />
                     <Route path="stats" element={<div className="text-gray-500">Statistiques</div>} />

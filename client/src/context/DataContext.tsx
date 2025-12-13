@@ -1,5 +1,6 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
+import { App } from '@capacitor/app';
 import type { Client, Agency, Order, Expense, Transaction, User, Supplier, Offer, GuideExpense, Discount, Tax, BankAccount, Payment } from '../types';
 import {
     clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI,
@@ -19,6 +20,8 @@ interface DataContextType {
     discounts: Discount[];
     taxes: Tax[];
     bankAccounts: BankAccount[];
+
+    refreshData: () => Promise<void>;
 
     // CRUD Operations
     addClient: (client: Client) => Promise<void>;
@@ -117,11 +120,19 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
 
     const loadData = async () => {
         try {
-            // Parallel Fetching for Performance
-            const [
-                clientsData, ordersData, offersData, suppliersData,
-                agenciesData, expensesData, usersData, transactionsData, bankAccountsData
-            ] = await Promise.all([
+            // CACHE-FIRST STRATEGY: Load from local storage immediately if available
+            const cachedClients = localStorage.getItem('cache_clients');
+            const cachedOrders = localStorage.getItem('cache_orders');
+            const cachedOffers = localStorage.getItem('cache_offers');
+            const cachedSuppliers = localStorage.getItem('cache_suppliers');
+
+            if (cachedClients) setClients(JSON.parse(cachedClients));
+            if (cachedOrders) setOrders(JSON.parse(cachedOrders));
+            if (cachedOffers) setOffers(JSON.parse(cachedOffers));
+            if (cachedSuppliers) setSuppliers(JSON.parse(cachedSuppliers));
+
+            // Use Promise.allSettled so one failure doesn't block everything
+            const results = await Promise.allSettled([
                 clientsAPI.getAll(1, 1000),
                 ordersAPI.getAll(1, 1000),
                 offersAPI.getAll(),
@@ -129,16 +140,41 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 agenciesAPI.getAll(1, 1000),
                 expensesAPI.getAll(1, 1000),
                 usersAPI.getAll(1, 1000),
-                transactionsAPI.getAll(1, 100), // Limit transactions init load
+                transactionsAPI.getAll(1, 100),
                 bankAccountsAPI.getAll()
             ]);
 
-            setClients(clientsData.data || []);
-            setOrders(ordersData.data || []);
-            setOffers(offersData || []);
+            // Helper to get data or empty array
+            const getData = (index: number, name: string) => {
+                const result = results[index];
+                if (result.status === 'fulfilled') {
+                    return result.value.data || result.value || []; // Handle {data: []} or []
+                } else {
+                    console.error(`❌ Failed to load ${name}:`, result.reason);
+                    // Optionally alert the user here or track errors
+                    return [];
+                }
+            };
+
+            const clientsData = getData(0, 'Clients');
+            const ordersData = getData(1, 'Orders');
+            const offersData = getData(2, 'Offers');
+            const suppliersData = getData(3, 'Suppliers');
+            const agenciesData = getData(4, 'Agencies');
+            const expensesData = getData(5, 'Expenses');
+            const usersData = getData(6, 'Users');
+            const transactionsData = getData(7, 'Transactions');
+            const bankAccountsData = getData(8, 'BankAccounts');
+
+
+            setClients(Array.isArray(clientsData) ? clientsData : (clientsData.data || []));
+            setOrders(Array.isArray(ordersData) ? ordersData : (ordersData.data || []));
+            setOffers(Array.isArray(offersData) ? offersData : []);
 
             // Suppliers Mapping
-            const mappedSuppliers = suppliersData.map((s: any) => ({
+            // Check if suppliersData is array before mapping
+            const validSuppliers = Array.isArray(suppliersData) ? suppliersData : [];
+            const mappedSuppliers = validSuppliers.map((s: any) => ({
                 id: s.id,
                 name: s.name,
                 contactPerson: s.contact_person,
@@ -148,22 +184,41 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
                 serviceType: s.service_type,
                 createdAt: s.created_at
             }));
-            setSuppliers(mappedSuppliers);
 
-            setAgencies(agenciesData.data || []);
-            setExpenses(expensesData.data || []);
-            // Users mapping (if needed, or backend sends correct shape)
-            setUsers(usersData.data || []);
-            setTransactions(transactionsData.data || []);
-            setBankAccounts(bankAccountsData || []);
+            setSuppliers(mappedSuppliers);
+            setAgencies(Array.isArray(agenciesData) ? agenciesData : (agenciesData.data || []));
+            setExpenses(Array.isArray(expensesData) ? expensesData : (expensesData.data || []));
+            setUsers(Array.isArray(usersData) ? usersData : (usersData.data || []));
+            setTransactions(Array.isArray(transactionsData) ? transactionsData : (transactionsData.data || []));
+            setBankAccounts(Array.isArray(bankAccountsData) ? bankAccountsData : []);
+
+            // UPDATE CACHE
+            if (clientsData?.data || Array.isArray(clientsData)) localStorage.setItem('cache_clients', JSON.stringify(Array.isArray(clientsData) ? clientsData : clientsData.data));
+            if (ordersData?.data || Array.isArray(ordersData)) localStorage.setItem('cache_orders', JSON.stringify(Array.isArray(ordersData) ? ordersData : ordersData.data));
+            if (offersData) localStorage.setItem('cache_offers', JSON.stringify(offersData));
+            if (mappedSuppliers) localStorage.setItem('cache_suppliers', JSON.stringify(mappedSuppliers));
+
+            // Check for failures to notify
+            const failures = results.filter(r => r.status === 'rejected');
+            if (failures.length > 0) {
+                console.error(`⚠️ ${failures.length} APIs failed to load. Check console for details.`);
+            }
 
         } catch (error) {
-            console.error('❌ Error loading data from backend:', error);
+            console.error('❌ Critical Error loading data:', error);
         }
     };
 
     useEffect(() => {
         loadData();
+
+        // Auto-refresh when app comes to foreground
+        App.addListener('appStateChange', ({ isActive }: { isActive: boolean }) => {
+            if (isActive) {
+                console.log('📱 App resumed: Refreshing data...');
+                loadData();
+            }
+        });
 
         // Load Remaining LocalStorage Data
         const storedGuideExpenses = localStorage.getItem('guideExpenses');
@@ -413,6 +468,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         <DataContext.Provider value={{
             clients, agencies, orders, expenses, transactions, users, suppliers,
             offers, guideExpenses, discounts, taxes, bankAccounts: bankAccountsWithBalances,
+            refreshData: loadData,
             addClient, updateClient,
             addAgency, updateAgency, deleteAgency,
             addOrder, updateOrder,

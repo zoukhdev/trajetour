@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { Order, OrderStatus } from '../../types';
-import axios from 'axios';
+import { ordersAPI } from '../../services/api';
 import { Plus, Search, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -15,7 +15,6 @@ const OrderListV2 = () => {
 
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(''); // Unused for now
 
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<'ALL' | OrderStatus>('ALL');
@@ -23,9 +22,9 @@ const OrderListV2 = () => {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('/api/orders');
+            const response = await ordersAPI.getAll(1, 1000);
             // Ensure data structure is robust
-            const fetchedOrders = response.data.data.map((order: any) => ({
+            const fetchedOrders = response.data.map((order: any) => ({
                 ...order,
                 // Ensure totals are numbers
                 totalAmount: Number(order.totalAmount || 0),

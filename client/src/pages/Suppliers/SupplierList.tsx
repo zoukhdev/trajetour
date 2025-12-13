@@ -75,7 +75,11 @@ const SupplierList = () => {
             {/* Suppliers Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredSuppliers.map((supplier) => (
-                    <div key={supplier.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                    <div
+                        key={supplier.id}
+                        onClick={() => navigate(`/suppliers/${supplier.id}/contracts`)}
+                        className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer"
+                    >
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -88,15 +92,21 @@ const SupplierList = () => {
                                     </span>
                                 </div>
                             </div>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-2">
                                 <button
-                                    onClick={() => handleEdit(supplier)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleEdit(supplier);
+                                    }}
                                     className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
                                 >
                                     <Edit2 size={16} />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(supplier.id)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(supplier.id);
+                                    }}
                                     className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                                 >
                                     <Trash2 size={16} />
@@ -142,7 +152,10 @@ const SupplierList = () => {
 
                         {/* View Contracts Button */}
                         <button
-                            onClick={() => navigate(`/suppliers/${supplier.id}/contracts`)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/suppliers/${supplier.id}/contracts`);
+                            }}
                             className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-medium"
                         >
                             <Package size={16} />
