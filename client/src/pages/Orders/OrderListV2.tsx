@@ -28,9 +28,9 @@ const OrderListV2 = () => {
             const fetchedOrders = response.data.data.map((order: any) => ({
                 ...order,
                 // Ensure totals are numbers
-                totalAmount: Number(order.totalAmount),
-                totalAmountDZD: Number(order.totalAmountDZD || order.totalAmount), // Fallback if missing
-                payments: order.payments || []
+                totalAmount: Number(order.totalAmount || 0),
+                totalAmountDZD: Number(order.totalAmountDZD || order.totalAmount || 0),
+                payments: Array.isArray(order.payments) ? order.payments : []
             }));
             setOrders(fetchedOrders);
         } catch (err) {
@@ -46,8 +46,10 @@ const OrderListV2 = () => {
 
     // Filter logic
     const filteredOrders = orders.filter(order => {
+        if (!order) return false;
+
         const matchesSearch =
-            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (order.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
             (order.clientName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
             (order.agencyId || '').toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -58,7 +60,8 @@ const OrderListV2 = () => {
 
     const getStatusBadge = (status: OrderStatus, remaining: number) => {
         // Audit Fix: If remaining is <= 5 DZD, force Paid visual even if status says otherwise
-        const isPaid = status === 'Payé' || remaining <= 5;
+        // Use safe math for remaining
+        const isPaid = status === 'Payé' || (remaining !== undefined && remaining <= 5);
 
         if (isPaid) return <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Payé</span>;
         if (status === 'Partiel') return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Partiel</span>;

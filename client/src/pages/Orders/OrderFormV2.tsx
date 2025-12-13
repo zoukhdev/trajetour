@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Plus, Trash2, User as UserIcon, AlertCircle, Building2 } from 'lucide-react';
+import { Plus, Trash2, User as UserIcon, AlertCircle, Building2, DollarSign } from 'lucide-react';
 import type { Passenger, Hotel } from '../../types';
 
 // Helper to calculate age category
@@ -75,8 +75,25 @@ const OrderFormV2 = () => {
     ]);
 
     // Financials
-    const [totalAmount, setTotalAmount] = useState<number>(0);
+    // const [totalAmount, setTotalAmount] = useState<number>(0);
+    // Commission system (manual Tax or Reduction)
+    const [commissionType, setCommissionType] = useState<'none' | 'tax' | 'reduction'>('none');
+    const [commissionAmount, setCommissionAmount] = useState<number>(0);
+
     const [loading, setLoading] = useState(false);
+
+    // Calculated Totals
+    const passengerTotal = useMemo(() => {
+        return passengers.reduce((sum, p) => sum + Number(p.finalPrice || 0), 0);
+    }, [passengers]);
+
+    const commissionValue = useMemo(() => {
+        if (commissionType === 'tax') return commissionAmount;
+        if (commissionType === 'reduction') return -commissionAmount;
+        return 0;
+    }, [commissionType, commissionAmount]);
+
+    const finalTotal = passengerTotal + commissionValue;
 
     // Mock Client Fetch (Replace with real selector)
     const [clients, setClients] = useState<any[]>([]);
@@ -108,14 +125,8 @@ const OrderFormV2 = () => {
             .catch(console.error);
     }, [selectedHotelName]);
 
-    // Auto-calculate total from passenger prices
-    useEffect(() => {
-        const total = passengers.reduce((sum, p) => {
-            const finalPrice = Number((p as any).finalPrice || 0);
-            return sum + finalPrice;
-        }, 0);
-        setTotalAmount(total);
-    }, [passengers]);
+    // Removed auto-calculate effect in favor of useMemo
+    // useEffect(() => { ... }, [passengers]);
 
     // State for price editing
     const [editingPriceFor, setEditingPriceFor] = useState<string | null>(null);
@@ -155,16 +166,11 @@ const OrderFormV2 = () => {
                 }
 
                 // Set pricing fields
-                (newPassengers[index] as any).ageCategory = ageCategory;
-                (newPassengers[index] as any).suggestedPrice = suggestedPrice;
-                // Only overwrite finalPrice if not overridden manually OR if changing room/category implies reset? 
-                // Let's reset it to suggested if we are auto-calculating to ensure accuracy, unless user locked it?
-                // For now, update it always to fix "not showing" issue. User can override again.
-                // But wait, if user manually edited, we might annoy them. 
-                // But the requirement is "total price based on rooms prices NOT SHOWING". 
-                // So I should ensure it shows.
-                (newPassengers[index] as any).finalPrice = suggestedPrice;
-                (newPassengers[index] as any).priceOverridden = false;
+                // Set pricing fields
+                newPassengers[index].ageCategory = ageCategory;
+                newPassengers[index].suggestedPrice = suggestedPrice;
+                newPassengers[index].finalPrice = suggestedPrice;
+                newPassengers[index].priceOverridden = false;
             }
         }
 
@@ -196,13 +202,35 @@ const OrderFormV2 = () => {
 
         setLoading(true);
         try {
+            // Construct logic items for Tax/Reduction
+            const items = [];
+            if (commissionType === 'tax' && commissionAmount > 0) {
+                items.push({
+                    id: 'tax',
+                    description: 'Taxe / Supplément',
+                    quantity: 1,
+                    unitPrice: commissionAmount,
+                    amount: commissionAmount,
+                    amountDZD: commissionAmount
+                });
+            } else if (commissionType === 'reduction' && commissionAmount > 0) {
+                items.push({
+                    id: 'reduction',
+                    description: 'Réduction / Rabais',
+                    quantity: 1,
+                    unitPrice: -commissionAmount,
+                    amount: -commissionAmount,
+                    amountDZD: -commissionAmount
+                });
+            }
+
             const orderData = {
                 clientId,
                 agencyId: agencyId || null,
-                items: [], // Legacy items field, can default to empty or structured
+                items: items, // Include Tax/Reduction as items
                 passengers,
-                hotels, // Sending raw hotels array
-                totalAmount, // Assuming entered or calculated
+                hotels,
+                totalAmount: finalTotal, // Use final calculated total
                 notes
             };
 
@@ -350,7 +378,7 @@ const OrderFormV2 = () => {
                                     </div>
                                     <div>
                                         <label className="text-xs text-gray-500 block">Sexe</label>
-                                        <select value={(p as any).gender || 'Homme'} onChange={e => updatePassenger(index, 'gender', e.target.value)} className="w-full p-2 border rounded text-sm">
+                                        <select value={p.gender || 'Homme'} onChange={e => updatePassenger(index, 'gender', e.target.value)} className="w-full p-2 border rounded text-sm">
                                             <option value="Homme">Homme</option>
                                             <option value="Femme">Femme</option>
                                         </select>
@@ -359,7 +387,7 @@ const OrderFormV2 = () => {
                                     <div className="col-span-1 md:col-span-2">
                                         <label className="text-xs text-gray-500 block font-bold text-blue-600">Assigner Chambre (Optionnel)</label>
                                         <select
-                                            value={(p as any).assignedRoomId || ''}
+                                            value={p.assignedRoomId || ''}
                                             onChange={e => updatePassenger(index, 'assignedRoomId', e.target.value)}
                                             className="w-full p-2 border rounded text-sm border-blue-200 bg-blue-50"
                                         >
@@ -368,7 +396,7 @@ const OrderFormV2 = () => {
                                                 const occupied = parseInt(room.occupied_count || '0');
                                                 const isFull = occupied >= room.capacity;
                                                 // Allow selecting if not full OR if it's the already selected room (to keep selection)
-                                                if (isFull && (p as any).assignedRoomId !== room.id) return null;
+                                                if (isFull && p.assignedRoomId !== room.id) return null;
 
                                                 return (
                                                     <option key={room.id} value={room.id}>
@@ -377,10 +405,11 @@ const OrderFormV2 = () => {
                                                 );
                                             })}
                                         </select>
+
                                         {/* Gender Validation Error */}
-                                        {(p as any).assignedRoomId && (() => {
-                                            const selectedRoom = availableRooms.find(r => r.id === (p as any).assignedRoomId);
-                                            const validation = validateRoomGender(selectedRoom, (p as any).gender || 'Homme');
+                                        {p.assignedRoomId && (() => {
+                                            const selectedRoom = availableRooms.find(r => r.id === p.assignedRoomId);
+                                            const validation = validateRoomGender(selectedRoom, p.gender || 'Homme');
                                             if (!validation.isValid) {
                                                 return (
                                                     <div className="mt-1 text-red-600 text-xs font-medium flex items-center gap-1">
@@ -394,21 +423,21 @@ const OrderFormV2 = () => {
                                     </div>
 
                                     {/* Price Display & Override */}
-                                    {(p as any).assignedRoomId && (p as any).finalPrice !== undefined && (
+                                    {p.assignedRoomId && p.finalPrice !== undefined && (
                                         <div className="col-span-1 md:col-span-2 bg-green-50 border border-green-200 p-3 rounded-lg">
                                             <label className="text-xs font-medium text-green-800 block mb-2">
-                                                Prix de la Chambre {(p as any).priceOverridden && <span className="text-orange-600 text-xs">⚠️ Modifié</span>}
+                                                Prix de la Chambre {p.priceOverridden && <span className="text-orange-600 text-xs">⚠️ Modifié</span>}
                                             </label>
                                             {editingPriceFor === p.id ? (
                                                 <div className="flex gap-2">
                                                     <input
                                                         type="number"
-                                                        value={(p as any).finalPrice}
+                                                        value={p.finalPrice}
                                                         onChange={e => {
                                                             const newPrice = Number(e.target.value);
                                                             const updated = [...passengers];
-                                                            (updated[index] as any).finalPrice = newPrice;
-                                                            (updated[index] as any).priceOverridden = true;
+                                                            updated[index].finalPrice = newPrice;
+                                                            updated[index].priceOverridden = true;
                                                             setPassengers(updated);
                                                         }}
                                                         className="flex-1 px-2 py-1 border border-green-400 rounded text-sm"
@@ -426,7 +455,7 @@ const OrderFormV2 = () => {
                                             ) : (
                                                 <div className="flex justify-between items-center">
                                                     <span className="text-lg font-bold text-green-900">
-                                                        {(p as any).finalPrice.toLocaleString()} DZD
+                                                        {(p.finalPrice || 0).toLocaleString()} DZD
                                                     </span>
                                                     <button
                                                         type="button"
@@ -438,7 +467,7 @@ const OrderFormV2 = () => {
                                                 </div>
                                             )}
                                             <p className="text-xs text-gray-600 mt-1">
-                                                Catégorie: <strong>{(p as any).ageCategory || 'ADT'}</strong> • Suggéré: {(p as any).suggestedPrice || 0} DZD
+                                                Catégorie: <strong>{p.ageCategory || 'ADT'}</strong> • Suggéré: {p.suggestedPrice || 0} DZD
                                             </p>
                                         </div>
                                     )}
@@ -491,6 +520,78 @@ const OrderFormV2 = () => {
                 </div>
 
 
+                {/* Validated Commission / Tax / Reduction Section */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+                    <h2 className="text-lg font-semibold flex items-center gap-2">
+                        <DollarSign size={20} /> Commission / Taxe / Réduction
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Commission Type Selector */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Type
+                            </label>
+                            <select
+                                value={commissionType}
+                                onChange={(e) => {
+                                    setCommissionType(e.target.value as 'none' | 'tax' | 'reduction');
+                                    if (e.target.value === 'none') {
+                                        setCommissionAmount(0);
+                                    }
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                            >
+                                <option value="none">Aucun</option>
+                                <option value="tax">Taxe (Supplément)</option>
+                                <option value="reduction">Réduction (Rabais)</option>
+                            </select>
+                        </div>
+
+                        {/* Tax Field - Only shown when 'tax' is selected */}
+                        {commissionType === 'tax' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Montant de la taxe (DZD)
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="100"
+                                    value={commissionAmount}
+                                    onChange={(e) => setCommissionAmount(Number(e.target.value))}
+                                    className="w-full px-3 py-2 border border-green-300 bg-green-50 rounded-lg focus:ring-2 focus:ring-green-500/20 focus:border-green-500 outline-none"
+                                    placeholder="0.00"
+                                />
+                                <p className="text-xs text-green-600 mt-1">
+                                    + {commissionAmount.toLocaleString()} DZD au total
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Reduction Field - Only shown when 'reduction' is selected */}
+                        {commissionType === 'reduction' && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Montant de la réduction (DZD)
+                                </label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="100"
+                                    value={commissionAmount}
+                                    onChange={(e) => setCommissionAmount(Number(e.target.value))}
+                                    className="w-full px-3 py-2 border border-red-300 bg-red-50 rounded-lg focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none"
+                                    placeholder="0.00"
+                                />
+                                <p className="text-xs text-red-600 mt-1">
+                                    - {commissionAmount.toLocaleString()} DZD du total
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {/* Totals */}
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl shadow-sm border-2 border-green-300">
                     <div className="flex justify-between items-center">
@@ -500,10 +601,15 @@ const OrderFormV2 = () => {
                         </div>
                         <div className="text-right">
                             <div className="text-3xl font-bold text-green-700">
-                                {totalAmount.toLocaleString()} DZD
+                                {finalTotal.toLocaleString()} DZD
                             </div>
+                            {commissionValue !== 0 && (
+                                <p className={`text-sm ${commissionValue > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    Inclus: {commissionValue > 0 ? '+' : ''}{commissionValue.toLocaleString()} ({commissionType === 'tax' ? 'Taxe' : 'Réduction'})
+                                </p>
+                            )}
                             <p className="text-xs text-gray-600 mt-1">
-                                {passengers.filter(p => (p as any).finalPrice).length} passager(s) avec chambres
+                                {passengers.filter(p => p.finalPrice !== undefined).length} passager(s) avec chambres
                             </p>
                         </div>
                     </div>
@@ -515,8 +621,8 @@ const OrderFormV2 = () => {
                         {loading ? 'Création...' : 'Créer Commande'}
                     </button>
                 </div>
-            </form>
-        </div>
+            </form >
+        </div >
     );
 };
 

@@ -65,6 +65,12 @@ export interface Passenger {
     roomType?: 'Single' | 'Double' | 'Triple' | 'Quad';
     assignedRoomId?: string; // UUID of assigned Room
     photo?: string; // Base64
+
+    // Pricing Fields (Added for OrderFormV2)
+    finalPrice?: number;
+    suggestedPrice?: number;
+    priceOverridden?: boolean;
+    ageCategory?: 'ADT' | 'CHD' | 'INF';
 }
 
 export interface Hotel {
