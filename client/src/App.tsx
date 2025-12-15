@@ -28,6 +28,7 @@ import CommissionReport from './pages/Reports/CommissionReport';
 import RevenueReport from './pages/Reports/RevenueReport';
 import SupplierContracts from './pages/Suppliers/SupplierContracts';
 import LogsPage from './pages/Logs/LogsPage';
+import { OfflineProvider } from './context/OfflineContext';
 
 import DataMigration from './components/DataMigration';
 
@@ -38,51 +39,63 @@ function App() {
         <AuthProvider>
           <DataProvider>
             <ExchangeRateProvider>
-              <Routes>
-                <Route path="/login" element={<Login />} />
+              <OfflineProvider>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
 
-                <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="migration" element={<DataMigration />} />
+                  <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="migration" element={<DataMigration />} />
 
-                  {/* Business Modules */}
-                  <Route element={<ProtectedRoute permission="manage_business" />}>
-                    <Route path="clients" element={<ClientList />} />
-                    <Route path="orders" element={<OrderListV2 />} />
-                    <Route path="orders/:id" element={<OrderDetails />} />
-                    <Route path="orders/new" element={<OrderFormV2 />} />
-                    <Route path="agencies" element={<AgencyList />} />
-                    <Route path="agencies/:id" element={<AgencyDetails />} />
-                    <Route path="suppliers" element={<SupplierList />} />
-                    <Route path="suppliers/:id/contracts" element={<SupplierContracts />} />
-                    <Route path="offers" element={<OfferList />} />
+                    {/* Business Modules */}
+                    <Route element={<ProtectedRoute permission="manage_business" />}>
+                      <Route path="clients" element={<ClientList />} />
+                      <Route path="orders" element={<OrderListV2 />} />
+                      <Route path="orders/:id" element={<OrderDetails />} />
+                      <Route path="orders/new" element={<OrderFormV2 />} />
+                      <Route path="agencies" element={<AgencyList />} />
+                      <Route path="agencies/:id" element={<AgencyDetails />} />
+                      <Route path="suppliers" element={<SupplierList />} />
+                      <Route path="suppliers/:id/contracts" element={<SupplierContracts />} />
+                      <Route path="offers" element={<OfferList />} />
+                    </Route>
+
+                    {/* Financial Modules */}
+                    <Route element={<ProtectedRoute permission="manage_financials" />}>
+                      <Route path="reports" element={<ReportsPage />} />
+                      <Route path="reports/commissions" element={<CommissionReport />} />
+                      <Route path="reports/revenue" element={<RevenueReport />} />
+                      <Route path="expenses" element={<ExpenseList />} />
+                      <Route path="guide-expenses" element={<GuideExpenseList />} />
+                    </Route>
+
+                    {/* Agency Management */}
+                    {/* Agency Management - Business */}
+                    <Route element={<ProtectedRoute permission="manage_business" />}>
+                      <Route path="annexes" element={<div className="text-gray-500">Annexes</div>} />
+                      <Route path="agency-details" element={<AgencyList />} />
+                      <Route path="discounts" element={<DiscountList />} />
+                      <Route path="tax" element={<TaxList />} />
+                      <Route path="tax" element={<TaxList />} />
+                    </Route>
+
+                    {/* Agency Management - Users & Logs */}
+                    <Route element={<ProtectedRoute permission="manage_users" />}>
+                      <Route path="users" element={<UserList />} />
+                      <Route path="logs" element={<LogsPage />} />
+                    </Route>
+
+                    {/* Agency Management - Other */}
+                    <Route element={<ProtectedRoute permission="manage_business" />}>
+                      <Route path="support" element={<div className="text-gray-500">Support & Videos</div>} />
+                      <Route path="payments" element={<PaymentList />} />
+                      <Route path="stats" element={<div className="text-gray-500">Statistiques</div>} />
+                      <Route path="rooming-list" element={<RoomingList />} />
+                      <Route path="cash-register" element={<CaissePage />} />
+                    </Route>
                   </Route>
-
-                  {/* Financial Modules */}
-                  <Route element={<ProtectedRoute permission="manage_financials" />}>
-                    <Route path="reports" element={<ReportsPage />} />
-                    <Route path="reports/commissions" element={<CommissionReport />} />
-                    <Route path="reports/revenue" element={<RevenueReport />} />
-                    <Route path="expenses" element={<ExpenseList />} />
-                    <Route path="guide-expenses" element={<GuideExpenseList />} />
-                  </Route>
-
-                  {/* Agency Management */}
-                  <Route element={<ProtectedRoute permission="manage_business" />}>
-                    <Route path="annexes" element={<div className="text-gray-500">Annexes</div>} />
-                    <Route path="agency-details" element={<AgencyList />} />
-                    <Route path="discounts" element={<DiscountList />} />
-                    <Route path="tax" element={<TaxList />} />
-                    <Route path="users" element={<UserList />} />
-                    <Route path="logs" element={<LogsPage />} />
-                    <Route path="support" element={<div className="text-gray-500">Support & Videos</div>} />
-                    <Route path="payments" element={<PaymentList />} />
-                    <Route path="stats" element={<div className="text-gray-500">Statistiques</div>} />
-                    <Route path="rooming-list" element={<RoomingList />} />
-                    <Route path="cash-register" element={<CaissePage />} />
-                  </Route>
-                </Route>
-              </Routes>
+                </Routes>
+              </OfflineProvider>
             </ExchangeRateProvider>
           </DataProvider>
         </AuthProvider>

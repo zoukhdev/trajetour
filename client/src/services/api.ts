@@ -13,9 +13,54 @@ const api = axios.create({
 });
 
 // Add response interceptor for error handling
+api.interceptors.request.use(
+    async (config) => {
+        // If it's a sync request, pass through
+        if (config.headers && config.headers['x-sync-request']) {
+            return config;
+        }
+
+        // Check Online Status
+        if (!navigator.onLine) {
+            // Only queue mutation requests (POST, PUT, DELETE, PATCH)
+            const method = config.method?.toUpperCase();
+            if (method === 'POST' || method === 'PUT' || method === 'DELETE' || method === 'PATCH') {
+                const { offlineQueueService } = await import('./offlineQueue'); // Dynamic import to avoid circular dependency issues if any
+
+                offlineQueueService.addRequest({
+                    url: config.url || '',
+                    method: method,
+                    data: config.data,
+                    headers: config.headers
+                });
+
+                return Promise.reject({
+                    message: 'Network Error: Offline',
+                    code: 'OFFLINE_QUEUED',
+                    isOffline: true
+                });
+            }
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        // Handle Offline Queued "Errors" gracefully if caught here (though request interceptor usually rejects before this)
+        if (error.isOffline || error.code === 'OFFLINE_QUEUED') {
+            console.log('Request queued offline:', error);
+            // Return a resolved promise with a fake success/pending structure to prevent UI crashes?
+            // Or let the UI handle the error. 
+            // Better to let UI handle it, or standard error handler.
+            // But we don't want the "Red Toast" for system error.
+            return Promise.reject(error);
+        }
+
         console.error('❌ API Request Failed:', {
             url: error.config?.url,
             method: error.config?.method,
