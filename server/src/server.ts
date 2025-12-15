@@ -134,6 +134,73 @@ app.get('/api/migrate-transactions', async (req, res) => {
     }
 });
 
+// TEMPORARY: Fix Rooms Schema - Add price and pricing columns
+app.get('/api/fix-rooms-schema', async (req, res) => {
+    try {
+        console.log('🔄 Starting Rooms Schema Fix from API...');
+        const client = await pool.connect();
+        try {
+            // Check current columns
+            const columnsResult = await client.query(`
+                SELECT column_name, data_type 
+                FROM information_schema.columns 
+                WHERE table_name = 'rooms'
+                ORDER BY ordinal_position;
+            `);
+
+            console.log('📋 Current rooms table columns:', columnsResult.rows);
+
+            // Add missing columns
+            await client.query(`
+                ALTER TABLE rooms 
+                ADD COLUMN IF NOT EXISTS price DECIMAL(12,2) DEFAULT 0,
+                ADD COLUMN IF NOT EXISTS pricing JSONB DEFAULT '{"adult": 0, "child": 0, "infant": 0}'::jsonb;
+            `);
+
+            console.log('✅ Columns added successfully');
+
+            // Migrate existing data
+            await client.query(`
+                UPDATE rooms 
+                SET pricing = jsonb_build_object(
+                    'adult', COALESCE(price, 0), 
+                    'child', 0, 
+                    'infant', 0
+                )
+                WHERE pricing IS NULL 
+                   OR pricing = '{}'::jsonb 
+                   OR NOT (pricing ? 'adult' AND pricing ? 'child' AND pricing ? 'infant');
+            `);
+
+            console.log('✅ Data migration completed');
+
+            // Verify final schema
+            const finalColumnsResult = await client.query(`
+                SELECT column_name, data_type 
+                FROM information_schema.columns 
+                WHERE table_name = 'rooms'
+                ORDER BY ordinal_position;
+            `);
+
+            res.json({
+                success: true,
+                message: '✅ Rooms schema fixed successfully!',
+                before: columnsResult.rows,
+                after: finalColumnsResult.rows
+            });
+        } finally {
+            client.release();
+        }
+    } catch (error: any) {
+        console.error('❌ Migration failed:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Migration failed: ' + error.message,
+            error: error.stack
+        });
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/clients', clientsRoutes);
