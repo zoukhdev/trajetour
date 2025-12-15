@@ -239,9 +239,9 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const storedDiscounts = localStorage.getItem('discounts');
         const storedTaxes = localStorage.getItem('taxes');
 
-        if (storedGuideExpenses) setGuideExpenses(JSON.parse(storedGuideExpenses));
-        if (storedDiscounts) setDiscounts(JSON.parse(storedDiscounts));
-        if (storedTaxes) setTaxes(JSON.parse(storedTaxes));
+        if (storedGuideExpenses) setGuideExpenses(JSON.parse(storedGuideExpenses!));
+        if (storedDiscounts) setDiscounts(JSON.parse(storedDiscounts!));
+        if (storedTaxes) setTaxes(JSON.parse(storedTaxes!));
 
     }, []);
 
