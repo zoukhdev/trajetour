@@ -78,10 +78,46 @@ const LogsPage = () => {
     const renderChanges = (changes: any) => {
         if (!changes) return <span className="text-gray-400">-</span>;
 
-        // Simple JSON view for now, can be enhanced
+        // Ensure changes is an object
+        let parsedChanges = changes;
+        if (typeof changes === 'string') {
+            try {
+                parsedChanges = JSON.parse(changes);
+            } catch (e) {
+                return <span>{changes}</span>;
+            }
+        }
+
+        if (Object.keys(parsedChanges).length === 0) return <span className="text-gray-400">-</span>;
+
         return (
-            <div className="text-xs font-mono bg-gray-50 p-2 rounded border border-gray-100 max-w-xs overflow-auto max-h-20">
-                {JSON.stringify(changes, null, 2)}
+            <div className="flex flex-col gap-1 text-xs">
+                {Object.entries(parsedChanges).map(([key, value]) => {
+                    // Format Key: camelCase to Title Case (e.g. isValidated -> Is Validated)
+                    const formattedKey = key
+                        .replace(/([A-Z])/g, ' $1')
+                        .replace(/^./, (str) => str.toUpperCase())
+                        .replace(/_/g, ' ');
+
+                    // Format Value
+                    let formattedValue: any = value;
+                    if (typeof value === 'boolean') {
+                        formattedValue = value ?
+                            <span className="text-green-600 font-medium">Oui</span> :
+                            <span className="text-red-600 font-medium">Non</span>;
+                    } else if (value === null || value === undefined) {
+                        formattedValue = <span className="text-gray-400">N/A</span>;
+                    } else if (typeof value === 'object') {
+                        formattedValue = JSON.stringify(value); // Keep nested objects as JSON string for now
+                    }
+
+                    return (
+                        <div key={key} className="flex gap-1">
+                            <span className="font-semibold text-gray-700">{formattedKey}:</span>
+                            <span className="text-gray-600">{formattedValue}</span>
+                        </div>
+                    );
+                })}
             </div>
         );
     };
