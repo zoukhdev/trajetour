@@ -4,6 +4,7 @@ import { authMiddleware, requirePermission, AuthRequest } from '../middleware/au
 import { validate, orderSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { generateShortId } from '../utils/idGenerator.js';
 
 const router = express.Router();
 
