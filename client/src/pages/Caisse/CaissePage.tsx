@@ -123,7 +123,14 @@ const CaissePage = () => {
                                 <Wallet size={24} />
                             </div>
                             <div>
-                                <p className="text-sm text-gray-500 font-medium">{account.name}</p>
+                                <div className="flex items-center gap-2">
+                                    <p className="text-sm text-gray-500 font-medium">{account.name}</p>
+                                    {account.code && (
+                                        <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded border border-gray-200 font-mono">
+                                            #{account.code}
+                                        </span>
+                                    )}
+                                </div>
                                 <div className="flex items-baseline gap-1">
                                     <p className="text-2xl font-bold text-gray-900">
                                         {account.balance.toLocaleString()}

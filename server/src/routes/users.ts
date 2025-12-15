@@ -5,10 +5,13 @@ import { authMiddleware, requirePermission, AuthRequest } from '../middleware/au
 import { validate, userSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
 
+import { generateShortId } from '../utils/idGenerator.js';
+
 const router = express.Router();
 
 const mapUserResponse = (row: any) => ({
     id: row.id,
+    code: row.code,
     username: row.username,
     email: row.email,
     role: row.role,
@@ -70,12 +73,13 @@ router.post('/',
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
+            const code = generateShortId();
 
             const result = await client.query(
-                `INSERT INTO users (username, email, password_hash, role, permissions)
-                 VALUES ($1, $2, $3, $4, $5)
+                `INSERT INTO users (username, email, password_hash, role, permissions, code)
+                 VALUES ($1, $2, $3, $4, $5, $6)
                  RETURNING *`,
-                [username, email, hashedPassword, role, permissions || []]
+                [username, email, hashedPassword, role, permissions || [], code]
             );
 
             const newUser = result.rows[0];

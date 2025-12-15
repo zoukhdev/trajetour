@@ -68,6 +68,7 @@ const validateRoomAssignments = async (client: any, passengers: any[], ignoreOrd
 // Helper to map DB columns (snake_case) to API model (camelCase)
 const mapOrderResponse = (row: any) => ({
     id: row.id,
+    reference: row.reference,
     clientId: row.client_id,
     agencyId: row.agency_id,
     items: row.items,
@@ -232,13 +233,15 @@ router.post('/',
                 await validateRoomAssignments(client, passengers);
             }
 
+            const reference = generateShortId();
+
             const result = await client.query(
                 `INSERT INTO orders (
                     client_id, agency_id, 
                     items, passengers, hotels, 
-                    total_amount, status, created_by, notes
+                    total_amount, status, created_by, notes, reference
                 )
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                  RETURNING *`,
                 [
                     clientId,
@@ -249,7 +252,8 @@ router.post('/',
                     totalAmount,
                     'Non payé',
                     req.user!.id,
-                    notes
+                    notes,
+                    reference
                 ]
             );
 

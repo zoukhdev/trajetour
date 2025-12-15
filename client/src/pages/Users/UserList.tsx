@@ -79,7 +79,7 @@ const UserList = () => {
                             {filteredUsers.map((user) => (
                                 <tr key={user.id} className="hover:bg-gray-50/80 transition-colors">
                                     <td className="hidden md:table-cell px-6 py-4 font-mono text-sm text-gray-600">
-                                        #{user.id}
+                                        #{user.code || user.id.substring(0, 8)}
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
@@ -191,7 +191,7 @@ const UserList = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
                                 <span className="block text-xs font-medium text-gray-500 uppercase mb-1">ID Utilisateur</span>
-                                <span className="font-mono text-sm font-semibold text-gray-900">{viewingUser.id}</span>
+                                <span className="font-mono text-sm font-semibold text-gray-900">{viewingUser.code || viewingUser.id}</span>
                             </div>
                             <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
                                 <span className="block text-xs font-medium text-gray-500 uppercase mb-1">Mot de passe</span>

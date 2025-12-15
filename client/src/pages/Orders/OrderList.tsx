@@ -110,7 +110,7 @@ const OrderList = () => {
                                                     </div>
                                                     <div>
                                                         <span className="block font-semibold text-gray-900">{getClientName(order.clientId)}</span>
-                                                        <span className="text-xs text-gray-500">CMD-{(order.id || '').substr(0, 6).toUpperCase()}</span>
+                                                        <span className="text-xs text-gray-500">CMD-{order.reference || (order.id || '').substring(0, 6).toUpperCase()}</span>
                                                     </div>
                                                 </div>
                                             </td>

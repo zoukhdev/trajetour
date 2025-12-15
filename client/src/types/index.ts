@@ -8,6 +8,7 @@ export type Permission =
 
 export interface User {
     id: string;
+    code?: string;
     username: string;
     email: string;
     password?: string; // In a real app, this would be hashed. For mock, we store it.
@@ -123,6 +124,7 @@ export type OrderStatus = 'Payé' | 'Non payé' | 'Partiel';
 
 export interface Order {
     id: string;
+    reference?: string;
     clientId: string;
     agencyId?: string;
 
@@ -266,6 +268,7 @@ export interface Tax {
 
 export interface BankAccount {
     id: string;
+    code?: string;
     name: string; // e.g., "Caisse Principale", "CPA", "BADR", "SAR Account"
     type: 'Caisse' | 'Bank';
     currency: 'DZD' | 'SAR' | 'EUR' | 'USD';

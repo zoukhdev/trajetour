@@ -2,11 +2,13 @@ import express from 'express';
 import { pool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { logAudit } from '../services/auditLog.js';
+import { generateShortId } from '../utils/idGenerator.js';
 
 const router = express.Router();
 
 const mapAccountResponse = (row: any) => ({
     id: row.id,
+    code: row.code,
     name: row.name,
     type: row.type,
     balance: parseFloat(row.balance),
@@ -74,12 +76,13 @@ router.post('/',
         try {
             await client.query('BEGIN');
             const { name, type, balance, currency, accountNumber, isDefault, icon } = req.body;
+            const code = generateShortId();
 
             const result = await client.query(
-                `INSERT INTO bank_accounts (name, type, balance, currency, account_number, is_default, icon)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                `INSERT INTO bank_accounts (name, type, balance, currency, account_number, is_default, icon, code)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                  RETURNING *`,
-                [name, type, balance || 0, currency || 'DZD', accountNumber, isDefault || false, icon]
+                [name, type, balance || 0, currency || 'DZD', accountNumber, isDefault || false, icon, code]
             );
 
             const newAccount = result.rows[0];
