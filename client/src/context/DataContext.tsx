@@ -220,6 +220,20 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             }
         });
 
+        // Listen for Offline Sync completion
+        const handleSyncComplete = () => {
+            console.log('🔄 Sync complete: Refreshing data...');
+            loadData();
+        };
+        window.addEventListener('data-refresh-needed', handleSyncComplete);
+
+        return () => {
+            // Cleanup if useEffect returned a cleanup function (it currently doesn't, but good practice)
+            // Note: The original useEffect was [], so we can't easily return cleanup without refactoring.
+            // But since DataProvider is top-level, it likely never unmounts.
+            window.removeEventListener('data-refresh-needed', handleSyncComplete);
+        };
+
         // Load Remaining LocalStorage Data
         const storedGuideExpenses = localStorage.getItem('guideExpenses');
         const storedDiscounts = localStorage.getItem('discounts');

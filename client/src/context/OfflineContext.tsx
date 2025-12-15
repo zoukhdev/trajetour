@@ -17,6 +17,26 @@ export const OfflineProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [queue, setQueue] = useState<OfflineRequest[]>(offlineQueueService.getQueue());
     const [syncing, setSyncing] = useState(false);
 
+    // Get refreshData from DataContext
+    // Note: This assumes DataProvider wraps OfflineProvider or is available in the tree.
+    // If DataProvider is inside OfflineProvider in App.tsx, this will fail.
+    // However, for the fix to work, OfflineProvider usually wraps the generic App, but Data needs to be accessible.
+    // If this throws an error, we might need a different architectural approach (e.g. event bus).
+    // For now, let's assume standard Context composition allows it, or wrapped safely.
+    // Actually, usually <AuthProvider><OfflineProvider><DataProvider><App/></DataProvider></OfflineProvider></AuthProvider>
+    // If OfflineProvider is OUTSIDE DataProvider, `useData` will throw.
+    // I will add a safe check or catch. But useData throws if undefined.
+
+    // SAFEGUARDS: We cannot use useData() here if OfflineProvider is a parent of DataProvider.
+    // Instead of using useData directly, we can dispatch a custom event or use an event listener that DataContext listens to?
+    // OR we just use window.location.reload() as a nuclear option for "Refresh"?
+    // BETTER: DataContext listens to 'offline-sync-complete' event.
+
+    // Let's change strategy to be safer and avoid Context Dependency Cycles/Errors.
+    // Strategy: Dispatch a custom window event "sync-complete". DataContext listens to it.
+
+    // Wait, let's stick to the file write first. I will implement the Event based strategy which is safer.
+
     // Monitor Network Status
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
@@ -91,8 +111,9 @@ export const OfflineProvider: React.FC<{ children: ReactNode }> = ({ children })
 
         setSyncing(false);
         if (syncedCount > 0) {
-            // toast.success(`Synced ${syncedCount} offline changes.`);
             console.log(`Synced ${syncedCount} offline changes.`);
+            // Dispatch event for DataContext to pick up
+            window.dispatchEvent(new Event('data-refresh-needed'));
         }
     };
 

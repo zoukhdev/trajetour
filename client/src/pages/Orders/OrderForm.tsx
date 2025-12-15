@@ -142,7 +142,7 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
         setPassengers(passengers.filter(p => p.id !== passengerId));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!clientId || !selectedOfferId) {
             alert('Veuillez sélectionner un client et une offre');
@@ -193,19 +193,31 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
             notes
         };
 
-        // Add order
-        addOrder(newOrder);
+        // Add order with offline error handling
+        try {
+            await addOrder(newOrder);
 
-        // Deduct availability from offer
-        if (selectedOffer && selectedOffer.disponibilite !== undefined) {
-            const updatedOffer = {
-                ...selectedOffer,
-                disponibilite: selectedOffer.disponibilite - passengers.length
-            };
-            updateOffer(updatedOffer);
+            // Deduct availability from offer
+            if (selectedOffer && selectedOffer.disponibilite !== undefined) {
+                const updatedOffer = {
+                    ...selectedOffer,
+                    disponibilite: selectedOffer.disponibilite - passengers.length
+                };
+                await updateOffer(updatedOffer);
+            }
+
+            onClose();
+        } catch (error: any) {
+            // Check if this is an offline queue event
+            if (error?.message?.includes('offline') || error?.code === 'OFFLINE_QUEUED' || !navigator.onLine) {
+                alert('⚠️ Mode Hors-Ligne : Commande sauvegardée dans la file d\'attente. Elle sera synchronisée automatiquement lors de la reconnexion.');
+                onClose(); // Close the form since it was queued successfully
+            } else {
+                // Real error - show to user
+                console.error('Error creating order:', error);
+                alert('Erreur lors de la création de la commande: ' + (error?.message || 'Erreur inconnue'));
+            }
         }
-
-        onClose();
     };
 
     return (

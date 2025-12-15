@@ -236,9 +236,16 @@ const OrderFormV2 = () => {
 
             await ordersAPI.create(orderData);
             navigate('/orders');
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            alert('Erreur lors de la création de la commande');
+            // Check if this is an offline queue event
+            if (err?.message?.includes('offline') || err?.code === 'OFFLINE_QUEUED' || !navigator.onLine) {
+                alert('⚠️ Mode Hors-Ligne : Commande sauvegardée dans la file d\'attente. Elle sera synchronisée automatiquement lors de la reconnexion.');
+                navigate('/orders'); // Navigate away since it was queued successfully
+            } else {
+                // Real error - show to user
+                alert('Erreur lors de la création de la commande: ' + (err?.message || 'Erreur inconnue'));
+            }
         } finally {
             setLoading(false);
         }
