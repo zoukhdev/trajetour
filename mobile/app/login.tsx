@@ -21,7 +21,11 @@ export default function Login() {
 
         setIsLoading(true);
         try {
-            const success = await login(email, password);
+            // Sanitize input
+            const safeEmail = email.trim().toLowerCase();
+            const safePassword = password.trim();
+
+            const success = await login(safeEmail, safePassword);
             if (success) {
                 // Navigate to dashboard
                 router.replace('/(tabs)'); // Assuming we will create tabs layout

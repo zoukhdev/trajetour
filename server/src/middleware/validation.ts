@@ -26,7 +26,21 @@ export const orderSchema = z.object({
         unitPrice: z.number().nonnegative(),
         amount: z.number().nonnegative()
     })).optional().default([]),
+    passengers: z.array(z.object({
+        id: z.string().optional(),
+        firstName: z.string(),
+        lastName: z.string(),
+        birthDate: z.string().optional().or(z.literal('')),
+        passportNumber: z.string().optional().or(z.literal('')),
+        passportExpiry: z.string().optional().or(z.literal('')),
+        gender: z.enum(['Homme', 'Femme']).optional(),
+        ageCategory: z.enum(['ADT', 'CHD', 'INF']).optional(),
+        assignedRoomId: z.string().uuid().nullable().optional(),
+        finalPrice: z.number().nonnegative().optional()
+    })).optional().default([]),
+    hotels: z.array(z.any()).optional().default([]),
     totalAmount: z.number().nonnegative(),
+    totalAmountDZD: z.number().optional(),
     notes: z.string().optional()
 });
 

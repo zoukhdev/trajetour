@@ -76,6 +76,7 @@ const mapOrderResponse = (row: any) => ({
     passengers: row.passengers || [],
     hotels: row.hotels || [],
     totalAmount: parseFloat(row.total_amount),
+    totalAmountDZD: row.total_amount_dzd ? parseFloat(row.total_amount_dzd) : parseFloat(row.total_amount),
     status: row.status,
     createdAt: row.created_at,
     createdBy: row.created_by,
@@ -225,9 +226,9 @@ router.post('/',
         try {
             await client.query('BEGIN');
 
-            const { clientId, agencyId, items, passengers, hotels, totalAmount, notes } = req.body;
+            const { clientId, agencyId, items, passengers, hotels, totalAmount, totalAmountDZD, notes } = req.body;
 
-            console.log('📦 Create Order Request:', JSON.stringify({ clientId, agencyId, totalAmount, passengersCount: passengers?.length, hotelCount: hotels?.length }, null, 2));
+            console.log('📦 Create Order Request:', JSON.stringify({ clientId, agencyId, totalAmount, totalAmountDZD, passengersCount: passengers?.length, hotelCount: hotels?.length }, null, 2));
 
             // Validate Room Assignments
             if (passengers && passengers.length > 0) {
@@ -240,9 +241,9 @@ router.post('/',
                 `INSERT INTO orders (
                     client_id, agency_id, 
                     items, passengers, hotels, 
-                    total_amount, status, created_by, notes, reference
+                    total_amount, total_amount_dzd, status, created_by, notes, reference
                 )
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                  RETURNING *`,
                 [
                     clientId,
@@ -251,6 +252,7 @@ router.post('/',
                     JSON.stringify(passengers || []),
                     JSON.stringify(hotels || []),
                     totalAmount,
+                    totalAmountDZD || totalAmount,
                     'Non payé',
                     req.user!.id,
                     notes,
@@ -289,7 +291,7 @@ router.put('/:id',
         try {
             await client.query('BEGIN');
 
-            const { items, passengers, hotels, totalAmount, notes, status } = req.body;
+            const { items, passengers, hotels, totalAmount, totalAmountDZD, notes, status } = req.body;
 
             // Validate Room Assignments
             if (passengers && passengers.length > 0) {
@@ -299,14 +301,15 @@ router.put('/:id',
             const result = await client.query(
                 `UPDATE orders 
                  SET items = $1, passengers = $2, hotels = $3, 
-                     total_amount = $4, notes = $5, status = $6
-                 WHERE id = $7
+                     total_amount = $4, total_amount_dzd = $5, notes = $6, status = $7
+                 WHERE id = $8
                  RETURNING *`,
                 [
                     JSON.stringify(items),
                     JSON.stringify(passengers || []),
                     JSON.stringify(hotels || []),
                     totalAmount,
+                    totalAmountDZD || totalAmount,
                     notes,
                     status,
                     req.params.id

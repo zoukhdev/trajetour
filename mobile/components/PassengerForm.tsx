@@ -33,8 +33,61 @@ export default function PassengerForm({ passenger, onSave, onCancel, rooms = [],
 
     const [selectedHotel, setSelectedHotel] = useState('');
 
+    const calculateAge = (birthDate: string) => {
+        if (!birthDate) return null;
+        const birth = new Date(birthDate);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+        const m = today.getMonth() - birth.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
+    const getAgeCategory = (age: number | null): 'ADT' | 'CHD' | 'INF' => {
+        if (age === null) return 'ADT';
+        if (age < 2) return 'INF';
+        if (age < 12) return 'CHD';
+        return 'ADT';
+    };
+
+    const isPassportExpiringSoon = (expiry: string) => {
+        if (!expiry) return false;
+        const expiryDate = new Date(expiry);
+        const sixMonthsFromNow = new Date();
+        sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+        return expiryDate < sixMonthsFromNow;
+    };
+
     const handleChange = (field: keyof Passenger, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+        setFormData(prev => {
+            const updated = { ...prev, [field]: value };
+
+            // Re-calculate category and price if birthDate or assignedRoomId changes
+            if (field === 'birthDate' || field === 'assignedRoomId') {
+                const age = calculateAge(updated.birthDate || '');
+                const category = getAgeCategory(age);
+                updated.ageCategory = category;
+
+                if (updated.assignedRoomId) {
+                    const room = rooms.find(r => r.id === updated.assignedRoomId);
+                    if (room) {
+                        let price = room.price; // Fallback
+                        if (room.pricing) {
+                            if (category === 'INF') price = room.pricing.infant;
+                            else if (category === 'CHD') price = room.pricing.child;
+                            else price = room.pricing.adult;
+                        }
+                        updated.finalPrice = price;
+                    }
+                } else {
+                    updated.finalPrice = 0;
+                }
+            }
+
+            return updated;
+        });
     };
 
     const handleSubmit = () => {
@@ -79,6 +132,11 @@ export default function PassengerForm({ passenger, onSave, onCancel, rooms = [],
                     onChange={(date) => handleChange('birthDate', date)}
                     placeholder="Sélectionner la date de naissance"
                 />
+                {formData.birthDate && (
+                    <ThemedText className="text-xs font-bold text-blue-600 mt-1 uppercase">
+                        Catégorie: {formData.ageCategory === 'INF' ? 'BÉBÉ (0-2 ans)' : formData.ageCategory === 'CHD' ? 'ENFANT (3-12 ans)' : 'ADULTE (12+ ans)'}
+                    </ThemedText>
+                )}
             </View>
 
             <View className="mb-4">
@@ -118,6 +176,11 @@ export default function PassengerForm({ passenger, onSave, onCancel, rooms = [],
                     onChange={(date) => handleChange('passportExpiry', date)}
                     placeholder="Sélectionner la date d'expiration"
                 />
+                {isPassportExpiringSoon(formData.passportExpiry || '') && (
+                    <ThemedText className="text-xs font-bold text-red-600 mt-1">
+                        Attention: Le passeport expire dans moins de 6 mois
+                    </ThemedText>
+                )}
             </View>
 
             {/* Room Selection */}
@@ -182,10 +245,10 @@ export default function PassengerForm({ passenger, onSave, onCancel, rooms = [],
                                                 onPress={() => !isFull && handleChange('assignedRoomId', room.id)}
                                                 disabled={isFull}
                                                 className={`px-4 py-3 rounded-lg border min-w-[140px] ${isSelected
-                                                        ? 'bg-blue-600 border-blue-600'
-                                                        : isFull
-                                                            ? 'bg-gray-50 border-gray-200 opacity-50'
-                                                            : 'bg-white border-gray-200'
+                                                    ? 'bg-blue-600 border-blue-600'
+                                                    : isFull
+                                                        ? 'bg-gray-50 border-gray-200 opacity-50'
+                                                        : 'bg-white border-gray-200'
                                                     }`}
                                             >
                                                 <View className="flex-row items-center justify-between mb-1">
@@ -195,8 +258,8 @@ export default function PassengerForm({ passenger, onSave, onCancel, rooms = [],
                                                     <View className={`px-2 py-0.5 rounded ${room.gender === 'MEN' ? 'bg-blue-100' : room.gender === 'WOMEN' ? 'bg-pink-100' : 'bg-purple-100'
                                                         }`}>
                                                         <ThemedText className={`text-xs font-semibold ${isSelected ? 'text-white' :
-                                                                room.gender === 'MEN' ? 'text-blue-700' :
-                                                                    room.gender === 'WOMEN' ? 'text-pink-700' : 'text-purple-700'
+                                                            room.gender === 'MEN' ? 'text-blue-700' :
+                                                                room.gender === 'WOMEN' ? 'text-pink-700' : 'text-purple-700'
                                                             }`}>
                                                             {genderLabel}
                                                         </ThemedText>
@@ -211,6 +274,13 @@ export default function PassengerForm({ passenger, onSave, onCancel, rooms = [],
                                     })}
                             </ScrollView>
                         </>
+                    )}
+                    {formData.assignedRoomId && formData.finalPrice !== undefined && (
+                        <View className="mt-3 bg-blue-50 p-2 rounded-lg border border-blue-100">
+                            <ThemedText className="text-sm font-bold text-blue-700 text-center">
+                                Prix de la chambre: {formData.finalPrice.toLocaleString()} DZD
+                            </ThemedText>
+                        </View>
                     )}
                 </View>
             )}

@@ -25,17 +25,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Check if user is logged in on mount
         const checkAuth = async () => {
             try {
-                const userData = await authAPI.getCurrentUser();
+                // Determine if we need to check the server or just basic token presence?
+                // For now, add a timeout to prevent infinite white screen if server is sleeping.
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Auth Timeout')), 5000)
+                );
+
+                const userDataPromise = authAPI.getCurrentUser();
+
+                // Race the API call against a 5-second timeout
+                const userData = await Promise.race([userDataPromise, timeoutPromise]) as User;
+
                 setUser(userData);
             } catch (error: any) {
-                // Only log real errors, not expected 401s
-                if (error.response?.status !== 401) {
-                    console.error('❌ CheckAuth Failed:', {
-                        message: error.message,
-                        status: error.response?.status,
-                    });
-                }
-                // User not authenticated - silently fail
+                // Timeout or API Error
+                console.log('⚠️ Startup Auth Check Failed/Timed out:', error.message);
+
+                // User not authenticated - fail gracefully
                 setUser(null);
             } finally {
                 setLoading(false);

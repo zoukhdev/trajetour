@@ -6,7 +6,7 @@ import { useExchangeRates } from '../../../context/ExchangeRateContext';
 import { ThemedText } from '../../../components/ui/ThemedText';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { Printer, CreditCard, ArrowLeft, Users, FileText, Wallet, CheckCircle, Clock } from 'lucide-react-native';
+import { Printer, CreditCard, ArrowLeft, Users, FileText, Wallet, CheckCircle, Clock, User } from 'lucide-react-native';
 import type { Payment, Currency, PaymentMethod } from '../../../types';
 
 // Simple Payment Modal Component
@@ -23,7 +23,7 @@ const PaymentModal = ({
     orderCurrency: Currency;
     accounts: any[];
 }) => {
-    const { getLatestRate, getRateForDate } = useExchangeRates();
+    const { getLatestRate } = useExchangeRates();
     const [amount, setAmount] = useState('');
     const [currency, setCurrency] = useState<Currency>('DZD');
     const [method, setMethod] = useState<PaymentMethod>('Cash');
@@ -31,7 +31,6 @@ const PaymentModal = ({
     const [exchangeRate, setExchangeRate] = useState(1);
     const [amountDZD, setAmountDZD] = useState(0);
 
-    // Update DZD amount and Exchange Rate
     useEffect(() => {
         if (currency !== 'DZD') {
             const rate = getLatestRate(currency);
@@ -41,7 +40,7 @@ const PaymentModal = ({
             setExchangeRate(1);
             setAmountDZD(parseFloat(amount) || 0);
         }
-    }, [currency, amount]);
+    }, [currency, amount, getLatestRate]);
 
     const handleSave = () => {
         if (!amount || !method) {
@@ -55,11 +54,10 @@ const PaymentModal = ({
             method,
             accountId,
             exchangeRateUsed: exchangeRate,
-            amountDZD, // Calculated
+            amountDZD,
             date: new Date().toISOString()
         });
 
-        // Reset
         setAmount('');
         setAccountId('');
     };
@@ -171,16 +169,13 @@ export default function OrderDetailsScreen() {
     const orderId = Array.isArray(id) ? id[0] : id;
     const order = orders.find(o => o.id === orderId);
 
-    // Derived Data
     const client = order ? clients.find(c => c.id === order.clientId) : undefined;
-    const agency = order?.agencyId ? agencies.find(a => a.id === order.agencyId) : undefined;
 
-    // Calculations
     const paidAmountDZD = Array.isArray(order?.payments)
         ? order.payments.filter(p => p.isValidated !== false).reduce((sum, p) => sum + (p.amountDZD || 0), 0)
         : 0;
     const remainingAmountDZD = (order?.totalAmountDZD || 0) - paidAmountDZD;
-    const isPaid = remainingAmountDZD <= 1; // Tolerance for float diffs
+    const isPaid = remainingAmountDZD <= 1;
 
     const handleAddPayment = async (paymentData: Partial<Payment>) => {
         if (!order) return;
@@ -192,6 +187,14 @@ export default function OrderDetailsScreen() {
             console.error(error);
             Alert.alert("Erreur", "Impossible d'ajouter le paiement");
         }
+    };
+
+    const isPassportExpiringSoon = (expiry: string) => {
+        if (!expiry) return false;
+        const expiryDate = new Date(expiry);
+        const sixMonthsFromNow = new Date();
+        sixMonthsFromNow.setMonth(sixMonthsFromNow.getMonth() + 6);
+        return expiryDate < sixMonthsFromNow;
     };
 
     if (!order) {
@@ -245,6 +248,62 @@ export default function OrderDetailsScreen() {
                             </ThemedText>
                         </View>
                     </View>
+
+                    {remainingAmountDZD > 0 && (
+                        <TouchableOpacity
+                            onPress={() => setShowPaymentModal(true)}
+                            className="mt-4 bg-blue-600 py-3 rounded-lg flex-row justify-center items-center gap-2 shadow-sm"
+                        >
+                            <CreditCard size={18} color="white" />
+                            <ThemedText className="text-white font-bold">Ajouter un Paiement</ThemedText>
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* Passengers Detail Section */}
+                <View className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
+                    <ThemedText className="font-semibold text-gray-900 mb-4">Passagers & Chambres</ThemedText>
+                    {(order.passengers || []).map((p, index) => (
+                        <View key={p.id || index} className="mb-4 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+                            <View className="flex-row justify-between items-start">
+                                <View className="flex-row items-center gap-2">
+                                    <View className="bg-gray-100 p-2 rounded-full">
+                                        <User size={16} color="#6B7280" />
+                                    </View>
+                                    <View>
+                                        <ThemedText className="font-bold text-gray-900">{p.firstName} {p.lastName}</ThemedText>
+                                        <ThemedText className="text-xs text-gray-500 uppercase">
+                                            {p.ageCategory === 'INF' ? 'BÉBÉ' : p.ageCategory === 'CHD' ? 'ENFANT' : 'ADULTE'}
+                                            {p.birthDate ? ` • ${p.birthDate}` : ''}
+                                        </ThemedText>
+                                    </View>
+                                </View>
+                                {p.finalPrice && (
+                                    <View className="items-end">
+                                        <ThemedText className="text-sm font-bold text-blue-600">{p.finalPrice.toLocaleString()} DZD</ThemedText>
+                                        <ThemedText className="text-[10px] text-gray-400">Prix Chambre</ThemedText>
+                                    </View>
+                                )}
+                            </View>
+
+                            <View className="mt-3 pl-10">
+                                <View className="flex-row items-center gap-2">
+                                    <ThemedText className="text-xs text-gray-600">Passeport: {p.passportNumber || '-'}</ThemedText>
+                                    {p.passportExpiry && (
+                                        <ThemedText className="text-xs text-gray-400"> (Exp: {p.passportExpiry})</ThemedText>
+                                    )}
+                                </View>
+                                {p.passportExpiry && isPassportExpiringSoon(p.passportExpiry) && (
+                                    <ThemedText className="text-[10px] text-red-500 font-bold mt-1">
+                                        ⚠️ Le passeport expire dans moins de 6 mois
+                                    </ThemedText>
+                                )}
+                            </View>
+                        </View>
+                    ))}
+                    {(order.passengers || []).length === 0 && (
+                        <ThemedText className="text-gray-400 italic text-center py-2">Aucun passager</ThemedText>
+                    )}
                 </View>
 
                 {/* Financial Summary */}
@@ -290,7 +349,7 @@ export default function OrderDetailsScreen() {
                                             {p.amount.toLocaleString()} {p.currency}
                                         </ThemedText>
                                         <ThemedText className="text-xs text-gray-500">
-                                            {new Date(p.date).toLocaleDateString()} • {p.method}
+                                            {new Date(p.paymentDate || '').toLocaleDateString()} • {p.method}
                                         </ThemedText>
                                     </View>
                                 </View>
@@ -308,15 +367,16 @@ export default function OrderDetailsScreen() {
                 </View>
             </ScrollView>
 
-            <View className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-100 shadow-lg pb-8">
-                <Button
-                    title={remainingAmountDZD > 0 ? "Ajouter un Paiement" : "Commande Soldée"}
-                    onPress={() => setShowPaymentModal(true)}
-                    variant={remainingAmountDZD > 0 ? 'primary' : 'outline'}
-                    disabled={remainingAmountDZD <= 0}
-                    icon={<CreditCard size={20} color={remainingAmountDZD > 0 ? "white" : "gray"} />}
-                />
-            </View>
+            {remainingAmountDZD > 0 && (
+                <View className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-100 shadow-lg pb-8">
+                    <Button
+                        title="Ajouter un Paiement"
+                        onPress={() => setShowPaymentModal(true)}
+                        variant="primary"
+                        icon={<CreditCard size={20} color="white" />}
+                    />
+                </View>
+            )}
 
             <PaymentModal
                 visible={showPaymentModal}

@@ -44,8 +44,11 @@ export default function OrderFormScreen() {
     const [commissionAmount, setCommissionAmount] = useState<string>('0');
 
     // Calculations
-    const totalAmount = items.reduce((sum, item) => sum + item.amount, 0);
-    const totalAmountDZD = orderCurrency === 'DZD' ? totalAmount : totalAmount * exchangeRate;
+    const totalItemsAmount = items.reduce((sum, item) => sum + item.amount, 0);
+    const totalPassengersAmount = passengers.reduce((sum, p) => sum + (p.finalPrice || 0), 0);
+    const subtotal = totalItemsAmount + (orderCurrency === 'DZD' ? totalPassengersAmount : totalPassengersAmount / exchangeRate);
+
+    const subtotalDZD = orderCurrency === 'DZD' ? subtotal : subtotal * exchangeRate;
 
     const commAmountNum = parseFloat(commissionAmount) || 0;
     const commissionDZD = commissionType === 'tax'
@@ -54,7 +57,7 @@ export default function OrderFormScreen() {
             ? -commAmountNum
             : 0;
 
-    const grandTotalDZD = totalAmountDZD + commissionDZD;
+    const grandTotalDZD = subtotalDZD + commissionDZD;
 
     // Effects
     useEffect(() => {
@@ -118,7 +121,7 @@ export default function OrderFormScreen() {
     };
 
     const handleSubmit = async () => {
-        if (!clientId || !selectedOfferId) {
+        if (!clientId) {
             Alert.alert(t('common.error'), t('common.required_fields'));
             return;
         }
@@ -128,8 +131,8 @@ export default function OrderFormScreen() {
             return;
         }
 
-        // Check availability
-        const selectedOffer = offers.find(o => o.id === selectedOfferId);
+        // Check availability if an offer is selected
+        const selectedOffer = selectedOfferId ? offers.find(o => o.id === selectedOfferId) : null;
         if (selectedOffer) {
             const availableSeats = selectedOffer.disponibilite || 0;
             if (availableSeats < passengers.length) {
@@ -149,7 +152,7 @@ export default function OrderFormScreen() {
             totalCommissionDZD: commissionType !== 'none' ? commissionDZD : undefined,
             orderCurrency,
             items,
-            totalAmount,
+            totalAmount: subtotal,
             totalAmountDZD: grandTotalDZD,
             exchangeRateUsed: orderCurrency !== 'DZD' ? exchangeRate : undefined,
             remainingBalanceDZD: grandTotalDZD,
@@ -211,8 +214,19 @@ export default function OrderFormScreen() {
 
                 {/* Offer Selection */}
                 <View className="mb-6">
-                    <ThemedText className="text-sm font-medium text-gray-700 mb-2">{t('offers.title')} *</ThemedText>
+                    <ThemedText className="text-sm font-medium text-gray-700 mb-2">{t('offers.title')}</ThemedText>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                        <TouchableOpacity
+                            onPress={() => setSelectedOfferId('')}
+                            className={`px-4 py-2 rounded-xl border ${!selectedOfferId
+                                ? 'bg-blue-600 border-blue-600'
+                                : 'bg-white border-gray-200'
+                                }`}
+                        >
+                            <ThemedText className={!selectedOfferId ? 'text-white' : 'text-gray-700'}>
+                                Aucun
+                            </ThemedText>
+                        </TouchableOpacity>
                         {offers.map(offer => (
                             <TouchableOpacity
                                 key={offer.id}
@@ -291,7 +305,14 @@ export default function OrderFormScreen() {
                         >
                             <View>
                                 <ThemedText className="font-medium text-gray-800">{p.firstName} {p.lastName}</ThemedText>
-                                <ThemedText className="text-xs text-gray-500">{p.passportNumber}</ThemedText>
+                                <View className="flex-row gap-2">
+                                    <ThemedText className="text-xs text-gray-500">{p.passportNumber}</ThemedText>
+                                    {p.finalPrice ? (
+                                        <ThemedText className="text-xs text-blue-600 font-bold">
+                                            • {p.finalPrice.toLocaleString()} DZD
+                                        </ThemedText>
+                                    ) : null}
+                                </View>
                             </View>
                             <TouchableOpacity onPress={() => setPassengers(passengers.filter(pass => pass.id !== p.id))}>
                                 <Trash2 size={18} color="#EF4444" />
@@ -357,12 +378,64 @@ export default function OrderFormScreen() {
                     ))}
                 </View>
 
+                {/* Tax & Deduction Section */}
+                <View className="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                    <ThemedText className="font-semibold text-gray-900 mb-4">Taxe & Déduction</ThemedText>
+                    <View className="flex-row gap-2 mb-4">
+                        {[
+                            { id: 'none', label: 'Aucun', color: 'gray' },
+                            { id: 'tax', label: 'Taxe (+)', color: 'red' },
+                            { id: 'reduction', label: 'Déduction (-)', color: 'green' }
+                        ].map(type => (
+                            <TouchableOpacity
+                                key={type.id}
+                                onPress={() => setCommissionType(type.id as any)}
+                                className={`flex-1 py-2 items-center rounded-lg border ${commissionType === type.id
+                                    ? 'bg-blue-50 border-blue-200'
+                                    : 'bg-white border-gray-200'
+                                    }`}
+                            >
+                                <ThemedText className={`text-sm font-medium ${commissionType === type.id ? 'text-blue-700' : 'text-gray-600'}`}>
+                                    {type.label}
+                                </ThemedText>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                    {commissionType !== 'none' && (
+                        <View>
+                            <View className="flex-row items-center gap-2 mb-1">
+                                <ThemedText className="text-sm font-medium text-gray-700">
+                                    {commissionType === 'tax' ? 'Montant de la taxe (+)' : 'Montant de la déduction (-)'}
+                                </ThemedText>
+                            </View>
+                            <Input
+                                placeholder="0.00"
+                                value={commissionAmount}
+                                onChangeText={setCommissionAmount}
+                                keyboardType="numeric"
+                                startIcon={<ThemedText className="font-bold text-gray-400">{commissionType === 'tax' ? '+' : '-'}</ThemedText>}
+                            />
+                        </View>
+                    )}
+                </View>
+
                 {/* Footer Totals */}
                 <View className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-20">
                     <View className="flex-row justify-between mb-2">
                         <ThemedText className="text-gray-500">{t('orders.subtotal')}</ThemedText>
-                        <ThemedText className="font-medium text-lg">{totalAmount.toLocaleString()} {orderCurrency}</ThemedText>
+                        <ThemedText className="font-medium text-lg">{subtotal.toLocaleString()} {orderCurrency}</ThemedText>
                     </View>
+
+                    {commissionType !== 'none' && (
+                        <View className="flex-row justify-between mb-2">
+                            <ThemedText className={commissionType === 'tax' ? 'text-red-500' : 'text-green-500'}>
+                                {commissionType === 'tax' ? 'Taxe (+)' : 'Déduction (-)'}
+                            </ThemedText>
+                            <ThemedText className={`font-medium ${commissionType === 'tax' ? 'text-red-600' : 'text-green-600'}`}>
+                                {commissionType === 'tax' ? '+' : '-'}{commAmountNum.toLocaleString()} DZD
+                            </ThemedText>
+                        </View>
+                    )}
 
                     {orderCurrency !== 'DZD' && (
                         <View className="flex-row justify-between mb-2">
