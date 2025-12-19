@@ -134,6 +134,38 @@ app.get('/api/migrate-transactions', async (req, res) => {
     }
 });
 
+// EMERGENCY: Force Create Admin User
+app.get('/api/seed-admin', async (req, res) => {
+    try {
+        console.log('👤 Starting Manual Admin Seeding...');
+        const bcrypt = (await import('bcrypt')).default; // Dynamic import for safety
+        const hashedPassword = await bcrypt.hash('Aimen@2025', 10);
+        const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
+
+        await pool.query(
+            `INSERT INTO users (email, password_hash, username, role, permissions) 
+             VALUES ($1, $2, $3, $4, $5::jsonb)
+             ON CONFLICT (email) 
+             DO UPDATE SET password_hash = EXCLUDED.password_hash, permissions = EXCLUDED.permissions`,
+            ['aimen@wrtour.com', hashedPassword, 'Aimen', 'admin', permissions]
+        );
+
+        console.log('✅ Admin user created/updated successfully.');
+        res.status(200).json({
+            success: true,
+            message: 'Admin User (aimen@wrtour.com) Created/Reset Successfully!',
+            password: 'Aimen@2025'
+        });
+    } catch (error: any) {
+        console.error('❌ One-time seeding failed:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+            stack: error.stack
+        });
+    }
+});
+
 // TEMPORARY: Fix Rooms Schema - Add price and pricing columns
 app.get('/api/fix-rooms-schema', async (req, res) => {
     try {

@@ -84,6 +84,9 @@ router.post('/:supplierId/contracts', authMiddleware, requirePermission('admin')
         if (error.name === 'ZodError') {
             return res.status(400).json({ error: 'Validation error', details: error.errors });
         }
+        if (error.message && error.message.includes('Validation failed')) {
+            return res.status(400).json({ error: error.message });
+        }
         next(error);
     }
 });
