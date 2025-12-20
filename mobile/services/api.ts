@@ -457,5 +457,10 @@ export const roomsAPI = {
     async getOccupants(id: string) {
         const response = await api.get(`/rooms/${id}/occupants`);
         return response.data;
+    },
+
+    async transfer(data: { orderId: string; passengerId: string; newRoomId: string }) {
+        const response = await api.post('/rooms/transfer', data);
+        return response.data;
     }
 };

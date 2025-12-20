@@ -84,21 +84,11 @@ export default function RoomsScreen() {
 
         setIsTransferring(true);
         try {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.170:3001/api'}/rooms/transfer`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({
-                    orderId: passengerToTransfer.orderId,
-                    passengerId: passengerToTransfer.id,
-                    newRoomId: transferTargetRoomId
-                })
+            await roomsAPI.transfer({
+                orderId: passengerToTransfer.orderId,
+                passengerId: passengerToTransfer.id,
+                newRoomId: transferTargetRoomId
             });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Transfer failed');
-            }
 
             Alert.alert(t('common.success'), 'Transfert réussi!');
             // Refresh occupants and close transfer UI
