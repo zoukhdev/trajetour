@@ -74,10 +74,14 @@ export default function UserFormScreen() {
                 await updateUser({ id, ...updateData } as User);
                 Alert.alert('Succès', 'Utilisateur mis à jour');
             } else {
-                const newUser: User = {
-                    id: Math.random().toString(36).substr(2, 9), // Should be backend generated
-                    ...formData as User
-                };
+                const newUser = {
+                    ...formData,
+                    permissions: formData.permissions || [],
+                    // Let backend generate ID. If User type requires ID, we might need to handle it.
+                    // Assuming create endpoint ignores incoming ID or we don't send it.
+                    // Ideally we cast to 'any' or Omit<User, 'id'> to pass to keys.
+                } as User;
+
                 await addUser(newUser);
                 Alert.alert('Succès', 'Utilisateur créé');
             }

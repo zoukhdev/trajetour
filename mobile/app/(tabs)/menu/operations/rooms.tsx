@@ -334,10 +334,10 @@ export default function RoomsScreen() {
                                             <View className="flex-row justify-between items-center p-3 bg-white border border-gray-100 rounded-xl">
                                                 <View className="flex-1">
                                                     <ThemedText className="font-semibold text-gray-900 text-sm">
-                                                        {occ.first_name} {occ.last_name}
+                                                        {occ.firstName || occ.first_name || 'N/A'} {occ.lastName || occ.last_name || ''}
                                                     </ThemedText>
                                                     <ThemedText className="text-xs text-gray-500 mt-1">
-                                                        {occ.passport_number}
+                                                        {occ.passportNumber || occ.passport_number || 'No Passport'}
                                                     </ThemedText>
                                                 </View>
                                                 <View className="flex-row items-center gap-2">

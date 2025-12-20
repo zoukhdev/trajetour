@@ -174,7 +174,8 @@ export default function OrderDetailsScreen() {
     const paidAmountDZD = Array.isArray(order?.payments)
         ? order.payments.filter(p => p.isValidated !== false).reduce((sum, p) => sum + (p.amountDZD || 0), 0)
         : 0;
-    const remainingAmountDZD = (order?.totalAmountDZD || 0) - paidAmountDZD;
+    const totalDZD = order?.totalAmountDZD || order?.totalAmount || 0;
+    const remainingAmountDZD = totalDZD - paidAmountDZD;
     const isPaid = remainingAmountDZD <= 1;
 
     const handleAddPayment = async (paymentData: Partial<Payment>) => {
@@ -312,7 +313,7 @@ export default function OrderDetailsScreen() {
 
                     <View className="flex-row justify-between mb-2">
                         <ThemedText className="text-gray-500">Total Commande</ThemedText>
-                        <ThemedText className="font-bold">{(order.totalAmountDZD || 0).toLocaleString()} DZD</ThemedText>
+                        <ThemedText className="font-bold">{totalDZD.toLocaleString()} DZD</ThemedText>
                     </View>
                     <View className="flex-row justify-between mb-2">
                         <ThemedText className="text-gray-500">Montant Payé</ThemedText>

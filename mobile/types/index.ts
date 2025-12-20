@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'staff' | 'caisser';
+export type UserRole = 'admin' | 'staff' | 'caisser' | 'agent';
 
 export type Permission =
     | 'manage_users'
@@ -116,6 +116,7 @@ export interface Payment {
     exchangeRateDate: string; // Date of rate used
     method: PaymentMethod;
     date: string;
+    paymentDate?: string;
     accountId?: string;
     isValidated?: boolean; // Admin validation status
 }
