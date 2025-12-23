@@ -35,13 +35,12 @@ export function errorHandler(
         return;
     }
 
-    // Default error
+    // Default error - DEBUG MODE FORCED
     res.status(500).json({
         error: 'Internal server error',
-        ...(config.nodeEnv === 'development' && {
-            message: err.message,
-            stack: err.stack
-        })
+        message: err.message,
+        stack: err.stack,
+        details: (err as any).details || (err as any).detail // Catch Postgres details
     });
 }
 

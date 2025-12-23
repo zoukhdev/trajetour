@@ -233,6 +233,23 @@ app.get('/api/fix-rooms-schema', async (req, res) => {
     }
 });
 
+// DEBUG ROUTE - Check DB Schema
+app.get('/api/debug/schema', async (req, res) => {
+    try {
+        const cols = await pool.query("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users'");
+        const constraints = await pool.query("SELECT conname, pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'users'::regclass");
+
+        res.json({
+            columns: cols.rows,
+            constraints: constraints.rows,
+            env: process.env.NODE_ENV,
+            dbUrl: process.env.DATABASE_URL ? 'Set' : 'Missing'
+        });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message, stack: err.stack });
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/clients', clientsRoutes);
