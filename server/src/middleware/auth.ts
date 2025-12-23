@@ -47,17 +47,19 @@ export function requirePermission(permission: string) {
     };
 }
 
-export function requireRole(role: string) {
+export function requireRole(allowedRoles: string | string[]) {
     return (req: AuthRequest, res: Response, next: NextFunction): void => {
         if (!req.user) {
             res.status(401).json({ error: 'Authentication required' });
             return;
         }
 
-        if (req.user.role === role || req.user.role === 'admin') {
+        const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+
+        if (roles.includes(req.user.role) || req.user.role === 'admin') {
             next();
         } else {
-            res.status(403).json({ error: `Role ${role} required` });
+            res.status(403).json({ error: `Requires one of roles: ${roles.join(', ')}` });
         }
     };
 }

@@ -67,7 +67,7 @@ export const userSchema = z.object({
     username: z.string().min(3).max(100),
     email: z.string().email(),
     password: z.string().min(6),
-    role: z.enum(['admin', 'staff', 'caisser']),
+    role: z.enum(['admin', 'staff', 'caisser', 'agent']),
     permissions: z.array(z.string()).optional()
 });
 

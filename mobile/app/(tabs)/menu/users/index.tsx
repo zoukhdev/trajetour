@@ -61,7 +61,7 @@ export default function UserListScreen() {
                     <ThemedText className="text-xs text-gray-500">{users.length} comptes</ThemedText>
                 </View>
                 <TouchableOpacity
-                    onPress={() => router.push('/(tabs)/profile/users/form')}
+                    onPress={() => router.push('/(tabs)/menu/users/form')}
                     className="bg-blue-600 px-3 py-2 rounded-lg flex-row items-center gap-2 shadow-md"
                 >
                     <Plus size={18} color="white" />
@@ -102,7 +102,7 @@ export default function UserListScreen() {
 
                         <View className="flex-row gap-2">
                             <TouchableOpacity
-                                onPress={() => router.push({ pathname: '/(tabs)/profile/users/form', params: { id: user.id } })}
+                                onPress={() => router.push({ pathname: '/(tabs)/menu/users/form', params: { id: user.id } })}
                                 className="bg-gray-50 p-2 rounded-lg border border-gray-200"
                             >
                                 <Pencil size={18} color="#4B5563" />

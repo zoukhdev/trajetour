@@ -410,6 +410,18 @@ app.listen(PORT, async () => {
             } catch (authErr) {
                 console.error('⚠️ Failed to create admin user:', authErr);
             }
+
+            // 4b. Update Users Role Constraint to include 'agent'
+            try {
+                await pool.query(`
+                    ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+                    ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('admin', 'staff', 'caisser', 'agent'));
+                `);
+                console.log('✅ Users table role constraint updated (added agent).');
+            } catch (err) {
+                // If the constraint name is different, this might fail, but it's a good first attempt
+                console.error('⚠️ Failed to update users role constraint:', err);
+            }
         } catch (err) {
             console.error('❌ Database migration failed:', err);
         }

@@ -86,9 +86,10 @@ export default function UserFormScreen() {
                 Alert.alert('Succès', 'Utilisateur créé');
             }
             router.back();
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            Alert.alert('Erreur', 'Impossible d\'enregistrer l\'utilisateur');
+            const message = error.response?.data?.error || error.response?.data?.message || 'Impossible d\'enregistrer l\'utilisateur';
+            Alert.alert('Erreur', message);
         } finally {
             setLoading(false);
         }

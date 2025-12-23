@@ -43,7 +43,7 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Create a new room
-router.post('/', authMiddleware, requireRole('staff'), async (req, res) => {
+router.post('/', authMiddleware, requireRole(['staff', 'agent']), async (req, res) => {
     try {
         const { offerId, hotelName, roomNumber, capacity, gender, price, pricing } = req.body;
 
@@ -70,7 +70,7 @@ router.post('/', authMiddleware, requireRole('staff'), async (req, res) => {
 });
 
 // Update a room
-router.put('/:id', authMiddleware, requireRole('staff'), async (req, res) => {
+router.put('/:id', authMiddleware, requireRole(['staff', 'agent']), async (req, res) => {
     try {
         const { id } = req.params;
         const { roomNumber, capacity, gender, status, price, pricing } = req.body;
@@ -183,7 +183,7 @@ router.get('/:id/occupants', authMiddleware, async (req, res) => {
 });
 
 // Transfer passenger to another room
-router.post('/transfer', authMiddleware, requireRole('staff'), async (req, res) => {
+router.post('/transfer', authMiddleware, requireRole(['staff', 'agent']), async (req, res) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
