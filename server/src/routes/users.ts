@@ -79,7 +79,7 @@ router.post('/',
                 `INSERT INTO users (username, email, password_hash, role, permissions, code)
                  VALUES ($1, $2, $3, $4, $5, $6)
                  RETURNING *`,
-                [username, email, hashedPassword, role, permissions || [], code]
+                [username, email, hashedPassword, role, JSON.stringify(permissions || []), code]
             );
 
             const newUser = result.rows[0];
@@ -117,7 +117,7 @@ router.put('/:id',
 
             const { username, email, password, role, permissions } = req.body;
             let query = `UPDATE users SET username = $1, email = $2, role = $3, permissions = $4`;
-            let params = [username, email, role, permissions];
+            let params = [username, email, role, JSON.stringify(permissions || [])];
             let paramIndex = 5;
 
             if (password) {
