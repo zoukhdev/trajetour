@@ -411,16 +411,26 @@ app.listen(PORT, async () => {
                 console.error('⚠️ Failed to create admin user:', authErr);
             }
 
-            // 4b. Update Users Role Constraint to include 'agent'
+            // 4b. Update Users Table: add 'code' column and update 'role' constraint
             try {
+                // Add code column if missing
                 await pool.query(`
-                    ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+                    ALTER TABLE users ADD COLUMN IF NOT EXISTS code VARCHAR(50);
+                `);
+
+                // Update role constraint (Drop old one and add new one)
+                // We attempt to drop standard names, if it fails then we catch individually
+                try {
+                    await pool.query('ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check');
+                } catch (e) { /* ignore */ }
+
+                await pool.query(`
                     ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('admin', 'staff', 'caisser', 'agent'));
                 `);
-                console.log('✅ Users table role constraint updated (added agent).');
+
+                console.log('✅ Users table schema updated (added code column and agent role).');
             } catch (err) {
-                // If the constraint name is different, this might fail, but it's a good first attempt
-                console.error('⚠️ Failed to update users role constraint:', err);
+                console.error('⚠️ Failed to update users table schema:', err);
             }
         } catch (err) {
             console.error('❌ Database migration failed:', err);

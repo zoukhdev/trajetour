@@ -52,25 +52,30 @@ const UserForm = ({ onClose, initialData }: UserFormProps) => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        try {
+            const userData: User = {
+                id: initialData?.id || Math.floor(1000 + Math.random() * 9000).toString(),
+                username: formData.username!,
+                email: formData.email!,
+                password: formData.password!, // In real app, hash this
+                role: formData.role as UserRole,
+                permissions: formData.permissions || [],
+                avatar: initialData?.avatar || `https://ui-avatars.com/api/?name=${formData.username}&background=random`
+            };
 
-        const userData: User = {
-            id: initialData?.id || Math.floor(1000 + Math.random() * 9000).toString(),
-            username: formData.username!,
-            email: formData.email!,
-            password: formData.password!, // In real app, hash this
-            role: formData.role as UserRole,
-            permissions: formData.permissions || [],
-            avatar: initialData?.avatar || `https://ui-avatars.com/api/?name=${formData.username}&background=random`
-        };
-
-        if (initialData) {
-            updateUser(userData);
-        } else {
-            addUser(userData);
+            if (initialData) {
+                await updateUser(userData);
+            } else {
+                await addUser(userData);
+            }
+            onClose();
+        } catch (error: any) {
+            console.error('Failed to save user:', error);
+            const message = error.response?.data?.error || error.response?.data?.message || 'Impossible d\'enregistrer l\'utilisateur';
+            alert(`Erreur: ${message}`);
         }
-        onClose();
     };
 
     return (
@@ -79,7 +84,7 @@ const UserForm = ({ onClose, initialData }: UserFormProps) => {
                 <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
                     <div className="flex gap-4">
-                        {['admin', 'staff', 'caisser'].map((role) => (
+                        {['admin', 'staff', 'caisser', 'agent'].map((role) => (
                             <label key={role} className="flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="radio"
