@@ -24,7 +24,7 @@ const MainLayout = () => {
                     <div
                         className="md:hidden bg-white border-b border-gray-100 flex items-center justify-between sticky top-0 z-30 shadow-sm"
                         style={{
-                            paddingTop: 'max(env(safe-area-inset-top), 3.5rem)',
+                            paddingTop: 'max(env(safe-area-inset-top), 4.5rem)',
                             paddingLeft: 'max(env(safe-area-inset-left), 1rem)',
                             paddingRight: 'max(env(safe-area-inset-right), 1rem)',
                             paddingBottom: '1rem'

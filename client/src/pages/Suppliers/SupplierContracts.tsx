@@ -4,6 +4,7 @@ import { Package, Plus, Pencil, Trash2, ArrowLeft, ChevronDown, ChevronUp, Hotel
 import type { SupplierContract, ContractType } from '../../types';
 import { supplierContractsAPI, suppliersAPI } from '../../services/api';
 import { ContractForm } from '../../components/ContractForm';
+import { useAuth } from '../../context/AuthContext';
 
 const contractIcons: Record<ContractType, React.ReactNode> = {
     'Rooms': <Hotel className="w-5 h-5" />,
@@ -16,6 +17,7 @@ const contractIcons: Record<ContractType, React.ReactNode> = {
 export default function SupplierContracts() {
     const { id: supplierId } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [contracts, setContracts] = useState<SupplierContract[]>([]);
     const [supplierName, setSupplierName] = useState('');
@@ -355,26 +357,30 @@ export default function SupplierContracts() {
                                                     Valeur: {contract.contractValue.toLocaleString('fr-DZ')} {contract.paymentCurrency}
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleEdit(contract);
-                                                        }}
-                                                        className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50"
-                                                    >
-                                                        <Pencil className="w-3.5 h-3.5" />
-                                                        Modifier
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleDelete(contract.id);
-                                                        }}
-                                                        className="flex items-center gap-1 px-3 py-1.5 bg-red-50 border border-red-200 rounded text-sm font-medium text-red-600 hover:bg-red-100"
-                                                    >
-                                                        <Trash2 className="w-3.5 h-3.5" />
-                                                        Supprimer
-                                                    </button>
+                                                    {user?.role === 'admin' && (
+                                                        <>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleEdit(contract);
+                                                                }}
+                                                                className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-300 rounded text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                                            >
+                                                                <Pencil className="w-3.5 h-3.5" />
+                                                                Modifier
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDelete(contract.id);
+                                                                }}
+                                                                className="flex items-center gap-1 px-3 py-1.5 bg-red-50 border border-red-200 rounded text-sm font-medium text-red-600 hover:bg-red-100"
+                                                            >
+                                                                <Trash2 className="w-3.5 h-3.5" />
+                                                                Supprimer
+                                                            </button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

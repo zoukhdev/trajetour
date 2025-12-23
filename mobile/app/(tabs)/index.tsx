@@ -95,10 +95,9 @@ export default function Dashboard() {
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
         >
-            {/* Header */}
+            {/* Header - Title removed as it's in the nav bar */}
             <View className="mb-6 flex-row justify-between items-center">
                 <View>
-                    <ThemedText variant="h2" className="text-gray-900">{t('common.dashboard')}</ThemedText>
                     <ThemedText className="text-gray-500 mt-1">
                         Bonjour, <ThemedText className="font-bold">{user?.username}</ThemedText>
                     </ThemedText>
@@ -112,7 +111,14 @@ export default function Dashboard() {
 
             {/* Stats Grid */}
             <View className="flex-row flex-wrap gap-4 mb-8">
-                {stats.map((stat, index) => (
+                {stats.filter(stat => {
+                    if (user?.role === 'agent') {
+                        // Agent: Only show pending orders, hide total revenue (and others if needed)
+                        // User request: "only : a. in the tableau de bord : commandes en attente"
+                        return stat.label === t('common.pending_orders');
+                    }
+                    return true;
+                }).map((stat, index) => (
                     <View key={index} className="w-[47%] bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
                         <View className="w-10 h-10 rounded-full items-center justify-center mb-3" style={{ backgroundColor: stat.bg }}>
                             <stat.icon size={20} color={stat.color} />
@@ -177,10 +183,10 @@ export default function Dashboard() {
                                 </View>
                             </View>
                             <View className={`px-2 py-1 rounded-md ${order.status === 'paid' ? 'bg-green-100' :
-                                    order.status === 'confirmed' ? 'bg-blue-100' : 'bg-yellow-100'
+                                order.status === 'confirmed' ? 'bg-blue-100' : 'bg-yellow-100'
                                 }`}>
                                 <ThemedText className={`text-xs font-bold capitalize ${order.status === 'paid' ? 'text-green-700' :
-                                        order.status === 'confirmed' ? 'text-blue-700' : 'text-yellow-700'
+                                    order.status === 'confirmed' ? 'text-blue-700' : 'text-yellow-700'
                                     }`}>
                                     {order.status}
                                 </ThemedText>

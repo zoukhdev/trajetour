@@ -16,6 +16,7 @@
     "@types/react": "~19.1.10",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
+    "eas-cli": "^16.28.0",
     "expo": "~54.0.29",
     "expo-build-properties": "~1.0.10",
     "expo-constants": "~18.0.12",

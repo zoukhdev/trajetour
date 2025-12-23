@@ -34,11 +34,11 @@ export default function CaisseScreen() {
         <ScrollView className="flex-1 bg-gray-50">
             {/* NET TOTAL BANNER */}
             <View className="bg-blue-600 p-6 rounded-b-3xl shadow-lg pt-12">
-                <ThemedText className="text-blue-100 text-sm font-medium uppercase tracking-wider text-center mb-1">
+                <ThemedText className="text-white/70 text-sm font-medium uppercase tracking-wider text-center mb-1">
                     Total Net (DZD)
                 </ThemedText>
                 <ThemedText className="text-white font-[Outfit_700Bold] text-4xl text-center mb-6">
-                    {totalNetDZD.toLocaleString()} <ThemedText className="text-xl text-blue-200">DA</ThemedText>
+                    {totalNetDZD.toLocaleString()} <ThemedText className="text-xl text-white/50">DA</ThemedText>
                 </ThemedText>
 
                 {/* Breakdown by Currency */}
@@ -52,8 +52,8 @@ export default function CaisseScreen() {
                         if (total === 0 && curr !== 'DZD') return null;
 
                         return (
-                            <View key={curr} className="bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm items-center min-w-[30%]">
-                                <ThemedText className="text-blue-100 text-xs font-bold mb-0.5">{curr}</ThemedText>
+                            <View key={curr} className="bg-white/20 px-3 py-2 rounded-lg backdrop-blur-sm items-center min-w-[30%] border border-white/10">
+                                <ThemedText className="text-white/80 text-xs font-bold mb-0.5">{curr}</ThemedText>
                                 <ThemedText className="text-white font-bold text-base">{total.toLocaleString()}</ThemedText>
                             </View>
                         );

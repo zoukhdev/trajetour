@@ -84,30 +84,54 @@ export default function MenuScreen() {
             </View>
 
             <ScrollView className="flex-1 p-4">
-                {menuSections.map((section, index) => (
-                    <View key={index} className="mb-6">
-                        <ThemedText className="text-sm font-[Outfit_600SemiBold] text-gray-500 uppercase tracking-wider mb-3 ml-1">
-                            {section.title}
-                        </ThemedText>
-                        <View className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                            {section.items.map((item, idx) => (
-                                <TouchableOpacity
-                                    key={idx}
-                                    onPress={() => router.push(item.route as any)}
-                                    className={`flex-row items-center p-4 ${idx !== section.items.length - 1 ? 'border-b border-gray-50' : ''}`}
-                                >
-                                    <View className="w-10 h-10 rounded-full items-center justify-center mr-4" style={{ backgroundColor: `${item.color}15` }}>
-                                        <item.icon size={20} color={item.color} />
-                                    </View>
-                                    <ThemedText className="flex-1 text-base font-[Inter_500Medium] text-gray-900">
-                                        {item.label}
-                                    </ThemedText>
-                                    <ChevronRight size={20} color="#E5E7EB" />
-                                </TouchableOpacity>
-                            ))}
+                {menuSections.map((section, index) => {
+                    // Filter items for agents
+                    let filteredItems = section.items;
+
+                    if (user?.role === 'agent') {
+                        // Hide all Finance items
+                        if (section.title === t('menu.finance')) {
+                            return null;
+                        }
+
+                        // Filter Admin items
+                        if (section.title === t('menu.admin')) {
+                            filteredItems = section.items.filter(item =>
+                                item.route !== '/(tabs)/menu/users' &&
+                                item.route !== '/(tabs)/menu/agency'
+                            );
+
+                            if (filteredItems.length === 0) return null;
+                        }
+                    }
+
+                    if (filteredItems.length === 0) return null;
+
+                    return (
+                        <View key={index} className="mb-6">
+                            <ThemedText className="text-sm font-[Outfit_600SemiBold] text-gray-500 uppercase tracking-wider mb-3 ml-1">
+                                {section.title}
+                            </ThemedText>
+                            <View className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                                {filteredItems.map((item, idx) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        onPress={() => router.push(item.route as any)}
+                                        className={`flex-row items-center p-4 ${idx !== filteredItems.length - 1 ? 'border-b border-gray-50' : ''}`}
+                                    >
+                                        <View className="w-10 h-10 rounded-full items-center justify-center mr-4" style={{ backgroundColor: `${item.color}15` }}>
+                                            <item.icon size={20} color={item.color} />
+                                        </View>
+                                        <ThemedText className="flex-1 text-base font-[Inter_500Medium] text-gray-900">
+                                            {item.label}
+                                        </ThemedText>
+                                        <ChevronRight size={20} color="#E5E7EB" />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
                         </View>
-                    </View>
-                ))}
+                    );
+                })}
 
                 <View className="mb-8">
                     <ThemedText className="text-sm font-[Outfit_600SemiBold] text-gray-500 uppercase tracking-wider mb-3 ml-1">

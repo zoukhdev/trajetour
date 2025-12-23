@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useData } from '../../../../context/DataContext';
 import { useLanguage } from '../../../../context/LanguageContext';
+import { useAuth } from '../../../../context/AuthContext';
 import { ThemedText } from '../../../../components/ui/ThemedText';
 import { Button } from '../../../../components/ui/Button';
 import { BedDouble, Users, Plus, Edit, Trash2, ChevronDown, X, ArrowRightLeft } from 'lucide-react-native';
@@ -11,7 +12,8 @@ import { roomsAPI } from '../../../../services/api';
 export default function RoomsScreen() {
     const { t } = useLanguage();
     const router = useRouter();
-    const { rooms, deleteRoom } = useData();
+    const { rooms, deleteRoom, refreshData } = useData();
+    const { user } = useAuth();
 
     const [selectedHotel, setSelectedHotel] = useState('');
     const [selectedRoom, setSelectedRoom] = useState<any>(null);
@@ -91,8 +93,10 @@ export default function RoomsScreen() {
             });
 
             Alert.alert(t('common.success'), 'Transfert réussi!');
-            // Refresh occupants and close transfer UI
+            // Refresh occupants and global data
             if (selectedRoom) fetchOccupants(selectedRoom);
+            refreshData(); // Update global room occupancy counts
+
             setPassengerToTransfer(null);
             setTransferTargetRoomId('');
             setTransferTargetHotel('');
@@ -235,20 +239,24 @@ export default function RoomsScreen() {
                                         )}
                                     </View>
                                     <View className="flex-row gap-2">
-                                        <TouchableOpacity
-                                            onPress={(e) => {
-                                                router.push({ pathname: '/(tabs)/menu/operations/form', params: { id: room.id } });
-                                            }}
-                                            className="w-9 h-9 bg-blue-50 rounded-lg items-center justify-center"
-                                        >
-                                            <Edit size={16} color="#3B82F6" />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            onPress={() => handleDeleteRoom(room.id, room.roomNumber)}
-                                            className="w-9 h-9 bg-red-50 rounded-lg items-center justify-center"
-                                        >
-                                            <Trash2 size={16} color="#EF4444" />
-                                        </TouchableOpacity>
+                                        {user?.role === 'admin' && (
+                                            <>
+                                                <TouchableOpacity
+                                                    onPress={(e) => {
+                                                        router.push({ pathname: '/(tabs)/menu/operations/form', params: { id: room.id } });
+                                                    }}
+                                                    className="w-9 h-9 bg-blue-50 rounded-lg items-center justify-center"
+                                                >
+                                                    <Edit size={16} color="#3B82F6" />
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    onPress={() => handleDeleteRoom(room.id, room.roomNumber)}
+                                                    className="w-9 h-9 bg-red-50 rounded-lg items-center justify-center"
+                                                >
+                                                    <Trash2 size={16} color="#EF4444" />
+                                                </TouchableOpacity>
+                                            </>
+                                        )}
                                     </View>
                                 </View>
                             </TouchableOpacity>
@@ -277,170 +285,181 @@ export default function RoomsScreen() {
                 onRequestClose={() => setIsDetailsModalOpen(false)}
             >
                 <View className="flex-1 bg-black/50 justify-end">
-                    <View className="bg-white rounded-t-3xl p-6 max-h-[80%]">
-                        {/* Header */}
-                        <View className="flex-row justify-between items-center mb-4">
-                            <ThemedText className="text-xl font-[Outfit_700Bold] text-gray-900">
-                                Chambre {selectedRoom?.roomNumber}
-                            </ThemedText>
-                            <TouchableOpacity
-                                onPress={() => setIsDetailsModalOpen(false)}
-                                className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
-                            >
-                                <X size={18} color="#6B7280" />
-                            </TouchableOpacity>
-                        </View>
-
-                        {/* Room Info */}
-                        <View className="bg-gray-50 p-4 rounded-xl mb-4 flex-row justify-between">
-                            <View>
-                                <ThemedText className="text-xs text-gray-500">Hôtel</ThemedText>
-                                <ThemedText className="font-semibold text-gray-900">{selectedRoom?.hotelName}</ThemedText>
+                    <View className="bg-white rounded-t-3xl p-6" style={{ maxHeight: '85%' }}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {/* Header */}
+                            <View className="flex-row justify-between items-center mb-4">
+                                <ThemedText className="text-xl font-[Outfit_700Bold] text-gray-900">
+                                    Chambre {selectedRoom?.roomNumber}
+                                </ThemedText>
+                                <TouchableOpacity
+                                    onPress={() => setIsDetailsModalOpen(false)}
+                                    className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center"
+                                >
+                                    <X size={18} color="#6B7280" />
+                                </TouchableOpacity>
                             </View>
-                            <View>
-                                <ThemedText className="text-xs text-gray-500">Type</ThemedText>
-                                <ThemedText className="font-semibold text-gray-900">{selectedRoom?.gender}</ThemedText>
-                            </View>
-                            <View>
-                                <ThemedText className="text-xs text-gray-500">Prix</ThemedText>
-                                <ThemedText className="font-semibold text-gray-900">{selectedRoom?.price} DA</ThemedText>
-                            </View>
-                        </View>
 
-                        {/* Occupants List */}
-                        <View className="flex-1">
-                            <ThemedText className="font-[Inter_600SemiBold] text-gray-900 mb-3 flex-row items-center gap-2">
-                                <Users size={18} color="#374151" /> Occupants ({occupants.length} / {selectedRoom?.capacity})
-                            </ThemedText>
+                            {/* Room Info */}
+                            <View className="bg-gray-50 p-4 rounded-xl mb-4 flex-row justify-between">
+                                <View>
+                                    <ThemedText className="text-xs text-gray-500">Hôtel</ThemedText>
+                                    <ThemedText className="font-semibold text-gray-900">{selectedRoom?.hotelName}</ThemedText>
+                                </View>
+                                <View>
+                                    <ThemedText className="text-xs text-gray-500">Type</ThemedText>
+                                    <ThemedText className="font-semibold text-gray-900">{selectedRoom?.gender}</ThemedText>
+                                </View>
+                                <View>
+                                    <ThemedText className="text-xs text-gray-500">Prix</ThemedText>
+                                    <ThemedText className="font-semibold text-gray-900">{selectedRoom?.price} DA</ThemedText>
+                                </View>
+                            </View>
 
-                            {loadingOccupants ? (
-                                <ThemedText className="text-center text-gray-400 py-8">Chargement...</ThemedText>
-                            ) : occupants.length === 0 ? (
-                                <ThemedText className="text-center text-gray-400 italic py-8">Aucun occupant</ThemedText>
-                            ) : (
-                                <ScrollView className="flex-1">
-                                    {occupants.map((occ, idx) => (
-                                        <View key={idx} className="mb-2">
-                                            <View className="flex-row justify-between items-center p-3 bg-white border border-gray-100 rounded-xl">
-                                                <View className="flex-1">
-                                                    <ThemedText className="font-semibold text-gray-900 text-sm">
-                                                        {occ.firstName || occ.first_name || 'N/A'} {occ.lastName || occ.last_name || ''}
-                                                    </ThemedText>
-                                                    <ThemedText className="text-xs text-gray-500 mt-1">
-                                                        {occ.passportNumber || occ.passport_number || 'No Passport'}
-                                                    </ThemedText>
-                                                </View>
-                                                <View className="flex-row items-center gap-2">
-                                                    <View className="bg-blue-50 px-2 py-1 rounded-md">
-                                                        <ThemedText className="text-xs font-semibold text-blue-700">
-                                                            {occ.gender}
+                            {/* Occupants List */}
+                            <View className="mt-2">
+                                <View className="flex-row items-center gap-2 mb-3">
+                                    <Users size={18} color="#374151" />
+                                    <ThemedText className="font-bold text-gray-900">
+                                        Occupants ({(occupants || []).length} / {selectedRoom?.capacity || '?'})
+                                    </ThemedText>
+                                </View>
+
+                                {loadingOccupants ? (
+                                    <View className="py-10 items-center">
+                                        <ThemedText className="text-gray-400">Chargement...</ThemedText>
+                                    </View>
+                                ) : (occupants || []).length === 0 ? (
+                                    <View className="py-10 items-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                        <ThemedText className="text-gray-400 italic">Aucun occupant</ThemedText>
+                                    </View>
+                                ) : (
+                                    <View>
+                                        {occupants.map((occ, idx) => (
+                                            <View key={idx} className="mb-2">
+                                                <View className="flex-row justify-between items-center p-3 bg-white border border-gray-100 rounded-xl">
+                                                    <View className="flex-1">
+                                                        <ThemedText className="font-semibold text-gray-900 text-sm">
+                                                            {occ.firstName || occ.first_name || 'N/A'} {occ.lastName || occ.last_name || ''}
+                                                        </ThemedText>
+                                                        <ThemedText className="text-xs text-gray-500 mt-1">
+                                                            {occ.passportNumber || occ.passport_number || 'No Passport'}
                                                         </ThemedText>
                                                     </View>
-                                                    {passengerToTransfer?.id !== occ.passenger_id && (
-                                                        <TouchableOpacity
-                                                            onPress={() => {
-                                                                setPassengerToTransfer({ orderId: occ.order_id, id: occ.passenger_id });
-                                                                setTransferTargetHotel(selectedRoom?.hotelName || '');
-                                                            }}
-                                                            className="bg-purple-50 px-3 py-1 rounded-md"
-                                                        >
-                                                            <ThemedText className="text-xs font-semibold text-purple-700">
-                                                                Transférer
+                                                    <View className="flex-row items-center gap-2">
+                                                        <View className="bg-blue-50 px-2 py-1 rounded-md">
+                                                            <ThemedText className="text-xs font-semibold text-blue-700">
+                                                                {occ.gender}
                                                             </ThemedText>
-                                                        </TouchableOpacity>
-                                                    )}
-                                                </View>
-                                            </View>
-
-                                            {/* Transfer UI */}
-                                            {passengerToTransfer?.id === occ.passenger_id && (
-                                                <View className="mt-2 bg-purple-50 p-3 rounded-xl border border-purple-200">
-                                                    <ThemedText className="text-xs font-semibold text-purple-900 mb-2">
-                                                        Transférer vers:
-                                                    </ThemedText>
-
-                                                    {/* Hotel Selector */}
-                                                    <View className="mb-2">
-                                                        <ThemedText className="text-xs text-gray-600 mb-1">Hôtel</ThemedText>
-                                                        <View className="bg-white border border-gray-200 rounded-lg">
-                                                            {uniqueHotels.map((hotel) => (
-                                                                <TouchableOpacity
-                                                                    key={hotel}
-                                                                    onPress={() => {
-                                                                        setTransferTargetHotel(hotel);
-                                                                        setTransferTargetRoomId(''); // Reset room
-                                                                    }}
-                                                                    className={`p-2 border-b border-gray-100 ${transferTargetHotel === hotel ? 'bg-purple-50' : ''}`}
-                                                                >
-                                                                    <ThemedText className={`text-xs ${transferTargetHotel === hotel ? 'font-semibold text-purple-700' : 'text-gray-700'}`}>
-                                                                        {hotel}
-                                                                    </ThemedText>
-                                                                </TouchableOpacity>
-                                                            ))}
                                                         </View>
+                                                        {passengerToTransfer?.id !== occ.passenger_id && (
+                                                            <TouchableOpacity
+                                                                onPress={() => {
+                                                                    setPassengerToTransfer({ orderId: occ.order_id, id: occ.passenger_id });
+                                                                    setTransferTargetHotel(selectedRoom?.hotelName || '');
+                                                                }}
+                                                                className="bg-purple-50 px-3 py-1 rounded-md"
+                                                            >
+                                                                <ThemedText className="text-xs font-semibold text-purple-700">
+                                                                    Transférer
+                                                                </ThemedText>
+                                                            </TouchableOpacity>
+                                                        )}
                                                     </View>
+                                                </View>
 
-                                                    {/* Room Selector */}
-                                                    {transferTargetHotel && (
+                                                {/* Transfer UI */}
+                                                {passengerToTransfer?.id === occ.passenger_id && (
+                                                    <View className="mt-2 bg-purple-50 p-3 rounded-xl border border-purple-200">
+                                                        <ThemedText className="text-xs font-semibold text-purple-900 mb-2">
+                                                            Transférer vers:
+                                                        </ThemedText>
+
+                                                        {/* Hotel Selector */}
                                                         <View className="mb-2">
-                                                            <ThemedText className="text-xs text-gray-600 mb-1">Chambre</ThemedText>
-                                                            <View className="bg-white border border-gray-200 rounded-lg max-h-32">
-                                                                <ScrollView>
-                                                                    {rooms
-                                                                        .filter(r =>
-                                                                            r.hotelName === transferTargetHotel &&
-                                                                            r.id !== selectedRoom?.id &&
-                                                                            (r.occupiedCount || 0) < r.capacity
-                                                                        )
-                                                                        .map((room) => (
-                                                                            <TouchableOpacity
-                                                                                key={room.id}
-                                                                                onPress={() => setTransferTargetRoomId(room.id)}
-                                                                                className={`p-2 border-b border-gray-100 flex-row justify-between ${transferTargetRoomId === room.id ? 'bg-purple-50' : ''}`}
-                                                                            >
-                                                                                <ThemedText className={`text-xs ${transferTargetRoomId === room.id ? 'font-semibold text-purple-700' : 'text-gray-700'}`}>
-                                                                                    Room {room.roomNumber}
-                                                                                </ThemedText>
-                                                                                <ThemedText className="text-xs text-gray-500">
-                                                                                    ({room.gender})
-                                                                                </ThemedText>
-                                                                            </TouchableOpacity>
-                                                                        ))
-                                                                    }
-                                                                </ScrollView>
+                                                            <ThemedText className="text-xs text-gray-600 mb-1">Hôtel</ThemedText>
+                                                            <View className="bg-white border border-gray-200 rounded-lg">
+                                                                {uniqueHotels.map((hotel) => (
+                                                                    <TouchableOpacity
+                                                                        key={hotel}
+                                                                        onPress={() => {
+                                                                            setTransferTargetHotel(hotel);
+                                                                            setTransferTargetRoomId(''); // Reset room
+                                                                        }}
+                                                                        className={`p-2 border-b border-gray-100 ${transferTargetHotel === hotel ? 'bg-purple-50' : ''}`}
+                                                                    >
+                                                                        <ThemedText className={`text-xs ${transferTargetHotel === hotel ? 'font-semibold text-purple-700' : 'text-gray-700'}`}>
+                                                                            {hotel}
+                                                                        </ThemedText>
+                                                                    </TouchableOpacity>
+                                                                ))}
                                                             </View>
                                                         </View>
-                                                    )}
 
-                                                    {/* Action Buttons */}
-                                                    <View className="flex-row gap-2 mt-2">
-                                                        <TouchableOpacity
-                                                            onPress={() => setPassengerToTransfer(null)}
-                                                            className="flex-1 bg-gray-200 py-2 rounded-lg"
-                                                        >
-                                                            <ThemedText className="text-center text-xs font-semibold text-gray-700">
-                                                                Annuler
-                                                            </ThemedText>
-                                                        </TouchableOpacity>
-                                                        <TouchableOpacity
-                                                            onPress={handleTransfer}
-                                                            disabled={!transferTargetRoomId || isTransferring}
-                                                            className={`flex-1 py-2 rounded-lg flex-row items-center justify-center gap-1 ${!transferTargetRoomId || isTransferring ? 'bg-gray-300' : 'bg-green-600'
-                                                                }`}
-                                                        >
-                                                            <ArrowRightLeft size={14} color="white" />
-                                                            <ThemedText className="text-center text-xs font-semibold text-white">
-                                                                {isTransferring ? 'En cours...' : 'Transférer'}
-                                                            </ThemedText>
-                                                        </TouchableOpacity>
+                                                        {/* Room Selector */}
+                                                        {transferTargetHotel && (
+                                                            <View className="mb-2">
+                                                                <ThemedText className="text-xs text-gray-600 mb-1">Chambre</ThemedText>
+                                                                <View className="bg-white border border-gray-200 rounded-lg max-h-32">
+                                                                    <ScrollView>
+                                                                        {rooms
+                                                                            .filter(r =>
+                                                                                r.hotelName === transferTargetHotel &&
+                                                                                r.id !== selectedRoom?.id &&
+                                                                                (r.occupiedCount || 0) < r.capacity
+                                                                            )
+                                                                            .map((room) => (
+                                                                                <TouchableOpacity
+                                                                                    key={room.id}
+                                                                                    onPress={() => setTransferTargetRoomId(room.id)}
+                                                                                    className={`p-2 border-b border-gray-100 flex-row justify-between ${transferTargetRoomId === room.id ? 'bg-purple-50' : ''}`}
+                                                                                >
+                                                                                    <ThemedText className={`text-xs ${transferTargetRoomId === room.id ? 'font-semibold text-purple-700' : 'text-gray-700'}`}>
+                                                                                        Room {room.roomNumber}
+                                                                                    </ThemedText>
+                                                                                    <ThemedText className="text-xs text-gray-500">
+                                                                                        ({room.gender})
+                                                                                    </ThemedText>
+                                                                                </TouchableOpacity>
+                                                                            ))
+                                                                        }
+                                                                    </ScrollView>
+                                                                </View>
+                                                            </View>
+                                                        )}
+
+                                                        {/* Action Buttons */}
+                                                        <View className="flex-row gap-2 mt-2">
+                                                            <TouchableOpacity
+                                                                onPress={() => setPassengerToTransfer(null)}
+                                                                className="flex-1 bg-gray-200 py-2 rounded-lg"
+                                                            >
+                                                                <ThemedText className="text-center text-xs font-semibold text-gray-700">
+                                                                    Annuler
+                                                                </ThemedText>
+                                                            </TouchableOpacity>
+                                                            <TouchableOpacity
+                                                                onPress={handleTransfer}
+                                                                disabled={!transferTargetRoomId || isTransferring}
+                                                                className={`flex-1 py-2 rounded-lg flex-row items-center justify-center gap-1 ${!transferTargetRoomId || isTransferring ? 'bg-gray-300' : 'bg-green-600'
+                                                                    }`}
+                                                            >
+                                                                <ArrowRightLeft size={14} color="white" />
+                                                                <ThemedText className="text-center text-xs font-semibold text-white">
+                                                                    {isTransferring ? 'En cours...' : 'Transférer'}
+                                                                </ThemedText>
+                                                            </TouchableOpacity>
+                                                        </View>
                                                     </View>
-                                                </View>
-                                            )}
-                                        </View>
-                                    ))}
-                                </ScrollView>
-                            )}
-                        </View>
+                                                )}
+                                            </View>
+                                        ))}
+                                    </View>
+                                )}
+                            </View>
+
+                            <View className="h-8" />
+                        </ScrollView>
                     </View>
                 </View>
             </Modal>
