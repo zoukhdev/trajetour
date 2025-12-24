@@ -161,11 +161,6 @@ export const ordersAPI = {
         return response.data;
     },
 
-    delete: async (id: string) => {
-        const response = await api.delete(`/orders/${id}`);
-        return response.data;
-    },
-
     addPayment: async (orderId: string, payment: any) => {
         const response = await api.post(`/orders/${orderId}/payments`, payment);
         return response.data;
