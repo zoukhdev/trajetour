@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import type { Order, OrderStatus } from '../../types';
 import { ordersAPI } from '../../services/api';
-import { Plus, Search, Eye } from 'lucide-react';
+import { Plus, Search, Eye, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useData } from '../../context/DataContext';
 
 // Utility to format currency
 const formatMoney = (amount: number, currency = 'DZD') => {
@@ -10,8 +12,8 @@ const formatMoney = (amount: number, currency = 'DZD') => {
 };
 
 const OrderListV2 = () => {
-    // const { user, hasPermission } = useAuth(); // Unused for now
-    // const { convertToDZD } = useExchangeRates(); // Unused for now
+    const { user } = useAuth();
+    const { deleteOrder } = useData();
 
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -196,13 +198,31 @@ const OrderListV2 = () => {
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <Link
-                                                        to={`/orders/${order.id}`} // Point to existing details for now, or V2 details later
+                                                        to={`/orders/${order.id}`}
                                                         className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg tooltip"
                                                         title="Voir détails"
                                                     >
                                                         <Eye size={18} />
                                                     </Link>
-                                                    {/* can add edit/delete if needed */}
+                                                    {user?.role === 'admin' && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                if (window.confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
+                                                                    try {
+                                                                        await deleteOrder(order.id);
+                                                                        fetchOrders(); // Refresh list
+                                                                    } catch (error) {
+                                                                        console.error('Failed to delete order', error);
+                                                                        alert('Erreur lors de la suppression de la commande');
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg tooltip"
+                                                            title="Supprimer"
+                                                        >
+                                                            <Trash2 size={18} />
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>

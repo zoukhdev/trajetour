@@ -2,7 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useExchangeRates } from '../../context/ExchangeRateContext';
-import { ArrowLeft, Printer, CreditCard, TrendingUp, Pencil } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { ArrowLeft, Printer, CreditCard, TrendingUp, Pencil, Check, X } from 'lucide-react';
 import { generateInvoice } from '../../services/pdfGenerator';
 import { useState, useEffect } from 'react';
 import Modal from '../../components/Modal';
@@ -16,11 +17,17 @@ const OrderDetails = () => {
     const navigate = useNavigate();
     const { orders, clients, agencies, bankAccounts } = useData();
     const { language } = useLanguage();
+    const { user } = useAuth();
     const { getLatestRate, getRateForDate } = useExchangeRates();
 
     // Modal State
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [editingPayment, setEditingPayment] = useState<any>(null); // Track payment being edited
+
+    // Passenger price editing state
+    const [editingPassengerId, setEditingPassengerId] = useState<string | null>(null);
+    const [editedPrice, setEditedPrice] = useState<number>(0);
+    const [isSavingPrice, setIsSavingPrice] = useState(false);
 
     // Payment form state
     const [paymentCurrency, setPaymentCurrency] = useState<Currency>('DZD');
@@ -115,6 +122,39 @@ const OrderDetails = () => {
         setIsPaymentModalOpen(true);
     };
 
+    const handleStartEditPrice = (passengerId: string, currentPrice: number) => {
+        setEditingPassengerId(passengerId);
+        setEditedPrice(currentPrice || 0);
+    };
+
+    const handleCancelEditPrice = () => {
+        setEditingPassengerId(null);
+        setEditedPrice(0);
+    };
+
+    const handleSavePrice = async (passengerId: string) => {
+        if (!order?.id) return;
+
+        setIsSavingPrice(true);
+        try {
+            // Update passenger price via API
+            await api.put(`/passengers/${passengerId}`, {
+                finalPrice: editedPrice,
+                priceOverridden: true
+            });
+
+            // Refresh order to get updated data
+            fetchOrder();
+            setEditingPassengerId(null);
+            setEditedPrice(0);
+        } catch (error) {
+            console.error('Failed to update passenger price:', error);
+            alert('Erreur lors de la mise à jour du prix');
+        } finally {
+            setIsSavingPrice(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -134,7 +174,7 @@ const OrderDetails = () => {
                         <Printer size={20} />
                         <span>Imprimer</span>
                     </button>
-                    {remainingAmount > 0 && (
+                    {remainingAmount > 0 && user?.role === 'admin' && (
                         <button
                             onClick={() => {
                                 setEditingPayment(null);
@@ -219,12 +259,18 @@ const OrderDetails = () => {
                                         <th className="px-4 py-2 font-medium text-gray-500">Passeport</th>
                                         <th className="px-4 py-2 font-medium text-gray-500">Téléphone</th>
                                         <th className="px-4 py-2 font-medium text-gray-500 text-right">Chambre</th>
+                                        <th className="px-4 py-2 font-medium text-gray-500 text-right">Prix</th>
+                                        {user?.role === 'admin' && (
+                                            <th className="px-4 py-2 font-medium text-gray-500 text-center">Actions</th>
+                                        )}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
                                     {(order.passengers || []).map((p: any, idx: number) => {
                                         // Lookup room details from relatedRooms
                                         const room = (order as any).relatedRooms?.find((r: any) => r.id === p.assignedRoomId);
+                                        const isEditing = editingPassengerId === p.id;
+
                                         return (
                                             <tr key={idx}>
                                                 <td className="px-4 py-3">{p.firstName} {p.lastName}</td>
@@ -238,6 +284,54 @@ const OrderDetails = () => {
                                                         </span>
                                                     ) : '-'}
                                                 </td>
+                                                <td className="px-4 py-3 text-right">
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="number"
+                                                            value={editedPrice}
+                                                            onChange={(e) => setEditedPrice(Number(e.target.value))}
+                                                            className="w-28 px-2 py-1 border border-blue-300 rounded text-right focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                            autoFocus
+                                                            disabled={isSavingPrice}
+                                                        />
+                                                    ) : (
+                                                        <span className="font-medium text-gray-900">
+                                                            {(p.finalPrice || 0).toLocaleString()} DZD
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                {user?.role === 'admin' && (
+                                                    <td className="px-4 py-3 text-center">
+                                                        {isEditing ? (
+                                                            <div className="flex items-center justify-center gap-1">
+                                                                <button
+                                                                    onClick={() => handleSavePrice(p.id)}
+                                                                    disabled={isSavingPrice}
+                                                                    className="p-1 text-green-600 hover:bg-green-50 rounded disabled:opacity-50"
+                                                                    title="Enregistrer"
+                                                                >
+                                                                    <Check size={16} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={handleCancelEditPrice}
+                                                                    disabled={isSavingPrice}
+                                                                    className="p-1 text-red-600 hover:bg-red-50 rounded disabled:opacity-50"
+                                                                    title="Annuler"
+                                                                >
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={() => handleStartEditPrice(p.id, p.finalPrice)}
+                                                                className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                                                title="Modifier le prix"
+                                                            >
+                                                                <Pencil size={16} />
+                                                            </button>
+                                                        )}
+                                                    </td>
+                                                )}
                                             </tr>
                                         );
                                     })}
@@ -296,13 +390,15 @@ const OrderDetails = () => {
                                                 </span>
                                             </div>
                                         </div>
-                                        <button
-                                            onClick={() => handleEditClick(payment)}
-                                            className="p-1 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            title="Modifier"
-                                        >
-                                            <Pencil size={14} />
-                                        </button>
+                                        {user?.role === 'admin' && (
+                                            <button
+                                                onClick={() => handleEditClick(payment)}
+                                                className="p-1 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="Modifier"
+                                            >
+                                                <Pencil size={14} />
+                                            </button>
+                                        )}
                                     </div>
                                 ))
                             )}

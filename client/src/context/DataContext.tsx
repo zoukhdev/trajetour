@@ -33,6 +33,7 @@ interface DataContextType {
 
     addOrder: (order: Order) => Promise<void>;
     updateOrder: (order: Order) => Promise<void>;
+    deleteOrder: (id: string) => Promise<void>;
 
     addExpense: (expense: Expense) => Promise<void>;
     updateExpense: (expense: Expense) => Promise<void>;
@@ -376,6 +377,10 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const saved = await ordersAPI.update(updatedOrder.id, updatedOrder);
         setOrders(prev => prev.map(o => o.id === saved.id ? saved : o));
     };
+    const deleteOrder = async (id: string) => {
+        await ordersAPI.delete(id);
+        setOrders(prev => prev.filter(o => o.id !== id));
+    };
 
     // SUPPLIERS
     const addSupplier = async (supplier: Supplier) => {
@@ -485,7 +490,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             refreshData: loadData,
             addClient, updateClient,
             addAgency, updateAgency, deleteAgency,
-            addOrder, updateOrder,
+            addOrder, updateOrder, deleteOrder,
             addExpense, updateExpense, deleteExpense,
             addUser, updateUser, deleteUser,
             addSupplier, updateSupplier, deleteSupplier,

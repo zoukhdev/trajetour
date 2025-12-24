@@ -1,16 +1,24 @@
 import { useState } from 'react';
 import { useData } from '../../context/DataContext';
-import { Search, Plus, ShoppingCart, Calendar, Printer, Eye } from 'lucide-react';
+import { Search, Plus, ShoppingCart, Calendar, Printer, Eye, Trash2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import OrderForm from './OrderForm';
 import { generateInvoice } from '../../services/pdfGenerator';
 import type { Order } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const OrderList = () => {
-    const { orders, clients, agencies } = useData();
+    const { orders, clients, agencies, deleteOrder } = useData();
+    const { user } = useAuth();
     const { t, language } = useLanguage();
+
+    // Debug: Log user role
+    console.log('OrderList - Current user:', user);
+    console.log('OrderList - User role:', user?.role);
+    console.log('OrderList - Is admin?', user?.role === 'admin');
+
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isGeneratingPdf, setIsGeneratingPdf] = useState<string | null>(null);
@@ -158,12 +166,40 @@ const OrderList = () => {
                                                             <Printer size={18} />
                                                         )}
                                                     </button>
-                                                    <Link
-                                                        to={`/orders/${order.id}`}
-                                                        className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors"
-                                                    >
-                                                        <Eye size={18} />
-                                                    </Link>
+
+                                                    {user?.role === 'admin' ? (
+                                                        <>
+                                                            <Link
+                                                                to={`/orders/${order.id}`}
+                                                                className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors"
+                                                            >
+                                                                <Eye size={18} />
+                                                            </Link>
+                                                            <button
+                                                                onClick={async () => {
+                                                                    if (window.confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')) {
+                                                                        try {
+                                                                            await deleteOrder(order.id);
+                                                                        } catch (error) {
+                                                                            console.error('Failed to delete order', error);
+                                                                            alert('Erreur lors de la suppression de la commande');
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Supprimer"
+                                                            >
+                                                                <Trash2 size={18} />
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <Link
+                                                            to={`/orders/${order.id}`}
+                                                            className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors"
+                                                        >
+                                                            <Eye size={18} />
+                                                        </Link>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>

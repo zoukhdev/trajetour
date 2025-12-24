@@ -297,14 +297,18 @@ export interface Commission {
 export type ContractType = 'Rooms' | 'Visa' | 'Transportation' | 'Flight' | 'Food';
 
 export interface RoomsDetails {
-    quantity: number;
-    pricePerPersonDzd: number;
+    rooms: Array<{
+        roomType: string;
+        age: number; // Age of occupant or room category age
+        price: number;
+    }>;
     dateIn: string;
     dateOut: string;
     cityIn: string;
     hotelName: string;
-    roomType?: 'Single' | 'Double' | 'Triple' | 'Quad';
     mealsIncluded?: boolean;
+    // Computed fields
+    totalDays?: number;
 }
 
 export interface VisaDetails {

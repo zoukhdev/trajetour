@@ -343,4 +343,50 @@ router.put('/:id',
     }
 );
 
+// Delete order (Admin only)
+router.delete('/:id',
+    authMiddleware,
+    requirePermission('admin'),
+    async (req: AuthRequest, res, next) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            const { id } = req.params;
+
+            // Check if order exists
+            const checkResult = await client.query('SELECT * FROM orders WHERE id = $1', [id]);
+            if (checkResult.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return res.status(404).json({ error: 'Order not found' });
+            }
+
+            const order = checkResult.rows[0];
+
+            // Delete related payments first (foreign key constraint)
+            await client.query('DELETE FROM payments WHERE order_id = $1', [id]);
+
+            // Delete the order
+            await client.query('DELETE FROM orders WHERE id = $1', [id]);
+
+            await logAudit(client, {
+                userId: req.user!.id,
+                action: 'DELETE',
+                entityType: 'order',
+                entityId: id,
+                changes: { deletedOrder: order },
+                ipAddress: req.ip
+            });
+
+            await client.query('COMMIT');
+            res.json({ message: 'Order deleted successfully', id });
+        } catch (error) {
+            await client.query('ROLLBACK');
+            next(error);
+        } finally {
+            client.release();
+        }
+    }
+);
+
 export default router;

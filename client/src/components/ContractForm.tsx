@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import type { ContractType, Currency, SupplierContract } from '../types';
 import { RoomsFields } from './ContractFields/RoomsFields';
@@ -45,7 +46,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ supplierId, contract
     const calculateContractValue = () => {
         switch (contractType) {
             case 'Rooms':
-                return (details.quantity || 0) * (details.pricePerPersonDzd || 0);
+                return details.rooms?.reduce((sum: number, room: any) => sum + (room.price || 0), 0) || 0;
             case 'Visa':
                 return (details.quantity || 0) * (details.pricePerVisa || 0);
             case 'Transportation':
@@ -125,10 +126,10 @@ export const ContractForm: React.FC<ContractFormProps> = ({ supplierId, contract
         setDetails({}); // Reset details when changing type
     };
 
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    return createPortal(
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+                <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
                     <h2 className="text-xl font-semibold">
                         {contract ? 'Modifier' : 'Nouveau'} Contrat Fournisseur
                     </h2>
@@ -299,6 +300,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ supplierId, contract
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
