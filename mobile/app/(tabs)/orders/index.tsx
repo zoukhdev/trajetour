@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { View, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useData } from '../../../context/DataContext';
+import { useAuth } from '../../../context/AuthContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { ThemedText } from '../../../components/ui/ThemedText';
 import { Input } from '../../../components/ui/Input';
-import { Search, Plus, ShoppingCart, Calendar, ChevronRight } from 'lucide-react-native';
+import { Search, Plus, ShoppingCart, Calendar, Trash2 } from 'lucide-react-native';
 import type { Order } from '../../../types';
 
 export default function OrdersList() {
-    const { orders, clients, refreshData } = useData();
+    const { orders, clients, refreshData, deleteOrder } = useData();
+    const { user } = useAuth();
     const router = useRouter();
     const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,6 +21,32 @@ export default function OrdersList() {
         setRefreshing(true);
         await refreshData();
         setRefreshing(false);
+    };
+
+    const handleDeleteOrder = (order: Order) => {
+        if (!order.id) return;
+
+        Alert.alert(
+            "Suppression",
+            `Êtes-vous sûr de vouloir supprimer la commande ${order.reference || order.id.substring(0, 6).toUpperCase()} ?`,
+            [
+                { text: "Annuler", style: "cancel" },
+                {
+                    text: "Supprimer",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await deleteOrder(order.id);
+                            // refreshData is called inside deleteOrder usually, but safe to refresh
+                            await refreshData();
+                        } catch (error) {
+                            console.error(error);
+                            Alert.alert("Erreur", "Impossible de supprimer la commande");
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const getClientName = (clientId: string) => {
@@ -70,6 +98,14 @@ export default function OrdersList() {
                             {paymentStatus}
                         </ThemedText>
                     </View>
+                    {user?.role === 'admin' && (
+                        <TouchableOpacity
+                            onPress={() => handleDeleteOrder(item)}
+                            className="ml-2 p-1 bg-red-50 rounded-full"
+                        >
+                            <Trash2 size={16} color="#EF4444" />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 <View className="flex-row items-center gap-2 mb-3">

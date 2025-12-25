@@ -33,7 +33,8 @@ const Dashboard = () => {
             trend: 'up',
             color: 'text-blue-600',
             bg: 'bg-blue-50',
-            border: 'border-blue-100'
+            border: 'border-blue-100',
+            adminOnly: true
         },
         {
             title: t('dashboard.total_received'),
@@ -43,7 +44,8 @@ const Dashboard = () => {
             trend: 'up',
             color: 'text-green-600',
             bg: 'bg-green-50',
-            border: 'border-green-100'
+            border: 'border-green-100',
+            adminOnly: true
         },
         {
             title: t('dashboard.total_debt'),
@@ -53,7 +55,18 @@ const Dashboard = () => {
             trend: 'down',
             color: 'text-red-600',
             bg: 'bg-red-50',
-            border: 'border-red-100'
+            border: 'border-red-100',
+            adminOnly: true
+        },
+        {
+            title: t('common.orders'),
+            value: orders.length.toString(),
+            icon: ShoppingCart,
+            change: '+2',
+            trend: 'up',
+            color: 'text-orange-600',
+            bg: 'bg-orange-50',
+            border: 'border-orange-100'
         },
         {
             title: t('common.clients'),
@@ -65,7 +78,7 @@ const Dashboard = () => {
             bg: 'bg-purple-50',
             border: 'border-purple-100'
         }
-    ];
+    ].filter(card => !card.adminOnly || user?.role === 'admin');
 
     return (
         <div className="space-y-6 overflow-x-hidden w-full">

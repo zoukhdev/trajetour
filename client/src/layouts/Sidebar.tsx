@@ -51,26 +51,26 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         {
             title: 'COMPTABILITÉ',
             items: [
-                { icon: FileText, label: t('common.reports'), path: '/reports', permission: 'view_reports' },
-                { icon: BarChart, label: 'Commissions', path: '/reports/commissions', permission: 'view_reports' },
-                { icon: BarChart, label: 'Revenus', path: '/reports/revenue', permission: 'view_reports' },
-                { icon: CreditCard, label: t('common.expenses'), path: '/expenses', permission: 'manage_financials' },
-                { icon: CreditCard, label: t('common.guide_expenses'), path: '/guide-expenses', permission: 'manage_financials' },
+                { icon: FileText, label: t('common.reports'), path: '/reports', permission: 'view_reports', adminOnly: true },
+                { icon: BarChart, label: 'Commissions', path: '/reports/commissions', permission: 'view_reports', adminOnly: true },
+                { icon: BarChart, label: 'Revenus', path: '/reports/revenue', permission: 'view_reports', adminOnly: true },
+                { icon: CreditCard, label: t('common.expenses'), path: '/expenses', permission: 'manage_financials', adminOnly: true },
+                { icon: CreditCard, label: t('common.guide_expenses'), path: '/guide-expenses', permission: 'manage_financials', adminOnly: true },
             ]
         },
         {
             title: 'GESTION DE L\'AGENCE',
             items: [
-                { icon: MapPin, label: t('common.annexes'), path: '/annexes', permission: 'manage_business' },
-                { icon: Settings, label: t('common.agency_details'), path: '/agency-details', permission: 'manage_business' },
-                { icon: Percent, label: t('common.discounts'), path: '/discounts', permission: 'manage_business' },
-                { icon: Percent, label: t('common.tax'), path: '/tax', permission: 'manage_business' },
-                { icon: UserCircle, label: t('common.users'), path: '/users', permission: 'manage_users' },
-                { icon: Activity, label: "Journal d'activité", path: '/logs', permission: 'manage_users' },
+                { icon: MapPin, label: t('common.annexes'), path: '/annexes', permission: 'manage_business', adminOnly: true },
+                { icon: Settings, label: t('common.agency_details'), path: '/agency-details', permission: 'manage_business', adminOnly: true },
+                { icon: Percent, label: t('common.discounts'), path: '/discounts', permission: 'manage_business', adminOnly: true },
+                { icon: Percent, label: t('common.tax'), path: '/tax', permission: 'manage_business', adminOnly: true },
+                { icon: UserCircle, label: t('common.users'), path: '/users', permission: 'manage_users', adminOnly: true },
+                { icon: Activity, label: "Journal d'activité", path: '/logs', permission: 'manage_users', adminOnly: true },
                 { icon: HelpCircle, label: t('common.support'), path: '/support', permission: 'manage_business' },
-                { icon: Receipt, label: t('common.payments'), path: '/payments', permission: 'manage_business' },
+                { icon: Receipt, label: t('common.payments'), path: '/payments', permission: 'manage_business', adminOnly: true },
                 { icon: List, label: t('common.rooming_list'), path: '/rooming-list', permission: 'manage_business' },
-                { icon: Wallet, label: t('common.caisse'), path: '/cash-register', permission: 'manage_financials' },
+                { icon: Wallet, label: t('common.caisse'), path: '/cash-register', permission: 'manage_financials', adminOnly: true },
             ]
         }
     ];
@@ -143,18 +143,23 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         <span className="relative z-10">{t('common.dashboard')}</span>
                     </NavLink>
 
-                    {sections.map((section, index) => (
-                        <div key={index}>
-                            <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                                {section.title}
-                            </h3>
-                            <div className="space-y-1">
-                                {section.items.map((item) => {
-                                    if (item.permission && !hasPermission(item.permission as any)) {
-                                        return null;
-                                    }
+                    {sections.map((section, index) => {
+                        // Check if any item in the section is visible to the user
+                        const visibleItems = section.items.filter(item => {
+                            if (item.adminOnly && user?.role !== 'admin') return false;
+                            if (item.permission && !hasPermission(item.permission as any)) return false;
+                            return true;
+                        });
 
-                                    return (
+                        if (visibleItems.length === 0) return null;
+
+                        return (
+                            <div key={index}>
+                                <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                                    {section.title}
+                                </h3>
+                                <div className="space-y-1">
+                                    {visibleItems.map((item) => (
                                         <NavLink
                                             key={item.path}
                                             to={item.path}
@@ -169,11 +174,11 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                             <item.icon size={18} className={cn("transition-transform duration-200 group-hover:scale-110 rtl:rotate-180", ({ isActive }: { isActive: boolean }) => isActive && "text-primary")} />
                                             <span className="relative z-10">{item.label}</span>
                                         </NavLink>
-                                    );
-                                })}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </nav>
 
                 {/* Footer with Safe Area */}

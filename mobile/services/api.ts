@@ -172,6 +172,13 @@ export const ordersAPI = {
     }
 };
 
+export const passengersAPI = {
+    update: async (id: string, data: any) => {
+        const response = await api.put(`/passengers/${id}`, data);
+        return response.data;
+    }
+};
+
 export const paymentsAPI = {
     create: async (data: any) => {
         const response = await api.post('/payments', data);

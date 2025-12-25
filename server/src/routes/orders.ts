@@ -343,6 +343,7 @@ router.put('/:id',
     }
 );
 
+
 // Delete order (Admin only)
 router.delete('/:id',
     authMiddleware,
@@ -363,10 +364,39 @@ router.delete('/:id',
 
             const order = checkResult.rows[0];
 
-            // Delete related payments first (foreign key constraint)
+            // 1. Get all payments for this order
+            const paymentsResult = await client.query('SELECT id FROM payments WHERE order_id = $1', [id]);
+            const paymentIds = paymentsResult.rows.map(p => p.id);
+
+            // 2. If there are payments, get associated transactions to revert balances
+            if (paymentIds.length > 0) {
+                const transactionsResult = await client.query(
+                    'SELECT amount, type, account_id FROM transactions WHERE payment_id = ANY($1::uuid[])',
+                    [paymentIds]
+                );
+
+                // 3. Revert balances for each transaction
+                for (const trans of transactionsResult.rows) {
+                    if (trans.account_id) {
+                        const revertAmount = trans.type === 'IN' ? -parseFloat(trans.amount) : parseFloat(trans.amount);
+                        await client.query(
+                            'UPDATE bank_accounts SET balance = balance + $1 WHERE id = $2',
+                            [revertAmount, trans.account_id]
+                        );
+                    }
+                }
+
+                // 4. Delete associated transactions
+                await client.query(
+                    'DELETE FROM transactions WHERE payment_id = ANY($1::uuid[])',
+                    [paymentIds]
+                );
+            }
+
+            // 5. Delete related payments (foreign key constraint)
             await client.query('DELETE FROM payments WHERE order_id = $1', [id]);
 
-            // Delete the order
+            // 6. Delete the order
             await client.query('DELETE FROM orders WHERE id = $1', [id]);
 
             await logAudit(client, {
@@ -374,12 +404,16 @@ router.delete('/:id',
                 action: 'DELETE',
                 entityType: 'order',
                 entityId: id,
-                changes: { deletedOrder: order },
+                changes: { deletedOrder: order, deletedPayments: paymentIds.length },
                 ipAddress: req.ip
             });
 
             await client.query('COMMIT');
-            res.json({ message: 'Order deleted successfully', id });
+            res.json({
+                message: 'Order and associated financial records deleted successfully',
+                id,
+                deletedPayments: paymentIds.length
+            });
         } catch (error) {
             await client.query('ROLLBACK');
             next(error);

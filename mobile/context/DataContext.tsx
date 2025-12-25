@@ -6,7 +6,7 @@ import { eventBus, EVENTS } from '../services/events';
 import type { Client, Agency, Order, Expense, Transaction, User, Supplier, Offer, GuideExpense, Discount, Tax, BankAccount, Payment, Room } from '../types';
 import {
     clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI,
-    agenciesAPI, expensesAPI, usersAPI, transactionsAPI, bankAccountsAPI, roomsAPI
+    agenciesAPI, expensesAPI, usersAPI, transactionsAPI, bankAccountsAPI, roomsAPI, passengersAPI
 } from '../services/api';
 
 interface DataContextType {
@@ -36,6 +36,8 @@ interface DataContextType {
 
     addOrder: (order: Order) => Promise<void>;
     updateOrder: (order: Order) => Promise<void>;
+    deleteOrder: (id: string) => Promise<void>;
+    updatePassengerPrice: (passengerId: string, orderId: string, finalPrice: number) => Promise<void>;
 
     addExpense: (expense: Expense) => Promise<void>;
     updateExpense: (expense: Expense) => Promise<void>;
@@ -388,6 +390,17 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         const saved = await ordersAPI.update(updatedOrder.id, updatedOrder);
         setOrders(prev => prev.map(o => o.id === saved.id ? saved : o));
     };
+    const deleteOrder = async (id: string) => {
+        await ordersAPI.delete(id);
+        setOrders(prev => prev.filter(o => o.id !== id));
+    };
+
+    const updatePassengerPrice = async (passengerId: string, orderId: string, finalPrice: number) => {
+        await passengersAPI.update(passengerId, { finalPrice, priceOverridden: true });
+        // Refresh the specific order to get recalculated totals
+        const updatedOrder = await ordersAPI.getById(orderId);
+        setOrders(prev => prev.map(o => o.id === orderId ? updatedOrder : o));
+    };
 
     // SUPPLIERS
     const addSupplier = async (supplier: Supplier) => {
@@ -511,7 +524,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             refreshData: loadData,
             addClient, updateClient,
             addAgency, updateAgency, deleteAgency,
-            addOrder, updateOrder,
+            addOrder, updateOrder, deleteOrder, updatePassengerPrice,
             addExpense, updateExpense, deleteExpense,
             addUser, updateUser, deleteUser,
             addSupplier, updateSupplier, deleteSupplier,

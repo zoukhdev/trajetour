@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { View, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useData } from '../../../context/DataContext';
+import { useAuth } from '../../../context/AuthContext';
 import { useExchangeRates } from '../../../context/ExchangeRateContext';
 import { ThemedText } from '../../../components/ui/ThemedText';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { Printer, CreditCard, ArrowLeft, Users, FileText, Wallet, CheckCircle, Clock, User } from 'lucide-react-native';
-import type { Payment, Currency, PaymentMethod } from '../../../types';
+import { Printer, CreditCard, ArrowLeft, Users, FileText, Wallet, CheckCircle, Clock, User, Trash2, Edit3, Check, X } from 'lucide-react-native';
+import type { Payment, Currency, PaymentMethod, Order } from '../../../types';
 
 // Simple Payment Modal Component
 const PaymentModal = ({
@@ -163,8 +164,12 @@ const PaymentModal = ({
 export default function OrderDetailsScreen() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
-    const { orders, clients, agencies, bankAccounts, addPayment } = useData();
+    const { orders, clients, bankAccounts, addPayment, deleteOrder, updatePassengerPrice } = useData();
+    const { user } = useAuth();
     const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [editingPassengerId, setEditingPassengerId] = useState<string | null>(null);
+    const [editedPrice, setEditedPrice] = useState('');
+    const [isSavingPrice, setIsSavingPrice] = useState(false);
 
     const orderId = Array.isArray(id) ? id[0] : id;
     const order = orders.find(o => o.id === orderId);
@@ -187,6 +192,50 @@ export default function OrderDetailsScreen() {
         } catch (error) {
             console.error(error);
             Alert.alert("Erreur", "Impossible d'ajouter le paiement");
+        }
+    };
+
+    const handleDeleteOrder = () => {
+        if (!order) return;
+        Alert.alert(
+            "Suppression",
+            "Êtes-vous sûr de vouloir supprimer cette commande et tous les paiements/transactions associés ?",
+            [
+                { text: "Annuler", style: "cancel" },
+                {
+                    text: "Supprimer",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await deleteOrder(order.id);
+                            router.replace('/(tabs)/orders');
+                        } catch (error) {
+                            Alert.alert("Erreur", "Impossible de supprimer la commande");
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const handleStartEditPrice = (passengerId: string, currentPrice: number) => {
+        setEditingPassengerId(passengerId);
+        setEditedPrice(currentPrice.toString());
+    };
+
+    const handleSavePrice = async (passengerId: string) => {
+        if (!order) return;
+        const newPrice = parseFloat(editedPrice);
+        if (isNaN(newPrice)) return;
+
+        setIsSavingPrice(true);
+        try {
+            await updatePassengerPrice(passengerId, order.id, newPrice);
+            setEditingPassengerId(null);
+        } catch (error) {
+            Alert.alert("Erreur", "Impossible de mettre à jour le prix");
+        } finally {
+            setIsSavingPrice(false);
         }
     };
 
@@ -215,9 +264,16 @@ export default function OrderDetailsScreen() {
                     <ArrowLeft size={20} color="#374151" />
                     <ThemedText className="text-lg font-semibold text-gray-700">Retour</ThemedText>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => Alert.alert("Imprimer", "Fonctionnalité PDF bientôt disponible")}>
-                    <Printer size={20} color="#374151" />
-                </TouchableOpacity>
+                <View className="flex-row items-center gap-4">
+                    {user?.role === 'admin' && (
+                        <TouchableOpacity onPress={handleDeleteOrder}>
+                            <Trash2 size={20} color="#EF4444" />
+                        </TouchableOpacity>
+                    )}
+                    <TouchableOpacity onPress={() => Alert.alert("Imprimer", "Fonctionnalité PDF bientôt disponible")}>
+                        <Printer size={20} color="#374151" />
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <ScrollView className="flex-1 p-4" contentContainerStyle={{ paddingBottom: 100 }}>
@@ -267,11 +323,11 @@ export default function OrderDetailsScreen() {
                     {(order.passengers || []).map((p, index) => (
                         <View key={p.id || index} className="mb-4 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
                             <View className="flex-row justify-between items-start">
-                                <View className="flex-row items-center gap-2">
+                                <View className="flex-row items-center gap-2 flex-1">
                                     <View className="bg-gray-100 p-2 rounded-full">
                                         <User size={16} color="#6B7280" />
                                     </View>
-                                    <View>
+                                    <View className="flex-1">
                                         <ThemedText className="font-bold text-gray-900">{p.firstName} {p.lastName}</ThemedText>
                                         <ThemedText className="text-xs text-gray-500 uppercase">
                                             {p.ageCategory === 'INF' ? 'BÉBÉ' : p.ageCategory === 'CHD' ? 'ENFANT' : 'ADULTE'}
@@ -279,10 +335,46 @@ export default function OrderDetailsScreen() {
                                         </ThemedText>
                                     </View>
                                 </View>
-                                {p.finalPrice && (
-                                    <View className="items-end">
-                                        <ThemedText className="text-sm font-bold text-blue-600">{p.finalPrice.toLocaleString()} DZD</ThemedText>
-                                        <ThemedText className="text-[10px] text-gray-400">Prix Chambre</ThemedText>
+
+                                {editingPassengerId === p.id ? (
+                                    <View className="flex-row items-center gap-2">
+                                        <Input
+                                            value={editedPrice}
+                                            onChangeText={setEditedPrice}
+                                            keyboardType="numeric"
+                                            className="w-24 h-9 py-0 px-2 text-sm mb-0"
+                                            containerClassName="mb-0"
+                                        />
+                                        <TouchableOpacity
+                                            onPress={() => handleSavePrice(p.id)}
+                                            disabled={isSavingPrice}
+                                            className="bg-green-100 p-2 rounded-full"
+                                        >
+                                            <Check size={14} color="#16A34A" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            onPress={() => setEditingPassengerId(null)}
+                                            className="bg-red-100 p-2 rounded-full"
+                                        >
+                                            <X size={14} color="#EF4444" />
+                                        </TouchableOpacity>
+                                    </View>
+                                ) : (
+                                    <View className="flex-row items-center gap-2">
+                                        <View className="items-end">
+                                            <ThemedText className="text-sm font-bold text-blue-600">
+                                                {(p.finalPrice || 0).toLocaleString()} DZD
+                                            </ThemedText>
+                                            <ThemedText className="text-[10px] text-gray-400">Prix Chambre</ThemedText>
+                                        </View>
+                                        {user?.role === 'admin' && (
+                                            <TouchableOpacity
+                                                onPress={() => handleStartEditPrice(p.id, p.finalPrice || 0)}
+                                                className="bg-gray-50 p-2 rounded-full"
+                                            >
+                                                <Edit3 size={14} color="#6B7280" />
+                                            </TouchableOpacity>
+                                        )}
                                     </View>
                                 )}
                             </View>
