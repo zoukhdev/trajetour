@@ -174,7 +174,7 @@ const OrderDetails = () => {
                         <Printer size={20} />
                         <span>Imprimer</span>
                     </button>
-                    {remainingAmount > 0 && user?.role === 'admin' && (
+                    {remainingAmount > 0 && (user?.role === 'admin' || user?.role === 'agent') && (
                         <button
                             onClick={() => {
                                 setEditingPayment(null);
@@ -390,7 +390,7 @@ const OrderDetails = () => {
                                                 </span>
                                             </div>
                                         </div>
-                                        {user?.role === 'admin' && (
+                                        {(user?.role === 'admin' || user?.role === 'agent') && (
                                             <button
                                                 onClick={() => handleEditClick(payment)}
                                                 className="p-1 text-gray-400 hover:text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity"

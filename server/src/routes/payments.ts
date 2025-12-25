@@ -9,7 +9,13 @@ const router = express.Router();
 // Create payment
 router.post('/',
     authMiddleware,
-    requirePermission('manage_financials'),
+    (req: AuthRequest, res, next) => {
+        if (req.user?.role === 'admin' || req.user?.role === 'agent' || req.user?.permissions.includes('manage_financials')) {
+            next();
+        } else {
+            res.status(403).json({ error: 'Insufficient permissions' });
+        }
+    },
     validate(paymentSchema),
     async (req: AuthRequest, res, next) => {
         const client = await pool.connect();
@@ -199,7 +205,13 @@ router.patch('/:id/validate',
 // Update Payment (PUT) for fixing errors (Request 2)
 router.put('/:id',
     authMiddleware,
-    requirePermission('manage_financials'),
+    (req: AuthRequest, res, next) => {
+        if (req.user?.role === 'admin' || req.user?.role === 'agent' || req.user?.permissions.includes('manage_financials')) {
+            next();
+        } else {
+            res.status(403).json({ error: 'Insufficient permissions' });
+        }
+    },
     async (req: AuthRequest, res, next) => {
         const client = await pool.connect();
         try {

@@ -22,7 +22,13 @@ const mapAccountResponse = (row: any) => ({
 // Get all accounts
 router.get('/',
     authMiddleware,
-    requirePermission('manage_financials'),
+    (req: AuthRequest, res, next) => {
+        if (req.user?.role === 'admin' || req.user?.role === 'agent' || req.user?.permissions.includes('manage_financials')) {
+            next();
+        } else {
+            res.status(403).json({ error: 'Insufficient permissions' });
+        }
+    },
     async (req: AuthRequest, res, next) => {
         try {
             const result = await pool.query('SELECT * FROM bank_accounts ORDER BY is_default DESC, name ASC');

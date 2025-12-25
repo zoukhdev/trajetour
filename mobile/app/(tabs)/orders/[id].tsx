@@ -306,7 +306,7 @@ export default function OrderDetailsScreen() {
                         </View>
                     </View>
 
-                    {remainingAmountDZD > 0 && (
+                    {(remainingAmountDZD > 0 || user?.role === 'admin' || user?.role === 'agent') && (
                         <TouchableOpacity
                             onPress={() => setShowPaymentModal(true)}
                             className="mt-4 bg-blue-600 py-3 rounded-lg flex-row justify-center items-center gap-2 shadow-sm"
@@ -460,7 +460,7 @@ export default function OrderDetailsScreen() {
                 </View>
             </ScrollView>
 
-            {remainingAmountDZD > 0 && (
+            {(remainingAmountDZD > 0 || user?.role === 'admin' || user?.role === 'agent') && (
                 <View className="absolute bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-100 shadow-lg pb-8">
                     <Button
                         title="Ajouter un Paiement"
