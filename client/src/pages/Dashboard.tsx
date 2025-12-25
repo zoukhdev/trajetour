@@ -9,7 +9,8 @@ import {
     ArrowUpRight,
     ArrowDownRight,
     DollarSign,
-    Calendar
+    Calendar,
+    ShoppingCart
 } from 'lucide-react';
 
 const Dashboard = () => {
