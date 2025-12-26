@@ -250,7 +250,7 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
 
         // PDF options
         const opt = {
-            margin: [10, 10, 10, 10],
+            margin: [10, 10, 10, 10] as [number, number, number, number],
             filename: `Facture-${order.id.substr(0, 6)}.pdf`,
             image: { type: 'jpeg' as const, quality: 0.95 },
             html2canvas: {
