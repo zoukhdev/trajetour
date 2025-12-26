@@ -318,11 +318,11 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         alert(`Erreur lors de la génération du PDF: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     } finally {
         // Clean up
-        if (container && container.parentNode) {
-            container.parentNode.removeChild(container);
+        if (container && (container as HTMLElement).parentNode) {
+            (container as HTMLElement).parentNode.removeChild(container);
         }
-        if (overlay && overlay.parentNode) {
-            overlay.parentNode.removeChild(overlay);
+        if (overlay && (overlay as HTMLElement).parentNode) {
+            (overlay as HTMLElement).parentNode.removeChild(overlay);
         }
     }
 };
