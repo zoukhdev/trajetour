@@ -260,13 +260,16 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         `;
 
         // The actual invoice wrapper
+        // The actual invoice wrapper - Slightly reduced width for safety margins (750px < A4's ~794px)
         const wrapper = document.createElement('div');
         wrapper.style.cssText = `
-            width: 210mm;
+            width: 750px;
             min-height: 297mm;
             background: white; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             position: relative;
+            padding: 0;
+            box-sizing: border-box;
         `;
         wrapper.innerHTML = htmlContent;
 
@@ -290,17 +293,18 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
             image: { type: 'jpeg' as const, quality: 0.98 },
             html2canvas: {
                 scale: 2,
-                useCORS: false,
+                useCORS: true,
                 logging: true,
                 letterRendering: true,
                 backgroundColor: '#ffffff'
-                // Removed explicit x, y, scrollY, windowWidth, windowHeight to let it capture naturally
+                // Removed explicit width/windowWidth to let auto-scaling work better
             },
             jsPDF: {
                 unit: 'mm' as const,
                 format: 'a4' as const,
                 orientation: 'portrait' as const,
-                compress: true
+                compress: true,
+                hotfixes: ['px_scaling']
             }
         };
 
