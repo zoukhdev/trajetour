@@ -17,216 +17,251 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
     const fontFamily = isRTL ? "Arial, 'Arial Unicode MS', sans-serif" : "Arial, Helvetica, sans-serif";
 
     return `
-<!DOCTYPE html>
-<html dir="${isRTL ? 'rtl' : 'ltr'}" lang="${isRTL ? 'ar' : 'fr'}">
-<head>
-    <meta charset="UTF-8">
     <style>
-        * {
+        .invoice-container * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
+        .invoice-container {
             font-family: ${fontFamily};
-            padding: 30px;
+            padding: 40px;
             direction: ${isRTL ? 'rtl' : 'ltr'};
             font-size: 14px;
             line-height: 1.6;
+            background: white;
+            color: #333;
+            width: 100%;
+            min-height: 1123px;
         }
         
-        .header {
+        .invoice-container .invoice-header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             border-bottom: 3px solid #1a56db;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
-        
-        .company-name {
-            color: #1a56db;
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
+
+        .invoice-container .header-content {
+            flex: 1;
         }
         
-        .company-info {
+        .invoice-container .logo-container {
+            margin-${isRTL ? 'right' : 'left'}: 20px;
+        }
+
+        .invoice-container .logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+        }
+        
+        .invoice-container .company-name {
+            color: #1a56db;
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .invoice-container .company-info {
             color: #64748b;
             font-size: 12px;
-            line-height: 1.8;
+            line-height: 1.6;
         }
         
-        .invoice-title {
+        .invoice-container .invoice-title {
             font-size: 24px;
             font-weight: bold;
             margin: 20px 0 10px 0;
-        }
-        
-        .invoice-meta {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 20px;
-        }
-        
-        .section {
-            background: #f9fafb;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
             color: #1f2937;
         }
         
-        .section-content {
+        .invoice-container .invoice-meta {
             font-size: 13px;
             color: #4b5563;
-            line-height: 1.8;
+            margin-bottom: 25px;
         }
         
-        table {
+        .invoice-container .section {
+            background: #f8fafc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            break-inside: avoid;
+        }
+        
+        .invoice-container .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .invoice-container .section-content {
+            font-size: 13px;
+            color: #475569;
+        }
+        
+        .invoice-container table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 25px 0;
         }
         
-        th {
+        .invoice-container th {
             background: #1a56db;
             color: white;
-            padding: 15px 10px;
+            padding: 12px;
             text-align: ${isRTL ? 'right' : 'left'};
-            font-size: 13px;
-            font-weight: bold;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
         
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #e5e7eb;
+        .invoice-container td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
             font-size: 13px;
         }
         
-        .text-right {
+        .invoice-container tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .invoice-container .text-right {
             text-align: right;
         }
         
-        .text-center {
+        .invoice-container .text-center {
             text-align: center;
         }
         
-        .totals-section {
-            margin: 30px 0;
-            ${isRTL ? 'margin-right' : 'margin-left'}: 50%;
+        .invoice-container .totals-section {
+            margin-top: 30px;
+            margin-bottom: 30px;
+            width: 50%;
+            margin-${isRTL ? 'right' : 'left'}: auto;
+            break-inside: avoid;
         }
         
-        .total-line {
+        .invoice-container .total-line {
             padding: 10px 0;
-            font-size: 15px;
+            font-size: 14px;
             display: flex;
             justify-content: space-between;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e2e8f0;
         }
         
-        .total-line.grand {
+        .invoice-container .total-line.grand {
             font-size: 18px;
             font-weight: bold;
             border-top: 2px solid #1a56db;
             border-bottom: 2px solid #1a56db;
-            padding-top: 15px;
+            padding: 15px 0;
+            margin-top: 5px;
+            color: #1e293b;
         }
         
-        .total-line.paid {
+        .invoice-container .total-line.paid {
             color: #059669;
         }
         
-        .total-line.remaining {
+        .invoice-container .total-line.remaining {
             color: ${remainingAmount > 0 ? '#dc2626' : '#059669'};
-            font-weight: bold;
+            font-weight: 600;
         }
         
-        .footer {
-            margin-top: 50px;
+        .invoice-container .footer {
+            margin-top: 40px;
             text-align: center;
-            color: #9ca3af;
+            color: #94a3b8;
             font-size: 11px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            break-inside: avoid;
         }
     </style>
-</head>
-<body>
-    <div class="header">
-        <div class="company-name">${t('Wahat Alrajaa', 'واحة الرجاء')}</div>
-        <div class="company-info">
-            ${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}<br>
-            ${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}<br>
-            ${t('Tél', 'هاتف')}: +213550323020<br>
-            Email: contact@wahat-alrajaa.com
+    <div class="invoice-container">
+        <div class="invoice-header-wrapper" style="direction: ${isRTL ? 'rtl' : 'ltr'};">
+            <div class="header-content">
+                <div class="company-name">${t('Wahat Alrajaa', 'واحة الرجاء')}</div>
+                <div class="company-info">
+                    ${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}<br>
+                    ${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}<br>
+                    ${t('Tél', 'هاتف')}: +213550323020<br>
+                    Email: contact@wahat-alrajaa.com
+                </div>
+            </div>
+            <div class="logo-container">
+                <img src="/logo.png" alt="Logo" class="logo" crossorigin="anonymous" />
+            </div>
         </div>
-    </div>
-    
-    <div class="invoice-title">${t('FACTURE', 'فاتورة')}</div>
-    <div class="invoice-meta">
-        <strong>${t('N°', 'رقم')}:</strong> CMD-${order.id.substr(0, 8).toUpperCase()}<br>
-        <strong>${t('Date', 'تاريخ')}:</strong> ${dateStr}<br>
-        <strong>${t('État', 'الحالة')}:</strong> ${order.status}
-    </div>
-    
-    <div class="section">
-        <div class="section-title">${t('Facturé à:', 'فوترة إلى:')}</div>
-        <div class="section-content">
-            <strong>${client.fullName}</strong><br>
-            ${t('Tél', 'هاتف')}: ${client.mobileNumber}<br>
-            ${client.passportNumber ? `${t('Passeport', 'جواز سفر')}: ${client.passportNumber}<br>` : ''}
-            ${t('Type', 'نوع')}: ${client.type}
-            ${agency ? `<br>${t('Agence/Rabbateur', 'وكالة/مسوق')}: ${agency.name}` : ''}
+        
+        <div class="invoice-title">${t('FACTURE', 'فاتورة')}</div>
+        <div class="invoice-meta">
+            <strong>${t('N°', 'رقم')}:</strong> CMD-${order.id.substr(0, 8).toUpperCase()}<br>
+            <strong>${t('Date', 'تاريخ')}:</strong> ${dateStr}<br>
+            <strong>${t('État', 'الحالة')}:</strong> ${order.status}
         </div>
-    </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>${t('Description', 'الوصف')}</th>
-                <th class="text-center">${t('Qté', 'الكمية')}</th>
-                <th class="text-right">${t('Prix Unit.', 'سعر الوحدة')}</th>
-                <th class="text-right">${t('Montant', 'المبلغ')} (DZD)</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${order.items.map(item => `
+        
+        <div class="section">
+            <div class="section-title">${t('Facturé à:', 'فوترة إلى:')}</div>
+            <div class="section-content">
+                <strong>${client.fullName}</strong><br>
+                ${t('Tél', 'هاتف')}: ${client.mobileNumber}<br>
+                ${client.passportNumber ? `${t('Passeport', 'جواز سفر')}: ${client.passportNumber}<br>` : ''}
+                ${t('Type', 'نوع')}: ${client.type}
+                ${agency ? `<br>${t('Agence/Rabbateur', 'وكالة/مسوق')}: ${agency.name}` : ''}
+            </div>
+        </div>
+        
+        <table>
+            <thead>
                 <tr>
-                    <td>${item.description}</td>
-                    <td class="text-center">${item.quantity}</td>
-                    <td class="text-right">${item.unitPrice.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}</td>
-                    <td class="text-right">${item.amount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}</td>
+                    <th>${t('Description', 'الوصف')}</th>
+                    <th class="text-center">${t('Qté', 'الكمية')}</th>
+                    <th class="text-right">${t('Prix Unit.', 'سعر الوحدة')}</th>
+                    <th class="text-right">${t('Montant', 'المبلغ')} (DZD)</th>
                 </tr>
-            `).join('')}
-        </tbody>
-    </table>
-    
-    <div class="totals-section">
-        <div class="total-line grand">
-            <span>${t('Total:', 'المجموع:')}</span>
-            <span>${order.totalAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
+            </thead>
+            <tbody>
+                ${order.items.map(item => `
+                    <tr>
+                        <td>${item.description}</td>
+                        <td class="text-center">${item.quantity}</td>
+                        <td class="text-right">${item.unitPrice.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}</td>
+                        <td class="text-right">${item.amount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        
+        <div class="totals-section">
+            <div class="total-line grand">
+                <span>${t('Total:', 'المجموع:')}</span>
+                <span>${order.totalAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
+            </div>
+            <div class="total-line paid">
+                <span>${t('Payé:', 'مدفوع:')}</span>
+                <span>${paidAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
+            </div>
+            <div class="total-line remaining">
+                <span>${t('Reste à payer:', 'الباقي:')}</span>
+                <span>${remainingAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
+            </div>
         </div>
-        <div class="total-line paid">
-            <span>${t('Payé:', 'مدفوع:')}</span>
-            <span>${paidAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
-        </div>
-        <div class="total-line remaining">
-            <span>${t('Reste à payer:', 'الباقي:')}</span>
-            <span>${remainingAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
+        
+        <div class="footer">
+            ${t('Merci de votre confiance.', 'شكراً لثقتكم.')}<br>
+            Wahat Alrajaa Tour - RC: XXXXX - NIF: XXXXX
         </div>
     </div>
-    
-    <div class="footer">
-        ${t('Merci de votre confiance.', 'شكراً لثقتكم.')}<br>
-        Wahat Alrajaa Tour - RC: XXXXX - NIF: XXXXX
-    </div>
-</body>
-</html>
     `;
 };
 
@@ -241,53 +276,25 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         console.log('✅ HTML created');
 
         // Create a full-screen white container that covers EVERYTHING
-        // This is the most robust way to ensure html2canvas captures exactly what we see
         container = document.createElement('div');
         container.id = 'pdf-generation-container';
-        container.style.cssText = `
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            background: #ffffff; 
-            z-index: 999999; 
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        `;
+        container.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 999999; overflow-y: auto; padding: 0; margin: 0; display: flex; justify-content: center; align-items: flex-start;';
 
-        // The actual invoice wrapper
         // The actual invoice wrapper - Exact A4 dimensions at 96 DPI
-        // Width: 210mm approx 794px
-        // Height: 297mm approx 1123px (we allow auto-height but restrict for single page feeling)
         const wrapper = document.createElement('div');
-        wrapper.style.cssText = `
-            width: 794px;
-            min-height: 1123px;
-            background: white; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            padding: 0;
-            box-sizing: border-box;
-            background-color: white;
-        `;
+        wrapper.style.cssText = 'width: 794px; min-height: 1123px; background: white; position: relative; padding: 0; margin: 0; box-sizing: border-box;';
         wrapper.innerHTML = htmlContent;
 
         container.appendChild(wrapper);
-        document.body.appendChild(container); // Append to body to cover everything
+        document.body.appendChild(container);
 
         console.log('✅ Full screen container added');
 
-        // Show a "Generating..." message on top
         const msg = document.createElement('div');
         msg.innerHTML = 'Génération du PDF...';
         msg.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #2563eb; color: white; border-radius: 6px; font-family: system-ui; z-index: 1000000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 500;';
         document.body.appendChild(msg);
 
-        // Substantial delay to ensure rendering is stable (2 seconds)
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         const opt = {
@@ -305,7 +312,7 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
             },
             jsPDF: {
                 unit: 'px' as const,
-                format: [794, 1123] as [number, number], // Exact A4 pixel dimensions
+                format: [794, 1123] as [number, number],
                 orientation: 'portrait' as const,
                 compress: true,
                 hotfixes: ['px_scaling']
@@ -313,18 +320,16 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         };
 
         console.log('🔄 Taking snapshot...');
-        // Capture specific wrapper
+        // @ts-ignore
         await html2pdf().set(opt).from(wrapper).save();
         console.log('✅ PDF generated successfully!');
 
-        // Remove message
         if (msg.parentNode) msg.parentNode.removeChild(msg);
 
     } catch (error) {
         console.error('❌ PDF generation failed:', error);
         alert(`Erreur lors de la génération du PDF: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     } finally {
-        // Clean up safely
         const cleanupContainer = document.getElementById('pdf-generation-container');
         if (cleanupContainer && cleanupContainer.parentNode) {
             cleanupContainer.parentNode.removeChild(cleanupContainer);
