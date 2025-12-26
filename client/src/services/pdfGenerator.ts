@@ -291,7 +291,7 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         await new Promise(resolve => setTimeout(resolve, 2000));
 
         const opt = {
-            margin: [0, 0, 0, 0] as [number, number, number, number],
+            margin: 0,
             filename: `Facture-${order.id.substr(0, 6)}.pdf`,
             image: { type: 'jpeg' as const, quality: 0.98 },
             html2canvas: {
@@ -299,12 +299,13 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
                 useCORS: true,
                 logging: true,
                 letterRendering: true,
-                backgroundColor: '#ffffff'
-                // Removed explicit width/windowWidth to let auto-scaling work better
+                backgroundColor: '#ffffff',
+                width: 794,
+                windowWidth: 794
             },
             jsPDF: {
-                unit: 'mm' as const,
-                format: 'a4' as const,
+                unit: 'px' as const,
+                format: [794, 1123] as [number, number], // Exact A4 pixel dimensions
                 orientation: 'portrait' as const,
                 compress: true,
                 hotfixes: ['px_scaling']
