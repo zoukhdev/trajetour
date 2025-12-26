@@ -234,7 +234,6 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
     console.log('🔄 Starting PDF generation...', { language, orderId: order.id });
 
     let container: HTMLDivElement | null = null;
-    let overlay: HTMLDivElement | null = null;
 
     try {
         // Create HTML
