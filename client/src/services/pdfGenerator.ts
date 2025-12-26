@@ -18,8 +18,9 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
 <html dir="${isRTL ? 'rtl' : 'ltr'}" lang="${isRTL ? 'ar' : 'fr'}">
 <head>
     <meta charset="UTF-8">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -27,9 +28,10 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
         
         body {
-            font-family: ${isRTL ? "'Tajawal', sans-serif" : "Arial, sans-serif"};
+            font-family: ${isRTL ? "'Tajawal', Arial, sans-serif" : "Arial, Helvetica, sans-serif"};
             padding: 20px;
             direction: ${isRTL ? 'rtl' : 'ltr'};
+            font-size: 12px;
         }
         
         .invoice {
@@ -47,18 +49,6 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             padding-bottom: 20px;
         }
         
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-        }
-        
         .company-info h1 {
             color: #1a56db;
             font-size: 24px;
@@ -67,7 +57,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         
         .company-info p {
             color: #64748b;
-            font-size: 12px;
+            font-size: 11px;
             line-height: 1.6;
         }
         
@@ -81,7 +71,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
         
         .invoice-details p {
-            font-size: 12px;
+            font-size: 11px;
             color: #64748b;
             margin: 3px 0;
         }
@@ -94,13 +84,13 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
         
         .client-section h3 {
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 10px;
             color: #1f2937;
         }
         
         .client-section p {
-            font-size: 12px;
+            font-size: 11px;
             color: #4b5563;
             margin: 3px 0;
         }
@@ -116,14 +106,14 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             color: white;
             padding: 12px;
             text-align: ${isRTL ? 'right' : 'left'};
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
         }
         
         td {
             padding: 10px 12px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 12px;
+            font-size: 11px;
         }
         
         .amount-col {
@@ -140,12 +130,12 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .total-row.main {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 15px;
             border-top: 2px solid #e5e7eb;
             padding-top: 12px;
         }
@@ -176,15 +166,12 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
 <body>
     <div class="invoice">
         <div class="header">
-            <div class="logo-section">
-                <img src="/logo.png" alt="Logo" class="logo" />
-                <div class="company-info">
-                    <h1>${t('Wahat Alrajaa', 'واحة الرجاء')}</h1>
-                    <p>${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}</p>
-                    <p>${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}</p>
-                    <p>${t('Tél', 'هاتف')}: +213550323020</p>
-                    <p>Email: contact@wahat-alrajaa.com</p>
-                </div>
+            <div class="company-info">
+                <h1>${t('Wahat Alrajaa', 'واحة الرجاء')}</h1>
+                <p>${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}</p>
+                <p>${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}</p>
+                <p>${t('Tél', 'هاتف')}: +213550323020</p>
+                <p>Email: contact@wahat-alrajaa.com</p>
             </div>
             
             <div class="invoice-details">
@@ -255,21 +242,33 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
     const container = document.createElement('div');
     container.style.position = 'absolute';
     container.style.left = '-9999px';
+    container.style.width = '210mm';
     container.innerHTML = createInvoiceHTML(order, client, agency, language);
     document.body.appendChild(container);
+
+    // Wait a moment for fonts to load
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     // PDF options
     const opt = {
         margin: 10,
         filename: `Facture-${order.id.substr(0, 6)}.pdf`,
         image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            letterRendering: true
+        },
         jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
     };
 
     // Generate PDF
     try {
         await html2pdf().set(opt).from(container).save();
+    } catch (error) {
+        console.error('PDF generation error:', error);
+        alert('Erreur lors de la génération du PDF. Veuillez réessayer.');
     } finally {
         // Clean up
         document.body.removeChild(container);
