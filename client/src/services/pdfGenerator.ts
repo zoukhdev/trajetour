@@ -317,12 +317,14 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         console.error('❌ PDF generation failed:', error);
         alert(`Erreur lors de la génération du PDF: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     } finally {
-        // Clean up
-        if (container && (container as HTMLElement).parentNode) {
-            (container as HTMLElement).parentNode.removeChild(container);
+        // Clean up safely
+        if (container) {
+            const parent = container.parentNode;
+            if (parent) parent.removeChild(container);
         }
-        if (overlay && (overlay as HTMLElement).parentNode) {
-            (overlay as HTMLElement).parentNode.removeChild(overlay);
+        if (overlay) {
+            const parent = overlay.parentNode;
+            if (parent) parent.removeChild(overlay);
         }
     }
 };
