@@ -241,48 +241,49 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         const htmlContent = createInvoiceHTML(order, client, agency, language);
         console.log('✅ HTML created');
 
-        // Overlay
-        overlay = document.createElement('div');
-        overlay.style.cssText = `
+        // Create a full-screen white container that covers EVERYTHING
+        // This is the most robust way to ensure html2canvas captures exactly what we see
+        container = document.createElement('div');
+        container.id = 'pdf-generation-container';
+        container.style.cssText = `
             position: fixed; 
             top: 0; 
             left: 0; 
             width: 100vw; 
             height: 100vh; 
-            background: rgba(0,0,0,0.8); 
-            z-index: 9999; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            color: white; 
-            flex-direction: column;
+            background: #ffffff; 
+            z-index: 999999; 
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         `;
-        overlay.innerHTML = `
-            <div style="font-size: 24px; margin-bottom: 20px;">Génération du PDF en cours...</div>
-            <div style="font-size: 14px;">Veuillez patienter</div>
-        `;
-        document.body.appendChild(overlay);
 
-        // Container (Visible)
-        container = document.createElement('div');
-        container.id = 'invoice-container';
-        container.style.cssText = `
-            position: fixed; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 210mm; 
-            min-height: 297mm; 
+        // The actual invoice wrapper
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = `
+            width: 210mm;
+            min-height: 297mm;
             background: white; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            z-index: 10000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
         `;
-        container.innerHTML = htmlContent;
-        document.body.appendChild(container); // Append as sibling to overlay for better stacking control
+        wrapper.innerHTML = htmlContent;
 
-        console.log('✅ Visible container added to DOM');
+        container.appendChild(wrapper);
+        document.body.appendChild(container); // Append to body to cover everything
 
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log('✅ Full screen container added');
+
+        // Show a "Generating..." message on top
+        const msg = document.createElement('div');
+        msg.innerHTML = 'Génération du PDF...';
+        msg.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #2563eb; color: white; border-radius: 6px; font-family: system-ui; z-index: 1000000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 500;';
+        document.body.appendChild(msg);
+
+        // Substantial delay to ensure rendering is stable (2 seconds)
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         const opt = {
             margin: [0, 0, 0, 0] as [number, number, number, number],
@@ -293,9 +294,8 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
                 useCORS: false,
                 logging: true,
                 letterRendering: true,
-                backgroundColor: '#ffffff',
-                windowWidth: container.scrollWidth,
-                windowHeight: container.scrollHeight
+                backgroundColor: '#ffffff'
+                // Removed explicit x, y, scrollY, windowWidth, windowHeight to let it capture naturally
             },
             jsPDF: {
                 unit: 'mm' as const,
@@ -305,17 +305,20 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
             }
         };
 
-        console.log('🔄 Generating PDF logic...');
-        window.scrollTo(0, 0);
-
-        await html2pdf().set(opt).from(container).save();
+        console.log('🔄 Taking snapshot...');
+        // Capture specific wrapper
+        await html2pdf().set(opt).from(wrapper).save();
         console.log('✅ PDF generated successfully!');
+
+        // Remove message
+        if (msg.parentNode) msg.parentNode.removeChild(msg);
 
     } catch (error) {
         console.error('❌ PDF generation failed:', error);
         alert(`Erreur lors de la génération du PDF: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     } finally {
-        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        // Clean up
         if (container && container.parentNode) container.parentNode.removeChild(container);
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
     }
 };
