@@ -260,16 +260,19 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         `;
 
         // The actual invoice wrapper
-        // The actual invoice wrapper - Slightly reduced width for safety margins (750px < A4's ~794px)
+        // The actual invoice wrapper - Exact A4 dimensions at 96 DPI
+        // Width: 210mm approx 794px
+        // Height: 297mm approx 1123px (we allow auto-height but restrict for single page feeling)
         const wrapper = document.createElement('div');
         wrapper.style.cssText = `
-            width: 750px;
-            min-height: 297mm;
+            width: 794px;
+            min-height: 1123px;
             background: white; 
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             position: relative;
             padding: 0;
             box-sizing: border-box;
+            background-color: white;
         `;
         wrapper.innerHTML = htmlContent;
 
