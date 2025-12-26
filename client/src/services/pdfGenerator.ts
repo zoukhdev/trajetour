@@ -239,14 +239,28 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         console.log('✅ HTML created');
 
         // Create temporary container
+        // FIX: Don't use left: -9999px as it can cause blank renders in html2canvas
+        // Instead use fixed position with z-index behind everything
         const container = document.createElement('div');
-        container.style.cssText = 'position: absolute; left: -9999px; width: 210mm; background: white;';
+        container.style.cssText = 'position: fixed; top: 0; left: 0; width: 210mm; z-index: -1000; background: white;';
         container.innerHTML = htmlContent;
         document.body.appendChild(container);
         console.log('✅ Container added to DOM');
 
-        // Small delay for rendering
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Longer delay for rendering on slower devices/production
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Ensure images are loaded (if any)
+        const images = container.getElementsByTagName('img');
+        if (images.length > 0) {
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            }));
+        }
 
         // PDF options
         const opt = {
