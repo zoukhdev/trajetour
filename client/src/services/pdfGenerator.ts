@@ -1,7 +1,7 @@
 import html2pdf from 'html2pdf.js';
 import type { Order, Client, Agency } from '../types';
 
-// Helper function to create invoice HTML
+// Helper function to create invoice HTML with inline fonts
 const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, language: 'fr' | 'ar' = 'fr'): string => {
     const isRTL = language === 'ar';
 
@@ -13,14 +13,15 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
 
     const t = (fr: string, ar: string) => isRTL ? ar : fr;
 
+    // Use system fonts that work without loading
+    const fontFamily = isRTL ? "Arial, 'Arial Unicode MS', sans-serif" : "Arial, Helvetica, sans-serif";
+
     return `
 <!DOCTYPE html>
 <html dir="${isRTL ? 'rtl' : 'ltr'}" lang="${isRTL ? 'ar' : 'fr'}">
 <head>
     <meta charset="UTF-8">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -28,209 +29,201 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
         
         body {
-            font-family: ${isRTL ? "'Tajawal', Arial, sans-serif" : "Arial, Helvetica, sans-serif"};
-            padding: 20px;
+            font-family: ${fontFamily};
+            padding: 30px;
             direction: ${isRTL ? 'rtl' : 'ltr'};
-            font-size: 12px;
-        }
-        
-        .invoice {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 20px;
-        }
-        
-        .company-info h1 {
-            color: #1a56db;
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        
-        .company-info p {
-            color: #64748b;
-            font-size: 11px;
+            font-size: 14px;
             line-height: 1.6;
         }
         
-        .invoice-details {
-            text-align: ${isRTL ? 'left' : 'right'};
+        .header {
+            border-bottom: 3px solid #1a56db;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
         
-        .invoice-details h2 {
-            font-size: 20px;
+        .company-name {
+            color: #1a56db;
+            font-size: 28px;
+            font-weight: bold;
             margin-bottom: 10px;
         }
         
-        .invoice-details p {
-            font-size: 11px;
+        .company-info {
             color: #64748b;
-            margin: 3px 0;
+            font-size: 12px;
+            line-height: 1.8;
         }
         
-        .client-section {
-            background: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+        }
+        
+        .invoice-meta {
+            font-size: 12px;
+            color: #64748b;
             margin-bottom: 20px;
         }
         
-        .client-section h3 {
-            font-size: 13px;
+        .section {
+            background: #f9fafb;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
             margin-bottom: 10px;
             color: #1f2937;
         }
         
-        .client-section p {
-            font-size: 11px;
+        .section-content {
+            font-size: 13px;
             color: #4b5563;
-            margin: 3px 0;
+            line-height: 1.8;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
         
         th {
             background: #1a56db;
             color: white;
-            padding: 12px;
+            padding: 15px 10px;
             text-align: ${isRTL ? 'right' : 'left'};
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: bold;
         }
         
         td {
-            padding: 10px 12px;
+            padding: 12px 10px;
             border-bottom: 1px solid #e5e7eb;
-            font-size: 11px;
-        }
-        
-        .amount-col {
-            text-align: right;
-        }
-        
-        .totals {
-            margin-top: 20px;
-            ${isRTL ? 'margin-right' : 'margin-left'}: auto;
-            width: 300px;
-        }
-        
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
             font-size: 13px;
         }
         
-        .total-row.main {
-            font-weight: bold;
-            font-size: 15px;
-            border-top: 2px solid #e5e7eb;
-            padding-top: 12px;
+        .text-right {
+            text-align: right;
         }
         
-        .total-row.paid {
+        .text-center {
+            text-align: center;
+        }
+        
+        .totals-section {
+            margin: 30px 0;
+            ${isRTL ? 'margin-right' : 'margin-left'}: 50%;
+        }
+        
+        .total-line {
+            padding: 10px 0;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .total-line.grand {
+            font-size: 18px;
+            font-weight: bold;
+            border-top: 2px solid #1a56db;
+            border-bottom: 2px solid #1a56db;
+            padding-top: 15px;
+        }
+        
+        .total-line.paid {
             color: #059669;
         }
         
-        .total-row.remaining {
+        .total-line.remaining {
             color: ${remainingAmount > 0 ? '#dc2626' : '#059669'};
             font-weight: bold;
         }
         
         .footer {
-            margin-top: 40px;
+            margin-top: 50px;
             text-align: center;
             color: #9ca3af;
-            font-size: 10px;
+            font-size: 11px;
             padding-top: 20px;
             border-top: 1px solid #e5e7eb;
-        }
-        
-        .footer p {
-            margin: 3px 0;
         }
     </style>
 </head>
 <body>
-    <div class="invoice">
-        <div class="header">
-            <div class="company-info">
-                <h1>${t('Wahat Alrajaa', 'واحة الرجاء')}</h1>
-                <p>${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}</p>
-                <p>${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}</p>
-                <p>${t('Tél', 'هاتف')}: +213550323020</p>
-                <p>Email: contact@wahat-alrajaa.com</p>
-            </div>
-            
-            <div class="invoice-details">
-                <h2>${t('FACTURE', 'فاتورة')}</h2>
-                <p><strong>${t('N°', 'رقم')}:</strong> CMD-${order.id.substr(0, 8).toUpperCase()}</p>
-                <p><strong>${t('Date', 'تاريخ')}:</strong> ${dateStr}</p>
-                <p><strong>${t('État', 'الحالة')}:</strong> ${order.status}</p>
-            </div>
+    <div class="header">
+        <div class="company-name">${t('Wahat Alrajaa', 'واحة الرجاء')}</div>
+        <div class="company-info">
+            ${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}<br>
+            ${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}<br>
+            ${t('Tél', 'هاتف')}: +213550323020<br>
+            Email: contact@wahat-alrajaa.com
         </div>
-        
-        <div class="client-section">
-            <h3>${t('Facturé à:', 'فوترة إلى:')}</h3>
-            <p><strong>${client.fullName}</strong></p>
-            <p>${t('Tél', 'هاتف')}: ${client.mobileNumber}</p>
-            ${client.passportNumber ? `<p>${t('Passeport', 'جواز سفر')}: ${client.passportNumber}</p>` : ''}
-            <p>${t('Type', 'نوع')}: ${client.type}</p>
-            ${agency ? `<p>${t('Agence/Rabbateur', 'وكالة/مسوق')}: ${agency.name}</p>` : ''}
+    </div>
+    
+    <div class="invoice-title">${t('FACTURE', 'فاتورة')}</div>
+    <div class="invoice-meta">
+        <strong>${t('N°', 'رقم')}:</strong> CMD-${order.id.substr(0, 8).toUpperCase()}<br>
+        <strong>${t('Date', 'تاريخ')}:</strong> ${dateStr}<br>
+        <strong>${t('État', 'الحالة')}:</strong> ${order.status}
+    </div>
+    
+    <div class="section">
+        <div class="section-title">${t('Facturé à:', 'فوترة إلى:')}</div>
+        <div class="section-content">
+            <strong>${client.fullName}</strong><br>
+            ${t('Tél', 'هاتف')}: ${client.mobileNumber}<br>
+            ${client.passportNumber ? `${t('Passeport', 'جواز سفر')}: ${client.passportNumber}<br>` : ''}
+            ${t('Type', 'نوع')}: ${client.type}
+            ${agency ? `<br>${t('Agence/Rabbateur', 'وكالة/مسوق')}: ${agency.name}` : ''}
         </div>
-        
-        <table>
-            <thead>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>${t('Description', 'الوصف')}</th>
+                <th class="text-center">${t('Qté', 'الكمية')}</th>
+                <th class="text-right">${t('Prix Unit.', 'سعر الوحدة')}</th>
+                <th class="text-right">${t('Montant', 'المبلغ')} (DZD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${order.items.map(item => `
                 <tr>
-                    <th>${t('Description', 'الوصف')}</th>
-                    <th style="text-align: center">${t('Qté', 'الكمية')}</th>
-                    <th class="amount-col">${t('Prix Unit.', 'سعر الوحدة')}</th>
-                    <th class="amount-col">${t('Montant', 'المبلغ')} (DZD)</th>
+                    <td>${item.description}</td>
+                    <td class="text-center">${item.quantity}</td>
+                    <td class="text-right">${item.unitPrice.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}</td>
+                    <td class="text-right">${item.amount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}</td>
                 </tr>
-            </thead>
-            <tbody>
-                ${order.items.map(item => `
-                    <tr>
-                        <td>${item.description}</td>
-                        <td style="text-align: center">${item.quantity}</td>
-                        <td class="amount-col">${item.unitPrice.toLocaleString(isRTL ? 'ar-DZ' : 'fr-DZ', { minimumFractionDigits: 2 })}</td>
-                        <td class="amount-col">${item.amount.toLocaleString(isRTL ? 'ar-DZ' : 'fr-DZ', { minimumFractionDigits: 2 })}</td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-        
-        <div class="totals">
-            <div class="total-row main">
-                <span>${t('Total:', 'المجموع:')}</span>
-                <span>${order.totalAmount.toLocaleString(isRTL ? 'ar-DZ' : 'fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
-            </div>
-            <div class="total-row paid">
-                <span>${t('Payé:', 'مدفوع:')}</span>
-                <span>${paidAmount.toLocaleString(isRTL ? 'ar-DZ' : 'fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
-            </div>
-            <div class="total-row remaining">
-                <span>${t('Reste à payer:', 'الباقي:')}</span>
-                <span>${remainingAmount.toLocaleString(isRTL ? 'ar-DZ' : 'fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
-            </div>
+            `).join('')}
+        </tbody>
+    </table>
+    
+    <div class="totals-section">
+        <div class="total-line grand">
+            <span>${t('Total:', 'المجموع:')}</span>
+            <span>${order.totalAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
         </div>
-        
-        <div class="footer">
-            <p>${t('Merci de votre confiance.', 'شكراً لثقتكم.')}</p>
-            <p>Wahat Alrajaa Tour - RC: XXXXX - NIF: XXXXX</p>
+        <div class="total-line paid">
+            <span>${t('Payé:', 'مدفوع:')}</span>
+            <span>${paidAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
         </div>
+        <div class="total-line remaining">
+            <span>${t('Reste à payer:', 'الباقي:')}</span>
+            <span>${remainingAmount.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD</span>
+        </div>
+    </div>
+    
+    <div class="footer">
+        ${t('Merci de votre confiance.', 'شكراً لثقتكم.')}<br>
+        Wahat Alrajaa Tour - RC: XXXXX - NIF: XXXXX
     </div>
 </body>
 </html>
@@ -238,39 +231,54 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
 };
 
 export const generateInvoice = async (order: Order, client: Client, agency?: Agency, language: 'fr' | 'ar' = 'fr') => {
-    // Create a temporary container
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.width = '210mm';
-    container.innerHTML = createInvoiceHTML(order, client, agency, language);
-    document.body.appendChild(container);
+    console.log('🔄 Starting PDF generation...', { language, orderId: order.id });
 
-    // Wait a moment for fonts to load
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // PDF options
-    const opt = {
-        margin: 10,
-        filename: `Facture-${order.id.substr(0, 6)}.pdf`,
-        image: { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            letterRendering: true
-        },
-        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
-    };
-
-    // Generate PDF
     try {
+        // Create HTML
+        const htmlContent = createInvoiceHTML(order, client, agency, language);
+        console.log('✅ HTML created');
+
+        // Create temporary container
+        const container = document.createElement('div');
+        container.style.cssText = 'position: absolute; left: -9999px; width: 210mm; background: white;';
+        container.innerHTML = htmlContent;
+        document.body.appendChild(container);
+        console.log('✅ Container added to DOM');
+
+        // Small delay for rendering
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // PDF options
+        const opt = {
+            margin: [10, 10, 10, 10],
+            filename: `Facture-${order.id.substr(0, 6)}.pdf`,
+            image: { type: 'jpeg' as const, quality: 0.95 },
+            html2canvas: {
+                scale: 2,
+                useCORS: false,
+                logging: true,
+                letterRendering: true,
+                backgroundColor: '#ffffff'
+            },
+            jsPDF: {
+                unit: 'mm' as const,
+                format: 'a4' as const,
+                orientation: 'portrait' as const,
+                compress: true
+            }
+        };
+
+        console.log('🔄 Generating PDF...');
         await html2pdf().set(opt).from(container).save();
-    } catch (error) {
-        console.error('PDF generation error:', error);
-        alert('Erreur lors de la génération du PDF. Veuillez réessayer.');
-    } finally {
+        console.log('✅ PDF generated successfully!');
+
         // Clean up
         document.body.removeChild(container);
+        console.log('✅ Cleanup complete');
+
+    } catch (error) {
+        console.error('❌ PDF generation failed:', error);
+        alert(`Erreur lors de la génération du PDF: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+        throw error;
     }
 };
