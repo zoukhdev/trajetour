@@ -164,7 +164,7 @@ router.get('/',
 router.get('/:id',
     authMiddleware,
     requirePermission('manage_business'),
-    async (req, res, next) => {
+    async (req: AuthRequest, res, next) => {
         try {
             const result = await pool.query(
                 `SELECT o.*, 

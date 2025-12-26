@@ -6,6 +6,7 @@ export interface JWTPayload {
     email: string;
     role: string;
     permissions: string[];
+    agencyId?: string; // Optional agency ID for non-admin users
 }
 
 export function generateToken(payload: JWTPayload): string {

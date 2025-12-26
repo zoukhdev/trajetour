@@ -3,6 +3,7 @@ import { pool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { validate, paymentSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
+import { AppError } from '../middleware/errorHandler.js';
 
 const router = express.Router();
 
