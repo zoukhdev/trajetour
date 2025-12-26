@@ -26,7 +26,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         
         .invoice-container {
             font-family: ${fontFamily};
-            padding: 40px;
+            padding: 60px; /* Increased padding on all sides */
             direction: ${isRTL ? 'rtl' : 'ltr'};
             font-size: 14px;
             line-height: 1.6;
@@ -43,6 +43,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             border-bottom: 3px solid #1a56db;
             padding-bottom: 20px;
             margin-bottom: 30px;
+            direction: ${isRTL ? 'rtl' : 'ltr'};
         }
 
         .invoice-container .header-content {
@@ -87,15 +88,15 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         
         .invoice-container .section {
             background: #f8fafc;
-            padding: 20px;
-            margin: 20px 0;
+            padding: 15px 20px;
+            margin: 15px 0;
             border-radius: 6px;
             border: 1px solid #e2e8f0;
             break-inside: avoid;
         }
         
         .invoice-container .section-title {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             margin-bottom: 8px;
             color: #334155;
@@ -111,13 +112,13 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         .invoice-container table {
             width: 100%;
             border-collapse: collapse;
-            margin: 25px 0;
+            margin: 20px 0;
         }
         
         .invoice-container th {
             background: #1a56db;
             color: white;
-            padding: 12px;
+            padding: 10px 12px;
             text-align: ${isRTL ? 'right' : 'left'};
             font-size: 12px;
             font-weight: 600;
@@ -125,7 +126,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
         
         .invoice-container td {
-            padding: 12px;
+            padding: 10px 12px;
             border-bottom: 1px solid #e2e8f0;
             font-size: 13px;
         }
@@ -151,7 +152,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
         
         .invoice-container .total-line {
-            padding: 10px 0;
+            padding: 8px 0;
             font-size: 14px;
             display: flex;
             justify-content: space-between;
@@ -163,7 +164,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             font-weight: bold;
             border-top: 2px solid #1a56db;
             border-bottom: 2px solid #1a56db;
-            padding: 15px 0;
+            padding: 12px 0;
             margin-top: 5px;
             color: #1e293b;
         }
@@ -188,7 +189,8 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         }
     </style>
     <div class="invoice-container">
-        <div class="invoice-header-wrapper" style="direction: ${isRTL ? 'rtl' : 'ltr'};">
+        <!-- Header -->
+        <div class="invoice-header-wrapper">
             <div class="header-content">
                 <div class="company-name">${t('Wahat Alrajaa', 'واحة الرجاء')}</div>
                 <div class="company-info">
@@ -203,25 +205,56 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             </div>
         </div>
         
-        <div class="invoice-title">${t('FACTURE', 'فاتورة')}</div>
-        <div class="invoice-meta">
-            <strong>${t('N°', 'رقم')}:</strong> CMD-${order.id.substr(0, 8).toUpperCase()}<br>
-            <strong>${t('Date', 'تاريخ')}:</strong> ${dateStr}<br>
-            <strong>${t('État', 'الحالة')}:</strong> ${order.status}
-        </div>
-        
-        <div class="section">
-            <div class="section-title">${t('Facturé à:', 'فوترة إلى:')}</div>
-            <div class="section-content">
-                <strong>${client.fullName}</strong><br>
-                ${t('Tél', 'هاتف')}: ${client.mobileNumber}<br>
-                ${client.passportNumber ? `${t('Passeport', 'جواز سفر')}: ${client.passportNumber}<br>` : ''}
-                ${t('Type', 'نوع')}: ${client.type}
-                ${agency ? `<br>${t('Agence/Rabbateur', 'وكالة/مسوق')}: ${agency.name}` : ''}
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div>
+                <div class="invoice-title" style="margin: 0;">${t('FACTURE', 'فاتورة')}</div>
+                <div class="invoice-meta">
+                    <strong>${t('N°', 'رقم')}:</strong> CMD-${order.id.substr(0, 8).toUpperCase()}<br>
+                    <strong>${t('Date', 'تاريخ')}:</strong> ${dateStr}<br>
+                    <strong>${t('État', 'الحالة')}:</strong> ${order.status}
+                </div>
+            </div>
+            
+            <div class="section" style="margin: 0; min-width: 250px;">
+                <div class="section-title">${t('Facturé à:', 'فوترة إلى:')}</div>
+                <div class="section-content">
+                    <strong>${client.fullName}</strong><br>
+                    ${t('Tél', 'هاتف')}: ${client.mobileNumber}<br>
+                    ${client.passportNumber ? `${t('Passeport', 'جواز سفر')}: ${client.passportNumber}<br>` : ''}
+                    ${t('Type', 'نوع')}: ${client.type}
+                    ${agency ? `<br>${t('Agence/Rabbateur', 'وكالة/مسوق')}: ${agency.name}` : ''}
+                </div>
             </div>
         </div>
+
+        <!-- Passengers Section -->
+        ${order.passengers && order.passengers.length > 0 ? `
+            <div class="section">
+                <div class="section-title">${t('Liste des Passagers', 'قائمة المسافرين')}</div>
+                <div class="section-content">
+                    <table style="margin: 10px 0 0 0; background: transparent;">
+                        <thead style="background: rgba(26, 86, 219, 0.05);">
+                            <tr>
+                                <th style="background: transparent; color: #1a56db; border-bottom: 2px solid #1a56db;">${t('Nom Completo', 'الاسم الكامل')}</th>
+                                <th style="background: transparent; color: #1a56db; border-bottom: 2px solid #1a56db;">${t('Passeport', 'جواز سفر')}</th>
+                                <th style="background: transparent; color: #1a56db; border-bottom: 2px solid #1a56db;" class="text-center">${t('Type', 'النوع')}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.passengers.map(p => `
+                                <tr>
+                                    <td>${p.firstName} ${p.lastName}</td>
+                                    <td>${p.passportNumber || '-'}</td>
+                                    <td class="text-center">${p.ageCategory || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        ` : ''}
         
-        <table>
+        <table style="margin-top: 10px;">
             <thead>
                 <tr>
                     <th>${t('Description', 'الوصف')}</th>
@@ -295,7 +328,8 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         msg.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 20px; background: #2563eb; color: white; border-radius: 6px; font-family: system-ui; z-index: 1000000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 500;';
         document.body.appendChild(msg);
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Increase delay for logo and passenger list rendering
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
         const opt = {
             margin: 0,
