@@ -25,23 +25,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Check if user is logged in on mount
         const checkAuth = async () => {
             try {
-                // Determine if we need to check the server or just basic token presence?
-                // For now, add a timeout to prevent infinite white screen if server is sleeping.
+                // FORCE LOGOUT on app startup to clear stale sessions
+                // This ensures fresh installs always show login screen
+                await authAPI.logout().catch(() => {
+                    // Ignore logout errors (e.g., no active session)
+                    console.log('No session to clear');
+                });
+
+                // Reduce timeout to 2 seconds for faster splash screen
                 const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Auth Timeout')), 5000)
+                    setTimeout(() => reject(new Error('Auth Timeout')), 2000)
                 );
 
                 const userDataPromise = authAPI.getCurrentUser();
 
-                // Race the API call against a 5-second timeout
+                // Race the API call against a 2-second timeout
                 const userData = await Promise.race([userDataPromise, timeoutPromise]) as User;
 
                 setUser(userData);
             } catch (error: any) {
-                // Timeout or API Error
+                // Timeout or API Error - user not authenticated
                 console.log('⚠️ Startup Auth Check Failed/Timed out:', error.message);
-
-                // User not authenticated - fail gracefully
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -80,14 +84,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     if (loading) {
-        return (
-            <View className="flex-1 items-center justify-center bg-gray-50">
-                <View className="items-center">
-                    <ActivityIndicator size="large" color="#0ea5e9" />
-                    <Text className="mt-4 text-gray-600">Chargement...</Text>
-                </View>
-            </View>
-        );
+        // Return null while loading - the AnimatedSplashScreen handles the UI
+        return null;
     }
 
     return (

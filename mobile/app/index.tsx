@@ -11,9 +11,6 @@ export default function Index() {
     useEffect(() => {
         if (loading) return;
 
-        // Check if we are already in auth group to avoid loops
-        // But index is root, so we decide where to go.
-
         if (!user) {
             router.replace('/login');
         } else {
@@ -21,9 +18,7 @@ export default function Index() {
         }
     }, [user, loading]);
 
-    return (
-        <View className="flex-1 items-center justify-center bg-white">
-            <ActivityIndicator size="large" color="#2563EB" />
-        </View>
-    );
+    // Return null while loading to avoid showing a second splash screen
+    // The animated splash just finished, so we don't need another loading indicator
+    return null;
 }

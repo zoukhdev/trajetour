@@ -1,34 +1,40 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
+// SECURITY FIX: Use encrypted SecureStore instead of plain AsyncStorage
+// SecureStore uses:
+// - Android: EncryptedSharedPreferences (AES-256)
+// - iOS: Keychain
 export const clientStorage = {
     getItem: async (key: string) => {
         try {
-            const value = await AsyncStorage.getItem(key);
+            const value = await SecureStore.getItemAsync(key);
             return value ?? null;
         } catch (e) {
-            console.error('Storage Read Error', e);
+            console.error('SecureStore Read Error', e);
             return null;
         }
     },
     setItem: async (key: string, value: string) => {
         try {
-            await AsyncStorage.setItem(key, value);
+            await SecureStore.setItemAsync(key, value);
         } catch (e) {
-            console.error('Storage Write Error', e);
+            console.error('SecureStore Write Error', e);
         }
     },
     removeItem: async (key: string) => {
         try {
-            await AsyncStorage.removeItem(key);
+            await SecureStore.deleteItemAsync(key);
         } catch (e) {
-            console.error('Storage Delete Error', e);
+            console.error('SecureStore Delete Error', e);
         }
     },
     clear: async () => {
         try {
-            await AsyncStorage.clear();
+            // SecureStore doesn't have a clear all method
+            // You'd need to track keys separately if needed
+            console.warn('SecureStore does not support clear() - delete keys individually');
         } catch (e) {
-            console.error('Storage Clear Error', e);
+            console.error('SecureStore Clear Error', e);
         }
     }
 };

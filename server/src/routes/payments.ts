@@ -27,6 +27,39 @@ router.post('/',
             // Calculate DZD amount (backend validation/calculation)
             const amountDZD = currency === 'DZD' ? amount : amount * exchangeRate;
 
+            // SECURITY FIX: Validate payment amount against order balance
+            // Get order total
+            const orderRes = await client.query(
+                'SELECT total_amount_dzd FROM orders WHERE id = $1',
+                [orderId]
+            );
+
+            if (orderRes.rows.length === 0) {
+                throw new AppError(404, 'Order not found');
+            }
+
+            const orderTotal = parseFloat(orderRes.rows[0].total_amount_dzd);
+
+            // Get already paid amount (validated payments only)
+            const paidRes = await client.query(
+                `SELECT COALESCE(SUM(amount_dzd), 0) as total_paid 
+                 FROM payments 
+                 WHERE order_id = $1 AND is_validated = true`,
+                [orderId]
+            );
+
+            const alreadyPaid = parseFloat(paidRes.rows[0].total_paid);
+            const remainingBalance = orderTotal - alreadyPaid;
+
+            // Validate payment doesn't exceed remaining balance (with 1 DZD tolerance)
+            if (amountDZD > remainingBalance + 1) {
+                throw new AppError(400,
+                    `Payment exceeds remaining balance. Order total: ${orderTotal.toFixed(2)} DZD, Already paid: ${alreadyPaid.toFixed(2)} DZD, Remaining: ${remainingBalance.toFixed(2)} DZD, Attempted: ${amountDZD.toFixed(2)} DZD`
+                );
+            }
+
+            console.log(`✅ Payment validation passed: ${amountDZD.toFixed(2)} DZD (Remaining balance: ${remainingBalance.toFixed(2)} DZD)`);
+
             // Sanitize accountId
             const sanitizedAccountId = (accountId && accountId.trim() !== '') ? accountId : null;
 
@@ -102,6 +135,29 @@ router.patch('/:id/validate',
             const payRes = await client.query('SELECT * FROM payments WHERE id = $1', [id]);
             if (payRes.rows.length === 0) throw new Error('Payment not found');
             const payment = payRes.rows[0];
+
+            // SECURITY FIX: IDOR Protection - Check payment ownership via order
+            const orderCheck = await client.query(
+                'SELECT created_by, agency_id FROM orders WHERE id = $1',
+                [payment.order_id]
+            );
+
+            if (orderCheck.rows.length === 0) {
+                throw new AppError(404, 'Associated order not found');
+            }
+
+            const order = orderCheck.rows[0];
+
+            // Non-admins can only validate payments for their own orders
+            if (req.user?.role !== 'admin') {
+                if (order.created_by !== req.user?.id &&
+                    order.agency_id !== req.user?.agencyId) {
+                    console.log(`🚫 IDOR attempt blocked: User ${req.user?.id} tried to validate payment for order created by ${order.created_by}`);
+                    throw new AppError(403,
+                        'Unauthorized to validate this payment'
+                    );
+                }
+            }
 
             if (payment.is_validated === isValidated) {
                 // No change

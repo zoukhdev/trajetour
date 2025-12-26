@@ -97,7 +97,22 @@ router.get('/',
             const limit = parseInt(req.query.limit as string) || 20;
             const offset = (page - 1) * limit;
 
-            const countResult = await pool.query('SELECT COUNT(*) FROM orders');
+            // SECURITY FIX: IDOR Protection - Filter by ownership
+            let whereClause = '';
+            let countWhereClause = '';
+            const params: any[] = [limit, offset];
+
+            if (req.user?.role !== 'admin') {
+                // Non-admins only see orders they created or from their agency
+                whereClause = 'WHERE (o.created_by = $3 OR o.agency_id = $4)';
+                countWhereClause = 'WHERE (created_by = $1 OR agency_id = $2)';
+                params.push(req.user?.id, req.user?.agencyId);
+            }
+
+            const countResult = await pool.query(
+                `SELECT COUNT(*) FROM orders ${countWhereClause}`,
+                req.user?.role !== 'admin' ? [req.user?.id, req.user?.agencyId] : []
+            );
             const total = parseInt(countResult.rows[0].count);
 
             const result = await pool.query(
@@ -123,10 +138,11 @@ router.get('/',
                  FROM orders o
                  LEFT JOIN clients c ON o.client_id = c.id
                  LEFT JOIN payments p ON o.id = p.order_id
+                 ${whereClause}
                  GROUP BY o.id, c.full_name, c.mobile_number
                  ORDER BY o.created_at DESC
                  LIMIT $1 OFFSET $2`,
-                [limit, offset]
+                params
             );
 
             res.json({
@@ -183,6 +199,18 @@ router.get('/:id',
 
             const orderRow = result.rows[0];
 
+            // SECURITY FIX: IDOR Protection - Check ownership
+            if (req.user?.role !== 'admin') {
+                // Non-admins can only view orders they created or that belong to their agency
+                if (orderRow.created_by !== req.user?.id &&
+                    orderRow.agency_id !== req.user?.agencyId) {
+                    console.log(`🚫 IDOR attempt blocked: User ${req.user?.id} tried to access order ${req.params.id} owned by ${orderRow.created_by}`);
+                    return res.status(403).json({
+                        error: 'Unauthorized to access this order'
+                    });
+                }
+            }
+
             // Fetch related room details for passengers
             let relatedRooms: any[] = [];
             const passengers = orderRow.passengers || [];
@@ -229,6 +257,29 @@ router.post('/',
             const { clientId, agencyId, items, passengers, hotels, totalAmount, totalAmountDZD, notes } = req.body;
 
             console.log('📦 Create Order Request:', JSON.stringify({ clientId, agencyId, totalAmount, totalAmountDZD, passengersCount: passengers?.length, hotelCount: hotels?.length }, null, 2));
+
+            // SECURITY FIX: Server-side price calculation
+            const calculateOrderTotal = (items: any[]): number => {
+                if (!items || !Array.isArray(items)) return 0;
+                return items.reduce((sum, item) => {
+                    const price = parseFloat(item.price) || 0;
+                    const quantity = parseInt(item.quantity) || 1;
+                    return sum + (price * quantity);
+                }, 0);
+            };
+
+            // Calculate expected total from items
+            const serverCalculatedTotal = calculateOrderTotal(items);
+
+            // Validate client-provided total matches server calculation  
+            // Allow 1 DZD tolerance for rounding
+            if (Math.abs(serverCalculatedTotal - totalAmount) > 1) {
+                throw new AppError(400,
+                    `Price mismatch detected. Server calculated: ${serverCalculatedTotal.toFixed(2)} DZD, Client provided: ${totalAmount.toFixed(2)} DZD`
+                );
+            }
+
+            console.log(`✅ Price validation passed: ${serverCalculatedTotal.toFixed(2)} DZD`);
 
             // Validate Room Assignments
             if (passengers && passengers.length > 0) {

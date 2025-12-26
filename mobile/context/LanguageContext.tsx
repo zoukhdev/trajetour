@@ -57,8 +57,8 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
         return value as string;
     };
 
-    if (!isLoaded) return null;
-
+    // Removed loading gate - render immediately with default language
+    // Language loads asynchronously without blocking
     return (
         <LanguageContext.Provider value={{ language, setLanguage, t, isRTL: language === 'ar' }}>
             {children}

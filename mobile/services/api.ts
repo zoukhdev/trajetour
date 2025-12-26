@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+// SECURITY FIX: Remove hardcoded IP - require env variable
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.170:3001/api';
+if (!API_URL) {
+    throw new Error('EXPO_PUBLIC_API_URL environment variable is required');
+}
 
 // Create axios instance with default config
 const api = axios.create({
