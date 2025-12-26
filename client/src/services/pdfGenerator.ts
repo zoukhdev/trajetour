@@ -2,32 +2,6 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { Order, Client, Agency } from '../types';
 
-// Cache the font to avoid re-downloading
-let amiriFontBase64: string | null = null;
-
-const loadAmiriFont = async () => {
-    if (amiriFontBase64) return amiriFontBase64;
-    try {
-        const response = await fetch('https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf');
-        const blob = await response.blob();
-        return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64data = reader.result as string;
-                // Remove the data URL prefix
-                const base64Content = base64data.split(',')[1];
-                amiriFontBase64 = base64Content;
-                resolve(base64Content);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-        });
-    } catch (error) {
-        console.error("Failed to load Arabic font:", error);
-        return null;
-    }
-};
-
 export const generateInvoice = async (order: Order, client: Client, agency?: Agency, language: 'fr' | 'ar' = 'fr') => {
     const doc = new jsPDF();
     const isRTL = language === 'ar';
