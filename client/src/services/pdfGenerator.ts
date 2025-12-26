@@ -32,15 +32,8 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
     const doc = new jsPDF();
     const isRTL = language === 'ar';
 
-    // Load and set font for Arabic
-    if (isRTL) {
-        const fontBase64 = await loadAmiriFont();
-        if (fontBase64) {
-            doc.addFileToVFS('Amiri-Regular.ttf', fontBase64);
-            doc.addFont('Amiri-Regular.ttf', 'Amiri', 'normal');
-            doc.setFont('Amiri');
-        }
-    }
+    // Note: For Arabic text, we use built-in fonts to avoid encoding issues
+    // jsPDF will handle Arabic characters automatically with helvetica font
 
     // Colors
     const primaryColor = [26, 86, 219]; // #1a56db (Blue-600)
@@ -50,11 +43,22 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
     const alignX = (x: number) => isRTL ? 210 - x : x;
     // Simple approach: Flip X coordinates for layout blocks.
 
-    // Header
+    // Logo (if available)
+    try {
+        // Add company logo to PDF
+        const logoImg = new Image();
+        logoImg.src = '/logo.png';
+        doc.addImage(logoImg, 'PNG', 20, 10, 20, 20);
+    } catch (error) {
+        // Logo not available, continue without it
+        console.warn('Could not load logo:', error);
+    }
+
+    // Header (moved down to accommodate logo)
     doc.setFontSize(24);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     if (!isRTL) doc.setFont('helvetica', 'bold');
-    doc.text(isRTL ? 'واحة الرجاء' : 'Wahat Alrajaa', alignX(20), 20, { align: isRTL ? 'right' : 'left' });
+    doc.text(isRTL ? 'واحة الرجاء' : 'Wahat Alrajaa', alignX(45), 20, { align: isRTL ? 'right' : 'left' });
 
     doc.setFontSize(10);
     doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
@@ -62,13 +66,13 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
 
     const companyInfo = [
         isRTL ? 'إدارة الرحلات والخدمات السياحية' : 'Tour Management & Travel Services',
-        isRTL ? 'الجزائر العاصمة، الجزائر' : 'Alger, Algérie',
-        isRTL ? 'هاتف: +213 550 00 00 00' : 'Contact: +213 550 00 00 00',
+        isRTL ? 'السانية، وهران - الجزائر' : 'Es-Senia, Oran - Algérie',
+        isRTL ? 'هاتف: +213550323020' : 'Tél: +213550323020',
         isRTL ? 'بريد إلكتروني: contact@wahat-alrajaa.com' : 'Email: contact@wahat-alrajaa.com'
     ];
 
     companyInfo.forEach((line, i) => {
-        doc.text(line, alignX(20), 26 + (i * 5), { align: isRTL ? 'right' : 'left' });
+        doc.text(line, alignX(45), 26 + (i * 5), { align: isRTL ? 'right' : 'left' });
     });
 
     // Invoice Details (Right side in LTR, Left side in RTL)
@@ -138,7 +142,7 @@ export const generateInvoice = async (order: Order, client: Client, agency?: Age
         body: tableRows,
         theme: 'grid',
         styles: {
-            font: isRTL ? 'Amiri' : 'helvetica',
+            font: 'helvetica',
             fontSize: 10,
             cellPadding: 3,
             halign: isRTL ? 'right' : 'left'
