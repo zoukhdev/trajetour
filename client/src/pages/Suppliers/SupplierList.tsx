@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { Search, Plus, Edit2, Trash2, Phone, Mail, MapPin, Building2, Package } from 'lucide-react';
+import Modal from '../../components/Modal';
 import { useLanguage } from '../../context/LanguageContext';
 import SupplierForm from './SupplierForm';
 import type { Supplier } from '../../types';
@@ -165,7 +166,17 @@ const SupplierList = () => {
                 ))}
             </div>
 
-            {isFormOpen && (
+            <Modal
+                isOpen={isFormOpen}
+                onClose={() => {
+                    setIsFormOpen(false);
+                    setEditingSupplier(undefined);
+                }}
+                title={editingSupplier
+                    ? `${t('common.edit')} ${t('common.suppliers')}`
+                    : `${t('common.add')} ${t('common.suppliers')}`
+                }
+            >
                 <SupplierForm
                     supplier={editingSupplier}
                     onSubmit={handleSubmit}
@@ -174,7 +185,7 @@ const SupplierList = () => {
                         setEditingSupplier(undefined);
                     }}
                 />
-            )}
+            </Modal>
         </div>
     );
 };

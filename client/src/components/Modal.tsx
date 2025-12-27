@@ -31,16 +31,17 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-            {/* Backdrop */}
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            {/* Backdrop - higher opacity and better transition */}
             <div
-                className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
                 onClick={onClose}
             />
 
-            {/* Modal Content */}
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100 opacity-100 animate-in fade-in zoom-in-95">
-                <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            {/* Modal Content - Restricted height and internal scrolling */}
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] my-8 flex flex-col transform transition-all duration-300 scale-100 opacity-100 animate-in fade-in zoom-in-95">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-100 shrink-0">
                     <h2 className="text-xl font-bold text-gray-900 font-display">{title}</h2>
                     <button
                         onClick={onClose}
@@ -49,7 +50,9 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
                         <X size={20} />
                     </button>
                 </div>
-                <div className="p-6">
+
+                {/* Body - Scrollable */}
+                <div className="p-6 overflow-y-auto custom-scrollbar">
                     {children}
                 </div>
             </div>

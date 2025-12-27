@@ -9,6 +9,7 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Printer, CreditCard, ArrowLeft, Users, FileText, Wallet, CheckCircle, Clock, User, Trash2, Edit3, Check, X } from 'lucide-react-native';
 import type { Payment, Currency, PaymentMethod, Order } from '../../../types';
+import { generateInvoicePDF } from '../../../services/pdfGenerator';
 
 // Simple Payment Modal Component
 const PaymentModal = ({
@@ -170,6 +171,42 @@ export default function OrderDetailsScreen() {
     const [editingPassengerId, setEditingPassengerId] = useState<string | null>(null);
     const [editedPrice, setEditedPrice] = useState('');
     const [isSavingPrice, setIsSavingPrice] = useState(false);
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+    const handlePrint = async () => {
+        if (!order || !client) return;
+
+        Alert.alert(
+            "Générer Facture",
+            "Choisissez la langue de la facture",
+            [
+                {
+                    text: "Arabe",
+                    onPress: () => startPDFGeneration('ar')
+                },
+                {
+                    text: "Français",
+                    onPress: () => startPDFGeneration('fr')
+                },
+                {
+                    text: "Annuler",
+                    style: "cancel"
+                }
+            ]
+        );
+    };
+
+    const startPDFGeneration = async (lang: 'fr' | 'ar') => {
+        setIsGeneratingPDF(true);
+        try {
+            await generateInvoicePDF(order, client, undefined, lang);
+        } catch (error) {
+            console.error(error);
+            Alert.alert("Erreur", "Impossible de générer la facture");
+        } finally {
+            setIsGeneratingPDF(false);
+        }
+    };
 
     const orderId = Array.isArray(id) ? id[0] : id;
     const order = orders.find(o => o.id === orderId);
@@ -270,8 +307,12 @@ export default function OrderDetailsScreen() {
                             <Trash2 size={20} color="#EF4444" />
                         </TouchableOpacity>
                     )}
-                    <TouchableOpacity onPress={() => Alert.alert("Imprimer", "Fonctionnalité PDF bientôt disponible")}>
-                        <Printer size={20} color="#374151" />
+                    <TouchableOpacity
+                        onPress={handlePrint}
+                        disabled={isGeneratingPDF}
+                        style={{ opacity: isGeneratingPDF ? 0.5 : 1 }}
+                    >
+                        <Printer size={20} color={isGeneratingPDF ? "#9CA3AF" : "#374151"} />
                     </TouchableOpacity>
                 </View>
             </View>
