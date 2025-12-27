@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import type { Supplier } from '../../types';
 
