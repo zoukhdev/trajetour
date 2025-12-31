@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
 import { useExchangeRates } from '../../context/ExchangeRateContext';
@@ -9,10 +10,11 @@ import Modal from '../../components/Modal';
 import type { Order, OrderItem, Passenger } from '../../types';
 
 interface OrderFormProps {
-    onClose: () => void;
+    onClose?: () => void;
 }
 
 const OrderForm = ({ onClose }: OrderFormProps) => {
+    const navigate = useNavigate();
     const { clients, agencies, offers, addOrder, updateOffer } = useData();
     const { user } = useAuth();
     const { getLatestRate, getRateForDate } = useExchangeRates();
@@ -69,6 +71,14 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
             setExchangeRate(1);
         }
     }, [orderCurrency, orderDate, getRateForDate, getLatestRate]);
+
+    const handleClose = () => {
+        if (onClose) {
+            onClose();
+        } else {
+            navigate('/orders');
+        }
+    };
 
     const handleAddItem = () => {
         setItems([
@@ -206,12 +216,12 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                 await updateOffer(updatedOffer);
             }
 
-            onClose();
+            handleClose();
         } catch (error: any) {
             // Check if this is an offline queue event
             if (error?.message?.includes('offline') || error?.code === 'OFFLINE_QUEUED' || !navigator.onLine) {
                 alert('⚠️ Mode Hors-Ligne : Commande sauvegardée dans la file d\'attente. Elle sera synchronisée automatiquement lors de la reconnexion.');
-                onClose(); // Close the form since it was queued successfully
+                handleClose(); // Close the form since it was queued successfully
             } else {
                 // Real error - show to user
                 console.error('Error creating order:', error);
@@ -570,7 +580,7 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                 <div className="flex justify-end gap-3 pt-4">
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={handleClose}
                         className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
                     >
                         Annuler

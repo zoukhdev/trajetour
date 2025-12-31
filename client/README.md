@@ -1,73 +1,98 @@
-# React + TypeScript + Vite
+# Wahat Alrajaa Tour
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Comprehensive management application for Wahat Alrajaa Tour, built with **React**, **TypeScript**, and **Vite**.
 
-Currently, two official plugins are available:
+## Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This client-side application serves as the central management platform for the agency, providing tools for tour management, client relations, financial reporting, and agency administration.
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Based on the application structure and navigation:
 
-## Expanding the ESLint configuration
+### 📊 Dashboard
+- Real-time overview of key business metrics and performance indicators.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 👥 Commandes (Orders)
+- **Clients**: Management of client database.
+- **Orders**: Tracking and processing of customer orders.
+- **Suppliers**: Management of service providers and partners.
+- **New Order**: Streamlined process for creating new bookings.
+- **Offers**: Management of special offers and packages.
+- **Agencies**: Partner agency coordination.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 💰 Comptabilité (Accounting)
+- **Reports**: Detailed financial reporting and analytics.
+- **Commissions**: Tracking of agent and agency commissions.
+- **Revenue**: Income analysis and visualization.
+- **Expenses**: General operational expense tracking.
+- **Guide Expenses**: Specific expense management for tour guides.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🏢 Gestion de l'Agence (Agency Management)
+- **Annexes**: Management of branch locations.
+- **Agency Details**: Configuration of core agency information.
+- **Discounts**: Management of discount structures and rules.
+- **Tax**: Tax configuration and compliance.
+- **Users**: User administration and role-based access control.
+- **Activity Logs**: System-wide audit trails.
+- **Support**: Integrated support ticketing system.
+- **Payments**: Payment processing and transaction history.
+- **Rooming List**: Hotel room allocation and management.
+- **Caisse**: Cash register and petty cash management.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🛠 Tech Stack
+
+- **Framework**: [React 19](https://react.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [TailwindCSS](https://tailwindcss.com/)
+- **Routing**: [React Router DOM](https://reactrouter.com/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **PDF Generation**: jsPDF, html2pdf.js
+- **State/Context**: Built-in React Context API (`AuthContext`, `LanguageContext`)
+
+## 🚀 Getting Started
+
+### Prerequisites
+- **Node.js**: LTS version recommended
+- **npm** or **yarn**
+
+### Installation
+
+1. Clone the repository and navigate to the client directory:
+   ```bash
+   cd client
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Development
+
+To start the development server with Hot Module Replacement (HMR):
+
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Access the application at `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+To build the application for production:
+
+```bash
+npm run build
+```
+
+This will compile the TypeScript code and generate optimized assets in the `dist` folder.
+
+### Linting
+
+To run the linter and check for code quality issues:
+
+```bash
+npm run lint
 ```

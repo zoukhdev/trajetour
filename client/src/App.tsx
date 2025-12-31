@@ -7,8 +7,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ClientList from './pages/Clients/ClientList';
 import AgencyList from './pages/Agencies/AgencyList';
-import OrderListV2 from './pages/Orders/OrderListV2';
-import OrderFormV2 from './pages/Orders/OrderFormV2';
+import OrderList from './pages/Orders/OrderList';
+import OrderForm from './pages/Orders/OrderForm';
 import OrderDetails from './pages/Orders/OrderDetails';
 import OfferList from './pages/Offers/OfferList';
 import AgencyDetails from './pages/Agencies/AgencyDetails';
@@ -30,7 +30,7 @@ import SupplierContracts from './pages/Suppliers/SupplierContracts';
 import LogsPage from './pages/Logs/LogsPage';
 import { OfflineProvider } from './context/OfflineContext';
 
-import DataMigration from './components/DataMigration';
+
 
 function App() {
   return (
@@ -45,14 +45,14 @@ function App() {
 
                   <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
                     <Route index element={<Dashboard />} />
-                    <Route path="migration" element={<DataMigration />} />
+
 
                     {/* Business Modules */}
                     <Route element={<ProtectedRoute permission="manage_business" />}>
                       <Route path="clients" element={<ClientList />} />
-                      <Route path="orders" element={<OrderListV2 />} />
+                      <Route path="orders" element={<OrderList />} />
                       <Route path="orders/:id" element={<OrderDetails />} />
-                      <Route path="orders/new" element={<OrderFormV2 />} />
+                      <Route path="orders/new" element={<OrderForm />} />
                       <Route path="agencies" element={<AgencyList />} />
                       <Route path="agencies/:id" element={<AgencyDetails />} />
                       <Route path="suppliers" element={<SupplierList />} />
@@ -76,7 +76,7 @@ function App() {
                       <Route path="agency-details" element={<AgencyList />} />
                       <Route path="discounts" element={<DiscountList />} />
                       <Route path="tax" element={<TaxList />} />
-                      <Route path="tax" element={<TaxList />} />
+
                     </Route>
 
                     {/* Agency Management - Users & Logs */}
