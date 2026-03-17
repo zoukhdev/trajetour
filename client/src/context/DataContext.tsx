@@ -22,6 +22,7 @@ interface DataContextType {
     bankAccounts: BankAccount[];
 
     refreshData: () => Promise<void>;
+    refreshOrders?: () => Promise<void>;
 
     // CRUD Operations
     addClient: (client: Client) => Promise<void>;
@@ -509,6 +510,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             clients, agencies, orders, expenses, transactions, users, suppliers,
             offers, guideExpenses, discounts, taxes, bankAccounts: bankAccountsWithBalances,
             refreshData: loadData,
+            refreshOrders: loadData,
             addClient, updateClient,
             addAgency, updateAgency, deleteAgency,
             addOrder, updateOrder, deleteOrder,

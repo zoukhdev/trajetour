@@ -82,6 +82,7 @@ export interface Passenger {
     suggestedPrice?: number;
     priceOverridden?: boolean;
     ageCategory?: 'ADT' | 'CHD' | 'INF';
+    dateOfBirth?: string; // Duplicate for compatibility
 }
 
 export interface Hotel {
@@ -166,6 +167,8 @@ export interface Order {
     // Joined fields
     clientName?: string;
     clientMobile?: string;
+    offerTitle?: string; // Derived or joined field
+    totalPrice?: number; // Alias for totalAmount
 }
 
 export type ExpenseCategory = 'Bureau' | 'Salaire' | 'Transport' | 'Autre';
@@ -241,6 +244,12 @@ export interface Offer {
         diner: boolean;
         bagages: boolean;
     };
+    capacity?: number;
+    bookedCount?: number;
+    duration?: number;
+    price_per_person?: number;
+    start_date?: string; // API snake_case
+    end_date?: string;   // API snake_case
 }
 
 export interface GuideExpense {

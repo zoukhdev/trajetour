@@ -4,7 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
 
 const Home = () => {
-    const { t } = useLanguage();
+    const {} = useLanguage();
     const navigate = useNavigate();
     const [destination, setDestination] = useState('omrah');
     const [date, setDate] = useState('');
