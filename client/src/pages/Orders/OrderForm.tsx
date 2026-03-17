@@ -157,7 +157,7 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
             };
 
             passengers.forEach(p => {
-                const birthDate = new Date(p.dateOfBirth);
+                const birthDate = new Date(p.dateOfBirth || '');
                 const ageDifMs = Date.now() - birthDate.getTime();
                 const ageDate = new Date(ageDifMs);
                 const age = Math.abs(ageDate.getUTCFullYear() - 1970);

@@ -159,7 +159,7 @@ const SlotBooking = () => {
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm mb-4">
                                         <Calendar size={16} />
                                         <span>
-                                            {formatDate(pkg.start_date)} - {formatDate(pkg.end_date)}
+                                            {formatDate(pkg.start_date || '')} - {formatDate(pkg.end_date || '')}
                                         </span>
                                     </div>
 
@@ -198,7 +198,7 @@ const SlotBooking = () => {
                                         <div>
                                             <p className="text-xs text-slate-500 uppercase font-bold mb-1">Prix</p>
                                             <p className="text-lg font-bold text-slate-900 dark:text-white">
-                                                {formatPrice(pkg.price_per_person)}
+                                                {formatPrice(pkg.price_per_person || 0)}
                                             </p>
                                         </div>
                                     </div>
