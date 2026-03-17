@@ -19,7 +19,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
 
     // Logo might need to be a base64 or absolute URL. 
     // Since we are on mobile, we'll try to use the hosted logo if possible.
-    const logoUrl = 'https://wahatalrajaa3.onrender.com/logo.png';
+    const logoUrl = 'https://trajetour.com/logo.png';
 
     return `
     <html>
@@ -204,12 +204,12 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             <!-- Header -->
             <div class="invoice-header-wrapper">
                 <div class="header-content">
-                    <div class="company-name">${t('Wahat Alrajaa', 'واحة الرجاء')}</div>
+                    <div class="company-name">${t('Trajetour', 'تراجيتور')}</div>
                     <div class="company-info">
                         ${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}<br>
                         ${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}<br>
                         ${t('Tél', 'هاتف')}: +213550323020<br>
-                        Email: contact@wahat-alrajaa.com
+                        Email: contact@trajetour.com
                     </div>
                 </div>
                 <div class="logo-container">
@@ -303,7 +303,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
             
             <div class="footer">
                 ${t('Merci de votre confiance.', 'شكراً لثقتكم.')}<br>
-                Wahat Alrajaa Tour
+                Trajetour
             </div>
         </div>
     </body>

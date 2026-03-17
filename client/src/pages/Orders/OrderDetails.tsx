@@ -3,14 +3,14 @@ import { useData } from '../../context/DataContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useExchangeRates } from '../../context/ExchangeRateContext';
 import { useAuth } from '../../context/AuthContext';
-import { ArrowLeft, Printer, CreditCard, TrendingUp, Pencil, Check, X } from 'lucide-react';
+import { ArrowLeft, Printer, CreditCard, TrendingUp, Pencil, Check, X, Upload, FileCheck, Image } from 'lucide-react';
 import { generateInvoice } from '../../services/pdfGenerator';
 import { useState, useEffect } from 'react';
 import Modal from '../../components/Modal';
 import type { PaymentMethod, Currency, Order } from '../../types';
 
 // Import API directly for custom calls if needed, though useData has some
-import api from '../../services/api';
+import api, { passengersAPI } from '../../services/api';
 
 const OrderDetails = () => {
     const { id } = useParams();
@@ -28,11 +28,28 @@ const OrderDetails = () => {
     const [editingPassengerId, setEditingPassengerId] = useState<string | null>(null);
     const [editedPrice, setEditedPrice] = useState<number>(0);
     const [isSavingPrice, setIsSavingPrice] = useState(false);
+    const [uploadingDoc, setUploadingDoc] = useState<{ id: string, type: 'passport' | 'photo' } | null>(null);
 
     // Payment form state
+    // ... (rest of the state remains same)
+
+    const handleDocumentUpload = async (passengerId: string, file: File, type: 'passport' | 'photo') => {
+        if (!order?.id) return;
+        setUploadingDoc({ id: passengerId, type });
+        try {
+            await passengersAPI.uploadDocument(order.id, passengerId, file, type);
+            fetchOrder(); // Refresh data
+        } catch (error: any) {
+            console.error('Upload failed:', error);
+            alert('Échec du téléchargement: ' + (error.response?.data?.error || error.message));
+        } finally {
+            setUploadingDoc(null);
+        }
+    };
     const [paymentCurrency, setPaymentCurrency] = useState<Currency>('DZD');
     const [paymentExchangeRate, setPaymentExchangeRate] = useState(1);
     const [paymentAmount, setPaymentAmount] = useState(0);
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('Cash');
     const paymentAmountDZD = paymentCurrency === 'DZD' ? paymentAmount : paymentAmount * paymentExchangeRate;
 
     // Load initial values for Edit
@@ -41,11 +58,13 @@ const OrderDetails = () => {
             setPaymentCurrency(editingPayment.currency);
             setPaymentAmount(editingPayment.amount);
             setPaymentExchangeRate(editingPayment.exchangeRateUsed || 1);
+            setPaymentMethod(editingPayment.method);
         } else {
             // Reset for new payment
             setPaymentCurrency('DZD');
             setPaymentAmount(0);
             setPaymentExchangeRate(1);
+            setPaymentMethod('Cash');
         }
     }, [editingPayment, isPaymentModalOpen]);
 
@@ -106,7 +125,7 @@ const OrderDetails = () => {
     }
 
     // Only count validated payments
-    const paidAmount = order.payments.filter(p => p.isValidated).reduce((sum, p) => sum + Number(p.amountDZD), 0);
+    const paidAmount = (order.payments || []).filter(p => p.isValidated).reduce((sum, p) => sum + Number(p.amountDZD), 0);
     const remainingAmount = order.totalAmount - paidAmount;
 
     const handlePrint = async () => {
@@ -197,7 +216,7 @@ const OrderDetails = () => {
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
                                 <span className="block text-gray-500">Référence</span>
-                                <span className="font-medium">CMD-{order.id.substr(0, 6).toUpperCase()}</span>
+                                <span className="font-medium">CMD-{order.id.substring(0, 6).toUpperCase()}</span>
                             </div>
                             <div>
                                 <span className="block text-gray-500">Date</span>
@@ -205,7 +224,7 @@ const OrderDetails = () => {
                             </div>
                             <div>
                                 <span className="block text-gray-500">Client</span>
-                                <span className="font-medium">{client.fullName}</span>
+                                <span className="font-medium">{client?.fullName || 'Chargement...'}</span>
                             </div>
                             <div>
                                 <span className="block text-gray-500">Agence</span>
@@ -230,7 +249,7 @@ const OrderDetails = () => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {order.items.map((item) => (
+                                {(order.items || []).map((item) => (
                                     <tr key={item.id}>
                                         <td className="px-6 py-4">{item.description}</td>
                                         <td className="px-6 py-4 text-center">{item.quantity}</td>
@@ -259,6 +278,7 @@ const OrderDetails = () => {
                                         <th className="px-4 py-2 font-medium text-gray-500">Passeport</th>
                                         <th className="px-4 py-2 font-medium text-gray-500">Téléphone</th>
                                         <th className="px-4 py-2 font-medium text-gray-500 text-right">Chambre</th>
+                                        <th className="px-4 py-2 font-medium text-gray-500">Documents</th>
                                         <th className="px-4 py-2 font-medium text-gray-500 text-right">Prix</th>
                                         {user?.role === 'admin' && (
                                             <th className="px-4 py-2 font-medium text-gray-500 text-center">Actions</th>
@@ -283,6 +303,61 @@ const OrderDetails = () => {
                                                             <span className="text-xs text-gray-500">{room.gender} • {room.price} DZD</span>
                                                         </span>
                                                     ) : '-'}
+                                                </td>
+                                                <td className="px-4 py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        {/* Passport Link/Upload */}
+                                                        <div className="flex flex-col items-center">
+                                                            {p.passportScanUrl ? (
+                                                                <a href={p.passportScanUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 bg-green-50 text-green-600 rounded-md border border-green-100 hover:bg-green-100 transition-colors" title='Voir le passeport'>
+                                                                    <FileCheck className="w-4 h-4" />
+                                                                </a>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => document.getElementById(`upload-passport-${p.id}`)?.click()}
+                                                                    disabled={uploadingDoc?.id === p.id}
+                                                                    className={`p-1.5 bg-red-50 text-red-600 rounded-md border border-red-100 hover:bg-red-100 transition-colors ${uploadingDoc?.id === p.id && uploadingDoc?.type === 'passport' ? 'animate-pulse' : ''}`}
+                                                                    title="Télécharger Passeport"
+                                                                >
+                                                                    <Upload className="w-4 h-4" />
+                                                                </button>
+                                                            )}
+                                                            <span className="text-[10px] uppercase font-bold text-gray-400 mt-1">Pass.</span>
+                                                            <input
+                                                                id={`upload-passport-${p.id}`}
+                                                                type="file"
+                                                                className="hidden"
+                                                                onChange={(e) => e.target.files?.[0] && handleDocumentUpload(p.id, e.target.files[0], 'passport')}
+                                                                accept="image/*,application/pdf"
+                                                            />
+                                                        </div>
+
+                                                        {/* Photo Link/Upload */}
+                                                        <div className="flex flex-col items-center">
+                                                            {p.photoUrl ? (
+                                                                <a href={p.photoUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 bg-blue-50 text-blue-600 rounded-md border border-blue-100 hover:bg-blue-100 transition-colors" title='Voir la photo'>
+                                                                    <Image className="w-4 h-4" />
+                                                                </a>
+                                                            ) : (
+                                                                <button
+                                                                    onClick={() => document.getElementById(`upload-photo-${p.id}`)?.click()}
+                                                                    disabled={uploadingDoc?.id === p.id}
+                                                                    className={`p-1.5 bg-red-50 text-red-600 rounded-md border border-red-100 hover:bg-red-100 transition-colors ${uploadingDoc?.id === p.id && uploadingDoc?.type === 'photo' ? 'animate-pulse' : ''}`}
+                                                                    title="Télécharger Photo"
+                                                                >
+                                                                    <Upload className="w-4 h-4" />
+                                                                </button>
+                                                            )}
+                                                            <span className="text-[10px] uppercase font-bold text-gray-400 mt-1">Photo</span>
+                                                            <input
+                                                                id={`upload-photo-${p.id}`}
+                                                                type="file"
+                                                                className="hidden"
+                                                                onChange={(e) => e.target.files?.[0] && handleDocumentUpload(p.id, e.target.files[0], 'photo')}
+                                                                accept="image/*"
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     {isEditing ? (
@@ -415,51 +490,63 @@ const OrderDetails = () => {
             >
                 <form onSubmit={async (e) => {
                     e.preventDefault();
+                    if (!order) return;
+
                     const formData = new FormData(e.currentTarget);
-                    const method = formData.get('method') as PaymentMethod;
                     const accountId = formData.get('accountId') as string;
 
-                    if (paymentAmountDZD > 0 && order) {
+                    const fileInput = (e.currentTarget as HTMLFormElement).querySelector('input[type="file"]') as HTMLInputElement;
+                    const receiptFile = fileInput?.files?.[0];
+
+                    if (paymentAmount > 0) {
                         try {
                             if (editingPayment) {
-                                // EDIT MODE
                                 await api.put(`/payments/${editingPayment.id}`, {
                                     amount: paymentAmount,
                                     currency: paymentCurrency,
                                     exchangeRate: paymentExchangeRate,
-                                    method,
+                                    method: paymentMethod,
                                     accountId,
-                                    // other fields?
                                 });
-                                // Refresh current order
-                                fetchOrder();
                                 alert('Paiement modifié (remis en attente de validation).');
                             } else {
-                                // CREATE MODE
-                                await api.post('/payments', {
-                                    orderId: order.id,
-                                    amount: paymentAmount,
-                                    currency: paymentCurrency,
-                                    exchangeRate: paymentExchangeRate,
-                                    method,
-                                    paymentDate: new Date().toISOString(),
-                                    accountId
-                                });
-                                // Refresh current order
-                                fetchOrder();
-                                alert('Paiement ajouté (en attente de validation).');
-                            }
+                                if (paymentMethod !== 'Cash') {
+                                    if (!receiptFile) {
+                                        alert('Veuillez télécharger une preuve de paiement pour ce mode de paiement.');
+                                        return;
+                                    }
+                                    const uploadData = new FormData();
+                                    uploadData.append('receipt', receiptFile);
+                                    uploadData.append('amount', paymentAmount.toString());
+                                    uploadData.append('method', paymentMethod);
 
-                            // Reset & Close
+                                    await import('../../services/api').then(({ paymentsAPI }) =>
+                                        paymentsAPI.uploadReceipt(order.id, uploadData)
+                                    );
+                                    alert('Paiement ajouté avec reçu (en attente de validation).');
+                                } else {
+                                    await api.post('/payments', {
+                                        orderId: order.id,
+                                        amount: paymentAmount,
+                                        currency: paymentCurrency,
+                                        exchangeRate: paymentExchangeRate,
+                                        method: paymentMethod,
+                                        paymentDate: new Date().toISOString(),
+                                        accountId
+                                    });
+                                    alert('Paiement ajouté (en attente de validation).');
+                                }
+                            }
+                            // Reset
                             setEditingPayment(null);
                             setPaymentAmount(0);
                             setPaymentCurrency('DZD');
+                            setPaymentMethod('Cash');
                             setIsPaymentModalOpen(false);
-                            fetchOrder(); // Ensure UI is fresh
-
-                        } catch (error) {
+                            fetchOrder();
+                        } catch (error: any) {
                             console.error("Failed to save payment:", error);
-                            alert("Erreur lors de l'enregistrement du paiement.");
+                            alert("Erreur lors de l'enregistrement du paiement: " + (error.message || 'Inconnue'));
                         }
                     }
                 }} className="space-y-4">
@@ -525,9 +612,9 @@ const OrderDetails = () => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Mode de Paiement</label>
                         <select
-                            name="method"
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
                             required
-                            defaultValue={editingPayment?.method}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                         >
                             <option value="Cash">Espèces</option>
@@ -536,22 +623,51 @@ const OrderDetails = () => {
                             <option value="Bank Transfer">Virement Bancaire</option>
                         </select>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Compte de Réception</label>
-                        <select
-                            name="accountId"
-                            required
-                            defaultValue={editingPayment?.accountId || ''}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                        >
-                            <option value="">-- Sélectionner un compte --</option>
-                            {bankAccounts.map(account => (
-                                <option key={account.id} value={account.id}>
-                                    {account.name} ({account.currency})
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+
+                    {/* Receipt Upload (Only visible for new payments if method is not Cash, or make it dynamic) */}
+                    {/* We can't easily detect method change here without state if using defaultValue. 
+                        Let's add state for method if needed, or just show it but require it conditionally?
+                        Ideally, we bind method to state. */}
+
+                    {!editingPayment && paymentMethod !== 'Cash' && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Preuve de Paiement (Reçu) <span className="text-red-500">*</span></label>
+                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer bg-gray-50 hover:bg-white"
+                                onClick={() => document.getElementById('receipt-upload')?.click()}
+                            >
+                                <div className="space-y-1 text-center">
+                                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                                    <div className="flex text-sm text-gray-600 justify-center">
+                                        <label htmlFor="receipt-upload" className="relative cursor-pointer rounded-md font-medium text-primary hover:text-blue-500 focus-within:outline-none">
+                                            <span>Télécharger un fichier</span>
+                                            <input id="receipt-upload" name="receipt" type="file" className="sr-only" accept="image/*,application/pdf" required />
+                                        </label>
+                                    </div>
+                                    <p className="text-xs text-gray-500">PNG, JPG, PDF jusqu'à 5MB</p>
+                                    <p className="text-xs text-orange-600 mt-2 font-medium">Requis pour virement, CCP, Baridimob</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {user?.role === 'admin' && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Compte de Réception</label>
+                            <select
+                                name="accountId"
+                                required
+                                defaultValue={editingPayment?.accountId || ''}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                            >
+                                <option value="">-- Sélectionner un compte --</option>
+                                {(bankAccounts || []).map(account => (
+                                    <option key={account.id} value={account.id}>
+                                        {account.name} ({account.currency})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                     <div className="flex justify-end gap-3 pt-4">
                         <button
                             type="button"

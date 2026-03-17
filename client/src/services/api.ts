@@ -103,6 +103,16 @@ export const authAPI = {
     getCurrentUser: async () => {
         const response = await api.get('/auth/me');
         return response.data;
+    },
+
+    register: async (data: any) => {
+        const response = await api.post('/auth/register', data);
+        return response.data;
+    },
+
+    registerAgency: async (data: any) => {
+        const response = await api.post('/auth/register-agency', data);
+        return response.data;
     }
 };
 
@@ -136,8 +146,12 @@ export const clientsAPI = {
 
 // Orders API
 export const ordersAPI = {
-    getAll: async (page = 1, limit = 100) => {
-        const response = await api.get(`/orders?page=${page}&limit=${limit}`);
+    getAll: async (pageOrParams: any = 1, limit = 100) => {
+        if (typeof pageOrParams === 'object') {
+            const response = await api.get('/orders', { params: pageOrParams });
+            return response.data;
+        }
+        const response = await api.get(`/orders?page=${pageOrParams}&limit=${limit}`);
         return response.data;
     },
 
@@ -164,6 +178,15 @@ export const ordersAPI = {
     addPayment: async (orderId: string, payment: any) => {
         const response = await api.post(`/orders/${orderId}/payments`, payment);
         return response.data;
+    },
+
+    uploadReceipt: async (orderId: string, formData: FormData) => {
+        const response = await api.post(`/payments/${orderId}/upload-receipt`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
     }
 };
 
@@ -173,8 +196,29 @@ export const paymentsAPI = {
         return response.data;
     },
 
+    getAll: async (params?: any) => {
+        const response = await api.get('/payments', { params });
+        return response.data;
+    },
+
     validate: async (id: string, isValidated: boolean) => {
         const response = await api.patch(`/payments/${id}/validate`, { isValidated });
+        return response.data;
+    },
+
+    uploadReceipt: async (orderId: string, formData: FormData) => {
+        const response = await api.post(`/payments/${orderId}/upload-receipt`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data;
+    }
+};
+
+export const reportsAPI = {
+    getPaymentReports: async (params?: { startDate?: string; endDate?: string; agencyId?: string }) => {
+        const response = await api.get('/reports/payments', { params });
         return response.data;
     }
 };
@@ -202,6 +246,36 @@ export const offersAPI = {
 
     delete: async (id: string) => {
         const response = await api.delete(`/offers/${id}`);
+        return response.data;
+    }
+};
+
+// Packages API (Alias for Offers)
+export const packagesAPI = {
+    getAll: async (type?: 'hajj' | 'omrah') => {
+        // In a real app, query param ?type=${type}
+        const response = await api.get('/offers');
+        // Filter client-side if API doesn't support filter yet, or if this is temporary
+        if (type) {
+            return response.data.filter((p: any) => p.type?.toLowerCase() === type);
+        }
+        return response.data;
+    },
+    getById: offersAPI.getById
+};
+
+export const passengersAPI = {
+    uploadDocument: async (orderId: string, passengerId: string, file: File, type: 'passport' | 'photo') => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', type);
+        const response = await api.post(`/passengers/${orderId}/${passengerId}/upload`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    },
+    update: async (orderId: string, passengerId: string, data: any) => {
+        const response = await api.put(`/passengers/${orderId}/${passengerId}`, data);
         return response.data;
     }
 };
@@ -235,6 +309,10 @@ export const agenciesAPI = {
     getAll: async (page = 1, limit = 100) => {
         const response = await api.get(`/agencies?page=${page}&limit=${limit}`);
         return response.data; // { data: [], pagination: {} }
+    },
+    getById: async (id: string) => {
+        const response = await api.get(`/agencies/${id}`);
+        return response.data;
     },
     create: async (data: any) => {
         const response = await api.post('/agencies', data);
@@ -405,6 +483,18 @@ export const auditLogsAPI = {
         if (params.endDate) urlParams.append('endDate', params.endDate);
 
         const response = await api.get(`/audit-logs?${urlParams.toString()}`);
+        return response.data;
+    }
+};
+
+// Master Platform API (Multi-Tenancy)
+export const masterAPI = {
+    registerAgency: async (data: { name: string; subdomain: string; dbUrl: string; ownerEmail?: string }) => {
+        const response = await api.post('/master/register-agency', data);
+        return response.data;
+    },
+    getAgencies: async () => {
+        const response = await api.get('/master/agencies');
         return response.data;
     }
 };

@@ -133,16 +133,37 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             if (cachedSuppliers) setSuppliers(JSON.parse(cachedSuppliers));
 
             // Use Promise.allSettled so one failure doesn't block everything
+
+            // Only fetch restricted data if user has permission (handled by API, but better to skip)
+            // Ideally we check specific roles. For now, let's just make the calls and handle 403s gracefully without error logging?
+            // OR better: check local storage token?
+            // Actually, the best way in DataContext (which is global) is to let the 403s happen but NOT log them as "Failed".
+            // However, the console errors ARE annoying.
+            // Let's wrap them in a conditional check if we can access `user`.
+            // Since we can't easily perform a conditional hook usage here (AuthContext), let's rely on the fail-safe.
+
+            // Refactoring to handle rejection silently for strictly protected endpoints if it's a 403.
+            const fetchIfAllowed = async (apiCall: Promise<any>) => {
+                try {
+                    return await apiCall;
+                } catch (err: any) {
+                    if (err.response && err.response.status === 403) {
+                        return { data: [] }; // Silent fail for forbidden
+                    }
+                    throw err;
+                }
+            };
+
             const results = await Promise.allSettled([
-                clientsAPI.getAll(1, 1000),
-                ordersAPI.getAll(1, 1000),
+                fetchIfAllowed(clientsAPI.getAll(1, 1000)),
+                fetchIfAllowed(ordersAPI.getAll(1, 1000)),
                 offersAPI.getAll(),
-                suppliersAPI.getAll(),
-                agenciesAPI.getAll(1, 1000),
-                expensesAPI.getAll(1, 1000),
-                usersAPI.getAll(1, 1000),
-                transactionsAPI.getAll(1, 100),
-                bankAccountsAPI.getAll()
+                fetchIfAllowed(suppliersAPI.getAll()),
+                fetchIfAllowed(agenciesAPI.getAll(1, 1000)),
+                fetchIfAllowed(expensesAPI.getAll(1, 1000)),
+                fetchIfAllowed(usersAPI.getAll(1, 1000)),
+                fetchIfAllowed(transactionsAPI.getAll(1, 100)),
+                fetchIfAllowed(bankAccountsAPI.getAll())
             ]);
 
             // Helper to get data or empty array

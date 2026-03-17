@@ -35,13 +35,14 @@ async function createAdminUser() {
                 role,
                 permissions
             ) VALUES ($1, $2, $3, $4, $5::jsonb)
-            ON CONFLICT (email) 
+            ON CONFLICT (username) 
             DO UPDATE SET 
+                email = EXCLUDED.email,
                 password_hash = EXCLUDED.password_hash,
                 permissions = EXCLUDED.permissions
             RETURNING id, email, username, role`,
             [
-                'aimen@wrtour.com',
+                'aimen@trajetour.com',
                 hashedPassword,
                 'Aimen',
                 'admin',
@@ -55,9 +56,7 @@ async function createAdminUser() {
         console.log('👤 Username:', result.rows[0].username);
         console.log('🔑 Role:', result.rows[0].role);
         console.log('━'.repeat(50));
-        console.log('\n🎉 You can now login with:');
-        console.log('   Email: aimen@wrtour.com');
-        console.log('   Password: Aimen@2025');
+        console.log('   Email: aimen@trajetour.com');
         console.log('\n');
 
         process.exit(0);

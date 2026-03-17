@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Payment Gateway - Omrah &amp; Hajj Travels</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom styles for radio checked state borders */
+        input[type="radio"]:checked + div {
+            border-color: #1773cf;
+            background-color: rgba(23, 115, 207, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-b-[#2a3441] bg-white dark:bg-[#1e2732] px-6 lg:px-10 py-3">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fill-rule="evenodd"></path>
+<path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Omrah &amp; Hajj Travels</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Home</a>
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Packages</a>
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">My Bookings</a>
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Support</a>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200 dark:border-gray-700" data-alt="User profile avatar showing a generic person silhouette" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAD65n541dKSsnqdbSlHRyelSG8HdhxxvGwcjw3h95QT-zutUujnbXJGSlinOwQyfpsC7tgaN5UN2FFqf1yC7ZV4b6VUloASHPt5ZPtHHg0WUcs3_vKdCJ-DYfuUT3zeUxw6a5N9XZGK-hm_oXn1MW5rTPrjiIm-XY5uqtm6YV7oNFCSe8PQ4xde9kLjofkeLeUszShP50iWdT4bF-bnXgRPTogjWYJX_yrSYqRFUJviFycxw8tgva6w1SlSBjF5B4VBUvsjZyWi1E9");'></div>
+</div>
+</header>
+<!-- Main Content Wrapper -->
+<main class="layout-container flex h-full grow flex-col w-full max-w-7xl mx-auto px-4 md:px-8 lg:px-12 py-6">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 pb-6 items-center">
+<a class="text-[#637588] dark:text-gray-400 text-sm md:text-base font-medium leading-normal flex items-center gap-1 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[18px]">check_circle</span> Select Package
+            </a>
+<span class="text-[#637588] dark:text-gray-500 text-sm md:text-base font-medium leading-normal">/</span>
+<a class="text-[#637588] dark:text-gray-400 text-sm md:text-base font-medium leading-normal flex items-center gap-1 hover:text-primary" href="#">
+<span class="material-symbols-outlined text-[18px]">check_circle</span> Traveler Details
+            </a>
+<span class="text-[#637588] dark:text-gray-500 text-sm md:text-base font-medium leading-normal">/</span>
+<span class="text-[#111418] dark:text-white text-sm md:text-base font-bold leading-normal flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px] text-primary">pending</span> Payment
+            </span>
+</div>
+<!-- Layout Grid: 2 Columns on Desktop -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Payment Form -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Page Heading -->
+<div class="flex flex-col gap-2">
+<h1 class="text-[#111418] dark:text-white tracking-light text-[32px] font-bold leading-tight flex items-center gap-3">
+                        Secure Checkout
+                        <span class="material-symbols-outlined text-primary text-3xl">lock</span>
+</h1>
+<p class="text-[#637588] dark:text-gray-400 text-sm font-normal leading-normal">Complete your booking for the Premium Umrah Package securely.</p>
+</div>
+<!-- Payment Methods -->
+<div class="bg-white dark:bg-[#1e2732] rounded-xl border border-[#e5e7eb] dark:border-[#2f3b4b] p-6 shadow-sm">
+<h3 class="text-lg font-bold mb-4">Select Payment Method</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+<!-- Card Option -->
+<label class="cursor-pointer group relative">
+<input checked="" class="peer sr-only" name="payment_method" type="radio"/>
+<div class="flex flex-col items-center justify-center p-4 border border-[#dce0e5] dark:border-[#3e4a5b] rounded-lg hover:border-primary transition-all h-full gap-2">
+<span class="material-symbols-outlined text-3xl text-primary">credit_card</span>
+<span class="text-sm font-medium">Credit/Debit Card</span>
+</div>
+</label>
+<!-- Bank Transfer Option -->
+<label class="cursor-pointer group relative">
+<input class="peer sr-only" name="payment_method" type="radio"/>
+<div class="flex flex-col items-center justify-center p-4 border border-[#dce0e5] dark:border-[#3e4a5b] rounded-lg hover:border-primary transition-all h-full gap-2">
+<span class="material-symbols-outlined text-3xl text-[#637588]">account_balance</span>
+<span class="text-sm font-medium text-[#637588] dark:text-gray-400">Bank Transfer</span>
+</div>
+</label>
+<!-- Digital Wallet Option -->
+<label class="cursor-pointer group relative">
+<input class="peer sr-only" name="payment_method" type="radio"/>
+<div class="flex flex-col items-center justify-center p-4 border border-[#dce0e5] dark:border-[#3e4a5b] rounded-lg hover:border-primary transition-all h-full gap-2">
+<span class="material-symbols-outlined text-3xl text-[#637588]">account_balance_wallet</span>
+<span class="text-sm font-medium text-[#637588] dark:text-gray-400">Digital Wallet</span>
+</div>
+</label>
+</div>
+<!-- Card Details Form -->
+<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-sm font-medium text-[#111418] dark:text-gray-200">Name on Card</label>
+<input class="form-input w-full rounded-lg border-[#dce0e5] dark:border-[#3e4a5b] bg-white dark:bg-[#2a3441] text-[#111418] dark:text-white h-11 focus:border-primary focus:ring-primary px-3" placeholder="e.g. Ahmed Ali" type="text"/>
+</div>
+<div class="flex flex-col gap-1 relative">
+<label class="text-sm font-medium text-[#111418] dark:text-gray-200">Card Number</label>
+<div class="relative">
+<input class="form-input w-full rounded-lg border-[#dce0e5] dark:border-[#3e4a5b] bg-white dark:bg-[#2a3441] text-[#111418] dark:text-white h-11 focus:border-primary focus:ring-primary pl-10 pr-3" placeholder="0000 0000 0000 0000" type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9ca3af]">credit_card</span>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
+<img alt="Mastercard" class="h-4" data-alt="Mastercard logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLqqb5hNi2uHBAbTjq3wI-FNOHBzqA6fhxYpR0m6Cn0pJhGVKW-q1_3Z_-Hz1ZFaDkjIL3k6UUMOJ5UR4n1lE6Z_t7VwV-lTj14VFs0X6FYiXZWzj6Lw07dY_55suBgpzErWoauhTrEVzkewfMjheQT9vNCd1PEAf0Z3QYNYskPrbR_KZ-9zup9gu37UKEBWLm1LhS25pqX9jSHWc9W1VcuH3pIfu9VB7D9pCMHFsVM3qHy_bsUBMl5hX7OsXj-oZWPYEIvqExpJ9Z"/>
+<img alt="Visa" class="h-4" data-alt="Visa logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJ4BYlM6mAu4yvPpMCWR9t0tEdP2qDY-cPlI4achqk1reMSRFiMi1cYXsNevNa9MiQp_T60CO1bRKct5zbY5S-5g7TK_wrFJvAOA2dr08lgm0DSWaJPgBwxsW2bVVDWA1tchIXzmbVq1sQ5VEk_I1M9RUB2jDpXQ-S1TuMMQ9opE5GdXT_HBUkh6WlkDBE1eGh4Fa1E-MNnrVj6SGyXhD069L26dI3qnho1NfKjTu5CVLzKDMypZAj1dEMBoC7XvitdaCKinazC0ZZ"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col gap-1">
+<label class="text-sm font-medium text-[#111418] dark:text-gray-200">Expiry Date</label>
+<input class="form-input w-full rounded-lg border-[#dce0e5] dark:border-[#3e4a5b] bg-white dark:bg-[#2a3441] text-[#111418] dark:text-white h-11 focus:border-primary focus:ring-primary px-3" placeholder="MM / YY" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<label class="text-sm font-medium text-[#111418] dark:text-gray-200">CVV / CVC</label>
+<span class="material-symbols-outlined text-[16px] text-[#9ca3af] cursor-help" title="3 digits on the back of your card">help</span>
+</div>
+<input class="form-input w-full rounded-lg border-[#dce0e5] dark:border-[#3e4a5b] bg-white dark:bg-[#2a3441] text-[#111418] dark:text-white h-11 focus:border-primary focus:ring-primary px-3" placeholder="123" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<input class="rounded border-gray-300 text-primary focus:ring-primary" id="save-card" type="checkbox"/>
+<label class="text-sm text-[#637588] dark:text-gray-400" for="save-card">Save this card securely for future bookings</label>
+</div>
+</div>
+</div>
+<!-- Trust Badges & Button -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2 text-[#637588] dark:text-gray-400 text-xs justify-center bg-[#f0f2f4] dark:bg-[#2a3441] p-3 rounded-lg">
+<span class="material-symbols-outlined text-sm">lock</span>
+<p>Your transaction is secured with 256-bit SSL encryption. We do not store your full card details.</p>
+</div>
+<button class="w-full bg-primary hover:bg-blue-700 text-white font-bold text-lg h-14 rounded-lg shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-2">
+<span>Pay $4,500.00</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<div class="flex justify-center gap-4 mt-2 opacity-60 grayscale">
+<img class="h-6" data-alt="PayPal Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE5ZsTWjl9oXhIV-8Ak2rEhJZ8JuMab6_Bp8Is2HiPeQGBbBxgMBaNAtR-gPj3eRCftAvmllHSbsXdmJGRiPeBBwYkxpc294dRxgsCMv2lUbsaPg3aEeROzXtY46bniKtoOdRXOglJF4KxxvVDZJX47pQj3_c62JFtmPu7Vtpvjwk-dYZ0ac3hsIaWkkhi_9kaQlV4JJSfJrGnATIbC1nKuvHdJY29CDaXIorL4MKe_lVmdpiJFtJOoBm_nDPg5RAEiNuS1LwsN6PP"/>
+<img class="h-6" data-alt="Amex Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv17Q8S4Y7fok0S9WGMqiF044tG7__oK-K6OMjVz6beuG6hCfb_SGr3JObDn-SWfemSI6sFnzc8cpO0uYAr8_bqN98m58cm_NF4cWCkny8gwcsYiD-KQ--N2qlbVTlRvYytN_LNAd7iJgW-c-YnbRNMCBFlrhnTrpimGa5yCP2f7uph6v56l7RhKZ8_INw30NXfHyIlqLoXQoPlrnS1uTq6B46MffTTkAhcivUX7NkC-ZzThy22TqgzUlJe-m8eH0SvxiocAJobanG"/>
+<img class="h-6" data-alt="Visa Logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBebrb9SWsFrQ507tXiI7g1ea_dDRGG7R3TClS6L5_bz_gE8hD7a8_V9YYasSp6Tw70YcDgeMh9Q0oBTzb3_1yFCYxa4bCtSDquRXYCyq-Pc9X3dbgV9CVC1jsOAt16ReK_HDNsyOI6Y0km85r8norSE2RKJCoDxS1EH9xtSKDwRStnFpvA6cayYkIywUR44_ENo6IuhELGJ9i7-5oSNqLbvvcgqSTRE9Ed0L8ZTytuFbxbuVeBrV77jrdTTWeby-WnH9UwQxO25vem"/>
+</div>
+</div>
+</div>
+<!-- Right Column: Booking Summary -->
+<div class="lg:col-span-1">
+<div class="bg-white dark:bg-[#1e2732] rounded-xl border border-[#e5e7eb] dark:border-[#2f3b4b] overflow-hidden sticky top-24 shadow-sm">
+<!-- Image Header -->
+<div class="h-40 w-full bg-cover bg-center relative" data-alt="Beautiful view of the Kaaba in Mecca during evening prayers" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgsmu4PWCoOP6iURyG26XDgbMv1DsfflSOOdkMlTRMF7I6AMkTvcZLTU0c8GNLfanYyC_A53sGGZ5Em-V26sF1_41y_RCxYbnZh8RtLC3nNiQ2yaApWMLleLeiZDxqCQ_Ru7zHkfltXyrcSbHU9mJTBRclfb6JNvIrozWdz0W-VgrIEOazm-Lkkl56zosL1xOPO2GmL1-w-XiGiKAyKAUPDxkKRaOdIMdcRe-jVOAMddTJlsQSHAXVhAinOOH0ZNAnEG-G45bKnQ2c');">
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-white">
+<span class="bg-primary px-2 py-1 rounded text-xs font-bold uppercase tracking-wide">Premium</span>
+<h3 class="font-bold text-xl mt-1 text-white shadow-black drop-shadow-md">Premium Umrah</h3>
+</div>
+</div>
+<!-- Summary Content -->
+<div class="p-5 flex flex-col gap-6">
+<div class="flex justify-between items-center pb-4 border-b border-[#f0f2f4] dark:border-[#2f3b4b]">
+<h3 class="text-[#111418] dark:text-white font-bold text-lg">Order Summary</h3>
+<a class="text-primary text-sm font-medium hover:underline" href="#">Edit</a>
+</div>
+<!-- Description List -->
+<div class="flex flex-col gap-4">
+<div class="grid grid-cols-[auto_1fr] gap-x-4">
+<div class="bg-primary/10 rounded-full p-2 h-fit">
+<span class="material-symbols-outlined text-primary text-xl block">calendar_month</span>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Dates</p>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-semibold">Apr 10 - Apr 20, 2024</p>
+<p class="text-[#637588] dark:text-gray-500 text-xs">10 Days / 9 Nights</p>
+</div>
+</div>
+<div class="grid grid-cols-[auto_1fr] gap-x-4">
+<div class="bg-primary/10 rounded-full p-2 h-fit">
+<span class="material-symbols-outlined text-primary text-xl block">group</span>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Travelers</p>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-semibold">2 Adults</p>
+<p class="text-[#637588] dark:text-gray-500 text-xs">Primary: Ahmed Ali</p>
+</div>
+</div>
+<div class="grid grid-cols-[auto_1fr] gap-x-4">
+<div class="bg-primary/10 rounded-full p-2 h-fit">
+<span class="material-symbols-outlined text-primary text-xl block">hotel</span>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium uppercase tracking-wider">Accommodation</p>
+<p class="text-[#111418] dark:text-gray-200 text-sm font-semibold">Pullman ZamZam Makkah</p>
+<p class="text-[#637588] dark:text-gray-500 text-xs">5 Star • Quad Room</p>
+</div>
+</div>
+</div>
+<!-- Price Breakdown -->
+<div class="pt-4 border-t border-[#f0f2f4] dark:border-[#2f3b4b] flex flex-col gap-2">
+<div class="flex justify-between text-sm">
+<span class="text-[#637588] dark:text-gray-400">Subtotal</span>
+<span class="text-[#111418] dark:text-gray-200 font-medium">$4,200.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#637588] dark:text-gray-400">Taxes &amp; Fees</span>
+<span class="text-[#111418] dark:text-gray-200 font-medium">$300.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#637588] dark:text-gray-400">Processing Fee</span>
+<span class="text-green-600 font-medium">Free</span>
+</div>
+<div class="flex justify-between items-end mt-2 pt-3 border-t border-dashed border-[#dce0e5] dark:border-[#3e4a5b]">
+<span class="text-[#111418] dark:text-white font-bold text-lg">Total Due</span>
+<span class="text-primary font-bold text-2xl">$4,500.00</span>
+</div>
+</div>
+<!-- Guarantee Badge -->
+<div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded p-3 flex items-start gap-3">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-xl">verified_user</span>
+<div>
+<p class="text-green-800 dark:text-green-300 text-xs font-bold">Best Price Guaranteed</p>
+<p class="text-green-700 dark:text-green-400 text-[10px] leading-tight mt-1">Found a lower price? We'll match it and give you a discount.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Helper Links -->
+<div class="mt-6 flex flex-wrap gap-4 justify-center lg:justify-start px-2">
+<a class="text-[#637588] hover:text-[#111418] dark:text-gray-500 dark:hover:text-gray-300 text-xs font-medium" href="#">Refund Policy</a>
+<a class="text-[#637588] hover:text-[#111418] dark:text-gray-500 dark:hover:text-gray-300 text-xs font-medium" href="#">Terms of Service</a>
+<a class="text-[#637588] hover:text-[#111418] dark:text-gray-500 dark:hover:text-gray-300 text-xs font-medium" href="#">Contact Support</a>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,7 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
-
+import { Plus, X } from 'lucide-react';
 import type { Offer } from '../../types';
+
+interface OfferHotel {
+    id: string; // Assignment ID
+    room_id: string;
+    hotel_name: string;
+    room_number: string;
+    capacity: number;
+    infant_price: number;
+    child_price: number;
+    adult_price: number;
+}
+
+interface Room {
+    id: string;
+    hotel_name: string;
+    room_number: string;
+    capacity: number;
+    price: number;
+    infant_price: number;
+    child_price: number;
+    adult_price: number;
+}
 
 interface OfferFormProps {
     onClose: () => void;
@@ -58,13 +80,129 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         }
     }, [initialData]);
 
-    // Hotels state removed
+    // Hotels state for age-based pricing
+    const [hotels, setHotels] = useState<OfferHotel[]>([]);
+    const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
+
+    // Selection state
+    const [selectedHotelFilter, setSelectedHotelFilter] = useState<string>('');
+    const [selectedRoomId, setSelectedRoomId] = useState<string>('');
+    const [isAddingRoom, setIsAddingRoom] = useState(false);
+
+    // Derived state for unique hotel names
+    const uniqueHotels = Array.from(new Set(availableRooms.map(r => r.hotel_name))).sort();
+
+    // Filter rooms by selected hotel
+    const filteredRooms = selectedHotelFilter
+        ? availableRooms.filter(r => r.hotel_name === selectedHotelFilter)
+        : [];
+
+    const [roomsDebugInfo, setRoomsDebugInfo] = useState<any>(null); // Store debug feedback
+
+    // Fetch hotels when editing
+    useEffect(() => {
+        if (initialData?.id) {
+            fetchOfferHotels(initialData.id);
+            if (currentStep === 2) {
+                fetchAvailableRooms(initialData.id);
+            }
+        }
+    }, [initialData, currentStep]);
+
+    const fetchOfferHotels = async (offerId: string) => {
+        try {
+            const response = await fetch(`/api/offers/${offerId}/hotels`, {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            setHotels(data.hotels || []);
+        } catch (error) {
+            console.error('Error fetching hotels:', error);
+        }
+    };
+
+    const fetchAvailableRooms = async (offerId: string) => {
+        try {
+            // Fetch ALL active rooms from the proven /api/rooms endpoint
+            const response = await fetch(`/api/rooms`, {
+                credentials: 'include'
+            });
+            const allRooms = await response.json();
+
+            // Fetch rooms already assigned to THIS offer
+            const assignedResponse = await fetch(`/api/offers/${offerId}/hotels`, {
+                credentials: 'include'
+            });
+            const assignedData = await assignedResponse.json();
+            const assignedRoomIds = (assignedData.hotels || []).map((h: any) => h.room_id);
+
+            // Filter out already-assigned rooms
+            const available = allRooms.filter((room: any) =>
+                !assignedRoomIds.includes(room.id)
+            );
+
+            setAvailableRooms(available);
+            setRoomsDebugInfo({
+                totalInDb: allRooms.length,
+                activeInDb: allRooms.length,
+                foundAvailable: available.length
+            });
+            console.log('Rooms fetched:', { total: allRooms.length, available: available.length, assigned: assignedRoomIds.length });
+        } catch (error) {
+            console.error('Error fetching available rooms:', error);
+        }
+    };
+
+    const addRoomToOffer = async () => {
+        if (!selectedRoomId || !initialData?.id) return;
+
+        try {
+            const response = await fetch(`/api/offers/${initialData.id}/hotels`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ room_id: selectedRoomId })
+            });
+
+            if (response.ok) {
+                await fetchOfferHotels(initialData.id);
+                await fetchAvailableRooms(initialData.id);
+                setIsAddingRoom(false);
+                setSelectedRoomId('');
+            }
+        } catch (error) {
+            console.error('Error adding room:', error);
+            alert('Erreur lors de l\'ajout du voyage');
+        }
+    };
+
+    const removeHotel = async (assignmentId: string) => {
+        if (!initialData?.id) return;
+
+        try {
+            await fetch(`/api/offers/hotels/${assignmentId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            await fetchOfferHotels(initialData.id);
+            await fetchAvailableRooms(initialData.id);
+        } catch (error) {
+            alert('Erreur lors de la suppression');
+        }
+    };
+
+    // Helper to format currency
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 0 }).format(price);
+    };
 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
+            // Only update the offer details here. 
+            // Hotels are managed instantly via separate API calls in this improved version.
             if (initialData) {
                 await updateOffer({ ...initialData, ...formData } as Offer);
             } else {
@@ -73,6 +211,8 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                     ...formData as Omit<Offer, 'id'>
                 };
                 await addOffer(newOffer);
+                // Note: For new offers, we can't add rooms yet until offer ID exists. 
+                // UX: User should create offer first, then edit to add rooms.
             }
 
             onClose();
@@ -81,6 +221,8 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
             alert('Erreur lors de l\'enregistrement de l\'offre. Veuillez vérifier les champs et réessayer.');
         }
     };
+
+    // Removed old saveOfferHotels - using direct API calls now
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -254,10 +396,176 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 </div>
             )}
 
-            {/* Step 2: Inclusions, Room Pricing, and Hotel & Rooms Inventory */}
+            {/* Step 2: Rooms & Age-Based Pricing */}
             {currentStep === 2 && (
                 <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Options et configurations</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Hôtels et Tarification par Âge</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                        Sélectionnez les chambres du "Rooming List" pour associer leurs tarifs à cette offre.
+                        Les prix sont récupérés automatiquement de la configuration de la chambre.
+                    </p>
+
+                    {/* Room Management Section */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <div className="flex justify-between items-center mb-3">
+                            <h4 className="text-md font-medium text-gray-800">Chambres / Hôtels assignés</h4>
+                            {initialData?.id ? (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        fetchAvailableRooms(initialData.id!);
+                                        setIsAddingRoom(true);
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-primary text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                                >
+                                    <Plus size={16} />
+                                    Ajouter Chambre
+                                </button>
+                            ) : (
+                                <div className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded border border-amber-200">
+                                    Enregistrez l'offre d'abord pour ajouter des chambres
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Validating Data Availability with Debug Info */}
+                        {isAddingRoom && availableRooms.length === 0 && (
+                            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-lg p-4 text-amber-800 text-sm">
+                                <p className="font-bold flex items-center gap-2">
+                                    <span className="text-xl">⚠️</span>
+                                    Aucune chambre disponible trouvée.
+                                </p>
+                                {roomsDebugInfo ? (
+                                    <ul className="list-disc ml-8 mt-2 space-y-1 text-xs text-amber-900">
+                                        <li>Total chambres en base de données: <strong>{roomsDebugInfo.totalInDb}</strong></li>
+                                        <li>Chambres avec statut 'ACTIVE': <strong>{roomsDebugInfo.activeInDb}</strong></li>
+                                        <li>Chambres filtrées (non déjà assignées): <strong>{roomsDebugInfo.foundAvailable}</strong></li>
+                                    </ul>
+                                ) : (
+                                    <p className="mt-2 text-xs font-bold text-red-600 bg-red-50 p-2 rounded">
+                                        ⚠️ Le serveur semble ne pas avoir redémarré avec la nouvelle mise à jour de diagnostic. Veuillez patienter 10 secondes et réessayer.
+                                    </p>
+                                )}
+                                <p className="mt-2 text-xs">
+                                    Vérifiez que vous avez bien créé des chambres et qu'elles ne sont pas archivées.
+                                    Le système ignore la casse (Active/active) et les chambres déjà liées à cette offre.
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Add Room Modal/Inline Form */}
+                        {isAddingRoom && (
+                            <div className="mb-4 bg-white p-4 rounded-lg border border-primary/20 shadow-sm">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Ajouter une chambre</label>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                    {/* 1. Select Hotel */}
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">1. Choisir l'Hôtel</label>
+                                        <select
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 text-sm"
+                                            value={selectedHotelFilter}
+                                            onChange={(e) => {
+                                                setSelectedHotelFilter(e.target.value);
+                                                setSelectedRoomId(''); // Reset room when hotel changes
+                                            }}
+                                        >
+                                            <option value="">-- Sélectionner un hôtel --</option>
+                                            {uniqueHotels.map(hotel => (
+                                                <option key={hotel} value={hotel}>{hotel}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* 2. Select Room (Filtered) */}
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-600 mb-1">2. Choisir la Chambre</label>
+                                        <select
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 text-sm"
+                                            value={selectedRoomId}
+                                            onChange={(e) => setSelectedRoomId(e.target.value)}
+                                            disabled={!selectedHotelFilter}
+                                        >
+                                            <option value="">
+                                                {selectedHotelFilter ? '-- Sélectionner une chambre --' : '-- Choisir un hôtel d\'abord --'}
+                                            </option>
+                                            {filteredRooms.map(room => (
+                                                <option key={room.id} value={room.id}>
+                                                    Ch.{room.room_number} ({room.capacity} pers) - {formatPrice(room.adult_price)}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2 justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsAddingRoom(false);
+                                            setSelectedHotelFilter('');
+                                            setSelectedRoomId('');
+                                        }}
+                                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={addRoomToOffer}
+                                        disabled={!selectedRoomId}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 text-sm"
+                                    >
+                                        Confirmer Ajout
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {hotels.length === 0 ? (
+                            <div className="text-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                                <p>Aucune chambre assignée. Cliquez sur "Ajouter Chambre" pour lier une chambre du Rooming List.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                {hotels.map((hotel, index) => (
+                                    <div key={hotel.id || index} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                        <div className="flex justify-between items-start mb-3 border-b pb-2">
+                                            <div>
+                                                <h5 className="font-semibold text-gray-900">{hotel.hotel_name}</h5>
+                                                <div className="text-xs text-gray-500">
+                                                    Chambre {hotel.room_number} • Capacité: {hotel.capacity} pers
+                                                </div>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeHotel(hotel.id!)}
+                                                className="text-red-600 hover:text-red-700 p-1 hover:bg-red-50 rounded"
+                                                title="Retirer cette chambre"
+                                            >
+                                                <X size={18} />
+                                            </button>
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-3">
+                                            <div className="bg-blue-50 p-2 rounded text-center">
+                                                <span className="block text-xs font-bold text-blue-700 mb-1">Bébé (0-2) 👶</span>
+                                                <span className="font-mono text-sm">{formatPrice(hotel.infant_price)}</span>
+                                            </div>
+                                            <div className="bg-green-50 p-2 rounded text-center">
+                                                <span className="block text-xs font-bold text-green-700 mb-1">Enfant (3-17) 🧒</span>
+                                                <span className="font-mono text-sm">{formatPrice(hotel.child_price)}</span>
+                                            </div>
+                                            <div className="bg-purple-50 p-2 rounded text-center">
+                                                <span className="block text-xs font-bold text-purple-700 mb-1">Adulte (18+) 👤</span>
+                                                <span className="font-mono text-sm">{formatPrice(hotel.adult_price)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Section A: Inclusions */}
                     <div>

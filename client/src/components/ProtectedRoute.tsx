@@ -1,34 +1,41 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import type { Permission } from '../types';
+import type { Permission, UserRole } from '../types';
 
 interface ProtectedRouteProps {
-    permission?: Permission;
-    redirectPath?: string;
     children?: React.ReactNode;
+    permission?: Permission; // Keep existing permission check
+    role?: UserRole; // Add role check
 }
 
-const ProtectedRoute = ({ permission, redirectPath = '/login', children }: ProtectedRouteProps) => {
-    const { isAuthenticated, hasPermission, loading } = useAuth();
+const ProtectedRoute = ({ children, permission, role }: ProtectedRouteProps) => {
+    const { user, loading, hasPermission } = useAuth();
+    const location = useLocation();
 
-    // Show loading spinner while checking auth status
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-                    <p className="mt-4 text-gray-600">Chargement...</p>
-                </div>
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
 
-    // Check if user is authenticated
-    if (!isAuthenticated) {
-        return <Navigate to={redirectPath} replace />;
+    if (!user) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Check if user has required permission
+    // Role Check
+    if (role && (user.role as string) !== (role as string) && user.role !== 'super_admin') {
+        // Allow admin to access everything or strictly enforce? 
+        // For now, strict check except super_admin
+        if (user.role === 'admin' && role === 'agent') {
+            // Admin can view agency dashboard? Maybe.
+        } else {
+            return <div className="p-10 text-center text-red-500">Access Denied: Role mismatch</div>;
+        }
+    }
+
     if (permission && !hasPermission(permission)) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-50">

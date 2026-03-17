@@ -25,10 +25,10 @@ const mapOfferResponse = (row: any) => ({
     roomPricing: row.room_pricing || []
 });
 
-// Get all offers (with filters)
+// Get all offers (with filters) - PUBLIC
 router.get('/',
-    authMiddleware,
-    async (req: AuthRequest, res, next) => {
+    // authMiddleware, // Public access for website
+    async (req: express.Request, res, next) => {
         try {
             const status = req.query.status as string;
             let query = 'SELECT * FROM offers';

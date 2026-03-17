@@ -1,10 +1,12 @@
-export type UserRole = 'admin' | 'staff' | 'caisser' | 'agent';
+export type UserRole = 'super_admin' | 'admin' | 'staff' | 'caisser' | 'agent' | 'client';
 
 export type Permission =
     | 'manage_users'
     | 'manage_business' // Clients, Agencies, Orders
     | 'manage_financials' // Expenses, Caisse
-    | 'view_reports';
+    | 'view_reports'
+    | 'view_bookings'
+    | 'view_profile';
 
 export interface User {
     id: string;
@@ -15,6 +17,10 @@ export interface User {
     role: UserRole;
     permissions: Permission[];
     avatar?: string;
+    clientId?: string;
+    agencyId?: string;
+    firstName?: string;
+    lastName?: string;
 }
 
 export interface Client {
@@ -66,6 +72,10 @@ export interface Passenger {
     roomType?: 'Single' | 'Double' | 'Triple' | 'Quad';
     assignedRoomId?: string; // UUID of assigned Room
     photo?: string; // Base64
+
+    // Document URLs
+    passportScanUrl?: string;
+    photoUrl?: string;
 
     // Pricing Fields (Added for OrderFormV2)
     finalPrice?: number;

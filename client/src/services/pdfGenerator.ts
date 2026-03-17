@@ -192,12 +192,12 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         <!-- Header -->
         <div class="invoice-header-wrapper">
             <div class="header-content">
-                <div class="company-name">${t('Wahat Alrajaa', 'واحة الرجاء')}</div>
+                <div class="company-name">${t('Trajetour', 'تراجيتور')}</div>
                 <div class="company-info">
                     ${t('Tour Management & Travel Services', 'إدارة الرحلات والخدمات السياحية')}<br>
                     ${t('Es-Senia, Oran - Algérie', 'السانية، وهران - الجزائر')}<br>
                     ${t('Tél', 'هاتف')}: +213550323020<br>
-                    Email: contact@wahat-alrajaa.com
+                    Email: contact@trajetour.com
                 </div>
             </div>
             <div class="logo-container">
@@ -292,7 +292,7 @@ const createInvoiceHTML = (order: Order, client: Client, agency?: Agency, langua
         
         <div class="footer">
             ${t('Merci de votre confiance.', 'شكراً لثقتكم.')}<br>
-            Wahat Alrajaa Tour - RC: XXXXX - NIF: XXXXX
+            Trajetour - RC: XXXXX - NIF: XXXXX
         </div>
     </div>
     `;

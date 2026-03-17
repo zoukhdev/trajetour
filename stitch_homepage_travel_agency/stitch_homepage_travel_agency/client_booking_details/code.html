@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Details - Omrah &amp; Hajj Travel</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[#111418] dark:text-white min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e5e7eb] dark:border-gray-800 bg-white dark:bg-[#111921] px-6 lg:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-8 text-primary">
+<svg class="w-full h-full" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_319)">
+<path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
+</g>
+<defs>
+<clippath id="clip0_6_319"><rect fill="white" height="48" width="48"></rect></clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Omrah &amp; Hajj Travel</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6 lg:gap-9">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors text-primary" href="#">My Bookings</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Packages</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Support</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full size-10 bg-[#f0f2f4] dark:bg-gray-800 text-[#111418] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-gray-200 dark:border-gray-700" data-alt="User profile avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAmz2ni1SrQQTEqBffQZ1e1aFerZL44ofMtv_r4SrH2BfOu5VqMaVhS6yVKpDJlRp3CMKbFnWBZMddQa1rUOxSk4lJlJDTHAK21fDhdgsRvZd05m6qT9nN-RBONGu-rrBGAB9a4dFZXQvyFX0Msxpo2GEDb6HIZBCT66SF8Z_mvI9CzeE7hj8HlWshE6YSG636d5qtGgWrGRKTlY-3BzjGg5Tk_s1T885tBijzQhl3wuIJ9PBVs0uD3md65WZtaE3TPaZwb2hRFMOYV");'></div>
+</div>
+</header>
+<main class="flex-grow container mx-auto px-4 md:px-6 lg:px-10 py-6 max-w-7xl">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 mb-6 text-sm">
+<a class="text-[#637588] dark:text-gray-400 font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<span class="text-[#637588] dark:text-gray-400 font-medium">/</span>
+<a class="text-[#637588] dark:text-gray-400 font-medium hover:text-primary transition-colors" href="#">My Bookings</a>
+<span class="text-[#637588] dark:text-gray-400 font-medium">/</span>
+<span class="text-[#111418] dark:text-white font-medium">Booking #OH-2024-882</span>
+</div>
+<!-- Header Section -->
+<div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 flex-wrap">
+<h1 class="text-3xl md:text-4xl font-black leading-tight tracking-tight text-[#111418] dark:text-white">Premium Umrah Package (14 Days)</h1>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 border border-green-200 dark:border-green-800">
+                        CONFIRMED
+                    </span>
+</div>
+<p class="text-[#637588] dark:text-gray-400 text-base font-normal">Booking #OH-2024-882 • October 12 - October 26, 2024 • 2 Travelers</p>
+</div>
+<div class="flex gap-3 flex-wrap">
+<button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-white dark:bg-gray-800 border border-[#e5e7eb] dark:border-gray-700 text-[#111418] dark:text-white text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span class="hidden sm:inline">Print Itinerary</span>
+</button>
+<button class="flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold hover:bg-blue-700 transition-colors shadow-md">
+<span class="material-symbols-outlined text-[20px]">download</span>
+<span>Download Documents</span>
+</button>
+</div>
+</div>
+<!-- Progress/Status Bar -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-8">
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-[#111418] dark:text-white text-lg font-bold mb-1">Visa Processed</p>
+<p class="text-[#637588] dark:text-gray-400 text-sm">Your visa has been approved. Next step: Flight Check-in opens in 2 days.</p>
+</div>
+<p class="text-primary font-bold text-lg">75%</p>
+</div>
+<div class="rounded-full bg-gray-200 dark:bg-gray-700 h-3 overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 75%;"></div>
+</div>
+<!-- Steps Chips -->
+<div class="flex gap-3 flex-wrap mt-2">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[18px]">check_circle</span>
+<span class="text-green-700 dark:text-green-300 text-xs font-bold">Booking Confirmed</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[18px]">check_circle</span>
+<span class="text-green-700 dark:text-green-300 text-xs font-bold">Payment Complete</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-800">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-[18px]">check_circle</span>
+<span class="text-green-700 dark:text-green-300 text-xs font-bold">Visa Approved</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800">
+<span class="material-symbols-outlined text-primary text-[18px]">radio_button_checked</span>
+<span class="text-primary text-xs font-bold">Prepare for Travel</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Column: Itinerary Details -->
+<div class="lg:col-span-2 flex flex-col gap-8">
+<!-- Flights Card -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+<div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">flight</span>
+<h3 class="text-lg font-bold text-[#111418] dark:text-white">Flight Details</h3>
+</div>
+<span class="text-xs font-bold text-[#637588] dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">PNR: XJY782</span>
+</div>
+<div class="p-6 flex flex-col gap-6">
+<!-- Outbound -->
+<div class="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center p-2" data-alt="Saudia Airlines Logo">
+<img alt="Airline Logo" class="w-full h-auto object-contain" data-alt="Airline logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTQPYWuWktO-nDdgSoZ2fuCY6k7ruBg8UD33wmr6L_ZSE9rWdiH2bfLO7187PtglnJNIhTM6DzCfXgIJcJsB-OqhtTEX94sAm7p4_Sq26P_nKrC3wYlx4a_g4ilqf8tSIt1Zck5eq1Xzp99ThUWG2F0UanNlFYLJgZcwW1vCfo6GWxGU0oorluySATUnFrQZxnfxGg68NPTUsmHJdyHWC_EGOG3hfa6RdBgmYMjf4TO2kk_SBO9xSvGsF92ONkF5kw33BtG3AcZCxf"/>
+</div>
+<div>
+<p class="font-bold text-[#111418] dark:text-white">London (LHR) → Jeddah (JED)</p>
+<p class="text-sm text-[#637588] dark:text-gray-400">Saudia Airlines • SV 112 • Economy</p>
+</div>
+</div>
+<div class="text-right sm:text-right">
+<p class="font-bold text-[#111418] dark:text-white">12 Oct 2024</p>
+<p class="text-sm text-[#637588] dark:text-gray-400">10:30 AM - 18:45 PM</p>
+</div>
+</div>
+<div class="h-px bg-gray-100 dark:bg-gray-700 w-full"></div>
+<!-- Inbound -->
+<div class="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center p-2" data-alt="Saudia Airlines Logo">
+<img alt="Airline Logo" class="w-full h-auto object-contain" data-alt="Airline logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv1VYcekMyyrBj6OL9679sS5BMMpJKrZKa_xV5OGZaPhEcuUf1X8aVDhl1qldOG_l312bzO0JWrcFiefbbvgDeOZfnaDvyU4f5w62N7Dbo00EllCtgJcO7HXg_6mN_SzD-mEBzpO_PuJWnD2H27wsNSNsY_ZvFFPAVKGHGmFcEA0zuqoU-qGAsbVY6MItlpB7QouuOwmhN2VHGEsAwhhTVSq2oG3Uq3c8fai0g9eYw8VR75BEguJ8iBECMT2K9ZZpmvpEhBoGXyJj3"/>
+</div>
+<div>
+<p class="font-bold text-[#111418] dark:text-white">Madinah (MED) → London (LHR)</p>
+<p class="text-sm text-[#637588] dark:text-gray-400">Saudia Airlines • SV 115 • Economy</p>
+</div>
+</div>
+<div class="text-right sm:text-right">
+<p class="font-bold text-[#111418] dark:text-white">26 Oct 2024</p>
+<p class="text-sm text-[#637588] dark:text-gray-400">02:15 AM - 07:30 AM</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Accommodation Card -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+<div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">hotel</span>
+<h3 class="text-lg font-bold text-[#111418] dark:text-white">Accommodation</h3>
+</div>
+</div>
+<!-- Hotel 1 -->
+<div class="flex flex-col md:flex-row border-b border-gray-100 dark:border-gray-700 last:border-0">
+<div class="w-full md:w-48 h-48 md:h-auto bg-cover bg-center md:rounded-bl-xl" data-alt="Mecca Clock Tower view" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB-gz-UFtX1uEeErKUc7AcReTTb4ekqh33d719CYner8oOKXb0y_Do_6XE2W6OHzGAdj7S-1l8ER1UH9_c8b9L06q_xDYbCOuUktzaI-rGns-Mj908uj5XLfvOevp7WuFAMnhwzKFH2d_60yRU-QGDP_zjLPgGLRD4Mu6qHaJ7dxgZKetrQBojAjNXjE2BeHsdq25A9NGqyDLYg--zOCz5vfPm1NWI03gvIdI1w7OEqPEB9evYHApbk4XUku8DRxd_1yQRaNtAS3M4m');"></div>
+<div class="p-6 flex flex-1 flex-col justify-center">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-bold text-lg text-[#111418] dark:text-white">Pullman ZamZam Makkah</h4>
+<div class="flex text-yellow-400 text-sm">
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+</div>
+</div>
+<p class="text-sm text-[#637588] dark:text-gray-400 flex items-center gap-1 mb-3">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                        Abraj Al Bait Complex, Makkah
+                                    </p>
+</div>
+<span class="bg-blue-50 dark:bg-blue-900/30 text-primary text-xs font-bold px-2 py-1 rounded">5 Nights</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm bg-[#f9fafb] dark:bg-gray-700/50 p-3 rounded-lg">
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Check-in</p>
+<p class="font-semibold dark:text-white">12 Oct 2024</p>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Check-out</p>
+<p class="font-semibold dark:text-white">17 Oct 2024</p>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Room Type</p>
+<p class="font-semibold dark:text-white">Quad Kaaba View</p>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Status</p>
+<p class="font-semibold text-green-600 dark:text-green-400">Confirmed</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Hotel 2 -->
+<div class="flex flex-col md:flex-row">
+<div class="w-full md:w-48 h-48 md:h-auto bg-cover bg-center" data-alt="Madinah mosque pillars" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDmbcILJtyxwfbfBt6kTkmACy1_vxzbdFih9aPsQxP8XBVM6fsAe_RHqAYgl1On1CTFC1KPjhvlq50YFF1TaDESLH68tWpd5MWDZtsQCXADOsSxu3gKfhg4MSrZqlYxOypnhVkUhI1kkX52Fq7wlZo0SbwYuQ6yp-71ISgAXZCQBaMLmG3NHbDgIIYzDqtk2tli95gWWkmxWRseQSyKli_dMu0VY44lj5HTYd0r9qq9WCGQsCJ6KB1LaT8F_Sqdlj59AP9cIRadBrkh');"></div>
+<div class="p-6 flex flex-1 flex-col justify-center">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<h4 class="font-bold text-lg text-[#111418] dark:text-white">Anwar Al Madinah Mövenpick</h4>
+<div class="flex text-yellow-400 text-sm">
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current">star</span>
+</div>
+</div>
+<p class="text-sm text-[#637588] dark:text-gray-400 flex items-center gap-1 mb-3">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+                                        Central Area, Madinah
+                                    </p>
+</div>
+<span class="bg-blue-50 dark:bg-blue-900/30 text-primary text-xs font-bold px-2 py-1 rounded">5 Nights</span>
+</div>
+<div class="grid grid-cols-2 gap-4 text-sm bg-[#f9fafb] dark:bg-gray-700/50 p-3 rounded-lg">
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Check-in</p>
+<p class="font-semibold dark:text-white">17 Oct 2024</p>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Check-out</p>
+<p class="font-semibold dark:text-white">22 Oct 2024</p>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Room Type</p>
+<p class="font-semibold dark:text-white">Quad City View</p>
+</div>
+<div>
+<p class="text-[#637588] dark:text-gray-400 text-xs">Status</p>
+<p class="font-semibold text-green-600 dark:text-green-400">Confirmed</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Travelers -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+<div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">groups</span>
+<h3 class="text-lg font-bold text-[#111418] dark:text-white">Travelers (2)</h3>
+</div>
+</div>
+<div class="p-6">
+<div class="flex flex-col gap-4">
+<!-- Traveler 1 -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900 text-primary flex items-center justify-center font-bold">AA</div>
+<div>
+<p class="font-bold text-[#111418] dark:text-white">Ahmed Ali</p>
+<p class="text-xs text-[#637588] dark:text-gray-400">Primary Contact • Adult</p>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-green-50 text-green-700 border border-green-100">
+<span class="material-symbols-outlined text-[14px]">verified</span> Visa
+                                    </span>
+</div>
+</div>
+<!-- Traveler 2 -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-primary/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="size-10 rounded-full bg-pink-100 dark:bg-pink-900 text-pink-600 dark:text-pink-300 flex items-center justify-center font-bold">FA</div>
+<div>
+<p class="font-bold text-[#111418] dark:text-white">Fatima Ali</p>
+<p class="text-xs text-[#637588] dark:text-gray-400">Child (8 yrs)</p>
+</div>
+</div>
+<div class="flex gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium bg-green-50 text-green-700 border border-green-100">
+<span class="material-symbols-outlined text-[14px]">verified</span> Visa
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="flex flex-col gap-6">
+<!-- Payment Summary -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">payments</span>
+<h3 class="text-lg font-bold text-[#111418] dark:text-white">Payment Summary</h3>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex justify-between text-sm">
+<span class="text-[#637588] dark:text-gray-400">Package Cost</span>
+<span class="font-medium dark:text-white">$4,200.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-[#637588] dark:text-gray-400">Visa Fees</span>
+<span class="font-medium dark:text-white">$300.00</span>
+</div>
+<div class="flex justify-between text-sm border-t border-dashed border-gray-200 dark:border-gray-700 pt-3">
+<span class="font-bold text-[#111418] dark:text-white">Total Amount</span>
+<span class="font-bold text-lg text-[#111418] dark:text-white">$4,500.00</span>
+</div>
+<div class="flex justify-between text-sm bg-green-50 dark:bg-green-900/20 p-2 rounded text-green-700 dark:text-green-400">
+<span class="font-medium">Paid</span>
+<span class="font-bold">$4,500.00</span>
+</div>
+</div>
+<button class="w-full h-10 rounded-lg bg-[#f0f2f4] dark:bg-gray-700 text-[#111418] dark:text-white font-bold text-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Download Invoice</button>
+</div>
+<!-- Documents -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary">folder_open</span>
+<h3 class="text-lg font-bold text-[#111418] dark:text-white">Your Documents</h3>
+</div>
+<div class="space-y-3">
+<!-- Doc 1 -->
+<a class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all group" href="#">
+<div class="size-8 rounded bg-red-50 text-red-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">E-Visas.pdf</p>
+<p class="text-xs text-[#637588] dark:text-gray-400">2.4 MB • 10 Oct</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary">download</span>
+</a>
+<!-- Doc 2 -->
+<a class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all group" href="#">
+<div class="size-8 rounded bg-red-50 text-red-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Flight Tickets.pdf</p>
+<p class="text-xs text-[#637588] dark:text-gray-400">1.8 MB • 11 Oct</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary">download</span>
+</a>
+<!-- Doc 3 -->
+<a class="flex items-center gap-3 p-3 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all group" href="#">
+<div class="size-8 rounded bg-blue-50 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Umrah Guide</p>
+<p class="text-xs text-[#637588] dark:text-gray-400">Travel Instructions</p>
+</div>
+<span class="material-symbols-outlined text-gray-400 group-hover:text-primary">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Support Widget -->
+<div class="bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/20 p-6 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 text-primary/10">
+<span class="material-symbols-outlined text-[100px]">support_agent</span>
+</div>
+<div class="relative z-10">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white mb-2">Need Assistance?</h3>
+<p class="text-sm text-[#637588] dark:text-gray-300 mb-4">Your dedicated agent Karim is available to help you with any questions.</p>
+<div class="flex gap-2">
+<button class="flex-1 h-10 rounded-lg bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp
+                            </button>
+<button class="size-10 rounded-lg bg-white dark:bg-gray-800 text-[#111418] dark:text-white font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center border border-gray-200 dark:border-gray-600">
+<span class="material-symbols-outlined text-[20px]">phone</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-12 py-8 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+<div class="container mx-auto px-6 text-center text-sm text-[#637588] dark:text-gray-500">
+<p>© 2024 Omrah &amp; Hajj Travel Agency. All rights reserved.</p>
+</div>
+</footer>
+</body></html>

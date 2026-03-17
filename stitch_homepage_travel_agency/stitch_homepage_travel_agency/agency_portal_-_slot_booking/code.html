@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Agency Portal - Slot Booking</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white overflow-x-hidden">
+<div class="flex flex-col min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dce0e5] dark:border-[#2d3748] bg-white dark:bg-[#1a202c] px-6 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center rounded bg-primary/10 text-primary">
+<span class="material-symbols-outlined">mosque</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em] hidden sm:block">Agency Portal</h2>
+</div>
+<div class="flex flex-1 justify-end items-center gap-6">
+<div class="hidden md:flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Support</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Settings</a>
+</div>
+<div class="h-6 w-px bg-[#dce0e5] dark:bg-[#2d3748] hidden md:block"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="text-sm font-bold leading-none">Al-Haram Travels</p>
+<p class="text-xs text-gray-500 dark:text-gray-400">ID: AG-7829</p>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="Portrait of agency representative" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDefotysZx1Nod29NgtDx9jXqt3EEYCVxUIRuVfxrfz5fhg4Cqonlzu0H41v_jzFVI96Ln8ATTF3_VStl5u5Te5nXLwgUgEkpZOuu-T0XuffrbiO2_6IjyfwZbB3FDa54PqnfCVUfPbsdGA8cwPIuCrKwxdiu_DvXIw7PaKup2W6cFY-VyGq_4_GC1L2Lgbhxue5t5QmxbhgWuUxeIxu4TQrWDMTx1vEr_D9J1F76Q5DpUp905Bqlio7W4SahfOrSxZkwp1xzpgPGOk");'></div>
+<button class="flex items-center justify-center p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 relative">
+<!-- Sidebar Navigation -->
+<aside class="hidden lg:flex w-64 flex-col border-r border-[#dce0e5] dark:border-[#2d3748] bg-white dark:bg-[#1a202c] p-4 fixed h-[calc(100vh-64px)] overflow-y-auto">
+<div class="flex flex-col gap-6">
+<!-- Agency Info -->
+<div class="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10">
+<div class="bg-primary/10 p-2 rounded-full text-primary">
+<span class="material-symbols-outlined text-[20px]">verified_user</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-primary">Status: Active</span>
+<span class="text-[10px] text-gray-500 dark:text-gray-400">Authorized Partner</span>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-sm transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="text-sm font-medium">Book Slots</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span class="text-sm font-medium">My Groups</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]">workspace_premium</span>
+<span class="text-sm font-medium">Special Packages</span>
+<span class="ml-auto bg-yellow-100 text-yellow-800 text-[10px] px-1.5 py-0.5 rounded font-bold">NEW</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all group" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+<span class="text-sm font-medium">Financials</span>
+</a>
+</nav>
+<div class="h-px bg-gray-200 dark:bg-gray-700 my-2"></div>
+<!-- Helper Links -->
+<div class="flex flex-col gap-1">
+<p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Resources</p>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-primary/5 transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                        Visa Guidelines
+                    </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-primary hover:bg-primary/5 transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-[18px]">flight</span>
+                        Airline Policies
+                    </a>
+</div>
+<!-- Security Card -->
+<div class="mt-auto bg-blue-50 dark:bg-slate-800 rounded-lg p-4 border border-blue-100 dark:border-slate-700">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-sm mt-0.5">lock</span>
+<div>
+<p class="text-xs font-bold text-blue-900 dark:text-blue-100">Secure Session</p>
+<p class="text-[10px] text-blue-700 dark:text-blue-300 mt-1">Last login: Today, 09:41 AM</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 p-4 md:p-8 bg-background-light dark:bg-background-dark min-h-screen">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div>
+<h1 class="text-2xl font-bold text-[#111418] dark:text-white">Dashboard Overview</h1>
+<p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Welcome back. You have <span class="text-primary font-bold">3 upcoming departures</span> this month.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 h-10 bg-white dark:bg-[#1a202c] border border-gray-200 dark:border-gray-700 text-[#111418] dark:text-white rounded-lg text-sm font-bold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                        Export Report
+                    </button>
+<button class="flex items-center gap-2 px-4 h-10 bg-primary text-white rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                        New Group Booking
+                    </button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+<!-- Stat 1 -->
+<div class="bg-white dark:bg-[#1a202c] p-5 rounded-xl border border-[#dce0e5] dark:border-[#2d3748] shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Active Pilgrims</p>
+<span class="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 p-1 rounded text-xs font-bold">+12%</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-bold text-[#111418] dark:text-white">142</h3>
+<span class="text-sm text-gray-400">Total</span>
+</div>
+<div class="w-full bg-gray-100 rounded-full h-1.5 mt-4 dark:bg-gray-700">
+<div class="bg-green-500 h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-white dark:bg-[#1a202c] p-5 rounded-xl border border-[#dce0e5] dark:border-[#2d3748] shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Pending Payments</p>
+<span class="material-symbols-outlined text-orange-500">warning</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-bold text-[#111418] dark:text-white">$12,450</h3>
+<span class="text-sm text-red-500 font-medium">Due in 3 days</span>
+</div>
+<div class="w-full bg-gray-100 rounded-full h-1.5 mt-4 dark:bg-gray-700">
+<div class="bg-orange-400 h-1.5 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<!-- Stat 3 -->
+<div class="bg-white dark:bg-[#1a202c] p-5 rounded-xl border border-[#dce0e5] dark:border-[#2d3748] shadow-sm relative overflow-hidden">
+<div class="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-primary/10 to-transparent"></div>
+<div class="flex items-center justify-between mb-4 relative z-10">
+<p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Next Departure</p>
+<span class="bg-primary/10 text-primary p-1 rounded text-xs font-bold">JEDDAH</span>
+</div>
+<div class="flex items-baseline gap-2 relative z-10">
+<h3 class="text-3xl font-bold text-[#111418] dark:text-white">14</h3>
+<span class="text-sm text-gray-500">Days to go</span>
+</div>
+<p class="text-xs text-gray-400 mt-4 relative z-10">Flight SV-123 • 45 Pax</p>
+</div>
+<!-- Stat 4 -->
+<div class="bg-primary p-5 rounded-xl shadow-md text-white flex flex-col justify-between relative overflow-hidden group cursor-pointer hover:bg-blue-600 transition-colors">
+<div class="absolute -right-4 -bottom-4 opacity-20 transform rotate-12 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[100px]">hotel_class</span>
+</div>
+<div>
+<p class="text-blue-100 text-sm font-medium mb-1">Exclusive Offer</p>
+<h3 class="text-xl font-bold leading-tight">Ramadan Early Bird</h3>
+<p class="text-blue-100 text-sm mt-1">Save up to 15% on Makkah hotels</p>
+</div>
+<div class="mt-4 flex items-center gap-2 text-sm font-bold">
+                        View Packages <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Content Grid: Slots Table & Filters -->
+<div class="flex flex-col xl:flex-row gap-6">
+<!-- Main Table Section -->
+<div class="flex-1 bg-white dark:bg-[#1a202c] rounded-xl border border-[#dce0e5] dark:border-[#2d3748] shadow-sm overflow-hidden flex flex-col">
+<!-- Table Header Controls -->
+<div class="p-5 border-b border-[#dce0e5] dark:border-[#2d3748] flex flex-col sm:flex-row gap-4 justify-between items-center">
+<h3 class="text-lg font-bold">Available Slots</h3>
+<div class="flex w-full sm:w-auto items-center gap-2">
+<div class="relative w-full sm:w-64">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Search airline, date..." type="text"/>
+</div>
+<button class="p-2 bg-gray-50 dark:bg-gray-800 rounded-lg text-gray-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50 dark:bg-[#252f3e] border-b border-[#dce0e5] dark:border-[#2d3748]">
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Departure</th>
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Route</th>
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Airline</th>
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Hotel Rating</th>
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">Seats</th>
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Agency Rate</th>
+<th class="p-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dce0e5] dark:divide-[#2d3748]">
+<tr class="group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<td class="p-4">
+<div class="flex flex-col">
+<span class="font-bold text-[#111418] dark:text-white">Oct 24, 2023</span>
+<span class="text-xs text-gray-500">Duration: 14 Days</span>
+</div>
+</td>
+<td class="p-4 text-sm text-[#111418] dark:text-white">LHR <span class="text-gray-400 mx-1">→</span> JED</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-6 bg-gray-200 rounded-full bg-cover bg-center" data-alt="Saudia Airlines Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAX44DVtySdnkArOQPrFSlhXZrC-5s9bo7EvZMsO5QS_OhF60ndba6QMx_XPPmP62zhnQv8OCUXVkJxJkTyGe5NivOnJkXEa1Xuf8WmHj_fezHnyDPWOyNn0hsSSL6n4rHncEQir52LfRtnSkqqS9IbEvDTRqivhQ_26WKZr9c176MlT4gnzyHTZI6XUPewfs6X6lvr182RorvvD3DaExJYV0yf8f79WbaOtL0Cp8txdlvMzVCO31GVQkpYYN_tYEt7185q-DRW3Eub");'></div>
+<span class="text-sm font-medium">Saudia</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex text-yellow-400 text-[16px]">
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+</div>
+</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            12 Left
+                                        </span>
+</td>
+<td class="p-4 text-right font-bold text-[#111418] dark:text-white">$1,850</td>
+<td class="p-4 text-right">
+<button class="bg-primary hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors">
+                                            Book Slot
+                                        </button>
+</td>
+</tr>
+<tr class="group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<td class="p-4">
+<div class="flex flex-col">
+<span class="font-bold text-[#111418] dark:text-white">Nov 02, 2023</span>
+<span class="text-xs text-gray-500">Duration: 21 Days</span>
+</div>
+</td>
+<td class="p-4 text-sm text-[#111418] dark:text-white">DXB <span class="text-gray-400 mx-1">→</span> MED</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-6 bg-gray-200 rounded-full bg-cover bg-center" data-alt="Emirates Airlines Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdVllLgMN3aTKzCGizVRGEsTCmopoFK_jL9PYvgnhefXHXpoxnHDKw9CvHyTZGHZsrNf4uFntiZpcWm9JrKFdQydlJ79xrkZXjPSXepkl5Pzkm3Fa8EglnlrE8k7nAy_k3oPYnXU2srQ2Yjns8ATqjMlqkSESWBs0OMHT9Aw1GRS5XU_Y55h9Eyif-kK9VzDjqI2DT1mUYYY8w1qUxYxqFJVxuDz_OAqzRjI7ug0Vh9OsJBGHbPxopfXr9ZUp_qmTfi7IDGCazlBZN");'></div>
+<span class="text-sm font-medium">Emirates</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex text-yellow-400 text-[16px]">
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined text-gray-300">star</span>
+</div>
+</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                            4 Left
+                                        </span>
+</td>
+<td class="p-4 text-right font-bold text-[#111418] dark:text-white">$1,620</td>
+<td class="p-4 text-right">
+<button class="bg-primary hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors">
+                                            Book Slot
+                                        </button>
+</td>
+</tr>
+<tr class="group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<td class="p-4">
+<div class="flex flex-col">
+<span class="font-bold text-[#111418] dark:text-white">Nov 15, 2023</span>
+<span class="text-xs text-gray-500">Duration: 10 Days</span>
+</div>
+</td>
+<td class="p-4 text-sm text-[#111418] dark:text-white">JFK <span class="text-gray-400 mx-1">→</span> JED</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-6 bg-gray-200 rounded-full bg-cover bg-center" data-alt="Qatar Airways Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4F_VxSsmQ2EdJ4vCrAxoIaiGf9_KZyv7QQnqT-ZiL2pe0l4wBGGCNWyafif2gmln7j7r0Ez_2DLsCzJlsepJXk2qkhre_yurpYgjjipUX20W4wX9pfw0G_z03iDw7nMEzDmXnsquuKku8v9vUJ2nkHjEVqSzWGcY09jqic9Bkogsur2_8uCWrcgLOwRux8a4dxJ3THQucKHvz6ScB4yl5ICODNemuWtXBF8KnTm6AmDQfszLKzkVIFFBXV2D88LkdW693X_wm_91e");'></div>
+<span class="text-sm font-medium">Qatar</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex text-yellow-400 text-[16px]">
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+</div>
+</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                            Waitlist
+                                        </span>
+</td>
+<td class="p-4 text-right font-bold text-[#111418] dark:text-white">$2,100</td>
+<td class="p-4 text-right">
+<button class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-gray-800 dark:text-gray-200 text-xs font-bold py-2 px-3 rounded-lg transition-colors">
+                                            Request
+                                        </button>
+</td>
+</tr>
+<tr class="group hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+<td class="p-4">
+<div class="flex flex-col">
+<span class="font-bold text-[#111418] dark:text-white">Dec 05, 2023</span>
+<span class="text-xs text-gray-500">Duration: 14 Days</span>
+</div>
+</td>
+<td class="p-4 text-sm text-[#111418] dark:text-white">MAN <span class="text-gray-400 mx-1">→</span> JED</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="size-6 bg-gray-200 rounded-full bg-cover bg-center" data-alt="Turkish Airlines Logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWmKLDU8PbTVXtBOfaML2-T_c5EgzWY4LO8oMgIaQKfpxbyUUhuMt7aW35X6CG2k56Tv33EaTF8xbjBg0jalQY-GSkWTQMHcVYCrRjFavpTOiwC4XqOF3iYBFPW7iUr70vx1epGUTsTHb5lVX0Yf6pjaEsYV5x7R8c_fX8kKt5JpyxOWwq-4EqjI2ZvXD7IuwWemxFsaFJh06ZigDw_ldhmuy6tsY_-sY4bSVDvd8wguHREJv4ID_EUMc-7gqCf_7Ofj1G4N7ru2Tv");'></div>
+<span class="text-sm font-medium">Turkish</span>
+</div>
+</td>
+<td class="p-4">
+<div class="flex text-yellow-400 text-[16px]">
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined fill-current">star</span>
+<span class="material-symbols-outlined text-gray-300">star</span>
+</div>
+</td>
+<td class="p-4 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            25 Left
+                                        </span>
+</td>
+<td class="p-4 text-right font-bold text-[#111418] dark:text-white">$1,750</td>
+<td class="p-4 text-right">
+<button class="bg-primary hover:bg-blue-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-colors">
+                                            Book Slot
+                                        </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-4 border-t border-[#dce0e5] dark:border-[#2d3748] flex justify-center">
+<button class="text-sm font-medium text-primary hover:underline">View All Available Slots</button>
+</div>
+</div>
+<!-- Right Sidebar / Widgets -->
+<div class="w-full xl:w-80 flex flex-col gap-6">
+<!-- Featured Package -->
+<div class="bg-white dark:bg-[#1a202c] rounded-xl border border-[#dce0e5] dark:border-[#2d3748] shadow-sm overflow-hidden">
+<div class="h-40 bg-cover bg-center relative" data-alt="Aerial view of the Kaaba during Umrah" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBMaqiMDDdHnADJppNyR1icpkZG6oBN_iRxlJv1YkT2Iw_b_zlOpsbKion4eRzQF5_WInggLAnVMlVwhbttTpUqoPz16FQVBLK18zcn4tvNJeoa7rVVjPpILrHava3jExSr0lHl3GqEP2W4QFUoq55FMwnutXkK6bD8mCrjbSODX7IZCVa04XSIB4R__GkwJbsksy7CN7cOy3GyKOyCMcWd67gkJDFlxUo3WFDMH1ZLFzcY6_FmmyRo8XOrzA1ayoNxKETqIycLa-la");'>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+<div class="absolute bottom-3 left-4">
+<span class="bg-yellow-500 text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-1 inline-block">Premium</span>
+<h4 class="text-white font-bold text-lg">Luxury Hajj 2024</h4>
+</div>
+</div>
+<div class="p-5">
+<p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Secure your VIP tent slots in Mina with our exclusive partner package.</p>
+<div class="flex items-center justify-between mb-4 text-sm">
+<span class="flex items-center gap-1 text-gray-500"><span class="material-symbols-outlined text-[16px]">location_on</span>Mina, Zone A</span>
+<span class="font-bold text-primary">$12,500/pp</span>
+</div>
+<button class="w-full py-2 border border-primary text-primary hover:bg-primary hover:text-white rounded-lg font-bold text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+<!-- Recent Activity -->
+<div class="bg-white dark:bg-[#1a202c] rounded-xl border border-[#dce0e5] dark:border-[#2d3748] shadow-sm p-5">
+<h4 class="font-bold text-[#111418] dark:text-white mb-4">Recent Bookings</h4>
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-start">
+<div class="bg-green-100 dark:bg-green-900/30 p-1.5 rounded-full text-green-600 dark:text-green-400 shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-[#111418] dark:text-white">Booking #9928 Confirmed</p>
+<p class="text-xs text-gray-500">Group of 5 • Oct 24 Dep.</p>
+</div>
+<span class="text-[10px] text-gray-400 ml-auto whitespace-nowrap">2m ago</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="bg-yellow-100 dark:bg-yellow-900/30 p-1.5 rounded-full text-yellow-600 dark:text-yellow-400 shrink-0">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-[#111418] dark:text-white">Payment Pending</p>
+<p class="text-xs text-gray-500">Invoice #INV-203</p>
+</div>
+<span class="text-[10px] text-gray-400 ml-auto whitespace-nowrap">1h ago</span>
+</div>
+<div class="flex gap-3 items-start">
+<div class="bg-blue-100 dark:bg-blue-900/30 p-1.5 rounded-full text-blue-600 dark:text-blue-400 shrink-0">
+<span class="material-symbols-outlined text-[16px]">add_task</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-[#111418] dark:text-white">New Request</p>
+<p class="text-xs text-gray-500">Upgrade to 5-star hotel</p>
+</div>
+<span class="text-[10px] text-gray-400 ml-auto whitespace-nowrap">4h ago</span>
+</div>
+</div>
+<button class="w-full mt-4 text-xs font-medium text-gray-500 hover:text-primary text-center">View All Activity</button>
+</div>
+</div>
+</div>
+<!-- Login Section (Simulated 'Public' View below for demo purposes, normally a separate page but included as per single page request context) -->
+<div class="mt-16 pt-10 border-t border-gray-200 dark:border-gray-700">
+<p class="text-xs font-bold text-gray-400 uppercase tracking-widest text-center mb-8">Login View (For Demonstration)</p>
+<div class="bg-white dark:bg-[#1a202c] rounded-2xl shadow-xl overflow-hidden max-w-5xl mx-auto flex flex-col md:flex-row min-h-[500px]">
+<!-- Left Image Side -->
+<div class="w-full md:w-1/2 bg-cover bg-center relative p-10 flex flex-col justify-between" data-alt="Serene view of Masjid Nabawi umbrellas" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDYDxDyXMA_zDo19-N9s3QKum5nhXwNSkTXAEpHNLat960LQPsIIxQ0MBZ44BG0Fs6g5gSy31MQxiWs4-3LWeXHnVmkDJ2cNMXNaa4jMfGeljC-rrEaEDVuKLPHmrRK7lhSTjQdiDP5ODA5jvDHKesI1Fjhyph_x_PuFmuUwCsZkeVTHLzRY6xVxXgctwLpnw8AlxOE6eOrn5CgKZxQ3XT9Pebrj4_SSCWYmL13Ud0msVQ5qKqs3_TrgqFoROfYECnkyaqJXMGyNOFd");'>
+<div class="absolute inset-0 bg-primary/40 mix-blend-multiply"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+<div class="relative z-10">
+<div class="size-10 flex items-center justify-center rounded bg-white text-primary mb-6">
+<span class="material-symbols-outlined">mosque</span>
+</div>
+<h2 class="text-white text-4xl font-black leading-tight tracking-[-0.033em]">Partner Agency Portal</h2>
+</div>
+<div class="relative z-10">
+<p class="text-white/90 text-lg font-medium leading-normal mb-2">Manage your Omrah &amp; Hajj groups efficiently.</p>
+<p class="text-white/70 text-sm">Access exclusive slots, manage bookings, and track payments in one secure place.</p>
+</div>
+</div>
+<!-- Right Form Side -->
+<div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+<div class="mb-8">
+<h3 class="text-2xl font-bold text-[#111418] dark:text-white mb-2">Login to Account</h3>
+<p class="text-gray-500 dark:text-gray-400 text-sm">Please enter your agency credentials to continue.</p>
+</div>
+<form class="flex flex-col gap-4">
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Agency ID / Email</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">badge</span>
+<input class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Enter your ID" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 material-symbols-outlined text-[20px]">lock</span>
+<input class="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="••••••••" type="password"/>
+</div>
+<div class="flex justify-end mt-1">
+<a class="text-xs text-primary font-semibold hover:underline" href="#">Forgot password?</a>
+</div>
+</div>
+<button class="mt-2 w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-md" type="button">
+                                Login securely
+                            </button>
+</form>
+<div class="mt-8 pt-6 border-t border-gray-100 dark:border-gray-700 flex flex-col items-center gap-4">
+<p class="text-sm text-gray-500">Don't have an agency account? <a class="text-primary font-bold hover:underline" href="#">Apply for Partnership</a></p>
+<div class="flex items-center gap-2 text-gray-400 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-full text-xs">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+<span>Official Hajj Ministry Authorized Partner</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

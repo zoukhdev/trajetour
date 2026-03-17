@@ -7,6 +7,25 @@ export const loginSchema = z.object({
     password: z.string().min(6)
 });
 
+
+
+export const registerAgencySchema = z.object({
+    agencyName: z.string().min(2),
+    email: z.string().email(),
+    phone: z.string().min(8),
+    password: z.string().min(6),
+    address: z.string().optional(),
+    contactName: z.string().min(2)
+});
+
+export const registerSchema = z.object({
+    firstName: z.string().min(2),
+    lastName: z.string().min(2),
+    email: z.string().email(),
+    phone: z.string().min(8),
+    password: z.string().min(6)
+});
+
 export const clientSchema = z.object({
     fullName: z.string().min(2).max(255),
     // Relaxed mobile number validation to avoid blocking valid numbers
@@ -19,6 +38,7 @@ export const clientSchema = z.object({
 export const orderSchema = z.object({
     clientId: z.string(),
     agencyId: z.string().nullable().optional(),
+    offerId: z.string().uuid().optional(),
     items: z.array(z.object({
         id: z.string(),
         description: z.string(),
@@ -82,9 +102,16 @@ export const agencySchema = z.object({
     currentCredit: z.number().default(0)
 });
 
+export const multiTenantAgencySchema = z.object({
+    name: z.string().min(2).max(255),
+    subdomain: z.string().min(2).max(100).regex(/^[a-z0-9-]+$/, "Subdomain must contain only lowercase letters, numbers, and hyphens"),
+    dbUrl: z.string().url(),
+    ownerEmail: z.string().email().optional()
+});
+
 export const offerSchema = z.object({
     title: z.string().min(2).max(255),
-    type: z.enum(['Omra', 'Hajj', 'Voyage Organisé', 'Vols', 'Visa']),
+    type: z.enum(['Omra', 'Haj', 'Voyage Organisé', 'Vols', 'Visa']),
     destination: z.string().min(2),
     price: z.number().nonnegative().default(0),
     startDate: z.string(),

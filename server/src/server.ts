@@ -7,6 +7,8 @@ import { testConnection, pool } from './config/database.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 
 // Import routes
+// Registered routes
+// TRIGGER_RESTART: 2026-01-05
 import authRoutes from './routes/auth.js';
 import clientsRoutes from './routes/clients.js';
 import ordersRoutes from './routes/orders.js';
@@ -22,6 +24,11 @@ import bankAccountRoutes from './routes/bankAccounts.js';
 import suppliersRouter from './routes/suppliers.js';
 import supplierContractsRoutes from './routes/supplierContracts.js';
 import auditLogsRouter from './routes/auditLogs.js';
+import reportsRoutes from './routes/reports.js';
+import notificationsRoutes from './routes/notifications.js';
+import offerHotelsRoutes from './routes/offerHotels.js';
+import passengersRoutes from './routes/passengers.js';
+import masterRoutes from './routes/master.js';
 
 const app = express();
 
@@ -106,31 +113,98 @@ app.get('/api/migrate-rooms', async (req, res) => {
     }
 });
 
-// TEMPORARY: Migration Route for Transactions Table
-app.get('/api/migrate-transactions', async (req, res) => {
+// TEMPORARY: Migration Route for Client Auth
+app.get('/api/migrate-auth', async (req, res) => {
     try {
-        console.log('🔄 Starting Transactions migration from API...');
+        console.log('🔄 Starting Client Auth migration from API...');
         const client = await pool.connect();
         try {
+            await client.query('BEGIN');
+
+            // 1. Add user_id to clients
             await client.query(`
-                ALTER TABLE transactions 
-                ADD COLUMN IF NOT EXISTS currency VARCHAR(3) DEFAULT 'DZD',
-                ADD COLUMN IF NOT EXISTS amount_dzd DECIMAL(12,2),
-                ADD COLUMN IF NOT EXISTS payment_id UUID REFERENCES payments(id) ON DELETE CASCADE;
-                
-                -- Update existing rows: set amount_dzd = amount if null
-                UPDATE transactions SET amount_dzd = amount WHERE amount_dzd IS NULL;
-                
-                -- Now make amount_dzd NOT NULL
-                ALTER TABLE transactions ALTER COLUMN amount_dzd SET NOT NULL;
+                ALTER TABLE clients 
+                ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE SET NULL;
             `);
-            res.send('✅ Transactions table updated successfully: Added currency, amount_dzd, and payment_id columns.');
+
+            // 2. Update users role check to include 'client'
+            // Need to drop constraint and re-add it. Constraint name is likely 'users_role_check'
+            await client.query(`
+                ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+            `);
+            await client.query(`
+                ALTER TABLE users ADD CONSTRAINT users_role_check 
+                CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'));
+            `);
+
+            await client.query('COMMIT');
+            res.send('✅ Client Auth migration successful: Added user_id to clients and updated role check.');
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
         } finally {
             client.release();
         }
     } catch (error: any) {
         console.error('❌ Migration failed:', error);
         res.status(500).send('Migration failed: ' + error.message);
+    }
+});
+
+// TEMPORARY: Migration Route for Master Multi-Tenancy (Agencies Table)
+app.get('/api/migrate-master', async (req, res) => {
+    try {
+        console.log('🔄 Starting Master DB migration (Agencies Table)...');
+        const client = await pool.connect();
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS agencies (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    name VARCHAR(255) NOT NULL,
+                    subdomain VARCHAR(100) UNIQUE NOT NULL,
+                    db_url TEXT NOT NULL,
+                    status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'SUSPENDED', 'PENDING')),
+                    owner_email VARCHAR(255),
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+                
+                CREATE INDEX IF NOT EXISTS idx_agencies_subdomain ON agencies(subdomain);
+            `);
+            res.send('✅ Master DB migration successful: Agencies table and subdomain index created.');
+        } finally {
+            client.release();
+        }
+    } catch (error: any) {
+        console.error('❌ Migration failed:', error);
+        res.status(500).send('Migration failed: ' + error.message);
+    }
+});
+
+// TEMPORARY: Migration Route for Agency Auth
+app.get('/api/migrate-agency-auth', async (req, res) => {
+    try {
+        console.log('🔄 Starting Agency Auth Migration...');
+        const client = await pool.connect();
+        try {
+            // 1. Add user_id to agencies if not exists
+            await client.query(`
+                ALTER TABLE agencies 
+                ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE SET NULL;
+            `);
+
+            // 2. Update Role Check Constraint
+            await client.query(`ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check`);
+            await client.query(`ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'))`);
+
+            console.log('✅ Agency Auth Schema Migration Completed');
+            res.send('Agency Auth Schema Migration Completed');
+        } finally {
+            client.release();
+        }
+    } catch (error: any) {
+        console.error('❌ Migration Failed:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -147,13 +221,13 @@ app.get('/api/seed-admin', async (req, res) => {
              VALUES ($1, $2, $3, $4, $5::jsonb)
              ON CONFLICT (email) 
              DO UPDATE SET password_hash = EXCLUDED.password_hash, permissions = EXCLUDED.permissions`,
-            ['aimen@wrtour.com', hashedPassword, 'Aimen', 'admin', permissions]
+            ['aimen@trajetour.com', hashedPassword, 'Aimen', 'admin', permissions]
         );
 
         console.log('✅ Admin user created/updated successfully.');
         res.status(200).json({
             success: true,
-            message: 'Admin User (aimen@wrtour.com) Created/Reset Successfully!',
+            message: 'Admin User (aimen@trajetour.com) Created/Reset Successfully!',
             password: 'Aimen@2025'
         });
     } catch (error: any) {
@@ -256,7 +330,8 @@ app.use('/api/clients', clientsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/rooms', roomsRoutes);
-app.use('/api/offers', offersRoutes);
+app.use('/api/offers', offerHotelsRoutes); // Hotel management for offers (Specific first)
+app.use('/api/offers', offersRoutes);      // Generic offers CRUD (General second)
 app.use('/api/agencies', agencyRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/users', userRoutes);
@@ -266,6 +341,10 @@ app.use('/api/suppliers', suppliersRouter);
 app.use('/api/suppliers', supplierContractsRoutes); // Handle /api/suppliers/:id/contracts
 app.use('/api/supplier-contracts', supplierContractsRoutes);
 app.use('/api/audit-logs', auditLogsRouter);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/passengers', passengersRoutes);
+app.use('/api/master', masterRoutes);
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
 // They need to be created following the clients.ts template
 
@@ -421,9 +500,9 @@ app.listen(PORT, async () => {
                      VALUES ($1, $2, $3, $4, $5::jsonb)
                      ON CONFLICT (email) 
                      DO UPDATE SET password_hash = EXCLUDED.password_hash, permissions = EXCLUDED.permissions`,
-                    ['aimen@wrtour.com', hashedPassword, 'Aimen', 'admin', permissions]
+                    ['aimen@trajetour.com', hashedPassword, 'Aimen', 'admin', permissions]
                 );
-                console.log('✅ Admin user verified/created (aimen@wrtour.com).');
+                console.log('✅ Admin user verified/created (aimen@trajetour.com).');
             } catch (authErr) {
                 console.error('⚠️ Failed to create admin user:', authErr);
             }
@@ -442,7 +521,7 @@ app.listen(PORT, async () => {
                 } catch (e) { /* ignore */ }
 
                 await pool.query(`
-                    ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('admin', 'staff', 'caisser', 'agent'));
+                    ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'));
                 `);
 
                 console.log('✅ Users table schema updated (added code column and agent role).');
@@ -466,6 +545,29 @@ app.listen(PORT, async () => {
             console.error('❌ Offers table migration failed:', err);
         }
 
+        // 10. Create/Update offer_hotels table for age-based pricing from rooming list
+        try {
+            await pool.query(`
+                -- Drop and recreate for clean structure
+                DROP TABLE IF EXISTS offer_hotels CASCADE;
+                
+                CREATE TABLE offer_hotels (
+                    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                    offer_id UUID NOT NULL REFERENCES offers(id) ON DELETE CASCADE,
+                    room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(offer_id, room_id)
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_offer_hotels_offer_id ON offer_hotels(offer_id);
+                CREATE INDEX IF NOT EXISTS idx_offer_hotels_room_id ON offer_hotels(room_id);
+            `);
+
+            console.log('✅ Offer hotels table created/updated to link with rooming list');
+        } catch (error) {
+            console.error('❌ Offer hotels migration error:', error);
+        }
+
         // 6. Update Payments Table checks
         try {
             await pool.query(`
@@ -482,6 +584,18 @@ app.listen(PORT, async () => {
             console.log('✅ Transactions table columns verified (payment_id).');
         } catch (err) {
             console.error('❌ Payments/Transactions table migration failed:', err);
+        }
+
+        // 8.5. Add Audit Trail columns to payments table
+        try {
+            await pool.query(`
+                ALTER TABLE payments 
+                ADD COLUMN IF NOT EXISTS validated_by UUID REFERENCES users(id),
+                ADD COLUMN IF NOT EXISTS validated_at TIMESTAMP WITH TIME ZONE;
+            `);
+            console.log('✅ Payments audit trail columns verified (validated_by, validated_at).');
+        } catch (err) {
+            console.error('❌ Payments audit trail migration failed:', err);
         }
 
         // 8. Create supplier_contracts table

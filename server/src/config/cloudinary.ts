@@ -13,7 +13,7 @@ export { cloudinary };
 // Helper function to upload file
 export async function uploadToCloudinary(
     file: any,
-    folder: string = 'wahat-tour'
+    folder: string = 'trajetour'
 ): Promise<{ url: string; publicId: string }> {
     try {
         const result = await cloudinary.uploader.upload(file.path, {

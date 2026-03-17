@@ -87,19 +87,49 @@ const mapOrderResponse = (row: any) => ({
     payments: row.payments || []
 });
 
-// Get all orders with pagination and related data
+// Get all orders with pagination and role-based filtering
 router.get('/',
     authMiddleware,
-    requirePermission('manage_business'),
     async (req: AuthRequest, res, next) => {
         try {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 20;
             const offset = (page - 1) * limit;
 
-            // All authenticated users can see all orders (for collaboration & reporting)
-            const countResult = await pool.query('SELECT COUNT(*) FROM orders');
+            const { clientId: queryClientId, agencyId: queryAgencyId } = req.query;
+
+            let filterClause = 'WHERE 1=1';
+            const params: any[] = [];
+
+            // Role-based automatic filtering
+            if (req.user?.role === 'client') {
+                filterClause += ` AND o.client_id = $${params.length + 1}`;
+                params.push(req.user.clientId);
+            } else if (req.user?.role === 'agent') {
+                filterClause += ` AND o.agency_id = $${params.length + 1}`;
+                params.push(req.user.agencyId);
+            } else if (req.user?.role === 'admin' || req.user?.role === 'staff' || req.user?.permissions.includes('manage_business')) {
+                // Admin/Staff/Business Managers can use query filters
+                if (queryClientId) {
+                    filterClause += ` AND o.client_id = $${params.length + 1}`;
+                    params.push(queryClientId);
+                }
+                if (queryAgencyId) {
+                    filterClause += ` AND o.agency_id = $${params.length + 1}`;
+                    params.push(queryAgencyId);
+                }
+            } else {
+                // Other roles (e.g. caisser) might need specific filters or manage_business permission
+                return res.status(403).json({ error: 'Insufficient permissions to view orders' });
+            }
+
+            // Get total count for pagination
+            const countResult = await pool.query(`SELECT COUNT(*) FROM orders o ${filterClause}`, params);
             const total = parseInt(countResult.rows[0].count);
+
+            // Add pagination params
+            params.push(limit);
+            params.push(offset);
 
             const result = await pool.query(
                 `SELECT o.*, 
@@ -124,10 +154,11 @@ router.get('/',
                  FROM orders o
                  LEFT JOIN clients c ON o.client_id = c.id
                  LEFT JOIN payments p ON o.id = p.order_id
+                 ${filterClause}
                  GROUP BY o.id, c.full_name, c.mobile_number
                  ORDER BY o.created_at DESC
-                 LIMIT $1 OFFSET $2`,
-                [limit, offset]
+                 LIMIT $${params.length - 1} OFFSET $${params.length}`,
+                params
             );
 
             res.json({
@@ -139,6 +170,97 @@ router.get('/',
                     totalPages: Math.ceil(total / limit)
                 }
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+// Get orders with missing documents (for agency document tracking) - MUST BE BEFORE /:id route
+router.get('/missing-documents',
+    authMiddleware,
+    async (req: AuthRequest, res, next) => {
+        try {
+            let filterClause = 'WHERE 1=1';
+            const params: any[] = [];
+
+            // Role-based filtering
+            if (req.user?.role === 'agent') {
+                filterClause += ` AND o.agency_id = $${params.length + 1}`;
+                params.push(req.user.agencyId);
+            } else if (req.user?.role !== 'admin' && req.user?.role !== 'staff') {
+                return res.status(403).json({ error: 'Access denied' });
+            }
+
+            // Only get active orders (not cancelled)
+            filterClause += ` AND o.status NOT IN ('Cancelled', 'Completed')`;
+
+            const result = await pool.query(
+                `SELECT 
+                    o.id,
+                    o.reference,
+                    o.client_id,
+                    o.passengers,
+                    o.items,
+                    o.created_at,
+                    c.full_name as client_name,
+                    c.mobile_number as client_mobile
+                 FROM orders o
+                 LEFT JOIN clients c ON o.client_id = c.id
+                 ${filterClause}
+                 ORDER BY o.created_at DESC`,
+                params
+            );
+
+            // Process orders to find missing documents
+            const ordersWithMissingDocs = result.rows
+                .map(order => {
+                    const passengers = order.passengers || [];
+                    const items = order.items || [];
+
+                    // Find package start date from items
+                    let departureDate = null;
+                    if (items.length > 0 && items[0].start_date) {
+                        departureDate = new Date(items[0].start_date);
+                    }
+
+                    // Calculate days until departure
+                    let daysUntilDeparture = null;
+                    if (departureDate) {
+                        const today = new Date();
+                        const diffTime = departureDate.getTime() - today.getTime();
+                        daysUntilDeparture = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    }
+
+                    // Check for missing documents
+                    const missingDocs: string[] = [];
+
+                    for (const passenger of passengers) {
+                        // Check which documents are missing
+                        if (!passenger.passportNumber || passenger.passportNumber === '') {
+                            if (!missingDocs.includes('passport')) missingDocs.push('passport');
+                        }
+                        if (!passenger.photoUrl || passenger.photoUrl === '') {
+                            if (!missingDocs.includes('photo')) missingDocs.push('photo');
+                        }
+
+                    }
+
+                    return {
+                        id: order.id,
+                        reference: order.reference,
+                        clientName: order.client_name,
+                        clientMobile: order.client_mobile,
+                        passengerCount: passengers.length,
+                        missingDocuments: missingDocs,
+                        daysUntilDeparture,
+                        departureDate,
+                        createdAt: order.created_at
+                    };
+                })
+                .filter(order => order.missingDocuments.length > 0); // Only return orders with missing docs
+
+            res.json({ orders: ordersWithMissingDocs });
         } catch (error) {
             next(error);
         }
@@ -188,7 +310,15 @@ router.get('/:id',
 
             // Fetch related room details for passengers
             let relatedRooms: any[] = [];
-            const passengers = orderRow.passengers || [];
+            let passengers = orderRow.passengers || [];
+            // Ensure all passengers have IDs (for backward compatibility with old data)
+            const hasMissingIds = (passengers || []).some((p: any) => !p.id);
+            if (hasMissingIds) {
+                const enrichedPassengers = (passengers || []).map((p: any) => ({ ...p, id: p.id || crypto.randomUUID() }));
+                // Persist back to DB immediately so document uploads work
+                await pool.query('UPDATE orders SET passengers = $1 WHERE id = $2', [JSON.stringify(enrichedPassengers), req.params.id]);
+                passengers = enrichedPassengers;
+            }
             const roomIds = passengers
                 .map((p: any) => p.assignedRoomId)
                 .filter((id: string) => id); // Filter valid IDs
@@ -205,7 +335,8 @@ router.get('/:id',
             // Enrich response
             const response = {
                 ...mapOrderResponse(orderRow),
-                relatedRooms // Send map or array
+                passengers, // Use enriched passengers with IDs
+                relatedRooms
             };
 
             res.json(response);
@@ -229,26 +360,72 @@ router.post('/',
         try {
             await client.query('BEGIN');
 
-            const { clientId, agencyId, items, passengers, hotels, totalAmount, totalAmountDZD, notes } = req.body;
+            const { clientId, agencyId, items, passengers, hotels, totalAmount, totalAmountDZD, notes, offerId } = req.body;
 
-            console.log('📦 Create Order Request:', JSON.stringify({ clientId, agencyId, totalAmount, totalAmountDZD, passengersCount: passengers?.length, hotelCount: hotels?.length }, null, 2));
+            console.log('📦 Create Order Request:', JSON.stringify({ clientId, agencyId, offerId, passengersCount: passengers?.length }, null, 2));
 
-            // SECURITY FIX: Server-side price calculation
-            const calculateOrderTotal = (items: any[]): number => {
-                if (!items || !Array.isArray(items)) return 0;
-                return items.reduce((sum, item) => {
-                    const price = parseFloat(item.price) || 0;
-                    const quantity = parseInt(item.quantity) || 1;
-                    return sum + (price * quantity);
-                }, 0);
-            };
+            let serverCalculatedTotal = 0;
+            let enrichedPassengers = passengers || [];
 
-            // Calculate expected total from items
-            const serverCalculatedTotal = calculateOrderTotal(items);
+            // NEW: Hotel-based age pricing calculation
+            if (offerId && passengers && passengers.length > 0) {
+                // Import age calculation utilities
+                const { enrichPassengersWithPricing, calculateOrderTotal } = await import('../utils/ageCalculation.js');
+
+                // Fetch offer hotels with pricing from linked rooms
+                const hotelsResult = await client.query(
+                    `SELECT 
+                        r.price,
+                        r.pricing
+                     FROM offer_hotels oh
+                     JOIN rooms r ON oh.room_id = r.id
+                     WHERE oh.offer_id = $1`,
+                    [offerId]
+                );
+
+                // Map results to flat format expected by calculation utils
+                const offerHotels = hotelsResult.rows.map(row => ({
+                    infant_price: row.pricing?.infant || 0,
+                    child_price: row.pricing?.child || 0,
+                    adult_price: row.pricing?.adult || parseFloat(row.price) || 0
+                }));
+
+                if (offerHotels.length > 0) {
+                    // Calculate prices based on passenger ages
+                    enrichedPassengers = enrichPassengersWithPricing(passengers, offerHotels);
+                    serverCalculatedTotal = calculateOrderTotal(passengers, offerHotels);
+
+                    console.log('✅ Using hotel-based age pricing (from rooming list)');
+                    console.log(`📊 Price breakdown: ${enrichedPassengers.map((p: any) => `${p.name} (${p.age_category}): ${p.price} DA`).join(', ')}`);
+                } else {
+                    // Fallback to items pricing if no hotels assigned
+                    console.log('⚠️ No hotels assigned to offer, using items pricing');
+                    const calculateItemsTotal = (items: any[]): number => {
+                        if (!items || !Array.isArray(items)) return 0;
+                        return items.reduce((sum, item) => {
+                            const price = parseFloat(item.unitPrice || item.price) || 0;
+                            const quantity = parseInt(item.quantity) || 1;
+                            return sum + (price * quantity);
+                        }, 0);
+                    };
+                    serverCalculatedTotal = calculateItemsTotal(items);
+                }
+            } else {
+                // Legacy: Calculate from items if no offerId or passengers
+                const calculateItemsTotal = (items: any[]): number => {
+                    if (!items || !Array.isArray(items)) return 0;
+                    return items.reduce((sum, item) => {
+                        const price = parseFloat(item.unitPrice || item.price) || 0;
+                        const quantity = parseInt(item.quantity) || 1;
+                        return sum + (price * quantity);
+                    }, 0);
+                };
+                serverCalculatedTotal = calculateItemsTotal(items);
+            }
 
             // Validate client-provided total matches server calculation  
             // Allow 1 DZD tolerance for rounding
-            if (Math.abs(serverCalculatedTotal - totalAmount) > 1) {
+            if (totalAmount && Math.abs(serverCalculatedTotal - totalAmount) > 1) {
                 throw new AppError(400,
                     `Price mismatch detected. Server calculated: ${serverCalculatedTotal.toFixed(2)} DZD, Client provided: ${totalAmount.toFixed(2)} DZD`
                 );
@@ -256,9 +433,15 @@ router.post('/',
 
             console.log(`✅ Price validation passed: ${serverCalculatedTotal.toFixed(2)} DZD`);
 
+            // Assign unique IDs to all passengers if they don't have one
+            enrichedPassengers = enrichedPassengers.map((p: any) => ({
+                ...p,
+                id: p.id || crypto.randomUUID()
+            }));
+
             // Validate Room Assignments
-            if (passengers && passengers.length > 0) {
-                await validateRoomAssignments(client, passengers);
+            if (enrichedPassengers && enrichedPassengers.length > 0) {
+                await validateRoomAssignments(client, enrichedPassengers);
             }
 
             const reference = generateShortId();
@@ -275,10 +458,10 @@ router.post('/',
                     clientId,
                     agencyId || null,
                     JSON.stringify(items),
-                    JSON.stringify(passengers || []),
+                    JSON.stringify(enrichedPassengers),
                     JSON.stringify(hotels || []),
-                    totalAmount,
-                    totalAmountDZD || totalAmount,
+                    serverCalculatedTotal, // Use server-calculated total
+                    totalAmountDZD || serverCalculatedTotal,
                     'Non payé',
                     req.user!.id,
                     notes,
@@ -319,9 +502,15 @@ router.put('/:id',
 
             const { items, passengers, hotels, totalAmount, totalAmountDZD, notes, status } = req.body;
 
+            // Assign unique IDs to passengers if they don't have one
+            const enrichedPassengers = (passengers || []).map((p: any) => ({
+                ...p,
+                id: p.id || crypto.randomUUID()
+            }));
+
             // Validate Room Assignments
-            if (passengers && passengers.length > 0) {
-                await validateRoomAssignments(client, passengers, req.params.id);
+            if (enrichedPassengers && enrichedPassengers.length > 0) {
+                await validateRoomAssignments(client, enrichedPassengers, req.params.id);
             }
 
             const result = await client.query(
@@ -332,7 +521,7 @@ router.put('/:id',
                  RETURNING *`,
                 [
                     JSON.stringify(items),
-                    JSON.stringify(passengers || []),
+                    JSON.stringify(enrichedPassengers),
                     JSON.stringify(hotels || []),
                     totalAmount,
                     totalAmountDZD || totalAmount,

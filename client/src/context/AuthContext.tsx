@@ -4,7 +4,7 @@ import { authAPI } from '../services/api';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<boolean>;
+    login: (email: string, password: string) => Promise<User | null>;
     logout: () => void;
     isAuthenticated: boolean;
     hasPermission: (permission: Permission) => boolean;
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Don't check auth if already on login page
-        if (window.location.pathname === '/login') {
+        if (window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register')) {
             setLoading(false);
             return;
         }
@@ -30,12 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 const userData = await authAPI.getCurrentUser();
                 setUser(userData);
             } catch (error: any) {
-                console.error('❌ CheckAuth Failed:', {
-                    message: error.message,
-                    status: error.response?.status,
-                    url: window.location.href
-                });
-                // User not authenticated - silently fail
+                // ... existing error handling
                 setUser(null);
             } finally {
                 setLoading(false);
@@ -45,14 +40,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkAuth();
     }, []);
 
-    const login = async (email: string, password: string): Promise<boolean> => {
+    const login = async (email: string, password: string): Promise<User | null> => {
         try {
             const userData = await authAPI.login(email, password);
             setUser(userData);
-            return true;
+            return userData;
         } catch (error) {
             console.error('Login failed:', error);
-            return false;
+            return null;
         }
     };
 
@@ -68,7 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const hasPermission = (permission: Permission): boolean => {
         if (!user) return false;
-        if (user.role === 'admin') return true; // Admin has all permissions
+        if (user.role === 'admin' || user.role === 'super_admin') return true; // Admin and Super Admin have all permissions
         // Safely check permissions with fallback to empty array
         return Array.isArray(user.permissions) && user.permissions.includes(permission);
     };

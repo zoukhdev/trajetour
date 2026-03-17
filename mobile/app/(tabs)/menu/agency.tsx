@@ -25,8 +25,8 @@ export default function AgencySettingsScreen() {
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState<AgencyDetails>({
-        name: 'Wahat Alrajaa',
-        email: 'contact@wahatalrajaa.com',
+        name: 'Trajetour',
+        email: 'contact@trajetour.com',
         phone: '0550 00 00 00',
         address: 'Alger, Algérie',
         logo: '',

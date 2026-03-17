@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notification Settings - Agency Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        /* Custom Toggle Switch Style */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #1773cf;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #1773cf;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e5e7eb] dark:border-b-[#2a3441] bg-white dark:bg-[#1a222d] px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">mosque</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Agency Portal</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-sm font-medium leading-normal text-[#637588] hover:text-primary dark:text-[#93a2b7] dark:hover:text-white" href="#">Dashboard</a>
+<a class="text-sm font-medium leading-normal text-[#637588] hover:text-primary dark:text-[#93a2b7] dark:hover:text-white" href="#">Bookings</a>
+<a class="text-sm font-medium leading-normal text-[#637588] hover:text-primary dark:text-[#93a2b7] dark:hover:text-white" href="#">Travelers</a>
+<a class="text-sm font-medium leading-normal text-[#637588] hover:text-primary dark:text-[#93a2b7] dark:hover:text-white" href="#">Reports</a>
+<a class="text-sm font-medium leading-normal text-primary" href="#">Settings</a>
+</nav>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e0e2e4] dark:hover:bg-[#354150] text-[#111418] dark:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e0e2e4] dark:hover:bg-[#354150] text-[#111418] dark:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-white dark:ring-[#1a222d]" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDcJCPYpBm7KyTNQTd1beQte9lt2NRP4f8mSDJtiaHvSKSHDyui49uNBQbnZiHecDe2kkzGqjycNpUYAjSaRHbIpMod0cyv2Y4p_ZREqvvlKIKmnJ6aKpPkyzWUkmzC4YRdQnIBMazVnXLTIzQv6OjJZA-qj87kTqzsV7nx4EaRb8vPdZA8rvB21OpP6O-qcNHsVd6ni1ESGNlu_muoXrsM_BUaRxrvY1ckxmpKSUAYvF-T_U_sepngvaw8Ba4Q3MEHZhQWVZ9v1yCx");'></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- Side Navigation -->
+<aside class="hidden lg:flex w-72 flex-col border-r border-[#e5e7eb] dark:border-[#2a3441] bg-white dark:bg-[#1a222d] pt-8 pb-4 px-4 sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col px-2">
+<h1 class="text-base font-bold leading-normal mb-1">Agency Settings</h1>
+<p class="text-[#637588] dark:text-[#93a2b7] text-xs font-normal">Manage preferences</p>
+</div>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#93a2b7] hover:text-[#111418] dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span class="text-sm font-medium">General Profile</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#93a2b7] hover:text-[#111418] dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span class="text-sm font-medium">Security</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary dark:text-primary" href="#">
+<span class="material-symbols-outlined text-[20px] filled">notifications</span>
+<span class="text-sm font-bold">Notification Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#93a2b7] hover:text-[#111418] dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+<span class="text-sm font-medium">Payment Methods</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#93a2b7] hover:text-[#111418] dark:hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+<span class="text-sm font-medium">Team Members</span>
+</a>
+</div>
+<div class="mt-auto px-2">
+<div class="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
+<h3 class="text-sm font-bold text-primary mb-1">Need Help?</h3>
+<p class="text-xs text-[#637588] dark:text-[#93a2b7] mb-3">Contact support if you're having issues with notifications.</p>
+<button class="text-xs font-bold text-primary hover:underline">Contact Support</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col p-6 lg:p-10 max-w-5xl mx-auto w-full">
+<!-- Page Header -->
+<div class="mb-8">
+<h1 class="text-3xl font-black leading-tight tracking-tight mb-2">Notification Settings</h1>
+<p class="text-[#637588] dark:text-[#93a2b7] text-lg max-w-2xl">
+                        Manage how and when you receive updates about your bookings, traveler documents, and system alerts.
+                    </p>
+</div>
+<!-- Content Groups -->
+<div class="flex flex-col gap-6 mb-24">
+<!-- Section 1: Booking & Slots -->
+<div class="bg-white dark:bg-[#1a222d] rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] overflow-hidden">
+<div class="px-6 py-4 border-b border-[#e5e7eb] dark:border-[#2a3441]">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+                                Booking &amp; Slots
+                            </h2>
+</div>
+<div class="divide-y divide-[#e5e7eb] dark:divide-[#2a3441]">
+<!-- Item -->
+<div class="flex items-center justify-between p-6 hover:bg-[#f9fafb] dark:hover:bg-[#232d3b] transition-colors">
+<div class="flex flex-col pr-8">
+<p class="text-base font-semibold mb-1">New Slot Availability</p>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm">Get alerted instantly when new Umrah or Hajj slots become available for booking.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Item -->
+<div class="flex items-center justify-between p-6 hover:bg-[#f9fafb] dark:hover:bg-[#232d3b] transition-colors">
+<div class="flex flex-col pr-8">
+<p class="text-base font-semibold mb-1">Booking Status Changes</p>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm">Receive updates when a booking is confirmed, modified, or cancelled.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Section 2: Document Management -->
+<div class="bg-white dark:bg-[#1a222d] rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] overflow-hidden">
+<div class="px-6 py-4 border-b border-[#e5e7eb] dark:border-[#2a3441]">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">folder_open</span>
+                                Document Management
+                            </h2>
+</div>
+<div class="divide-y divide-[#e5e7eb] dark:divide-[#2a3441]">
+<!-- Item -->
+<div class="flex items-center justify-between p-6 hover:bg-[#f9fafb] dark:hover:bg-[#232d3b] transition-colors">
+<div class="flex flex-col pr-8">
+<div class="flex items-center gap-2 mb-1">
+<p class="text-base font-semibold">Traveler Document Uploads</p>
+<span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">High Priority</span>
+</div>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm">Notify me when a traveler uploads a new passport, visa, or health record.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Item -->
+<div class="flex items-center justify-between p-6 hover:bg-[#f9fafb] dark:hover:bg-[#232d3b] transition-colors">
+<div class="flex flex-col pr-8">
+<p class="text-base font-semibold mb-1">Verification Status</p>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm">Alerts when submitted documents are approved or rejected by the central agency.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Section 3: Communication -->
+<div class="bg-white dark:bg-[#1a222d] rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] overflow-hidden">
+<div class="px-6 py-4 border-b border-[#e5e7eb] dark:border-[#2a3441]">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">chat</span>
+                                Communication
+                            </h2>
+</div>
+<div class="divide-y divide-[#e5e7eb] dark:divide-[#2a3441]">
+<!-- Item -->
+<div class="flex items-center justify-between p-6 hover:bg-[#f9fafb] dark:hover:bg-[#232d3b] transition-colors">
+<div class="flex flex-col pr-8">
+<p class="text-base font-semibold mb-1">Traveler Messages</p>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm">Receive notifications when travelers send new inquiries or support requests.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Item -->
+<div class="flex items-center justify-between p-6 hover:bg-[#f9fafb] dark:hover:bg-[#232d3b] transition-colors">
+<div class="flex flex-col pr-8">
+<p class="text-base font-semibold mb-1">Admin Announcements</p>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm">Critical platform updates, policy changes, and maintenance alerts.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/40 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<!-- Section 4: Channels -->
+<div class="bg-white dark:bg-[#1a222d] rounded-xl shadow-sm border border-[#e5e7eb] dark:border-[#2a3441] overflow-hidden p-6">
+<div class="mb-4">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">devices</span>
+                                Notification Channels
+                            </h2>
+<p class="text-[#637588] dark:text-[#93a2b7] text-sm mt-1">Select where you would like to receive these notifications.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<label class="flex items-start gap-4 p-4 border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl cursor-pointer hover:border-primary/50 dark:hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all">
+<div class="flex items-center h-5 mt-1">
+<input checked="" class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" type="checkbox"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-gray-500">mail</span>
+<span class="font-bold text-sm">Email</span>
+</div>
+<p class="text-xs text-[#637588] dark:text-[#93a2b7]">Send daily summaries and critical alerts to <strong>admin@agency.com</strong></p>
+</div>
+</label>
+<label class="flex items-start gap-4 p-4 border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl cursor-pointer hover:border-primary/50 dark:hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 transition-all">
+<div class="flex items-center h-5 mt-1">
+<input class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" type="checkbox"/>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-gray-500">sms</span>
+<span class="font-bold text-sm">SMS</span>
+</div>
+<p class="text-xs text-[#637588] dark:text-[#93a2b7]">Send urgent alerts to <strong>+966 5X XXX XXXX</strong></p>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Footer / Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 lg:left-72 p-4 bg-white dark:bg-[#1a222d] border-t border-[#e5e7eb] dark:border-[#2a3441] z-10 flex items-center justify-between shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+<div class="hidden sm:block text-sm text-[#637588] dark:text-[#93a2b7]">
+                        Unsaved changes will be lost.
+                    </div>
+<div class="flex gap-3 w-full sm:w-auto justify-end">
+<button class="px-6 py-2.5 rounded-lg border border-[#e5e7eb] dark:border-[#2a3441] text-[#111418] dark:text-white font-bold text-sm hover:bg-[#f0f2f4] dark:hover:bg-[#354150] transition-colors">
+                            Cancel
+                        </button>
+<button class="px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+                            Save Preferences
+                        </button>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

@@ -27,7 +27,7 @@ export const config = {
 
     // Admin
     admin: {
-        email: process.env.ADMIN_EMAIL || 'admin@wahat-tour.com',
+        email: process.env.ADMIN_EMAIL || 'admin@trajetour.com',
         password: process.env.ADMIN_PASSWORD || 'admin123'
     }
 };

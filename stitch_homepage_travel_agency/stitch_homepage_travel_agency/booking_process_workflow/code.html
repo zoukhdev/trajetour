@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Process - Omrah &amp; Hajj Travels</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "text-main": "#111418",
+                        "text-muted": "#637588",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-text-main dark:text-white font-display antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- TopNavBar -->
+<div class="layout-container flex w-full flex-col bg-white dark:bg-background-dark border-b border-[#f0f2f4] dark:border-gray-800">
+<header class="flex items-center justify-between whitespace-nowrap px-4 py-3 lg:px-10 max-w-[1200px] mx-auto w-full">
+<div class="flex items-center gap-4 text-text-main dark:text-white">
+<div class="text-primary">
+<span class="material-symbols-outlined" style="font-size: 32px;">mosque</span>
+</div>
+<h2 class="text-text-main dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Omrah &amp; Hajj Travels</h2>
+</div>
+<div class="hidden lg:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-text-main dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-text-main dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Packages</a>
+<a class="text-text-main dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Hajj Guides</a>
+<a class="text-text-main dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">About Us</a>
+<a class="text-text-main dark:text-white text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors">
+<span class="truncate">Login</span>
+</button>
+</div>
+<!-- Mobile Menu Icon -->
+<button class="lg:hidden text-text-main dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+</div>
+<!-- HeroSection -->
+<div class="w-full bg-white dark:bg-background-dark">
+<div class="flex justify-center py-5 px-4 lg:px-0">
+<div class="flex flex-col max-w-[960px] flex-1">
+<div class="@container">
+<div class="@[480px]:p-4">
+<div class="flex min-h-[400px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-8 relative overflow-hidden group" data-alt="Abstract islamic pattern background with golden gradient overlay" style='background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url("https://lh3.googleusercontent.com/aida-public/AB6AXuANzBUiO3d6VTa0elbEtChgOkTjRBhfbRWmRTUJyGDWYYDRhR2tiYgLE-Mx_-k3-mLG1E55kpD2u-2_3LimEFNgCmB625PLffrSzjWGXLX35jZXC1NZsRYhOCtBLUnnL3H7UNABH5xkuLYhP8pFzt9_BuB_dkrxthjrF48HAFLzSDYPmLwZSzIclHQNlfUiIZPts_yDSQHhU9kh_bpKw7GHeNP-t6OnmCu-mfhePKVcpXvHRGztNMUFybndv0O2BGeiKKf4e7D8qkN4");'>
+<div class="flex flex-col gap-4 text-center max-w-[700px] z-10">
+<h1 class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl">
+                                    Your Journey Begins Here
+                                </h1>
+<h2 class="text-white/90 text-base font-normal leading-relaxed @[480px]:text-lg">
+                                    Embarking on your pilgrimage should be peaceful. We have simplified the process into 4 easy steps to secure your Omrah or Hajj package with complete peace of mind.
+                                </h2>
+</div>
+<div class="flex gap-4 z-10">
+<button class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-blue-700 transition-colors shadow-lg">
+<span class="truncate">Start Your Booking</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline / Process Section -->
+<div class="w-full bg-background-light dark:bg-background-dark py-12">
+<div class="px-4 lg:px-40 flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1 bg-white dark:bg-[#1a2632] p-8 rounded-xl shadow-sm border border-[#dce0e5] dark:border-gray-700">
+<div class="mb-8">
+<h3 class="text-2xl font-bold text-text-main dark:text-white mb-2">Booking Workflow</h3>
+<p class="text-text-muted dark:text-gray-400">Follow these steps to complete your reservation.</p>
+</div>
+<div class="grid grid-cols-[48px_1fr] gap-x-4">
+<!-- Step 1 -->
+<div class="flex flex-col items-center gap-1 pt-1">
+<div class="flex items-center justify-center size-12 rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">travel_explore</span>
+</div>
+<div class="w-[2px] bg-[#dce0e5] dark:bg-gray-700 h-full min-h-[60px]"></div>
+</div>
+<div class="flex flex-1 flex-col pb-8 pt-1">
+<p class="text-primary text-sm font-bold uppercase tracking-wider mb-1">Step 01</p>
+<p class="text-text-main dark:text-white text-lg font-bold leading-normal">Choose Your Package</p>
+<p class="text-text-muted dark:text-gray-400 text-base font-normal leading-normal mt-1">
+                            Browse our curated list of Omrah and Hajj packages. Select the one that best fits your schedule, budget, and accommodation preferences.
+                        </p>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#dce0e5] dark:bg-gray-700 h-4"></div>
+<div class="flex items-center justify-center size-12 rounded-full bg-background-light dark:bg-gray-800 text-text-main dark:text-white border border-[#dce0e5] dark:border-gray-700">
+<span class="material-symbols-outlined">assignment_add</span>
+</div>
+<div class="w-[2px] bg-[#dce0e5] dark:bg-gray-700 h-full min-h-[60px]"></div>
+</div>
+<div class="flex flex-1 flex-col pb-8 pt-1">
+<p class="text-text-muted text-sm font-bold uppercase tracking-wider mb-1">Step 02</p>
+<p class="text-text-main dark:text-white text-lg font-bold leading-normal">Submit Inquiry</p>
+<p class="text-text-muted dark:text-gray-400 text-base font-normal leading-normal mt-1">
+                            Fill out the traveler details form and upload initial documents like passport scans. Our team will review your application instantly.
+                        </p>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#dce0e5] dark:bg-gray-700 h-4"></div>
+<div class="flex items-center justify-center size-12 rounded-full bg-background-light dark:bg-gray-800 text-text-main dark:text-white border border-[#dce0e5] dark:border-gray-700">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div class="w-[2px] bg-[#dce0e5] dark:bg-gray-700 h-full min-h-[60px]"></div>
+</div>
+<div class="flex flex-1 flex-col pb-8 pt-1">
+<p class="text-text-muted text-sm font-bold uppercase tracking-wider mb-1">Step 03</p>
+<p class="text-text-main dark:text-white text-lg font-bold leading-normal">Secure Payment</p>
+<p class="text-text-muted dark:text-gray-400 text-base font-normal leading-normal mt-1">
+                            Pay your deposit securely online to reserve your spot. We accept all major credit cards and bank transfers with SSL encryption.
+                        </p>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center gap-1">
+<div class="w-[2px] bg-[#dce0e5] dark:bg-gray-700 h-4"></div>
+<div class="flex items-center justify-center size-12 rounded-full bg-background-light dark:bg-gray-800 text-text-main dark:text-white border border-[#dce0e5] dark:border-gray-700">
+<span class="material-symbols-outlined">confirmation_number</span>
+</div>
+</div>
+<div class="flex flex-1 flex-col pt-1">
+<p class="text-text-muted text-sm font-bold uppercase tracking-wider mb-1">Step 04</p>
+<p class="text-text-main dark:text-white text-lg font-bold leading-normal">Confirmation &amp; Visa</p>
+<p class="text-text-muted dark:text-gray-400 text-base font-normal leading-normal mt-1">
+                            Receive your booking confirmation immediately. Our team will then proceed with your visa processing and send your final itinerary.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- FeatureSection / Trust Signals -->
+<div class="w-full bg-white dark:bg-background-dark py-12">
+<div class="px-4 lg:px-40 flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<div class="flex flex-col gap-10 px-4 @container">
+<div class="flex flex-col gap-4 text-center items-center">
+<h2 class="text-text-main dark:text-white text-[32px] font-bold leading-tight max-w-[720px]">
+                            Why Book With Us?
+                        </h2>
+<p class="text-text-muted dark:text-gray-400 text-base font-normal leading-normal max-w-[720px]">
+                            We handle the logistics so you can focus on your worship.
+                        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Feature 1 -->
+<div class="flex flex-1 gap-4 rounded-xl border border-[#dce0e5] dark:border-gray-700 bg-background-light dark:bg-[#1a2632] p-6 flex-col items-start hover:border-primary/50 transition-colors group">
+<div class="p-3 bg-white dark:bg-gray-800 rounded-full text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">gpp_good</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-text-main dark:text-white text-lg font-bold leading-tight">ATOL Protected</h3>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed">
+                                    Your payments are fully protected and secure. We are fully licensed and bonded for your peace of mind.
+                                </p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="flex flex-1 gap-4 rounded-xl border border-[#dce0e5] dark:border-gray-700 bg-background-light dark:bg-[#1a2632] p-6 flex-col items-start hover:border-primary/50 transition-colors group">
+<div class="p-3 bg-white dark:bg-gray-800 rounded-full text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">diversity_3</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-text-main dark:text-white text-lg font-bold leading-tight">Experienced Guides</h3>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed">
+                                    Travel with knowledgeable leaders who guide you every step of the rituals, ensuring a complete spiritual experience.
+                                </p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="flex flex-1 gap-4 rounded-xl border border-[#dce0e5] dark:border-gray-700 bg-background-light dark:bg-[#1a2632] p-6 flex-col items-start hover:border-primary/50 transition-colors group">
+<div class="p-3 bg-white dark:bg-gray-800 rounded-full text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<div class="flex flex-col gap-2">
+<h3 class="text-text-main dark:text-white text-lg font-bold leading-tight">24/7 Support</h3>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed">
+                                    Our team is available around the clock for any questions or emergencies during your journey.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Accordions / FAQ -->
+<div class="w-full bg-background-light dark:bg-background-dark py-12">
+<div class="px-4 lg:px-40 flex flex-1 justify-center">
+<div class="layout-content-container flex flex-col max-w-[800px] flex-1">
+<div class="flex flex-col gap-4 text-center items-center mb-8">
+<h2 class="text-text-main dark:text-white text-2xl font-bold">Frequently Asked Questions</h2>
+</div>
+<div class="flex flex-col gap-3">
+<details class="flex flex-col rounded-lg border border-[#dce0e5] dark:border-gray-700 bg-white dark:bg-[#1a2632] px-[15px] py-[7px] group" open="">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+<p class="text-text-main dark:text-white text-sm font-bold leading-normal">What documents do I need for the visa?</p>
+<span class="material-symbols-outlined text-text-main dark:text-white group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed pb-3 pt-1 border-t border-transparent group-open:border-[#dce0e5] dark:group-open:border-gray-700 mt-2">
+                            You will typically need a valid passport with at least 6 months validity, passport-sized photos, and proof of vaccination (Meningitis ACWY). Our team will provide a detailed checklist upon booking.
+                        </p>
+</details>
+<details class="flex flex-col rounded-lg border border-[#dce0e5] dark:border-gray-700 bg-white dark:bg-[#1a2632] px-[15px] py-[7px] group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+<p class="text-text-main dark:text-white text-sm font-bold leading-normal">Can I pay in installments?</p>
+<span class="material-symbols-outlined text-text-main dark:text-white group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed pb-3 pt-1 border-t border-transparent group-open:border-[#dce0e5] dark:group-open:border-gray-700 mt-2">
+                            Yes, we offer flexible payment plans for bookings made at least 3 months in advance. An initial deposit is required to secure your package, with the balance due 4 weeks before departure.
+                        </p>
+</details>
+<details class="flex flex-col rounded-lg border border-[#dce0e5] dark:border-gray-700 bg-white dark:bg-[#1a2632] px-[15px] py-[7px] group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+<p class="text-text-main dark:text-white text-sm font-bold leading-normal">Is the deposit refundable?</p>
+<span class="material-symbols-outlined text-text-main dark:text-white group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed pb-3 pt-1 border-t border-transparent group-open:border-[#dce0e5] dark:group-open:border-gray-700 mt-2">
+                            Deposits are generally non-refundable as they are used to secure flights and hotels immediately. However, we recommend purchasing travel insurance to cover unforeseen cancellations.
+                        </p>
+</details>
+<details class="flex flex-col rounded-lg border border-[#dce0e5] dark:border-gray-700 bg-white dark:bg-[#1a2632] px-[15px] py-[7px] group">
+<summary class="flex cursor-pointer items-center justify-between gap-6 py-3 list-none">
+<p class="text-text-main dark:text-white text-sm font-bold leading-normal">Do you provide female guides?</p>
+<span class="material-symbols-outlined text-text-main dark:text-white group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<p class="text-text-muted dark:text-gray-400 text-sm font-normal leading-relaxed pb-3 pt-1 border-t border-transparent group-open:border-[#dce0e5] dark:group-open:border-gray-700 mt-2">
+                            Yes, we have experienced female scholars and guides available in select groups to assist women with their rituals and questions in a comfortable environment.
+                        </p>
+</details>
+</div>
+</div>
+</div>
+</div>
+<!-- Final CTA Banner -->
+<div class="w-full py-16 px-4 bg-white dark:bg-background-dark border-t border-[#f0f2f4] dark:border-gray-800">
+<div class="max-w-[960px] mx-auto rounded-2xl bg-primary text-white p-8 md:p-12 relative overflow-hidden text-center">
+<!-- Decorative pattern overlay -->
+<div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+<div class="relative z-10 flex flex-col items-center gap-6">
+<h2 class="text-3xl md:text-4xl font-bold tracking-tight">Ready to Begin Your Sacred Journey?</h2>
+<p class="text-blue-100 text-lg max-w-[600px]">Explore our upcoming packages and find the perfect dates for your Omrah or Hajj pilgrimage.</p>
+<div class="flex flex-col sm:flex-row gap-4 mt-2">
+<button class="flex items-center justify-center h-12 px-8 bg-white text-primary rounded-lg font-bold text-base hover:bg-gray-100 transition-colors">
+                        Browse Packages
+                    </button>
+<button class="flex items-center justify-center h-12 px-8 bg-primary border-2 border-white text-white rounded-lg font-bold text-base hover:bg-white hover:text-primary transition-colors">
+                        Contact Us
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Simple Footer -->
+<footer class="bg-white dark:bg-background-dark py-8 border-t border-[#f0f2f4] dark:border-gray-800">
+<div class="max-w-[1200px] mx-auto px-4 lg:px-10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-text-muted dark:text-gray-400">
+<p>© 2023 Omrah &amp; Hajj Travels. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

@@ -1,0 +1,61 @@
+# DigitalOcean App Spec (digitalocean.yaml)
+# To use this: 
+# 1. Go to DigitalOcean App Platform dashboard.
+# 2. Create a new App -> "Import from App Spec".
+# 3. Paste this content.
+
+name: wrtour-umbrella
+region: fra # Frankfurt (Best for North Africa/Europe)
+services:
+  - name: server
+    environment_slug: node-js
+    github:
+      repo: [YOUR_GITHUB_REPO] # e.g. user/wrtour
+      branch: main
+      deploy_on_push: true
+    source_dir: server
+    build_command: npm install && npm run build
+    run_command: npm start
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: JWT_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: CLOUDINARY_CLOUD_NAME
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: CLOUDINARY_API_KEY
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: CLOUDINARY_API_SECRET
+        scope: RUN_AND_BUILD_TIME
+        type: SECRET
+      - key: CLIENT_URL
+        value: https://wrtour.com # Your main domain
+
+static_sites:
+  - name: client
+    github:
+      repo: [YOUR_GITHUB_REPO] # same as above
+      branch: main
+      deploy_on_push: true
+    source_dir: client
+    build_command: npm install && npm run build
+    output_dir: dist
+    error_document: index.html # For React Router SPA
+    envs:
+      - key: VITE_API_URL
+        value: https://server.wrtour.com # Adjust after server is deployed
+
+domains:
+  - domain: "*.wrtour.com" # Wildcard support
+    type: PRIMARY
+  - domain: "wrtour.com"
+    type: ALIAS

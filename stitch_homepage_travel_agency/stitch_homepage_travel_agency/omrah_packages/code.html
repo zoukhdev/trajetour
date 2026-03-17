@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Omrah Packages - Omrah Travels</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&amp;family=Noto+Sans:wght@400..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-x-hidden flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 bg-white dark:bg-[#1a222d] border-b border-[#f0f2f4] dark:border-[#2a3441] shadow-sm">
+<div class="px-4 md:px-10 py-3 flex items-center justify-between mx-auto max-w-[1440px] w-full">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined !text-3xl">mosque</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Omrah Travels</h2>
+</div>
+<!-- Desktop Nav -->
+<nav class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-bold text-primary" href="#">Packages</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Hajj</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">About Us</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold shadow-lg shadow-primary/20">
+<span class="truncate">Book Consultation</span>
+</button>
+</nav>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-[#111418] dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col items-center w-full">
+<!-- HeroSection -->
+<section class="w-full bg-white dark:bg-[#1a222d] pb-8">
+<div class="w-full max-w-[1440px] px-4 md:px-10 mx-auto pt-6">
+<div class="rounded-xl overflow-hidden relative min-h-[400px] flex flex-col items-center justify-center text-center p-8 bg-cover bg-center" data-alt="Beautiful panoramic view of the Kaaba in Mecca with pilgrims" style='background-image: linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC3s1VqcKgeNPp9xRaEEWWPUJn-zHNDXCDdm-wKKiXPh51cRA_tN6KIfSpUsWhpCLiyW4Ox2xSnCD4-v03lOFkT6X0g9wA5KpHIBMgyQnAEWNaMkDBhjtTu5V4J2EfBoH-ovnUiFjG0nUBy9I4vv7G4bjKZlvASM0aTZkdi9uaDFZi5rbo5N75I-qSuv61NPT7Rxdha2bj7oeyNxDsinv9-Q0LPRqPF4VoKI3aNJJpmOCtuJOnhUwN-uilExaHe3Zzzx1QqE33RhYGp");'>
+<div class="max-w-2xl flex flex-col gap-4 animate-fade-in-up">
+<span class="text-primary bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider w-fit mx-auto">Sacred Journeys</span>
+<h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight">
+                            Find Your Perfect Omrah Package
+                        </h1>
+<p class="text-gray-200 text-lg md:text-xl font-normal leading-relaxed max-w-xl mx-auto">
+                            Compare prices, hotels, and flight options to embark on a spiritual journey that fits your needs and budget.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Search & Filter Bar (Chips) -->
+<section class="w-full -mt-12 z-10 px-4 relative">
+<div class="max-w-[1200px] mx-auto bg-white dark:bg-[#222b36] rounded-xl shadow-xl border border-[#f0f2f4] dark:border-[#2a3441] p-4 md:p-6">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Filter Packages</h3>
+<button class="text-primary text-sm font-bold hover:underline">Reset Filters</button>
+</div>
+<div class="flex gap-3 flex-wrap items-center">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e2e4e6] dark:hover:bg-[#323d4d] transition-colors pl-4 pr-3 border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-gray-500 text-[20px]">calendar_month</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium">Travel Month</p>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e2e4e6] dark:hover:bg-[#323d4d] transition-colors pl-4 pr-3 border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-gray-500 text-[20px]">schedule</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium">Duration</p>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e2e4e6] dark:hover:bg-[#323d4d] transition-colors pl-4 pr-3 border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-gray-500 text-[20px]">hotel</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium">Hotel Rating</p>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-[#2a3441] hover:bg-[#e2e4e6] dark:hover:bg-[#323d4d] transition-colors pl-4 pr-3 border border-transparent hover:border-primary/20">
+<span class="material-symbols-outlined text-gray-500 text-[20px]">attach_money</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium">Price Range</p>
+<span class="material-symbols-outlined text-gray-400 text-[20px]">expand_more</span>
+</button>
+<div class="flex-1"></div>
+<div class="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-4">
+<span class="text-sm text-gray-500">Sort by:</span>
+<select class="bg-transparent text-sm font-bold text-[#111418] dark:text-white border-none focus:ring-0 cursor-pointer">
+<option>Recommended</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Section (Horizontal Card) -->
+<section class="w-full max-w-[1200px] px-4 md:px-0 mx-auto mt-12 mb-8">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-amber-500 fill-current">star</span>
+<h2 class="text-[#111418] dark:text-white text-2xl font-bold leading-tight">Featured Package</h2>
+</div>
+<div class="flex flex-col lg:flex-row bg-white dark:bg-[#1a222d] rounded-xl shadow-md overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] group hover:shadow-lg transition-shadow duration-300">
+<div class="w-full lg:w-2/5 h-64 lg:h-auto bg-cover bg-center relative" data-alt="Luxurious hotel room interior with a view of the Haram in Mecca" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgaVi1yKllTRZxQ1BnoANfUQgj8D6Yv8h22_Pm4Pg1RCjVZgIVVeBU892Sf7VIu6o-OxR8bcVA6NHMIveW9keJq2-8jk30DmYZSc-Kr3vsdyXm4BueQ3aghrGEss4zD1EuapK0c4g81azj4bmEt9yop-45puYuznNGiByZMkBES_8DvpSp1EMlxGpCLp_9jUxEXsDF1ZUr_lw51NaaEhu9pXSHzPeNuMFAtk0F3St0omgxoJSH4gQA0KoTgNdtFf37aw5Xmu4PW_eg");'>
+<div class="absolute top-4 left-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Best Seller</div>
+</div>
+<div class="flex-1 p-6 lg:p-8 flex flex-col justify-center">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-2xl font-bold text-[#111418] dark:text-white">Royal 5-Star Experience</h3>
+<div class="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-2 py-1 rounded text-xs font-bold">
+<span class="material-symbols-outlined text-sm">verified</span>
+                            ATOL Protected
+                        </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 mb-6 line-clamp-2">Experience ultimate comfort with our premium package featuring direct flights and 5-star accommodation steps away from the Haram.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+<div class="flex flex-col gap-1">
+<span class="text-xs text-gray-500 uppercase font-bold">Duration</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-lg">calendar_today</span>
+<span class="text-sm font-semibold dark:text-gray-200">12 Days</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-gray-500 uppercase font-bold">Hotel</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-lg">apartment</span>
+<span class="text-sm font-semibold dark:text-gray-200">5-Star</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-gray-500 uppercase font-bold">Flight</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-lg">flight_takeoff</span>
+<span class="text-sm font-semibold dark:text-gray-200">Direct</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="text-xs text-gray-500 uppercase font-bold">Visa</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-lg">badge</span>
+<span class="text-sm font-semibold dark:text-gray-200">Included</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-auto border-t border-gray-100 dark:border-gray-700 pt-6">
+<div>
+<p class="text-gray-500 text-sm">Starting from</p>
+<p class="text-3xl font-bold text-primary">$2,450 <span class="text-sm text-gray-400 font-normal">/ person</span></p>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold transition-transform active:scale-95 shadow-lg shadow-primary/20">
+                            View Details
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Package Grid -->
+<section class="w-full max-w-[1200px] px-4 md:px-0 mx-auto mb-20">
+<h2 class="text-[#111418] dark:text-white text-2xl font-bold leading-tight mb-6">Available Packages</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="flex flex-col bg-white dark:bg-[#1a222d] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] hover:shadow-lg transition-all duration-300 group">
+<div class="relative h-48 bg-gray-200 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Modern hotel building exterior against a blue sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVJVXzaNJKHWciY4Kr5KXopot95w8x-yFelwzlw7JaoB6Zi2ywXyEnj3o_52aLiqW-xLqDoCXjzAsjppyFBFc2P6wcsel_-EdGfnpqLKrora8OIpyX998Lcci2zJ5DPnpfbGWKtxKP3onIHTTG7KN2RrEh2w4bGDl7P9FWBnUDI11G1z_SEpKpFUbUa5bX9nAgDaX4kERS1PyI3BCP8V5WhcFj6AkN_LhV9FbohEKhH6UI0Ki1ga8s9opSrrV6dd3hg_CJWv-mtf74");'>
+</div>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-[#111418] text-xs font-bold px-2 py-1 rounded">
+                            Economy
+                        </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Saver Package</h3>
+<div class="flex items-center text-amber-500 text-xs font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5 fill-current">star</span> 3.0
+                             </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">An affordable option focusing on essentials. Comfortable 3-star accommodation within 1km of the Haram.</p>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_month</span>
+<span>10 Days / 9 Nights</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">bed</span>
+<span>Double/Triple Sharing</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">flight</span>
+<span>Indirect Flights</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div>
+<span class="block text-xs text-gray-500">Per Person</span>
+<span class="text-xl font-bold text-primary">$1,200</span>
+</div>
+<button class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-lg text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex flex-col bg-white dark:bg-[#1a222d] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] hover:shadow-lg transition-all duration-300 group">
+<div class="relative h-48 bg-gray-200 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Close up detail of islamic architecture pattern" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBG_g_ol_Cfsa1A7YC1QGwlrAlf_g_btvor_dnqVdZqw8fraygqPb0xynmkQs6_DjZfPWznOM9auxazTFOkH3sjxk01dtIyaBL5jKfZVAa_o7y-WBkbj7o44gCeCFTwW-RupviMCCkC4sgkd9sl5wvosnS7UlOTL9KWkuTKmJcKz8Fn1QtL65t2k1E8Sl0glT5VVvIO__iUf2A9mTvoWF45T7SFVXHxvD7Ld5bciZXmS0lp1I8BKVBYvp7zQFPXycf1img0HedAbLcC");'>
+</div>
+<div class="absolute top-3 right-3 bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded border border-amber-200">
+                            Popular
+                        </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Family Comfort</h3>
+<div class="flex items-center text-amber-500 text-xs font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5 fill-current">star</span> 4.0
+                             </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">Ideal for families. Includes shuttle services and spacious family suites in 4-star hotels.</p>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_month</span>
+<span>14 Days / 13 Nights</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">airport_shuttle</span>
+<span>Private Transfers</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">soup_kitchen</span>
+<span>Breakfast Included</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div>
+<span class="block text-xs text-gray-500">Per Person</span>
+<span class="text-xl font-bold text-primary">$1,650</span>
+</div>
+<button class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-lg text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex flex-col bg-white dark:bg-[#1a222d] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] hover:shadow-lg transition-all duration-300 group">
+<div class="relative h-48 bg-gray-200 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Beautiful sunset over the desert landscape" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC3C37Op4IKEyW5K6-MoLEZrOuVrVpoaRgyLR9X6kar8mpcYW7G2eHIXFxC1BLJgdIHBlsGXG0jtaEguD-0EmUzKcsa3Mzfh3kudxt3na1mu8S9sopDRAkq0zCjAvWTWWhQaN08Ohbcz7ss_RES9XXVYytyl-7JHU61bpsVcB22ZpPEhCM-peE4NW5fzOD_3LMzGMzmeMi-QiWouxvh0G_aJ1aPXbtv8k5x0b3FgetnBvy7W4LD7pdG4O5JGgQgm2dE9DweTQ4bgdF6");'>
+</div>
+<div class="absolute top-3 right-3 bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded border border-purple-200">
+                            Ramadan
+                        </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Ramadan Special</h3>
+<div class="flex items-center text-amber-500 text-xs font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5 fill-current">star</span> 5.0
+                             </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">Spend the last 10 days of Ramadan in the holy cities. Premium Iftar arrangements included.</p>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_month</span>
+<span>Last 10 Days Ramadan</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">restaurant</span>
+<span>Suhoor &amp; Iftar</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">mosque</span>
+<span>Guided Ziarat</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div>
+<span class="block text-xs text-gray-500">Per Person</span>
+<span class="text-xl font-bold text-primary">$3,200</span>
+</div>
+<button class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-lg text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="flex flex-col bg-white dark:bg-[#1a222d] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] hover:shadow-lg transition-all duration-300 group">
+<div class="relative h-48 bg-gray-200 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Airplane wing view above clouds during sunset" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDepWICVOr3bVDNnawvBK10EBbkPiY2mQfeZd6sqN9mclHEPnjFVcHxUIxiUp2SNjqN2RFqraOFjRPZxJBkKJ7A6AqX3x6H_3_Zlmx8H66qyM-gSsHK2Z2KWu-qDF8-iulqWMvNLgxiDXdG5PFuUzwZ54CEyj4G6F7joT7mButkAKfpZigVOy26A2adOHqxX4eCqgSQ0NJ_y1xR7rpQT7rIfSxid-Sff8sMlT7HclFvABQ5HC1zymAqzG1VfgPkWrxQEeEo4TDBriuj");'>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Group Umrah</h3>
+<div class="flex items-center text-amber-500 text-xs font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5 fill-current">star</span> 3.5
+                             </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">Join a guided group from your city. Perfect for first-timers needing guidance.</p>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">groups</span>
+<span>Group of 20+</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">school</span>
+<span>Religious Guide</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">flight</span>
+<span>Includes Flights</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div>
+<span class="block text-xs text-gray-500">Per Person</span>
+<span class="text-xl font-bold text-primary">$1,400</span>
+</div>
+<button class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-lg text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="flex flex-col bg-white dark:bg-[#1a222d] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] hover:shadow-lg transition-all duration-300 group">
+<div class="relative h-48 bg-gray-200 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Serene view of Masjid Nabawi green dome in Medina" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCE-nLIVWmPQ-fJxAjwK84e4u4cV6QqieSOIc38H2Pn8wUNha-9elN8wPIoFGoWNHlJhK_qBPV1s6Q6v03xADCMkvUc4w0bGsbE0tlrneDEHJBJROoQahhDvjkO0jsiKBnQZVVHjAooIFh9KevmDD2pXRdBi_FzSx1Dc8E5Cy4OkNw0zx9Al8LYaHazRPvRqioK-uLdiTWjHr0DGdgeuSlimpo0gzgLaTO3FwAk6Q8AmpuZuBxzc5qT3-AzQpEnxySx3Q0-V3iJ2icW");'>
+</div>
+<div class="absolute top-3 right-3 bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded border border-blue-200">
+                            Custom
+                        </div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Medina First</h3>
+<div class="flex items-center text-amber-500 text-xs font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5 fill-current">star</span> 4.5
+                             </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">Start your journey in the city of the Prophet. Relaxed itinerary with more time in Medina.</p>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_month</span>
+<span>12 Days</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">train</span>
+<span>Haramain Train Ticket</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">local_cafe</span>
+<span>Daily Breakfast</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div>
+<span class="block text-xs text-gray-500">Per Person</span>
+<span class="text-xl font-bold text-primary">$1,900</span>
+</div>
+<button class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-lg text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="flex flex-col bg-white dark:bg-[#1a222d] rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden border border-[#f0f2f4] dark:border-[#2a3441] hover:shadow-lg transition-all duration-300 group">
+<div class="relative h-48 bg-gray-200 overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" data-alt="Abstract golden arabic calligraphy art" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDREE2X2UplwFoZzePgELQOvRvJ5ISNAy7OQm0eCSzjCI7hH0DJUxK4nQgEKI49ByBsptkn3IJDL2PfC-h3HvN-p-pmw7E9vihhO0dEaV36RnPWcRATnNn8eWLOioAdxhZhN9di_3gA-IFGYDkFak90Kd11OM887nvoPj5z6t2BkdTtf2Rw8ASJj-qAEvIgpmLEk3ArR1aeFa910kV6lSxFDmMHrESo5g8LAnPMeS8uB2-uQCCOLab-iU6c67VI_VYjhFcXiQd4aEmB");'>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-2">
+<h3 class="text-lg font-bold text-[#111418] dark:text-white group-hover:text-primary transition-colors">Flash Sale: September</h3>
+<div class="flex items-center text-amber-500 text-xs font-bold">
+<span class="material-symbols-outlined text-sm mr-0.5 fill-current">star</span> 4.0
+                             </div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-2">Limited time offer for travel in September. Great weather and lower crowds.</p>
+<div class="space-y-2 mb-6">
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_month</span>
+<span>7 Days Quick Trip</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">local_offer</span>
+<span>Discounted Rates</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#637588] dark:text-gray-300">
+<span class="material-symbols-outlined text-primary text-[18px]">hotel</span>
+<span>4-Star Hotel</span>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+<div>
+<span class="block text-xs text-red-500 line-through">$1,350</span>
+<span class="text-xl font-bold text-primary">$1,100</span>
+</div>
+<button class="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-lg text-sm transition-colors">
+                                View Details
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center mt-12">
+<button class="flex items-center gap-2 text-[#111418] dark:text-white font-bold border border-gray-300 dark:border-gray-600 px-6 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                     Show More Packages
+                     <span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</section>
+<!-- Trust Indicators -->
+<section class="w-full bg-[#f6f8fa] dark:bg-[#151c24] py-12 border-t border-[#e2e4e6] dark:border-[#2a3441]">
+<div class="max-w-[1200px] mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="flex flex-col items-center text-center gap-3">
+<div class="w-14 h-14 rounded-full bg-white dark:bg-[#222b36] shadow-sm flex items-center justify-center text-primary mb-1">
+<span class="material-symbols-outlined text-3xl">verified_user</span>
+</div>
+<h4 class="font-bold text-[#111418] dark:text-white">ATOL Protected</h4>
+<p class="text-sm text-gray-500">Your payments are fully protected and secure.</p>
+</div>
+<div class="flex flex-col items-center text-center gap-3">
+<div class="w-14 h-14 rounded-full bg-white dark:bg-[#222b36] shadow-sm flex items-center justify-center text-primary mb-1">
+<span class="material-symbols-outlined text-3xl">support_agent</span>
+</div>
+<h4 class="font-bold text-[#111418] dark:text-white">24/7 Support</h4>
+<p class="text-sm text-gray-500">Our ground team is available anytime you need.</p>
+</div>
+<div class="flex flex-col items-center text-center gap-3">
+<div class="w-14 h-14 rounded-full bg-white dark:bg-[#222b36] shadow-sm flex items-center justify-center text-primary mb-1">
+<span class="material-symbols-outlined text-3xl">description</span>
+</div>
+<h4 class="font-bold text-[#111418] dark:text-white">Visa Assistance</h4>
+<p class="text-sm text-gray-500">We handle the entire visa process for you.</p>
+</div>
+<div class="flex flex-col items-center text-center gap-3">
+<div class="w-14 h-14 rounded-full bg-white dark:bg-[#222b36] shadow-sm flex items-center justify-center text-primary mb-1">
+<span class="material-symbols-outlined text-3xl">handshake</span>
+</div>
+<h4 class="font-bold text-[#111418] dark:text-white">Best Price Guarantee</h4>
+<p class="text-sm text-gray-500">We match any comparable quote you find.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-[#1a222d] border-t border-[#f0f2f4] dark:border-[#2a3441] pt-12 pb-8">
+<div class="max-w-[1200px] mx-auto px-4 md:px-10">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-4">
+<div class="size-6 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined">mosque</span>
+</div>
+<h3 class="font-bold text-lg dark:text-white">Omrah Travels</h3>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Facilitating spiritual journeys with comfort, trust, and affordability since 2010.</p>
+</div>
+<div>
+<h4 class="font-bold text-[#111418] dark:text-white mb-4">Packages</h4>
+<ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+<li><a class="hover:text-primary" href="#">Economy Omrah</a></li>
+<li><a class="hover:text-primary" href="#">Premium 5-Star</a></li>
+<li><a class="hover:text-primary" href="#">Ramadan Specials</a></li>
+<li><a class="hover:text-primary" href="#">Group Tours</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#111418] dark:text-white mb-4">Company</h4>
+<ul class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+<li><a class="hover:text-primary" href="#">About Us</a></li>
+<li><a class="hover:text-primary" href="#">Testimonials</a></li>
+<li><a class="hover:text-primary" href="#">Blog</a></li>
+<li><a class="hover:text-primary" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-[#111418] dark:text-white mb-4">Subscribe</h4>
+<p class="text-sm text-gray-500 dark:text-gray-400 mb-3">Get the latest offers and updates.</p>
+<div class="flex gap-2">
+<input class="flex-1 bg-gray-50 dark:bg-[#222b36] border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary text-white" placeholder="Email address" type="email"/>
+<button class="bg-primary text-white rounded-lg px-4 py-2 text-sm font-bold hover:bg-primary/90">Join</button>
+</div>
+</div>
+</div>
+<div class="border-t border-gray-100 dark:border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-gray-400">© 2024 Omrah Travels. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="text-gray-400 hover:text-primary" href="#"><span class="material-symbols-outlined text-[20px]">thumb_up</span></a>
+<a class="text-gray-400 hover:text-primary" href="#"><span class="material-symbols-outlined text-[20px]">photo_camera</span></a>
+<a class="text-gray-400 hover:text-primary" href="#"><span class="material-symbols-outlined text-[20px]">public</span></a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

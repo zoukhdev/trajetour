@@ -40,7 +40,14 @@ export const translations = {
             tax: 'Taxe',
             support: 'Support & Videos',
             payments: 'Gestion des paiements',
-            rooming_list: 'Rooming List'
+            rooming_list: 'Rooming List',
+            my_bookings: 'Mes Réservations',
+            slot_booking: 'Réservation de Places',
+            notifications: 'Notifications',
+            documents: 'Documents',
+            my_account: 'Mon Compte',
+            agent: 'Agent',
+            client: 'Client'
         },
         dashboard: {
             welcome: 'Bienvenue',
@@ -50,6 +57,210 @@ export const translations = {
             total_debt: 'Montant Créance',
             exchange_rates: 'Taux de Change',
             manage_rates: 'Gérez les taux de conversion quotidiens',
+        },
+        public: {
+            nav: {
+                home: 'Accueil',
+                omrah: 'Omra',
+                hajj: 'Hajj',
+                about: 'À propos',
+                reviews: 'Avis',
+                contact: 'Contact',
+                book_now: 'Réserver',
+                login: 'Connexion',
+                portal: 'Espace Client'
+            },
+            hero: {
+                title: 'Embarquez pour un Voyage Sacré',
+                subtitle: 'Des forfaits Hajj et Omra de confiance, conçus pour votre tranquillité d\'esprit. Vivez la sérénité spirituelle avec nos conseils d\'experts.',
+                cta: 'Réserver votre voyage'
+            },
+            search: {
+                title: 'Trouvez votre Forfait Idéal',
+                destination: 'Destination',
+                dates: 'Dates de Voyage',
+                btn: 'Rechercher'
+            },
+            features: {
+                title: 'Pourquoi choisir Trajetour ?',
+                desc: 'Nous gérons la logistique pour que vous puissiez vous concentrer sur votre culte.',
+                f1: 'Vols Inclus',
+                f1_desc: 'Vols directs avec les meilleures compagnies.',
+                f2: 'Hôtels Premium',
+                f2_desc: 'Séjournez près du Haram dans nos hôtels partenaires.',
+                f3: 'Assistance Visa',
+                f3_desc: 'Traitement de visa sans tracas.',
+                f4: 'Guides Experts',
+                f4_desc: 'Des savants disponibles pour vous guider.'
+            },
+            footer: {
+                quick_links: 'Liens Rapides',
+                contact: 'Contactez-nous',
+                newsletter: 'Newsletter',
+                newsletter_desc: 'Abonnez-vous pour recevoir nos offres.',
+                subscribe: 'S\'abonner',
+                rights: 'Tous droits réservés.',
+                desc: 'Votre partenaire de confiance pour les voyages spirituels.'
+            },
+            packages: {
+                title: 'Nos Forfaits Sacrés',
+                subtitle: 'Choisissez le forfait qui convient le mieux à vos besoins spirituels et budgétaires.',
+                view_details: 'Voir Détails',
+                book_now: 'Réserver',
+                per_person: '/ personne',
+                duration: 'Jours',
+                makkah: 'La Mecque',
+                madinah: 'Médine'
+            },
+            about: {
+                title: 'À Propos de Nous',
+                story: 'Notre Histoire',
+                story_text: 'Depuis plus de 10 ans, nous servons les pèlerins avec dévouement et intégrité. Notre mission est de faciliter votre voyage sacré.',
+                values: 'Nos Valeurs',
+                v1: 'Intégrité',
+                v2: 'Service',
+                v3: 'Excellence'
+            },
+            contact: {
+                title: 'Contactez-nous',
+                subtitle: 'Nous sommes là pour répondre à toutes vos questions.',
+                name: 'Nom complet',
+                email: 'Email',
+                message: 'Message',
+                send: 'Envoyer',
+                sent: 'Message envoyé avec succès!'
+            },
+            reviews: {
+                title: 'Ce que disent nos Pèlerins',
+                subtitle: 'Découvrez les expériences de ceux qui ont voyagé avec nous.'
+            },
+            faq: {
+                title: 'Questions Fréquentes',
+                subtitle: 'Trouvez des réponses aux questions les plus courantes.',
+                q1: 'Quels documents sont nécessaires ?',
+                a1: 'Passeport valide, photos, carnet de vaccination...',
+                q2: 'Comment réserver ?',
+                a2: 'Choisissez votre forfait et suivez les étapes de réservation...',
+                q3: 'Les vols sont-ils directs ?',
+                a3: 'Oui, la plupart de nos forfaits incluent des vols directs.'
+            }
+        },
+        agency_dashboard: {
+            welcome: 'Espace Agence',
+            balance: 'Solde Agence',
+            commission: 'Commission',
+            active_bookings: 'Réservations Actives',
+            new_booking: 'Nouvelle Réservation',
+            quick_actions: {
+                book_slot: 'Réserver Place',
+                manage_clients: 'Gérer Clients',
+                reports: 'Rapports'
+            },
+            bookings: {
+                title: 'Mes Réservations',
+                ref: 'Référence',
+                client: 'Client',
+                package: 'Forfait',
+                status: 'Statut',
+                date: 'Date',
+                actions: 'Actions',
+                view: 'Voir',
+                cancel: 'Annuler'
+            },
+            slots: {
+                title: 'Réserver des Places',
+                available: 'Disponibles',
+                price: 'Prix',
+                book: 'Réserver',
+                select_date: 'Sélectionner Date'
+            },
+            notifications: {
+                title: 'Centre de Notifications',
+                mark_read: 'Marquer comme lu',
+                clear_all: 'Tout effacer'
+            },
+            documents: {
+                title: 'Rappels de Documents',
+                client: 'Client',
+                missing: 'Documents Manquants',
+                passport: 'Passeport',
+                photo: 'Photo',
+                vaccine: 'Vaccin',
+                status: 'Statut',
+                upload: 'Téléverser',
+                days_left: 'Jours restants'
+            }
+        },
+        auth: {
+            client_login: 'Connexion Client',
+            agency_login: 'Portail Agence',
+            welcome_back: 'Bon retour',
+            enter_details: 'Entrez vos coordonnées pour vous connecter.',
+            email: 'Adresse Email',
+            password: 'Mot de passe',
+            forgot_password: 'Mot de passe oublié ?',
+            login_btn: 'Se connecter',
+            register_prompt: 'Pas de compte ?',
+            register_link: 'Inscrivez-vous',
+            agency_prompt: 'Vous êtes une agence ?',
+            agency_link: 'Accès Partenaire',
+            register_title: 'Créer un compte',
+            first_name: 'Prénom',
+            last_name: 'Nom',
+            phone: 'Téléphone',
+            confirm_password: 'Confirmer le mot de passe',
+            create_account: 'Créer mon compte',
+            agency_app_title: 'Devenir Agence Partenaire',
+            submit_app: 'Soumettre la demande',
+            partner_program: 'Programme Partenaire',
+            agency_title: 'Devenir Agence Agréée',
+            agency_subtitle: 'Remplissez le formulaire ci-dessous pour postuler.',
+            agency_info: 'Informations de l\'Agence',
+            agency_name: 'Nom de l\'Agence',
+            license_number: 'Numéro de Licence / RC',
+            address: 'Adresse du Siège',
+            contact_person: 'Personne à Contacter',
+            full_name: 'Nom Complet',
+            position: 'Poste / Fonction',
+            submit_application: 'Soumettre la Demande',
+            already_account: 'Vous avez déjà un compte ?'
+        },
+        client_dashboard: {
+            welcome: 'Assalam Alaykum',
+            journey_status: 'Votre voyage spirituel commence bientôt.',
+            contact_guide: 'Contacter le Guide',
+            active_booking: 'Réservation Active',
+            ref: 'Réf',
+            booked: 'Réservé',
+            visa: 'Visa',
+            flights: 'Vols',
+            hotels: 'Hôtels',
+            outbound: 'Vol Aller',
+            accommodation: 'Hébergement',
+            view_itinerary: 'Voir Itinéraire',
+            download_tickets: 'Télécharger Billets',
+            recent_activity: 'Activité Récente',
+            view_all: 'Voir Tout',
+            no_activity: 'Aucune activité récente.',
+            upcoming_events: 'Événements à Venir',
+            payment_status: 'État des Paiements',
+            total_cost: 'Coût Total',
+            paid: 'Payé',
+            due: 'Reste',
+            pay_balance: 'Payer le solde',
+            quick_actions: {
+                visa: 'Visa',
+                guide_pdf: 'Guide PDF',
+                voucher: 'Voucher',
+                profile: 'Profil'
+            },
+            my_bookings: {
+                title: 'Mes Réservations',
+                upcoming: 'À Venir',
+                past: 'Passés',
+                details: 'Détails',
+                download: 'Télécharger'
+            }
         }
     },
     ar: {
@@ -93,7 +304,14 @@ export const translations = {
             tax: 'الضريبة',
             support: 'الدعم والفيديو',
             payments: 'إدارة المدفوعات',
-            rooming_list: 'قائمة الغرف'
+            rooming_list: 'قائمة الغرف',
+            my_bookings: 'حجوزاتي',
+            slot_booking: 'حجز الأماكن',
+            notifications: 'الإشعارات',
+            documents: 'الوثائق',
+            my_account: 'حسابي',
+            agent: 'وكيل',
+            client: 'عميل'
         },
         dashboard: {
             welcome: 'مرحباً',
@@ -103,8 +321,212 @@ export const translations = {
             total_debt: 'الديون المستحقة',
             exchange_rates: 'أسعار الصرف',
             manage_rates: 'إدارة أسعار التحويل اليومية',
+        },
+        public: {
+            nav: {
+                home: 'الرئيسية',
+                omrah: 'عمرة',
+                hajj: 'حج',
+                about: 'من نحن',
+                reviews: 'آراء العملاء',
+                contact: 'اتصل بنا',
+                book_now: 'احجز الآن',
+                login: 'دخول',
+                portal: 'فضاء العملاء'
+            },
+            hero: {
+                title: 'ابدأ رحلتك المقدسة',
+                subtitle: 'باقات حج وعمرة موثوقة مصممة لراحتك. اختبر السكينة الروحية مع توجيهات خبرائنا.',
+                cta: 'احجز رحلتك الروحية'
+            },
+            search: {
+                title: 'ابحث عن باقتك المثالية',
+                destination: 'الوجهة',
+                dates: 'تاريخ السفر',
+                btn: 'بحث'
+            },
+            features: {
+                title: 'لماذا تختار الحرمين ؟',
+                desc: 'نحن نهتم بالخدمات اللوجستية لتركز أنت على عبادتك.',
+                f1: 'رحلات شاملة',
+                f1_desc: 'رحلات مباشرة مع أفضل خطوط الطيران.',
+                f2: 'فنادق مميزة',
+                f2_desc: 'إقامة بالقرب من الحرم مع شركائنا.',
+                f3: 'مساعدة في التأشيرة',
+                f3_desc: 'إجراءات تأشيرة سهلة وسريعة.',
+                f4: 'مرشدين خبراء',
+                f4_desc: 'علماء متاحين لإرشادك في المناسك.'
+            },
+            footer: {
+                quick_links: 'روابط سريعة',
+                contact: 'اتصل بنا',
+                newsletter: 'النشرة البريدية',
+                newsletter_desc: 'اشترك للحصول على آخر العروض.',
+                subscribe: 'إشترك',
+                rights: 'جميع الحقوق محفوظة.',
+                desc: 'شريكك الموثوق للرحلات الروحية.'
+            },
+            packages: {
+                title: 'باقاتنا المقدسة',
+                subtitle: 'اختر الباقة التي تناسب احتياجاتك الروحية والمادية.',
+                view_details: 'التفاصيل',
+                book_now: 'احجز الآن',
+                per_person: '/ شخص',
+                duration: 'أيام',
+                makkah: 'مكة المكرمة',
+                madinah: 'المدينة المنورة'
+            },
+            about: {
+                title: 'من نحن',
+                story: 'قصتنا',
+                story_text: 'لأكثر من 10 سنوات، نخدم الحجاج بتفانٍ ونزاهة. مهمتنا هي تسهيل رحلتك المقدسة.',
+                values: 'قيمنا',
+                v1: 'النزاهة',
+                v2: 'الخدمة',
+                v3: 'التميز'
+            },
+            contact: {
+                title: 'اتصل بنا',
+                subtitle: 'نحن هنا للإجابة على جميع استفساراتكم.',
+                name: 'الاسم الكامل',
+                email: 'البريد الإلكتروني',
+                message: 'الرسالة',
+                send: 'إرسال',
+                sent: 'تم إرسال الرسالة بنجاح!'
+            },
+            reviews: {
+                title: 'ماذا يقول حجاجنا',
+                subtitle: 'اكتشف تجارب الذين سافروا معنا.'
+            },
+            faq: {
+                title: 'أسئلة شائعة',
+                subtitle: 'اعثر على إجابات للأسئلة الأكثر شيوعاً.',
+                q1: 'ما هي الوثائق المطلوبة ؟',
+                a1: 'جواز سفري ساري، صور، دفتر تلقيح...',
+                q2: 'كيف أقوم بالحجز ؟',
+                a2: 'اختر باقتك واتبع خطوات الحجز...',
+                q3: 'هل الرحلات مباشرة ؟',
+                a3: 'نعم، معظم باقاتنا تشمل رحلات مباشرة.'
+            }
+        },
+        agency_dashboard: {
+            welcome: 'فضاء الوكالة',
+            balance: 'رصيد الوكالة',
+            commission: 'العمولة',
+            active_bookings: 'حجوزات نشطة',
+            new_booking: 'حجز جديد',
+            quick_actions: {
+                book_slot: 'حجز مقعد',
+                manage_clients: 'إدارة العملاء',
+                reports: 'التقارير'
+            },
+            bookings: {
+                title: 'حجوزاتي',
+                ref: 'المرجع',
+                client: 'العميل',
+                package: 'الباقة',
+                status: 'الحالة',
+                date: 'التاريخ',
+                actions: 'إجراءات',
+                view: 'عرض',
+                cancel: 'إلغاء'
+            },
+            slots: {
+                title: 'حجز المقاعد',
+                available: 'متاح',
+                price: 'سعر',
+                book: 'حجز',
+                select_date: 'اختر التاريخ'
+            },
+            notifications: {
+                title: 'مركز الإشعارات',
+                mark_read: 'تحديد كمقروء',
+                clear_all: 'مسح الكل'
+            },
+            documents: {
+                title: 'تذكير الوثائق',
+                client: 'العميل',
+                missing: 'وثائق ناقصة',
+                passport: 'جواز السفر',
+                photo: 'صورة شمسية',
+                vaccine: 'لقاح',
+                status: 'الحالة',
+                upload: 'رفع',
+                days_left: 'أيام متبقية'
+            }
+        },
+        auth: {
+            client_login: 'دخول العملاء',
+            agency_login: 'بوابة الوكالات',
+            welcome_back: 'مرحباً بعودتك',
+            enter_details: 'أدخل بياناتك لتسجيل الدخول.',
+            email: 'البريد الإلكتروني',
+            password: 'كلمة المرور',
+            forgot_password: 'نسيت كلمة المرور؟',
+            login_btn: 'تسجيل الدخول',
+            register_prompt: 'ليس لديك حساب؟',
+            register_link: 'سجل الآن',
+            agency_prompt: 'هل أنت وكالة سياحية؟',
+            agency_link: 'وصول الشركاء',
+            register_title: 'إنشاء حساب جديد',
+            first_name: 'الاسم الأول',
+            last_name: 'اللقب',
+            phone: 'رقم الهاتف',
+            confirm_password: 'تأكيد كلمة المرور',
+            create_account: 'إنشاء حسابي',
+            agency_app_title: 'كن وكالة شريكة',
+            submit_app: 'قدّم طلب انضمام',
+            partner_program: 'برنامج الشركاء',
+            agency_title: 'كن وكالة معتمدة',
+            agency_subtitle: 'املأ النموذج أدناه للتقدم بطلب للحصول على حساب شريك.',
+            agency_info: 'معلومات الوكالة',
+            agency_name: 'اسم الوكالة',
+            license_number: 'رقم الترخيص / السجل التجاري',
+            address: 'عنوان المقر',
+            contact_person: 'الشخص المسؤول',
+            full_name: 'الاسم الكامل',
+            position: 'الوظيفة',
+            submit_application: 'تقديم الطلب',
+            already_account: 'لديك حساب بالفعل؟'
+        },
+        client_dashboard: {
+            welcome: 'السلام عليكم',
+            journey_status: 'رحلتك الروحية تبدأ قريباً.',
+            contact_guide: 'اتصل بالمرشد',
+            active_booking: 'الحجز الحالي',
+            ref: 'مرجع',
+            booked: 'تم الحجز',
+            visa: 'تأشيرة',
+            flights: 'طيران',
+            hotels: 'فنادق',
+            outbound: 'رحلة الذهاب',
+            accommodation: 'الإقامة',
+            view_itinerary: 'عرض البرنامج',
+            download_tickets: 'تذاكر السفر',
+            recent_activity: 'النشاط الأخير',
+            view_all: 'عرض الكل',
+            no_activity: 'لا يوجد نشاط حديث.',
+            upcoming_events: 'المواعيد القادمة',
+            payment_status: 'حالة الدفوعات',
+            total_cost: 'التكلفة الإجمالية',
+            paid: 'المدفوع',
+            due: 'المتبقي',
+            pay_balance: 'دفع المستحقات',
+            quick_actions: {
+                visa: 'تأشيرة',
+                guide_pdf: 'دليل PDF',
+                voucher: 'قسيمة',
+                profile: 'الملف'
+            },
+            my_bookings: {
+                title: 'حجوزاتي',
+                upcoming: 'القادمة',
+                past: 'السابقة',
+                details: 'التفاصيل',
+                download: 'تحميل'
+            }
         }
-    }
+    },
 };
 
 export type Language = 'fr' | 'ar';

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Details - Agency Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a242f",
+                        "text-main-light": "#111418",
+                        "text-main-dark": "#e0e6ed",
+                        "text-sec-light": "#637588",
+                        "text-sec-dark": "#94a3b8",
+                        "border-light": "#f0f2f4",
+                        "border-dark": "#2d3b4e",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main-light dark:text-text-main-dark transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<header class="bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark sticky top-0 z-50">
+<div class="px-6 lg:px-10 py-3 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 text-primary">
+<svg class="w-full h-full" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4C14.0589 4 6 12.0589 6 22C6 31.9411 14.0589 40 24 40C33.9411 40 42 31.9411 42 22C42 12.0589 33.9411 4 24 4ZM24 8C31.732 8 38 14.268 38 22C38 29.732 31.732 36 24 36C16.268 36 10 29.732 10 22C10 14.268 16.268 8 24 8ZM21.5 15.5C21.5 14.1193 22.6193 13 24 13C25.3807 13 26.5 14.1193 26.5 15.5C26.5 16.8807 25.3807 18 24 18C22.6193 18 21.5 16.8807 21.5 15.5ZM24 21C22.8954 21 22 21.8954 22 23V30C22 31.1046 22.8954 32 24 32C25.1046 32 26 31.1046 26 30V23C26 21.8954 25.1046 21 24 21Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold tracking-tight">Agency Portal</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold transition-colors" href="#">Bookings</a>
+<a class="text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Packages</a>
+<a class="text-text-sec-light dark:text-text-sec-dark hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-sec-light dark:text-text-sec-dark text-[20px]">search</span>
+<input class="bg-background-light dark:bg-background-dark border-none rounded-lg h-10 pl-10 pr-4 text-sm w-64 focus:ring-1 focus:ring-primary text-text-main-light dark:text-text-main-dark placeholder:text-text-sec-light/70" placeholder="Search bookings..." type="text"/>
+</div>
+<div class="size-9 rounded-full bg-cover bg-center border border-border-light dark:border-border-dark" data-alt="User profile avatar image" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCB-M4D-1X_G-ko8rWO6kDXNdagIOzj3WJEQrQ35ndEU2mCy6rL1vMpUFvHpNQbNUSzp30za7FYNkk9rwKhMp53CZarcbfxwP9Ocu5uEeqDhJxD9bh4CwY5yyzl_z4YgVYuX0CsqVl_NC0SpNS1lrjuySHtuui1DB0ZetfWadLw53DmE257XlGAXrBrn1wNz2-EXuVOsIzjjnpMm_J6uaiaGkTmV7--1CicRYYtXt29rAtgJtQJguVsG5skFBSsqUQMfVw1JjFluM_k');"></div>
+</div>
+</div>
+</header>
+<main class="flex-1 px-4 lg:px-10 py-6 max-w-[1440px] mx-auto w-full">
+<div class="flex items-center gap-2 text-sm text-text-sec-light dark:text-text-sec-dark mb-6">
+<a class="hover:text-primary" href="#">Home</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary" href="#">Bookings</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-text-main-light dark:text-text-main-dark font-medium">Booking #UMR-2024-885</span>
+</div>
+<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
+<div class="flex flex-col gap-3">
+<div class="flex items-center gap-4 flex-wrap">
+<h1 class="text-3xl lg:text-4xl font-black tracking-tight text-text-main-light dark:text-text-main-dark">
+                        Booking #UMR-2024-885
+                    </h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-bold border border-green-200 dark:border-green-800">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                            Confirmed
+                        </span>
+</div>
+<p class="text-text-sec-light dark:text-text-sec-dark text-base">Created on Oct 24, 2023 • Reference: <span class="font-mono text-text-main-light dark:text-text-main-dark">AG-99210</span></p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="h-10 px-4 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark text-text-main-light dark:text-text-main-dark text-sm font-bold flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]">description</span>
+                    Download Voucher
+                </button>
+<button class="h-10 px-4 rounded-lg bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark text-text-main-light dark:text-text-main-dark text-sm font-bold flex items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+                    Edit Details
+                </button>
+<button class="h-10 px-4 rounded-lg bg-primary hover:bg-blue-600 text-white text-sm font-bold flex items-center gap-2 transition-colors shadow-sm shadow-primary/30">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+                    Make Payment
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<div class="lg:col-span-3 flex flex-col gap-6">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Pilgrims (2)</h3>
+<button class="text-primary text-sm font-bold hover:underline">Add</button>
+</div>
+<div class="flex flex-col gap-4">
+<div class="group p-3 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex items-start gap-3">
+<div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-bold text-text-main-light dark:text-text-main-dark truncate">Mr. Ahmed Ali</p>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark mt-0.5">Adult • 42 Yrs</p>
+<div class="mt-2 flex flex-col gap-1 text-xs text-text-sec-light dark:text-text-sec-dark">
+<div class="flex justify-between">
+<span>Passport:</span>
+<span class="font-mono text-text-main-light dark:text-text-main-dark">A1234567</span>
+</div>
+<div class="flex justify-between items-center mt-1">
+<span>Visa:</span>
+<span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400 font-bold bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded text-[10px]">
+                                                    Issued
+                                                </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="group p-3 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark hover:border-primary/50 transition-colors cursor-pointer">
+<div class="flex items-start gap-3">
+<div class="size-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400 shrink-0">
+<span class="material-symbols-outlined">person_3</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-bold text-text-main-light dark:text-text-main-dark truncate">Mrs. Fatima Ali</p>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark mt-0.5">Adult • 38 Yrs</p>
+<div class="mt-2 flex flex-col gap-1 text-xs text-text-sec-light dark:text-text-sec-dark">
+<div class="flex justify-between">
+<span>Passport:</span>
+<span class="font-mono text-text-main-light dark:text-text-main-dark">B7654321</span>
+</div>
+<div class="flex justify-between items-center mt-1">
+<span>Visa:</span>
+<span class="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded text-[10px]">
+                                                    Processing
+                                                </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 shadow-sm">
+<h3 class="text-sm font-bold text-text-main-light dark:text-text-main-dark mb-3 uppercase tracking-wider">Primary Contact</h3>
+<div class="flex flex-col gap-3 text-sm">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-sec-light dark:text-text-sec-dark text-[20px]">call</span>
+<span class="text-text-main-light dark:text-text-main-dark">+966 55 123 4567</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-sec-light dark:text-text-sec-dark text-[20px]">mail</span>
+<span class="text-text-main-light dark:text-text-main-dark truncate">ahmed.ali@example.com</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 flex flex-col gap-6">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-6 shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div>
+<h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Standard Umrah Package</h3>
+<p class="text-sm text-text-sec-light dark:text-text-sec-dark">14 Days • Group #GRP-2023-A</p>
+</div>
+<div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">package_2</span>
+</div>
+</div>
+<div class="h-px bg-border-light dark:bg-border-dark w-full my-4"></div>
+<div class="mb-6">
+<h4 class="text-sm font-bold text-text-sec-light dark:text-text-sec-dark uppercase mb-3">Flight Itinerary</h4>
+<div class="rounded-lg border border-border-light dark:border-border-dark overflow-hidden">
+<div class="p-4 bg-background-light dark:bg-background-dark border-b border-border-light dark:border-border-dark flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-white flex items-center justify-center overflow-hidden">
+<img alt="Saudia Airlines Logo" class="object-contain w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7PS8ab_adbKKh4iaTCVPfSIngKoNDgHB6U-CuD8Pj5E3CeZCtuZVx_0X5F4Sjtog5N_O8G3U_g4XeC54imjpoDSWL1ve602xOZRuQW8a85qGn15Z6H4bRNgqn5FuGDEyvsvq34d-6LsRZkYRhsOTwOelEDqNYf03vn12l3tT83fCREmEIUcSideV6bBcgkPtX9DdPdjrx40mj1ypgVT30rAbZmynDJa1ibfyMAkosalKyG3sWENv13g3Fp76lIU2RknqByvkBtroh"/>
+</div>
+<div>
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Saudia Airlines</p>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark">Economy • SV123</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Nov 15, 2023</p>
+</div>
+</div>
+<div class="p-4 flex items-center justify-between gap-4">
+<div class="text-center min-w-[60px]">
+<p class="text-lg font-bold text-text-main-light dark:text-text-main-dark">10:30</p>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark">JFK</p>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<p class="text-[10px] text-text-sec-light dark:text-text-sec-dark">12h 45m</p>
+<div class="w-full h-0.5 bg-border-light dark:bg-border-dark relative">
+<div class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 text-border-dark dark:text-border-light">
+<span class="material-symbols-outlined text-[14px] rotate-90">flight</span>
+</div>
+</div>
+<p class="text-[10px] text-green-600 dark:text-green-400">Direct</p>
+</div>
+<div class="text-center min-w-[60px]">
+<p class="text-lg font-bold text-text-main-light dark:text-text-main-dark">16:15</p>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark">JED</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold text-text-sec-light dark:text-text-sec-dark uppercase mb-3">Accommodation</h4>
+<div class="flex flex-col gap-4">
+<div class="flex gap-4 p-3 rounded-lg border border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<div class="w-20 h-20 rounded-md bg-cover bg-center shrink-0" data-alt="Swissotel Makkah Hotel view" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC9ZZaWNV1DotxBn0dGG8fsdyn8fz-Ns7Ouh52vRPpYusPzj9I7KD6blwQEcjkMAcjUmaFmspBoKAnjA0LX93R4-Xz4Oz4mmupQ7UDklvwXRBgZbh9Mtexoel7M-NVqHTAPYeCfOY3SjEm36cplu-C4jZzfJ2j8iESjRdV_WZx8SH1lvtyWh0ufEw6RpBceIb0LPyQaKwENTjf5RA4BqDhmT0OZWhQKuzJKmQDHgwoMPcKRaSzv6PnpPsZE7A--UrSy89k25XxA-wpQ');"></div>
+<div class="flex-1 py-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-0.5 font-bold tracking-wide">MAKKAH</p>
+<h5 class="text-base font-bold text-text-main-light dark:text-text-main-dark leading-tight">Swissôtel Makkah</h5>
+</div>
+<div class="text-right">
+<span class="inline-block bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold">5 Nights</span>
+</div>
+</div>
+<div class="mt-2 flex items-center gap-4 text-xs text-text-sec-light dark:text-text-sec-dark">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                                            Nov 15 - Nov 20
+                                        </div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">bed</span>
+                                            Quad Room
+                                        </div>
+</div>
+</div>
+</div>
+<div class="flex gap-4 p-3 rounded-lg border border-border-light dark:border-border-dark hover:bg-background-light dark:hover:bg-background-dark transition-colors">
+<div class="w-20 h-20 rounded-md bg-cover bg-center shrink-0" data-alt="Anwar Al Madinah Movenpick Hotel" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDJzM525z8zL-MlFaRziv3pwNankGk7bf-hkdtXCdxVx4S23qoRAabkn1Io32Xy7agq6ABRslLjxwpXs7-4odYvcuC1XmWSHDKTbBmIIqo1jMCFqJcV98CS0lUfmV2Wr_WPcM_oeZ1p99-Ki4WNCZn00ixplK_8jeAI-QVp56IF6DHtR3F08UHbn6kaon-RjAAhJiGDTkZsXO5Fr1TJqrrsskPiBBvrofcI4ggpHQNGY2hHp2tjp29f32omacoehPJq5CK6QaVRrCAP');"></div>
+<div class="flex-1 py-1">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark mb-0.5 font-bold tracking-wide">MADINAH</p>
+<h5 class="text-base font-bold text-text-main-light dark:text-text-main-dark leading-tight">Anwar Al Madinah</h5>
+</div>
+<div class="text-right">
+<span class="inline-block bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded font-bold">5 Nights</span>
+</div>
+</div>
+<div class="mt-2 flex items-center gap-4 text-xs text-text-sec-light dark:text-text-sec-dark">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+                                            Nov 20 - Nov 25
+                                        </div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">bed</span>
+                                            Quad Room
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-800/30 p-5">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-500">info</span>
+<div>
+<h4 class="font-bold text-amber-900 dark:text-amber-400 text-sm">Special Requests</h4>
+<p class="text-sm text-amber-800/80 dark:text-amber-300/80 mt-1">"Wheelchair assistance required for Mrs. Fatima Ali during arrival at JED airport."</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark overflow-hidden shadow-sm">
+<div class="p-5 border-b border-border-light dark:border-border-dark flex justify-between items-center bg-background-light dark:bg-background-dark">
+<h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Required Documents</h3>
+<span class="text-xs font-bold text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-800">2 Actions Needed</span>
+</div>
+<div class="p-5">
+<div class="mb-6">
+<div class="flex justify-between text-sm mb-2">
+<span class="font-medium text-text-sec-light dark:text-text-sec-dark">Completion Status</span>
+<span class="font-bold text-text-main-light dark:text-text-main-dark">50%</span>
+</div>
+<div class="w-full h-2.5 bg-border-light dark:bg-border-dark rounded-full overflow-hidden">
+<div class="h-full bg-orange-500 w-1/2 rounded-full"></div>
+</div>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark mt-2">Please upload pending documents to avoid delays.</p>
+</div>
+<div class="mb-6 p-4 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">notifications_active</span>
+<h4 class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Reminders</h4>
+</div>
+<span class="text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded border border-green-100 dark:border-green-800/30 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">check</span> Active
+                                </span>
+</div>
+<div class="flex items-center gap-5">
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+<span class="text-xs font-medium text-text-sec-light dark:text-text-sec-dark peer-checked:font-bold peer-checked:text-text-main-light dark:peer-checked:text-text-main-dark">Email</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input class="sr-only peer" type="checkbox"/>
+<div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+<span class="text-xs font-medium text-text-sec-light dark:text-text-sec-dark peer-checked:font-bold peer-checked:text-text-main-light dark:peer-checked:text-text-main-dark">SMS</span>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 shrink-0">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Passport Copies</p>
+<p class="text-xs text-green-600 dark:text-green-400 font-medium">Approved</p>
+</div>
+<button aria-label="View Passport" class="text-text-sec-light hover:text-primary transition-colors p-1">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Personal Photos</p>
+<p class="text-xs text-red-600 dark:text-red-400 font-medium">Rejected - Re-upload</p>
+</div>
+<button class="px-3 py-1.5 text-xs font-bold text-white bg-primary hover:bg-blue-600 rounded-lg transition-colors">
+                                    Upload
+                                </button>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-text-sec-light dark:text-text-sec-dark shrink-0">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Vaccination Certs</p>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark font-medium">Required</p>
+</div>
+<button class="px-3 py-1.5 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors">
+                                    Upload
+                                </button>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+<span class="material-symbols-outlined text-[18px]">hourglass_top</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-text-main-light dark:text-text-main-dark">Visa Application</p>
+<p class="text-xs text-amber-600 dark:text-amber-400 font-medium">Under Review</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark overflow-hidden shadow-sm">
+<div class="p-5 border-b border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark">
+<h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Payment Summary</h3>
+</div>
+<div class="p-5 flex flex-col gap-3">
+<div class="flex justify-between text-sm">
+<span class="text-text-sec-light dark:text-text-sec-dark">Base Fare (2x Adults)</span>
+<span class="font-medium text-text-main-light dark:text-text-main-dark tabular-nums">$3,800.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-text-sec-light dark:text-text-sec-dark">Visa Fees</span>
+<span class="font-medium text-text-main-light dark:text-text-main-dark tabular-nums">$400.00</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-text-sec-light dark:text-text-sec-dark">Service Charge &amp; Taxes</span>
+<span class="font-medium text-text-main-light dark:text-text-main-dark tabular-nums">$300.00</span>
+</div>
+<div class="h-px bg-border-light dark:bg-border-dark my-2"></div>
+<div class="flex justify-between items-end">
+<span class="font-bold text-text-main-light dark:text-text-main-dark">Total Amount</span>
+<span class="font-black text-2xl text-primary tabular-nums">$4,500.00</span>
+</div>
+<div class="mt-4 p-4 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark">
+<div class="flex justify-between text-xs font-bold mb-2">
+<span class="text-green-600 dark:text-green-400">Paid: $1,000.00</span>
+<span class="text-red-500 dark:text-red-400">Due: $3,500.00</span>
+</div>
+<div class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[22%] rounded-full"></div>
+</div>
+<p class="text-xs text-text-sec-light dark:text-text-sec-dark mt-2 text-center">Balance due by <span class="font-bold text-text-main-light dark:text-text-main-dark">Nov 10, 2023</span></p>
+</div>
+<button class="w-full mt-2 py-2.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-sm font-bold transition-colors">
+                            View Payment History
+                        </button>
+</div>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark p-5 shadow-sm flex flex-col h-full min-h-[300px]">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark">Agency Support</h3>
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+</div>
+<div class="flex-1 flex flex-col gap-4 overflow-y-auto max-h-[250px] mb-4 pr-2">
+<div class="flex gap-3 items-start">
+<div class="size-8 rounded-full bg-gray-200 dark:bg-gray-700 shrink-0 overflow-hidden">
+<img alt="Support Avatar" class="w-full h-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzaSKkrJvx_87LgTUKI9q8KieTifqhacujmJy2OcbeA_2rVQSZzFnotIANR4kMzMF__ZVkfTlJ_yuB6WShP5bOGJBf11Sg0KdMUXquWylwb-WgTQj7VAYlyfYVhxg71pQ9itdl_Gk_odlnsS0lOdGZhdtw5MiwEI3l8IX3IBAdtl2yqBBUZRlAMO0VR8kBJSBrmf2LCoq7s2r9wvw94AIM8c2H47tjIbEHp9tqAr8pSfWR3i73kEOLljt10h_hGDajUpZRU0zhhvBi"/>
+</div>
+<div class="bg-background-light dark:bg-background-dark p-3 rounded-r-xl rounded-bl-xl text-sm text-text-main-light dark:text-text-main-dark">
+<p>Hello! The visa for Mr. Ahmed Ali has been issued. We are working on Mrs. Fatima's visa now.</p>
+<span class="text-[10px] text-text-sec-light dark:text-text-sec-dark block mt-1">10:42 AM</span>
+</div>
+</div>
+<div class="flex gap-3 items-start flex-row-reverse">
+<div class="size-8 rounded-full bg-primary shrink-0 flex items-center justify-center text-white text-xs font-bold">
+                                YOU
+                            </div>
+<div class="bg-primary/10 p-3 rounded-l-xl rounded-br-xl text-sm text-text-main-light dark:text-text-main-dark">
+<p>Great, thank you. Please ensure the wheelchair request is confirmed.</p>
+<span class="text-[10px] text-text-sec-light dark:text-text-sec-dark block mt-1 text-right">10:45 AM</span>
+</div>
+</div>
+</div>
+<div class="relative">
+<input class="w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark text-sm h-10 pr-10 focus:ring-primary focus:border-primary text-text-main-light dark:text-text-main-dark" placeholder="Type a message..." type="text"/>
+<button class="absolute right-2 top-1/2 -translate-y-1/2 text-primary hover:text-blue-700">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-border-light dark:border-border-dark">
+<h3 class="text-lg font-bold text-text-main-light dark:text-text-main-dark mb-6">Activity Log</h3>
+<div class="relative pl-4 border-l border-border-light dark:border-border-dark space-y-8">
+<div class="relative pl-6">
+<div class="absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 border-white dark:border-background-dark bg-green-500"></div>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+<p class="text-sm font-medium text-text-main-light dark:text-text-main-dark">Visa Issued for <span class="font-bold">Mr. Ahmed Ali</span></p>
+<span class="text-xs text-text-sec-light dark:text-text-sec-dark">Today, 10:42 AM</span>
+</div>
+</div>
+<div class="relative pl-6">
+<div class="absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 border-white dark:border-background-dark bg-primary"></div>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+<p class="text-sm font-medium text-text-main-light dark:text-text-main-dark">Payment of <span class="font-bold">$1,000.00</span> received via Credit Card</p>
+<span class="text-xs text-text-sec-light dark:text-text-sec-dark">Oct 25, 2023, 09:15 AM</span>
+</div>
+</div>
+<div class="relative pl-6">
+<div class="absolute -left-[21px] top-1 h-3 w-3 rounded-full border-2 border-white dark:border-background-dark bg-gray-400"></div>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+<p class="text-sm font-medium text-text-main-light dark:text-text-main-dark">Booking created by <span class="font-bold">Agency Admin</span></p>
+<span class="text-xs text-text-sec-light dark:text-text-sec-dark">Oct 24, 2023, 14:30 PM</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

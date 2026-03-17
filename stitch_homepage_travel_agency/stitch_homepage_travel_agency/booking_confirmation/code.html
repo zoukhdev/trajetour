@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Confirmation - Omrah &amp; Hajj Travels</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white antialiased">
+<!-- Top Navigation Bar -->
+<div class="bg-white dark:bg-[#111921] border-b border-[#f0f2f4] dark:border-[#22303e]">
+<div class="max-w-[1280px] mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-3 text-[#111418] dark:text-white">
+<div class="size-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">mosque</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Omrah &amp; Hajj Travels</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<nav class="flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Packages</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">My Bookings</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="size-8 rounded-full bg-gray-200 overflow-hidden" data-alt="User profile picture placeholder">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmb6IPhSMT9IvNdVKQ1O-KSU7WQmXKgGda-uB5f78auBqiXqIC4Y9jOMWYeCXo1ncaMf3cHG_qxRT03uC1DLDVZefopDsx0bjH-bX7vWl3IF2HGiGxx_UJCIQSVD7iWvcKN1QTWAL3-zzNM_H-Q-wXyE_4vaxdA13XpdtuH9tinclsEtUy0ZC6MOigqHQRrLeR0yGItjEIq4ecAAHDFyZl641jSHXxnRFeguQ9O7rptqiCXXk60eJ8n_4VMgewftRaNNIr76IEPhU4"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Container -->
+<div class="max-w-[1024px] mx-auto px-6 py-8 flex flex-col gap-6">
+<!-- Breadcrumbs -->
+<nav class="flex text-sm text-[#637588] dark:text-slate-400 font-medium">
+<a class="hover:text-primary hover:underline" href="#">Home</a>
+<span class="mx-2">/</span>
+<a class="hover:text-primary hover:underline" href="#">Checkout</a>
+<span class="mx-2">/</span>
+<span class="text-[#111418] dark:text-white">Confirmation</span>
+</nav>
+<!-- Success Header Section -->
+<div class="flex flex-col items-center text-center gap-4 py-8">
+<div class="size-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 mb-2">
+<span class="material-symbols-outlined text-[48px]">check_circle</span>
+</div>
+<h1 class="text-3xl md:text-4xl font-black tracking-tight text-[#111418] dark:text-white">
+                Al-Hamdulillah! Your journey is confirmed
+            </h1>
+<p class="text-[#637588] dark:text-slate-400 text-lg max-w-2xl">
+                We have received your payment and your booking is secure. May Allah accept your intention and facilitate your journey.
+            </p>
+<div class="mt-4 flex flex-col items-center bg-white dark:bg-[#1a2632] px-8 py-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+<span class="text-xs uppercase font-bold tracking-wider text-[#637588] dark:text-slate-400 mb-1">Booking Reference</span>
+<div class="flex items-center gap-2">
+<span class="text-2xl font-bold text-primary">OH-882910</span>
+<button class="text-[#637588] hover:text-primary transition-colors" title="Copy Reference">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+</button>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap gap-3 justify-center mt-4 w-full">
+<button class="flex items-center gap-2 h-10 px-5 rounded-lg bg-white dark:bg-[#1a2632] border border-slate-200 dark:border-slate-700 text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-lg">print</span>
+                    Print Receipt
+                </button>
+<button class="flex items-center gap-2 h-10 px-5 rounded-lg bg-white dark:bg-[#1a2632] border border-slate-200 dark:border-slate-700 text-sm font-bold shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-lg">mail</span>
+                    Email Itinerary
+                </button>
+<button class="flex items-center gap-2 h-10 px-5 rounded-lg bg-primary text-white border border-transparent text-sm font-bold shadow-sm hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                    Download PDF
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
+<!-- Left Column: Package Details & Travelers -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Package Summary Card -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">luggage</span>
+                            Package Summary
+                        </h3>
+<span class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Confirmed</span>
+</div>
+<div class="p-6">
+<div class="flex gap-4 mb-6">
+<div class="w-24 h-24 rounded-lg bg-slate-200 shrink-0 overflow-hidden relative">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="View of the Kaaba in Mecca" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCg7uYtOLyki0yvQhvAiqJ6cz4oltgKdqdo8A8m4dMvVsx457lR12GdL6Mfw0SZi5KwNFxaD9qghh6UBJQPmdFbtnTh91P7KgaPlnJ-YNOETbPDNWjZM46ekyzEV6IiO5gHLFzV5OCx62495oc3eH10oC4hcXejcd52o8CVddwQGoNQuKYN4BoDDxwmGBhaI6vq8CWgkHtLZmtyuDopxeSo-FD_UvedTxHhdxUNxRIH8rWfiNpRzu-l-B_yGmGMr139gDS0V2LAzS0s');"></div>
+</div>
+<div class="flex flex-col justify-center">
+<h4 class="text-xl font-bold mb-1">14-Day Umrah Deluxe Package</h4>
+<div class="flex items-center text-sm text-[#637588] dark:text-slate-400 gap-4 mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">calendar_month</span> Oct 12 - Oct 26, 2024</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">group</span> 2 Travelers</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-xs uppercase font-bold text-[#637588] dark:text-slate-400 mb-2">Makkah Accommodation</p>
+<div class="flex items-start gap-3">
+<div class="size-8 rounded bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-lg">apartment</span>
+</div>
+<div>
+<p class="font-bold text-sm">Hilton Makkah Convention</p>
+<p class="text-sm text-[#637588] dark:text-slate-400">5 Nights • Oct 12 - Oct 17</p>
+</div>
+</div>
+</div>
+<div>
+<p class="text-xs uppercase font-bold text-[#637588] dark:text-slate-400 mb-2">Madinah Accommodation</p>
+<div class="flex items-start gap-3">
+<div class="size-8 rounded bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-lg">mosque</span>
+</div>
+<div>
+<p class="font-bold text-sm">Anwar Al Madinah Mövenpick</p>
+<p class="text-sm text-[#637588] dark:text-slate-400">5 Nights • Oct 17 - Oct 22</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-6 pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
+<div>
+<p class="text-xs uppercase font-bold text-[#637588] dark:text-slate-400 mb-2">Flights</p>
+<div class="flex flex-col md:flex-row gap-4 md:items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary">flight_takeoff</span>
+</div>
+<div>
+<p class="font-bold text-sm">Saudi Airlines (SV-123)</p>
+<p class="text-xs text-[#637588] dark:text-slate-400">LHR to JED • 12 Oct, 10:00 AM</p>
+</div>
+</div>
+<div class="hidden md:block w-px h-8 bg-slate-200 dark:bg-slate-700"></div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-white dark:bg-slate-700 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary">flight_land</span>
+</div>
+<div>
+<p class="font-bold text-sm">Saudi Airlines (SV-124)</p>
+<p class="text-xs text-[#637588] dark:text-slate-400">MED to LHR • 26 Oct, 16:30 PM</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Traveler Details -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">group</span>
+                            Traveler Details
+                        </h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-[#637588] dark:text-slate-400 font-semibold uppercase text-xs">
+<tr>
+<th class="px-6 py-3">Name</th>
+<th class="px-6 py-3">Passport No.</th>
+<th class="px-6 py-3">Relationship</th>
+<th class="px-6 py-3">Visa Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr>
+<td class="px-6 py-4 font-medium">Mr. Ahmed Ali</td>
+<td class="px-6 py-4 text-[#637588] dark:text-slate-400">A123****89</td>
+<td class="px-6 py-4">Primary</td>
+<td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Processing</span></td>
+</tr>
+<tr>
+<td class="px-6 py-4 font-medium">Mrs. Fatima Ali</td>
+<td class="px-6 py-4 text-[#637588] dark:text-slate-400">B987****21</td>
+<td class="px-6 py-4">Spouse</td>
+<td class="px-6 py-4"><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Processing</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar (Next Steps & Payment) -->
+<div class="flex flex-col gap-6">
+<!-- Next Steps -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm p-6">
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">timeline</span>
+                        Next Steps
+                    </h3>
+<div class="relative pl-4 border-l-2 border-slate-100 dark:border-slate-700 space-y-6">
+<!-- Step 1 (Active) -->
+<div class="relative">
+<span class="absolute -left-[21px] top-0 size-3 rounded-full bg-primary ring-4 ring-white dark:ring-[#1a2632]"></span>
+<h4 class="text-sm font-bold text-[#111418] dark:text-white">Upload Passport Scans</h4>
+<p class="text-xs text-[#637588] dark:text-slate-400 mt-1">Please upload clear scans of passports for visa processing.</p>
+<button class="mt-2 text-xs font-bold text-primary hover:underline">Upload Now →</button>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<span class="absolute -left-[21px] top-0 size-3 rounded-full bg-slate-300 dark:bg-slate-600 ring-4 ring-white dark:ring-[#1a2632]"></span>
+<h4 class="text-sm font-bold text-[#637588] dark:text-slate-400">Visa Processing</h4>
+<p class="text-xs text-[#637588] dark:text-slate-400 mt-1">We will submit your documents to the embassy. Approx 5-7 days.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative">
+<span class="absolute -left-[21px] top-0 size-3 rounded-full bg-slate-300 dark:bg-slate-600 ring-4 ring-white dark:ring-[#1a2632]"></span>
+<h4 class="text-sm font-bold text-[#637588] dark:text-slate-400">Pre-Departure Briefing</h4>
+<p class="text-xs text-[#637588] dark:text-slate-400 mt-1">Join our online orientation on Oct 5th.</p>
+</div>
+</div>
+</div>
+<!-- Payment Summary -->
+<div class="bg-white dark:bg-[#1a2632] rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm p-6">
+<h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+                        Payment Details
+                    </h3>
+<div class="space-y-3 text-sm">
+<div class="flex justify-between">
+<span class="text-[#637588] dark:text-slate-400">Total Amount</span>
+<span class="font-bold">$4,500.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[#637588] dark:text-slate-400">Amount Paid</span>
+<span class="font-bold text-green-600 dark:text-green-400">$4,500.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[#637588] dark:text-slate-400">Balance Due</span>
+<span class="font-bold">$0.00</span>
+</div>
+<div class="border-t border-slate-100 dark:border-slate-700 my-2 pt-2"></div>
+<div class="flex justify-between text-xs text-[#637588] dark:text-slate-400">
+<span>Payment Method</span>
+<span>Visa **** 4242</span>
+</div>
+<div class="flex justify-between text-xs text-[#637588] dark:text-slate-400">
+<span>Transaction ID</span>
+<span>TXN-98210092</span>
+</div>
+</div>
+</div>
+<!-- Support Card -->
+<div class="bg-gradient-to-br from-primary/10 to-transparent dark:from-primary/20 dark:to-transparent rounded-xl p-6 border border-primary/20">
+<h3 class="text-lg font-bold mb-2 text-primary">Need Assistance?</h3>
+<p class="text-sm text-[#637588] dark:text-slate-300 mb-4">Our dedicated team is here to help you prepare for your spiritual journey.</p>
+<div class="space-y-3">
+<a class="flex items-center gap-3 text-sm font-medium hover:text-primary transition-colors" href="#">
+<div class="size-8 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm text-green-600">
+<span class="material-symbols-outlined text-lg">call</span>
+</div>
+                            +1-800-HAJJ-HELP
+                        </a>
+<a class="flex items-center gap-3 text-sm font-medium hover:text-primary transition-colors" href="#">
+<div class="size-8 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm text-green-600">
+<span class="material-symbols-outlined text-lg">chat</span>
+</div>
+                            Chat on WhatsApp
+                        </a>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Info -->
+<div class="border-t border-slate-200 dark:border-slate-800 pt-8 pb-12 mt-8 text-center">
+<p class="text-sm text-[#637588] dark:text-slate-400">
+                © 2024 Omrah &amp; Hajj Travels. All rights reserved. <br/>
+                Please keep this confirmation for your records. This is not a visa or a boarding pass.
+            </p>
+</div>
+</div>
+</body></html>

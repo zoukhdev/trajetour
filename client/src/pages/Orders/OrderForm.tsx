@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useAuth } from '../../context/AuthContext';
 import { useExchangeRates } from '../../context/ExchangeRateContext';
-import { Plus, Trash2, Users, DollarSign, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, Users, DollarSign, TrendingUp, Building2 } from 'lucide-react';
 import PassengerForm from '../../components/PassengerForm';
 import PassengerList from '../../components/PassengerList';
 import Modal from '../../components/Modal';
@@ -28,6 +28,10 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
     const [items, setItems] = useState<OrderItem[]>([
         { id: '1', description: '', quantity: 1, unitPrice: 0, amount: 0 }
     ]);
+
+    // Hotel & Pricing State
+    const [offerHotels, setOfferHotels] = useState<any[]>([]);
+    const [isHotelPricing, setIsHotelPricing] = useState(false);
 
     // Passengers (multi-passenger support)
     const [passengers, setPassengers] = useState<Passenger[]>([]);
@@ -116,13 +120,81 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
         }));
     };
 
-    const handleOfferChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleOfferChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const offerId = e.target.value;
         setSelectedOfferId(offerId);
 
         // Clear existing items when offer changes
         setItems([{ id: '1', description: '', quantity: 1, unitPrice: 0, amount: 0 }]);
+        setOfferHotels([]);
+        setIsHotelPricing(false);
+
+        if (offerId) {
+            try {
+                const response = await fetch(`/api/offers/${offerId}/hotels`, { credentials: 'include' });
+                const data = await response.json();
+                if (data.hotels && data.hotels.length > 0) {
+                    setOfferHotels(data.hotels);
+                    setIsHotelPricing(true);
+                    // Initial calculation will happen via useEffect when passengers change
+                }
+            } catch (error) {
+                console.error('Error fetching offer hotels:', error);
+            }
+        }
     };
+
+    // Auto-calculate prices when passengers or hotels change
+    useEffect(() => {
+        if (isHotelPricing && offerHotels.length > 0 && passengers.length > 0) {
+            const newItems: OrderItem[] = [];
+
+            // Group passengers by age category
+            const categories = {
+                adult: { count: 0, price: 0, label: 'Adulte (18+)' },
+                child: { count: 0, price: 0, label: 'Enfant (3-17)' },
+                infant: { count: 0, price: 0, label: 'Bébé (0-2)' }
+            };
+
+            passengers.forEach(p => {
+                const birthDate = new Date(p.dateOfBirth);
+                const ageDifMs = Date.now() - birthDate.getTime();
+                const ageDate = new Date(ageDifMs);
+                const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+                let category: 'infant' | 'child' | 'adult' = 'adult';
+                if (age < 3) category = 'infant';
+                else if (age < 18) category = 'child';
+
+                categories[category].count++;
+
+                // Sum price for this category across all assigned hotels
+                // offerHotels objects have { infant_price, child_price, adult_price }
+                let passengerPrice = 0;
+                offerHotels.forEach(hotel => {
+                    passengerPrice += hotel[`${category}_price`] || 0;
+                });
+                categories[category].price = passengerPrice;
+            });
+
+            // Generate items for each category present
+            Object.values(categories).forEach(cat => {
+                if (cat.count > 0) {
+                    newItems.push({
+                        id: `auto-${cat.label}`,
+                        description: `Forfait ${cat.label} (Hébergement inclus)`,
+                        quantity: cat.count,
+                        unitPrice: cat.price,
+                        amount: cat.count * cat.price
+                    });
+                }
+            });
+
+            setItems(newItems);
+        } else if (isHotelPricing && passengers.length === 0) {
+            setItems([]);
+        }
+    }, [passengers, offerHotels, isHotelPricing]);
 
 
 
@@ -340,6 +412,27 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                     </div>
                 </div>
 
+                {/* Hotel Information Display (If hotels assigned) */}
+                {isHotelPricing && offerHotels.length > 0 && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 className="text-sm font-semibold text-blue-800 flex items-center gap-2 mb-2">
+                            <Building2 size={18} />
+                            Hôtels Inclus
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            {/* Deduplicate hotel names */}
+                            {Array.from(new Set(offerHotels.map(h => h.hotel_name))).map((name, idx) => (
+                                <span key={idx} className="bg-white px-3 py-1 rounded-full text-sm font-medium text-blue-600 border border-blue-100 shadow-sm">
+                                    {name as string}
+                                </span>
+                            ))}
+                        </div>
+                        <p className="text-xs text-blue-600 mt-2">
+                            * Le prix est calculé automatiquement selon l'âge des passagers et les tarifs des chambres.
+                        </p>
+                    </div>
+                )}
+
 
 
                 {/* Passengers Section */}
@@ -464,15 +557,19 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
 
                 <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium text-gray-700">Articles / Services</h3>
-                        <button
-                            type="button"
-                            onClick={handleAddItem}
-                            className="text-sm text-primary hover:text-blue-700 font-medium flex items-center gap-1"
-                        >
-                            <Plus size={16} />
-                            Ajouter
-                        </button>
+                        <h3 className="text-sm font-medium text-gray-700">
+                            {isHotelPricing ? 'Détail de la tarification (Calculé automatiquement)' : 'Articles / Services'}
+                        </h3>
+                        {!isHotelPricing && (
+                            <button
+                                type="button"
+                                onClick={handleAddItem}
+                                className="text-sm text-primary hover:text-blue-700 font-medium flex items-center gap-1"
+                            >
+                                <Plus size={16} />
+                                Ajouter
+                            </button>
+                        )}
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4 space-y-3">
@@ -485,7 +582,8 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                                         placeholder="Description (ex: Omra Decembre)"
                                         value={item.description}
                                         onChange={(e) => handleItemChange(item.id, 'description', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm"
+                                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm ${isHotelPricing ? 'bg-gray-100 text-gray-500' : ''}`}
+                                        readOnly={isHotelPricing}
                                     />
                                 </div>
                                 <div className="w-20">
@@ -496,7 +594,8 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                                         placeholder="Qté"
                                         value={item.quantity}
                                         onChange={(e) => handleItemChange(item.id, 'quantity', Number(e.target.value))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm text-center"
+                                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm text-center ${isHotelPricing ? 'bg-gray-100 text-gray-500' : ''}`}
+                                        readOnly={isHotelPricing}
                                     />
                                 </div>
                                 <div className="w-32">
@@ -507,13 +606,14 @@ const OrderForm = ({ onClose }: OrderFormProps) => {
                                         placeholder="Prix Unit."
                                         value={item.unitPrice || ''}
                                         onChange={(e) => handleItemChange(item.id, 'unitPrice', Number(e.target.value))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm text-right"
+                                        className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm text-right ${isHotelPricing ? 'bg-gray-100 text-gray-500' : ''}`}
+                                        readOnly={isHotelPricing}
                                     />
                                 </div>
                                 <div className="w-32 pt-2 text-right font-medium text-gray-700 text-sm">
                                     {item.amount.toLocaleString()} DZD
                                 </div>
-                                {items.length > 1 && (
+                                {items.length > 1 && !isHotelPricing && (
                                     <button
                                         type="button"
                                         onClick={() => handleRemoveItem(item.id)}

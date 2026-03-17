@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "WRtour",
-    "slug": "WRtour",
-    "scheme": "wrtour",
+    "name": "Trajetour",
+    "slug": "Trajetour",
+    "scheme": "trajetour",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

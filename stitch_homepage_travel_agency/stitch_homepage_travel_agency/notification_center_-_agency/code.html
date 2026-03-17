@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notification Center - Agency Portal</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white font-display overflow-hidden">
+<div class="flex h-screen w-full bg-white dark:bg-background-dark overflow-hidden">
+<aside class="flex w-[280px] shrink-0 flex-col border-r border-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-[#111921] transition-all overflow-y-auto">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-center mb-4">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border border-gray-200 dark:border-gray-700" data-alt="Travel agency logo with abstract geometric shape" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCJL9zc7N9n8TCC1WeaL7fhG5ux5d8A2c-15ntW0Joiovo79t1_8xiD61RMAZjmruEwtGRHxHflNRuPiAncnv4k3LDLODXlkV1mI0qzSdmBNHACxzgfLlxws2s4E69KgX6hs92mHqqKd-McdFfd8YYG1QkSsaYLkADAfT8xfi0KXSimNQ5yzmptRzYKsZEenfV_6c5jdm8UURj9SI7s1JXc0IxVCfcPY6Er87whFSLEigHWPQtC41pN8Y41WLCIOz4YovkZuJ8H3s9j");'></div>
+<div class="flex flex-col">
+<h1 class="text-[#111418] dark:text-white text-base font-bold leading-normal">Al-Haram Travels</h1>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-normal leading-normal">Agency ID: 88291</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400 group-hover:text-[#111418] dark:group-hover:text-white">dashboard</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Overview</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400 group-hover:text-[#111418] dark:group-hover:text-white">calendar_month</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Bookings</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400 group-hover:text-[#111418] dark:group-hover:text-white">groups</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Travelers</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400 group-hover:text-[#111418] dark:group-hover:text-white">account_balance_wallet</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Finances</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 dark:bg-primary/20 border-l-4 border-primary" href="#">
+<span class="material-symbols-outlined text-primary icon-fill">notifications</span>
+<p class="text-primary text-sm font-bold leading-normal">Notification Center</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400 group-hover:text-[#111418] dark:group-hover:text-white">settings</span>
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Settings</p>
+</a>
+</div>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors group mt-auto">
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400 group-hover:text-red-600">logout</span>
+<p class="text-[#111418] dark:text-white group-hover:text-red-600 text-sm font-medium leading-normal">Sign Out</p>
+</div>
+</div>
+</aside>
+<main class="flex flex-1 flex-col h-full relative overflow-hidden bg-background-light dark:bg-background-dark">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-gray-800 bg-white dark:bg-[#111921] px-8 py-3 shrink-0">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-2 text-[#637588] dark:text-gray-400 text-sm">
+<span>Dashboard</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-[#111418] dark:text-white font-medium">Notifications</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<label class="flex flex-col min-w-40 !h-10 max-w-64 hidden md:flex">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-[#637588] dark:text-gray-400 flex border-none bg-[#f0f2f4] dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] dark:bg-gray-800 focus:border-none h-full placeholder:text-[#637588] dark:placeholder:text-gray-500 px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Search notifications..." value=""/>
+</div>
+</label>
+<div class="flex items-center gap-2 cursor-pointer">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 ring-2 ring-white dark:ring-gray-700" data-alt="User profile picture of a man in business attire" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA2dqrwA5-gC-WiEqPtL8qw4EuHFYlzdGnchKCVe5uEOdtCx-kCdDRjlv7K8dSLJD_60CgrdxneMlh1lOupmGtZEtsBU6_wz_H0BvQtpumINc5h3SghGJKiNkfoMFmQVr3NHmdKXmaye6tHq_xUJqWqQc2zpbGIe61Lj-iS36dMhBfJg7RibAo3OwAkfW-1AJbkQKvFuYDlh-bhqoonkVALUolZFMlCFezHd2DYboY8bEQ2i1hNudf0Txji4EsJmcmD5BZH48zTcZAr");'></div>
+<span class="material-symbols-outlined text-[#637588] dark:text-gray-400">expand_more</span>
+</div>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-4 md:p-8">
+<div class="max-w-[1000px] mx-auto flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<h1 class="text-[#111418] dark:text-white text-3xl md:text-4xl font-extrabold leading-tight tracking-[-0.033em]">Notification Center</h1>
+<p class="text-[#637588] dark:text-gray-400 text-base font-normal leading-normal max-w-2xl">
+                        Stay updated on booking statuses, visa document uploads, traveler messages, and important system announcements for your agency.
+                    </p>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-[#111921] p-2 rounded-xl border border-[#f0f2f4] dark:border-gray-800 shadow-sm sticky top-0 z-10 backdrop-blur-md bg-opacity-90 dark:bg-opacity-90">
+<div class="flex gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 hide-scrollbar">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#111418] dark:bg-white text-white dark:text-[#111418] px-4 transition-transform active:scale-95">
+<p class="text-sm font-bold leading-normal">All</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 transition-colors">
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Unread <span class="ml-1 text-xs bg-primary text-white px-1.5 py-0.5 rounded-full">3</span></p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 transition-colors">
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Bookings</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 transition-colors">
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">Documents</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-lg bg-[#f0f2f4] dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-4 transition-colors">
+<p class="text-[#111418] dark:text-white text-sm font-medium leading-normal">System</p>
+</button>
+</div>
+<div class="flex gap-2 shrink-0 ml-auto">
+<button class="flex items-center justify-center rounded-lg h-9 px-4 bg-primary text-white hover:bg-blue-700 transition-colors text-sm font-bold tracking-[0.015em] shadow-sm">
+<span class="material-symbols-outlined text-[18px] mr-2">done_all</span>
+                            Mark all as read
+                        </button>
+<button class="flex items-center justify-center rounded-lg h-9 px-3 text-[#637588] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-sm font-medium tracking-[0.015em]">
+                            Clear all
+                        </button>
+</div>
+</div>
+<div class="flex flex-col gap-8 pb-12">
+<div class="flex flex-col gap-4">
+<h3 class="text-[#637588] dark:text-gray-500 text-xs font-bold uppercase tracking-wider pl-1">Today</h3>
+<div class="group relative flex flex-col md:flex-row items-start gap-4 p-5 rounded-xl bg-white dark:bg-[#1e2936] border border-transparent shadow-sm hover:shadow-md transition-all duration-200 hover:border-primary/20 cursor-pointer overflow-hidden">
+<div class="absolute top-5 right-5 size-2.5 rounded-full bg-primary animate-pulse"></div>
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl"></div>
+<div class="flex shrink-0 items-center justify-center size-12 rounded-full bg-blue-50 dark:bg-blue-900/30 text-primary">
+<span class="material-symbols-outlined icon-fill">confirmation_number</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start pr-6">
+<p class="text-[#111418] dark:text-white text-base font-bold">Booking Confirmed: Group A (Ramadan Package)</p>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium whitespace-nowrap hidden md:block">10 mins ago</p>
+</div>
+<p class="text-[#111418] dark:text-gray-300 text-sm leading-relaxed max-w-3xl">
+                                    Great news! The slots for the 'Ramadan First 10 Days' package have been officially confirmed. Please proceed to traveler assignment.
+                                </p>
+<div class="flex items-center gap-4 mt-2">
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium md:hidden">10 mins ago</p>
+<button class="text-primary hover:text-blue-700 text-sm font-bold flex items-center gap-1 group/btn">
+                                        View Booking Details 
+                                        <span class="material-symbols-outlined text-[16px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="group relative flex flex-col md:flex-row items-start gap-4 p-5 rounded-xl bg-white dark:bg-[#1e2936] border border-transparent shadow-sm hover:shadow-md transition-all duration-200 hover:border-primary/20 cursor-pointer">
+<div class="absolute top-5 right-5 size-2.5 rounded-full bg-primary"></div>
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl"></div>
+<div class="flex shrink-0 items-center justify-center size-12 rounded-full bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined icon-fill">upload_file</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start pr-6">
+<p class="text-[#111418] dark:text-white text-base font-bold">Visa Document Uploaded</p>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium whitespace-nowrap hidden md:block">2 hours ago</p>
+</div>
+<p class="text-[#111418] dark:text-gray-300 text-sm leading-relaxed">
+                                    Visa copy for traveler <span class="font-semibold">Ahmed Al-Fulan</span> (Passport #N293821) has been processed and uploaded by the central office.
+                                </p>
+<div class="flex items-center gap-4 mt-2">
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium md:hidden">2 hours ago</p>
+<div class="flex gap-3">
+<button class="text-primary hover:text-blue-700 text-sm font-bold flex items-center gap-1">
+                                            Download PDF
+                                        </button>
+<button class="text-[#637588] hover:text-[#111418] dark:hover:text-white text-sm font-medium flex items-center gap-1">
+                                            View Traveler Profile
+                                        </button>
+</div>
+</div>
+</div>
+</div>
+<div class="group relative flex flex-col md:flex-row items-start gap-4 p-5 rounded-xl bg-white dark:bg-[#1e2936] border border-transparent shadow-sm hover:shadow-md transition-all duration-200 hover:border-orange-200 cursor-pointer">
+<div class="absolute top-5 right-5 size-2.5 rounded-full bg-primary"></div>
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl"></div>
+<div class="flex shrink-0 items-center justify-center size-12 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined icon-fill">warning</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start pr-6">
+<p class="text-[#111418] dark:text-white text-base font-bold">Action Required: Pending Payment</p>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium whitespace-nowrap hidden md:block">5 hours ago</p>
+</div>
+<p class="text-[#111418] dark:text-gray-300 text-sm leading-relaxed">
+                                    The reservation for Booking #Ref-9921 is expiring in 24 hours. Please complete the deposit to secure the slots.
+                                </p>
+<div class="flex items-center gap-4 mt-2">
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium md:hidden">5 hours ago</p>
+<button class="text-orange-600 dark:text-orange-400 hover:text-orange-700 text-sm font-bold flex items-center gap-1">
+                                        Go to Finances
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="text-[#637588] dark:text-gray-500 text-xs font-bold uppercase tracking-wider pl-1">Yesterday</h3>
+<div class="group relative flex flex-col md:flex-row items-start gap-4 p-5 rounded-xl bg-gray-50 dark:bg-[#111921] border border-[#f0f2f4] dark:border-gray-800 hover:bg-white dark:hover:bg-[#1e2936] hover:shadow-sm transition-all duration-200 cursor-pointer opacity-80 hover:opacity-100">
+<div class="flex shrink-0 items-center justify-center size-12 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start">
+<p class="text-[#111418] dark:text-white text-base font-bold">System Maintenance Scheduled</p>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium whitespace-nowrap hidden md:block">Yesterday, 4:00 PM</p>
+</div>
+<p class="text-[#637588] dark:text-gray-400 text-sm leading-relaxed">
+                                    The Agency Portal will undergo scheduled maintenance this Sunday from 2:00 AM to 4:00 AM. Access may be intermittent.
+                                </p>
+<div class="flex items-center gap-4 mt-2">
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium md:hidden">Yesterday</p>
+</div>
+</div>
+</div>
+<div class="group relative flex flex-col md:flex-row items-start gap-4 p-5 rounded-xl bg-gray-50 dark:bg-[#111921] border border-[#f0f2f4] dark:border-gray-800 hover:bg-white dark:hover:bg-[#1e2936] hover:shadow-sm transition-all duration-200 cursor-pointer opacity-80 hover:opacity-100">
+<div class="flex shrink-0 items-center justify-center size-12 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+<span class="material-symbols-outlined icon-fill">chat</span>
+</div>
+<div class="flex flex-col flex-1 gap-1">
+<div class="flex justify-between items-start">
+<p class="text-[#111418] dark:text-white text-base font-bold">New Message from Traveler</p>
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium whitespace-nowrap hidden md:block">Yesterday, 10:30 AM</p>
+</div>
+<p class="text-[#637588] dark:text-gray-400 text-sm leading-relaxed">
+<span class="font-semibold text-gray-900 dark:text-gray-200">Fatima Zara</span> sent a query regarding flight baggage allowance for the upcoming Omrah trip.
+                                </p>
+<div class="flex items-center gap-4 mt-2">
+<p class="text-[#637588] dark:text-gray-400 text-xs font-medium md:hidden">Yesterday</p>
+<button class="text-green-700 dark:text-green-400 hover:text-green-800 text-sm font-bold flex items-center gap-1">
+                                        Reply
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center pt-4">
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 bg-white dark:bg-[#1e2936] border border-[#f0f2f4] dark:border-gray-700 hover:bg-[#f0f2f4] dark:hover:bg-gray-700 text-[#111418] dark:text-white text-sm font-medium leading-normal shadow-sm transition-all">
+                            Load older notifications
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

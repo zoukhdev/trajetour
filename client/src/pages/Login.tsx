@@ -38,7 +38,7 @@ const Login = () => {
                     <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
                         <Lock className="text-white" size={32} />
                     </div>
-                    <h1 className="text-2xl font-bold text-white">Wahat Alrajaa Tour</h1>
+                    <h1 className="text-2xl font-bold text-white">Trajetour</h1>
                     <p className="text-blue-100 mt-2">Connectez-vous à votre espace</p>
                 </div>
 

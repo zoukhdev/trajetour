@@ -1,4 +1,4 @@
--- Wahat Alrajaa Tour - PostgreSQL Schema for Neon Database
+-- Trajetour - PostgreSQL Schema for Neon Database
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -55,7 +55,7 @@ CREATE TABLE orders (
     passengers JSONB DEFAULT '[]'::jsonb,
     hotels JSONB DEFAULT '[]'::jsonb,
     total_amount DECIMAL(12,2) NOT NULL,
-   status VARCHAR(20) NOT NULL CHECK (status IN ('Payé', 'Non payé', 'Partiel')),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('Payé', 'Non payé', 'Partiel', 'En attente')),
     created_by UUID REFERENCES users(id),
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -71,6 +71,7 @@ CREATE TABLE payments (
     exchange_rate DECIMAL(10,4) NOT NULL DEFAULT 1.0,
     amount_dzd DECIMAL(12,2) NOT NULL,
     method VARCHAR(50) NOT NULL CHECK (method IN ('Cash', 'CCP', 'Baridimob', 'Bank Transfer')),
+    receipt_url TEXT,
     is_validated BOOLEAN DEFAULT NULL,
     payment_date TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

@@ -7,6 +7,122 @@ import { AppError } from '../middleware/errorHandler.js';
 
 const router = express.Router();
 
+// Get all payments (Admin/Agent)
+router.get('/',
+    authMiddleware,
+    requirePermission('view_financials'),
+    async (req: AuthRequest, res, next) => {
+        const client = await pool.connect();
+        try {
+            const { page = 1, limit = 50, status, method, startDate, endDate, clientName } = req.query;
+            const offset = (Number(page) - 1) * Number(limit);
+
+            let query = `
+                SELECT p.*, 
+                       o.id as order_ref,
+                       c.full_name as client_name,
+                       c.type as client_type,
+                       u.username as validated_by_name
+                FROM payments p
+                JOIN orders o ON p.order_id = o.id
+                JOIN clients c ON o.client_id = c.id
+                LEFT JOIN users u ON p.validated_by = u.id
+                WHERE 1=1
+            `;
+            const params: any[] = [];
+            let paramIndex = 1;
+
+            // Permission Filter
+            if (req.user?.role === 'agent') {
+                query += ` AND o.agency_id = $${paramIndex}`;
+                params.push(req.user.agencyId);
+                paramIndex++;
+            }
+
+            // Status Filter (pending/validated/rejected)
+            if (status !== undefined) {
+                if (status === 'pending') {
+                    query += ` AND p.is_validated IS NULL`;
+                } else if (status === 'validated') {
+                    query += ` AND p.is_validated = true`;
+                } else if (status === 'rejected') {
+                    query += ` AND p.is_validated = false`;
+                }
+            }
+
+            if (method) {
+                query += ` AND p.method = $${paramIndex}`;
+                params.push(method);
+                paramIndex++;
+            }
+
+            if (startDate) {
+                query += ` AND p.payment_date >= $${paramIndex}`;
+                params.push(startDate);
+                paramIndex++;
+            }
+
+            if (endDate) {
+                query += ` AND p.payment_date <= $${paramIndex}`;
+                params.push(endDate);
+                paramIndex++;
+            }
+
+            if (clientName) {
+                query += ` AND c.full_name ILIKE $${paramIndex}`;
+                params.push(`%${clientName}%`);
+                paramIndex++;
+            }
+
+            // Count total
+            const countQuery = `SELECT COUNT(*) FROM (${query}) as count_table`;
+            const countResult = await client.query(countQuery, params);
+            const total = parseInt(countResult.rows[0].count);
+
+            // Add sorting and pagination
+            query += ` ORDER BY p.created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+            params.push(limit, offset);
+
+            const result = await client.query(query, params);
+
+            // Map response
+            const payments = result.rows.map(row => ({
+                id: row.id,
+                orderId: row.order_id,
+                amount: row.amount,
+                currency: row.currency,
+                amountDZD: row.amount_dzd,
+                exchangeRateUsed: row.exchange_rate,
+                method: row.method,
+                paymentDate: row.payment_date,
+                isValidated: row.is_validated,
+                accountId: row.account_id,
+                receiptUrl: row.receipt_url,
+                clientName: row.client_name,
+                clientType: row.client_type,
+                validatedBy: row.validated_by,
+                validatedByName: row.validated_by_name,
+                validatedAt: row.validated_at,
+                createdAt: row.created_at
+            }));
+
+            res.json({
+                data: payments,
+                pagination: {
+                    total,
+                    page: Number(page),
+                    limit: Number(limit),
+                    totalPages: Math.ceil(total / Number(limit))
+                }
+            });
+        } catch (error) {
+            next(error);
+        } finally {
+            client.release();
+        }
+    }
+);
+
 // Create payment
 router.post('/',
     authMiddleware,
@@ -166,13 +282,13 @@ router.patch('/:id/validate',
                 return res.json({ message: 'No change' });
             }
 
-            // 2. Update Payment
+            // 2. Update Payment with Audit Trail
             const result = await client.query(
                 `UPDATE payments
-                 SET is_validated = $1
-                 WHERE id = $2
+                 SET is_validated = $1, validated_by = $2, validated_at = $3
+                 WHERE id = $4
                  RETURNING *`,
-                [isValidated, id]
+                [isValidated, req.user!.id, new Date(), id]
             );
             const updatedPayment = result.rows[0];
 
@@ -343,6 +459,108 @@ router.put('/:id',
             });
 
             res.json(mapPaymentResponse(updatedPayment));
+        } catch (error) {
+            await client.query('ROLLBACK');
+            next(error);
+        } finally {
+            client.release();
+        }
+    }
+);
+
+// Upload Receipt (Client/Agent)
+router.post('/:orderId/upload-receipt',
+    authMiddleware,
+    // Add file upload middleware
+    async (req, res, next) => {
+        try {
+            const { upload } = await import('../utils/fileUpload.js');
+            const uploadMiddleware = upload.single('receipt');
+            uploadMiddleware(req, res, (err) => {
+                if (err) return next(new AppError(400, 'File upload failed: ' + err.message));
+                next();
+            });
+        } catch (e) {
+            next(e);
+        }
+    },
+    async (req: AuthRequest, res, next) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            const { orderId } = req.params;
+            const { method } = req.body; // 'CCP' or 'Baridimob'
+
+            if (!req.file) {
+                throw new AppError(400, 'No receipt file provided');
+            }
+
+            // check order ownership
+            const orderRes = await client.query('SELECT client_id, total_amount FROM orders WHERE id = $1', [orderId]);
+            if (orderRes.rows.length === 0) throw new AppError(404, 'Order not found');
+            const order = orderRes.rows[0];
+
+            if (req.user?.role === 'client' && order.client_id !== req.user.clientId) {
+                throw new AppError(403, 'Unauthorized');
+            }
+
+            // Upload to Cloudinary
+            const { uploadToCloudinary } = await import('../utils/fileUpload.js');
+            const uploadResult = await uploadToCloudinary(req.file.buffer, 'trajetour/receipts');
+
+            // Create Payment Record (Pending)
+            // We assume full amount or partial? Usually receipts are for full or specific amount. 
+            // For now, let's assume the user inputs amount or we take remaining?
+            // BETTER: User should inputs amount in the modal. IF not, defaults to full?
+            // Let's rely on body.amount if present, else 0 (needs admin verify).
+
+            const amount = req.body.amount || 0;
+
+            const result = await client.query(
+                `INSERT INTO payments (
+                    order_id, amount, currency, amount_dzd, 
+                    method, payment_date, receipt_url, is_validated
+                )
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                 RETURNING *`,
+                [
+                    orderId,
+                    amount,
+                    'DZD',
+                    amount, // amount_dzd
+                    method || 'CCP',
+                    new Date(),
+                    uploadResult.secure_url,
+                    null // Pending
+                ]
+            );
+
+            const newPayment = result.rows[0];
+
+            // Update Order Status to 'En attente'
+            await client.query(
+                `UPDATE orders SET status = 'En attente' WHERE id = $1 AND status != 'Payé'`,
+                [orderId]
+            );
+
+            await logAudit(client, {
+                userId: req.user!.id,
+                action: 'UPLOAD_RECEIPT',
+                entityType: 'payment',
+                entityId: newPayment.id,
+                changes: { url: uploadResult.secure_url },
+                ipAddress: req.ip
+            });
+
+            await client.query('COMMIT');
+
+            res.status(201).json({
+                message: 'Receipt uploaded successfully',
+                paymentId: newPayment.id,
+                url: newPayment.receipt_url,
+                status: 'Pending Verification'
+            });
+
         } catch (error) {
             await client.query('ROLLBACK');
             next(error);

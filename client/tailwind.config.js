@@ -8,7 +8,7 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#1a56db', // Richer blue
+          DEFAULT: '#1773cf', // Design primary
           50: '#eff6ff',
           100: '#dbeafe',
           200: '#bfdbfe',
@@ -20,16 +20,24 @@ export default {
           800: '#1e40af',
           900: '#1e3a8a',
         },
-        secondary: '#64748b', // Slate gray for secondary text
+        'background-light': '#f6f7f8',
+        'background-dark': '#111921',
+        'surface-light': '#ffffff',
+        'surface-dark': '#1A222C',
+        'border-light': '#dce0e5',
+        'border-dark': '#2a3441',
+        secondary: '#64748b',
         success: '#10b981',
         warning: '#f59e0b',
         danger: '#ef4444',
-        background: '#f8fafc', // Light slate background
+        background: '#f8fafc',
         surface: '#ffffff',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Outfit', 'Inter', 'system-ui', 'sans-serif'], // For headers
+        display: ['Plus Jakarta Sans', 'Manrope', 'Outfit', 'sans-serif'],
+        'public': ['Plus Jakarta Sans', 'sans-serif'],
+        'dashboard': ['Manrope', 'sans-serif'],
       },
       boxShadow: {
         'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',
@@ -37,5 +45,6 @@ export default {
       }
     },
   },
+  darkMode: 'class', // Ensure dark mode is enabled
   plugins: [],
 }

@@ -40,37 +40,37 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         {
             title: 'COMMANDES',
             items: [
-                { icon: Users, label: t('common.clients'), path: '/clients', permission: 'manage_business' },
-                { icon: ShoppingCart, label: t('common.orders'), path: '/orders', permission: 'manage_business' },
-                { icon: Users, label: t('common.suppliers'), path: '/suppliers', permission: 'manage_business' },
-                { icon: PlusCircle, label: t('common.new_order'), path: '/orders/new', permission: 'manage_business' },
-                { icon: Tag, label: t('common.offers'), path: '/offers', permission: 'manage_business' },
-                { icon: Briefcase, label: t('common.agencies'), path: '/agencies', permission: 'manage_business' },
+                { icon: Users, label: t('common.clients'), path: '/dashboard/clients', permission: 'manage_business' },
+                { icon: ShoppingCart, label: t('common.orders'), path: '/dashboard/orders', permission: 'manage_business' },
+                { icon: Users, label: t('common.suppliers'), path: '/dashboard/suppliers', permission: 'manage_business' },
+                { icon: PlusCircle, label: t('common.new_order'), path: '/dashboard/orders/new', permission: 'manage_business' },
+                { icon: Tag, label: t('common.offers'), path: '/dashboard/offers', permission: 'manage_business' },
+                { icon: Briefcase, label: t('common.agencies'), path: '/dashboard/agencies', permission: 'manage_business' },
             ]
         },
         {
             title: 'COMPTABILITÉ',
             items: [
-                { icon: FileText, label: t('common.reports'), path: '/reports', permission: 'view_reports', adminOnly: true },
-                { icon: BarChart, label: 'Commissions', path: '/reports/commissions', permission: 'view_reports', adminOnly: true },
-                { icon: BarChart, label: 'Revenus', path: '/reports/revenue', permission: 'view_reports', adminOnly: true },
-                { icon: CreditCard, label: t('common.expenses'), path: '/expenses', permission: 'manage_financials', adminOnly: true },
-                { icon: CreditCard, label: t('common.guide_expenses'), path: '/guide-expenses', permission: 'manage_financials', adminOnly: true },
+                { icon: FileText, label: t('common.reports'), path: '/dashboard/reports', permission: 'view_reports', adminOnly: true },
+                { icon: BarChart, label: 'Commissions', path: '/dashboard/reports/commissions', permission: 'view_reports', adminOnly: true },
+                { icon: BarChart, label: 'Revenus', path: '/dashboard/reports/revenue', permission: 'view_reports', adminOnly: true },
+                { icon: CreditCard, label: t('common.expenses'), path: '/dashboard/expenses', permission: 'manage_financials', adminOnly: true },
+                { icon: CreditCard, label: t('common.guide_expenses'), path: '/dashboard/guide-expenses', permission: 'manage_financials', adminOnly: true },
             ]
         },
         {
             title: 'GESTION DE L\'AGENCE',
             items: [
-                { icon: MapPin, label: t('common.annexes'), path: '/annexes', permission: 'manage_business', adminOnly: true },
-                { icon: Settings, label: t('common.agency_details'), path: '/agency-details', permission: 'manage_business', adminOnly: true },
-                { icon: Percent, label: t('common.discounts'), path: '/discounts', permission: 'manage_business', adminOnly: true },
-                { icon: Percent, label: t('common.tax'), path: '/tax', permission: 'manage_business', adminOnly: true },
-                { icon: UserCircle, label: t('common.users'), path: '/users', permission: 'manage_users', adminOnly: true },
-                { icon: Activity, label: "Journal d'activité", path: '/logs', permission: 'manage_users', adminOnly: true },
-                { icon: HelpCircle, label: t('common.support'), path: '/support', permission: 'manage_business' },
-                { icon: Receipt, label: t('common.payments'), path: '/payments', permission: 'manage_business', adminOnly: true },
-                { icon: List, label: t('common.rooming_list'), path: '/rooming-list', permission: 'manage_business' },
-                { icon: Wallet, label: t('common.caisse'), path: '/cash-register', permission: 'manage_financials', adminOnly: true },
+                { icon: MapPin, label: t('common.annexes'), path: '/dashboard/annexes', permission: 'manage_business', adminOnly: true },
+                { icon: Settings, label: t('common.agency_details'), path: '/dashboard/agency-details', permission: 'manage_business', adminOnly: true },
+                { icon: Percent, label: t('common.discounts'), path: '/dashboard/discounts', permission: 'manage_business', adminOnly: true },
+                { icon: Percent, label: t('common.tax'), path: '/dashboard/tax', permission: 'manage_business', adminOnly: true },
+                { icon: UserCircle, label: t('common.users'), path: '/dashboard/users', permission: 'manage_users', adminOnly: true },
+                { icon: Activity, label: "Journal d'activité", path: '/dashboard/logs', permission: 'manage_users', adminOnly: true },
+                { icon: HelpCircle, label: t('common.support'), path: '/dashboard/support', permission: 'manage_business' },
+                { icon: Receipt, label: t('common.payments'), path: '/dashboard/payments', permission: 'manage_business', adminOnly: true },
+                { icon: List, label: t('common.rooming_list'), path: '/dashboard/rooming-list', permission: 'manage_business' },
+                { icon: Wallet, label: t('common.caisse'), path: '/dashboard/cash-register', permission: 'manage_financials', adminOnly: true },
             ]
         }
     ];
@@ -118,7 +118,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                             <Plane size={24} className="-rotate-45 rtl:rotate-45" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900 font-display tracking-tight">Wahat Alrajaa</h1>
+                            <h1 className="text-xl font-bold text-gray-900 font-display tracking-tight">Trajetour</h1>
                             <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Tour Management</p>
                         </div>
                     </div>

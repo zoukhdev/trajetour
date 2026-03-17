@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pending Document Reminder - Omrah &amp; Hajj Agency</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e2732",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .ios-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 24px;
+            background-color: #1f2937;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white flex flex-col min-h-screen overflow-x-hidden">
+<header class="sticky top-0 z-30 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] bg-surface-light dark:bg-surface-dark dark:border-gray-800 px-4 lg:px-10 py-3 shadow-sm">
+<div class="flex items-center gap-4 lg:gap-8">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">mosque</span>
+</div>
+<h2 class="text-[#111418] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] hidden sm:block">Omrah &amp; Hajj Agency</h2>
+</div>
+<div class="hidden md:flex items-center gap-6 lg:gap-9">
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold leading-normal" href="#">Bookings</a>
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal" href="#">Clients</a>
+<a class="text-[#111418] dark:text-gray-300 hover:text-primary text-sm font-medium leading-normal" href="#">Reminders</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-4 lg:gap-8">
+<label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-[#637588] flex border-none bg-[#f0f2f4] dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] dark:bg-gray-800 focus:border-none h-full placeholder:text-[#637588] px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Search bookings..." value=""/>
+</div>
+</label>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-gray-200 dark:border-gray-700 cursor-pointer relative" data-alt="User avatar profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDHpyLX0qXQ0M5lsNQdmJ8UO3SSil9kByJVG0y7uXj-sIRNu_1rNIm5GiBLQQQu29GMZdsdOiRty5DJ3s9Vc3FVksyM9V1cx3xCoXOMhmFVOSw4WJ0EzNvXJ_FYbs0mo_lgikqg-yUfLlYZsZR9wPX7ZtNg3aOiC6zkYJmrfHhwC4woTsWgxQJyabpDRVEz-qPpAhJ9u6OBCiRBwKUeq_P5ZiOnVQf97VB75IxOC7w6I-wSeyTh9GB2a_vU8YI9y9Ee7_78Z7ieU2pA");'>
+<div class="absolute bottom-0 right-0 size-3 bg-green-500 border-2 border-white rounded-full"></div>
+</div>
+</div>
+</header>
+<div class="px-4 lg:px-40 flex justify-center pt-5">
+<div class="w-full max-w-[1200px]">
+<div class="flex flex-wrap gap-2 items-center">
+<a class="text-[#637588] hover:text-primary text-sm font-medium leading-normal" href="#">Dashboard</a>
+<span class="text-[#637588] text-sm font-medium leading-normal">/</span>
+<a class="text-[#637588] hover:text-primary text-sm font-medium leading-normal" href="#">Bookings</a>
+<span class="text-[#637588] text-sm font-medium leading-normal">/</span>
+<span class="text-[#111418] dark:text-white text-sm font-medium leading-normal">OH-2024-892</span>
+<span class="text-[#637588] text-sm font-medium leading-normal">/</span>
+<span class="text-primary text-sm font-medium leading-normal">Document Reminder</span>
+</div>
+</div>
+</div>
+<div class="px-4 lg:px-40 flex justify-center py-5">
+<div class="w-full max-w-[1200px]">
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-2">
+<h1 class="text-[#111418] dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Pending Document Reminders</h1>
+<p class="text-[#637588] dark:text-gray-400 text-base font-normal leading-normal flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+                    Client: <span class="font-bold text-primary dark:text-white">Ahmed Al-Fayed</span> (Booking #OH-2024-892)
+                </p>
+</div>
+<button class="flex items-center justify-center gap-2 rounded-lg h-12 px-6 bg-primary text-white text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span>Send All Reminders</span>
+</button>
+</div>
+</div>
+</div>
+<div class="flex-1 px-4 lg:px-40 pb-24">
+<div class="w-full max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-8 flex flex-col gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-[#111418] dark:text-white text-base font-bold leading-normal flex justify-between items-end">
+<span>Email Subject Line</span>
+<span class="text-xs font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">Editable</span>
+</label>
+<div class="relative">
+<input class="form-input w-full rounded-xl text-[#111418] dark:text-white border border-[#dce0e5] dark:border-gray-700 bg-surface-light dark:bg-surface-dark h-14 px-4 text-base font-medium shadow-sm focus:border-primary focus:ring-1 focus:ring-primary" value="Action Required: Missing Documents for Booking #OH-2024-892"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<h3 class="text-[#111418] dark:text-white text-lg font-bold">Email Preview</h3>
+<span class="text-xs text-gray-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-3 py-1 rounded-full font-medium">Draft</span>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 px-8 py-4 flex items-center gap-4">
+<div class="size-10 bg-white dark:bg-gray-700 rounded-full flex items-center justify-center text-primary shadow-sm border border-gray-100 dark:border-gray-600">
+<span class="material-symbols-outlined">mosque</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-gray-900 dark:text-white">Omrah &amp; Hajj Agency</span>
+<span class="text-xs text-gray-500">support@omrahagency.com</span>
+</div>
+<div class="ml-auto text-xs text-gray-400">
+                            To: ahmed.fayed@example.com
+                        </div>
+</div>
+<div class="p-8 md:p-10 flex flex-col gap-6 text-gray-700 dark:text-gray-300 leading-relaxed">
+<p class="text-lg font-bold text-[#111418] dark:text-white">Dear <span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-1.5 py-0.5 rounded border border-blue-200 dark:border-blue-800 border-dashed cursor-help" title="Dynamic Client Name">Ahmed Al-Fayed</span>,</p>
+<p>We hope you are preparing well for your spiritual journey. We are currently finalizing your Hajj package arrangements.</p>
+<p>To ensure your visa application is processed on time with the Ministry of Hajj and Umrah, we urgently require the following pending items for your booking <span class="font-semibold text-gray-900 dark:text-white">#OH-2024-892</span>.</p>
+<div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 p-5 rounded-r-lg my-2">
+<h4 class="text-amber-800 dark:text-amber-200 font-bold flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined">warning</span>
+                                Missing Documents
+                            </h4>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 text-amber-900 dark:text-amber-100/80">
+<div class="bg-white dark:bg-amber-800/30 rounded-full p-1 mt-0.5">
+<span class="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400">badge</span>
+</div>
+<div>
+<span class="font-bold">Passport Copy</span>
+<p class="text-sm opacity-80">Must be valid for at least 6 months.</p>
+</div>
+</li>
+<li class="flex items-start gap-3 text-amber-900 dark:text-amber-100/80">
+<div class="bg-white dark:bg-amber-800/30 rounded-full p-1 mt-0.5">
+<span class="material-symbols-outlined text-[18px] text-amber-600 dark:text-amber-400">vaccines</span>
+</div>
+<div>
+<span class="font-bold">Meningitis Vaccination Certificate</span>
+<p class="text-sm opacity-80">Clear scan of the original certificate.</p>
+</div>
+</li>
+</ul>
+</div>
+<p>Please upload these documents directly to your client portal using the secure link below.</p>
+<div class="py-2">
+<button class="bg-primary hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all flex items-center gap-2 mx-auto sm:mx-0">
+<span class="material-symbols-outlined">cloud_upload</span>
+                                Upload Documents Now
+                            </button>
+</div>
+<div class="h-px bg-gray-100 dark:bg-gray-700 w-full my-2"></div>
+<footer class="text-xs text-gray-500 dark:text-gray-400">
+<p class="font-bold mb-1">Important Deadline:</p>
+<p>Please submit all documents by <span class="text-red-600 dark:text-red-400 font-bold">October 24th, 2024</span> to avoid processing delays.</p>
+<br/>
+<p>Omrah &amp; Hajj Agency • 123 Pilgrimage Way, London, UK • +44 20 7123 4567</p>
+</footer>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h3 class="text-[#111418] dark:text-white text-lg font-bold">SMS Preview</h3>
+<div class="flex items-center gap-2">
+<span class="text-xs font-mono text-gray-500 dark:text-gray-400">148/160 chars</span>
+<div class="size-2 rounded-full bg-green-500"></div>
+</div>
+</div>
+<div class="relative mx-auto w-full max-w-[320px] lg:max-w-full">
+<div class="bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl border-4 border-gray-800">
+<div class="bg-white dark:bg-gray-950 rounded-[2rem] h-[550px] overflow-hidden flex flex-col relative">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-gray-900 rounded-b-xl z-10"></div>
+<div class="h-10 w-full flex justify-between items-center px-6 pt-2 text-[10px] font-bold text-black dark:text-white z-0">
+<span>9:41</span>
+<div class="flex gap-1.5">
+<span class="material-symbols-outlined text-[14px]">signal_cellular_alt</span>
+<span class="material-symbols-outlined text-[14px]">wifi</span>
+<span class="material-symbols-outlined text-[14px] rotate-90">battery_full</span>
+</div>
+</div>
+<div class="bg-gray-100/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 p-3 flex items-center gap-2 z-10 sticky top-0">
+<span class="material-symbols-outlined text-blue-500 text-[20px]">arrow_back_ios</span>
+<div class="flex flex-col items-center mx-auto pr-6">
+<div class="size-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center overflow-hidden mb-1">
+<span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-[20px]">person</span>
+</div>
+<span class="text-xs font-semibold text-black dark:text-white">OmrahTravel</span>
+</div>
+</div>
+<div class="flex-1 p-4 flex flex-col gap-4 overflow-y-auto bg-white dark:bg-gray-950" style="background-image: radial-gradient(#e5e7eb 1px, transparent 1px); background-size: 20px 20px;">
+<div class="text-center text-[10px] text-gray-400 font-medium py-2">Today 9:41 AM</div>
+<div class="self-start max-w-[85%]">
+<div class="bg-[#e9e9eb] dark:bg-[#26262a] text-black dark:text-white p-3 rounded-2xl rounded-tl-none text-sm leading-snug shadow-sm">
+<p>Salaam <span class="bg-blue-200/50 dark:bg-blue-900/40 rounded px-1">Ahmed</span>. Action needed for Booking <span class="bg-blue-200/50 dark:bg-blue-900/40 rounded px-1">#OH-2024-892</span>.</p>
+<p class="mt-2">Please upload your missing passport copy here to avoid visa delays:</p>
+<p class="mt-2 text-blue-500 underline break-all">omrah.co/lnk/829</p>
+</div>
+</div>
+<div class="self-end max-w-[85%] opacity-40">
+<div class="bg-blue-500 text-white p-3 rounded-2xl rounded-tr-none text-sm leading-snug">
+<p>Done.</p>
+</div>
+<div class="text-[10px] text-gray-400 text-right mt-1">Delivered</div>
+</div>
+</div>
+<div class="p-3 bg-gray-100 dark:bg-gray-900 flex items-center gap-3">
+<div class="size-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+<span class="material-symbols-outlined text-gray-500 text-[18px]">add</span>
+</div>
+<div class="flex-1 h-8 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 px-3 flex items-center text-xs text-gray-400">
+                                Text Message
+                            </div>
+<div class="size-8 rounded-full bg-blue-500 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[16px]">arrow_upward</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 bg-surface-light dark:bg-surface-dark border-t border-gray-200 dark:border-gray-800 p-4 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+<div class="max-w-[1200px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<label class="inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+<span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Edit Templates</span>
+</label>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+<button class="flex-1 sm:flex-none px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                Send SMS Only
+            </button>
+<button class="flex-1 sm:flex-none px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                Send Email Only
+            </button>
+<button class="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-primary text-white font-bold text-sm shadow-md hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">send_and_archive</span>
+                Send Both
+            </button>
+</div>
+</div>
+</div>
+
+</body></html>

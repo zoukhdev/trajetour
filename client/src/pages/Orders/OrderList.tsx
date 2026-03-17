@@ -170,7 +170,7 @@ const OrderList = () => {
                                                     {user?.role === 'admin' ? (
                                                         <>
                                                             <Link
-                                                                to={`/orders/${order.id}`}
+                                                                to={`/dashboard/orders/${order.id}`}
                                                                 className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors"
                                                             >
                                                                 <Eye size={18} />
@@ -194,7 +194,7 @@ const OrderList = () => {
                                                         </>
                                                     ) : (
                                                         <Link
-                                                            to={`/orders/${order.id}`}
+                                                            to={`/dashboard/orders/${order.id}`}
                                                             className="p-2 text-gray-400 hover:text-primary hover:bg-blue-50 rounded-lg transition-colors"
                                                         >
                                                             <Eye size={18} />

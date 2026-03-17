@@ -30,7 +30,7 @@ const MainLayout = () => {
                             paddingBottom: '1rem'
                         }}
                     >
-                        <div className="font-bold text-primary font-display text-lg">Wahat Alrajaa</div>
+                        <div className="font-bold text-primary font-display text-lg">Trajetour</div>
                         <button
                             onClick={() => setIsSidebarOpen(true)}
                             className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg"

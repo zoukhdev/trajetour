@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FAQ - Al-Safa Travel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1773cf",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111921",
+              "surface-light": "#ffffff",
+              "surface-dark": "#1a232e", 
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom styles for details summary marker removal */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        /* Rotate icon on open */
+        details[open] summary .expand-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111418] dark:text-white overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f4] dark:border-b-[#2a3441] bg-surface-light dark:bg-surface-dark px-4 md:px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#111418] dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.8261 30.5736C16.7203 29.8826 20.2244 29.4783 24 29.4783C27.7756 29.4783 31.2797 29.8826 34.1739 30.5736C36.9144 31.2278 39.9967 32.7669 41.3563 33.8352L24.8486 7.36089C24.4571 6.73303 23.5429 6.73303 23.1514 7.36089L6.64374 33.8352C8.00331 32.7669 11.0856 31.2278 13.8261 30.5736Z"></path>
+<path clip-rule="evenodd" d="M39.998 35.764C39.9944 35.7463 39.9875 35.7155 39.9748 35.6706C39.9436 35.5601 39.8949 35.4259 39.8346 35.2825C39.8168 35.2403 39.7989 35.1993 39.7813 35.1602C38.5103 34.2887 35.9788 33.0607 33.7095 32.5189C30.9875 31.8691 27.6413 31.4783 24 31.4783C20.3587 31.4783 17.0125 31.8691 14.2905 32.5189C12.0012 33.0654 9.44505 34.3104 8.18538 35.1832C8.17384 35.2075 8.16216 35.233 8.15052 35.2592C8.09919 35.3751 8.05721 35.4886 8.02977 35.589C8.00356 35.6848 8.00039 35.7333 8.00004 35.7388C8.00004 35.739 8 35.7393 8.00004 35.7388C8.00004 35.7641 8.0104 36.0767 8.68485 36.6314C9.34546 37.1746 10.4222 37.7531 11.9291 38.2772C14.9242 39.319 19.1919 40 24 40C28.8081 40 33.0758 39.319 36.0709 38.2772C37.5778 37.7531 38.6545 37.1746 39.3151 36.6314C39.9006 36.1499 39.9857 35.8511 39.998 35.764ZM4.95178 32.7688L21.4543 6.30267C22.6288 4.4191 25.3712 4.41909 26.5457 6.30267L43.0534 32.777C43.0709 32.8052 43.0878 32.8338 43.104 32.8629L41.3563 33.8352C43.104 32.8629 43.1038 32.8626 43.104 32.8629L43.1051 32.865L43.1065 32.8675L43.1101 32.8739L43.1199 32.8918C43.1276 32.906 43.1377 32.9246 43.1497 32.9473C43.1738 32.9925 43.2062 33.0545 43.244 33.1299C43.319 33.2792 43.4196 33.489 43.5217 33.7317C43.6901 34.1321 44 34.9311 44 35.7391C44 37.4427 43.003 38.7775 41.8558 39.7209C40.6947 40.6757 39.1354 41.4464 37.385 42.0552C33.8654 43.2794 29.133 44 24 44C18.867 44 14.1346 43.2794 10.615 42.0552C8.86463 41.4464 7.30529 40.6757 6.14419 39.7209C4.99695 38.7775 3.99999 37.4427 3.99999 35.7391C3.99999 34.8725 4.29264 34.0922 4.49321 33.6393C4.60375 33.3898 4.71348 33.1804 4.79687 33.0311C4.83898 32.9556 4.87547 32.8935 4.9035 32.8471C4.91754 32.8238 4.92954 32.8043 4.93916 32.7889L4.94662 32.777L4.95178 32.7688ZM35.9868 29.004L24 9.77997L12.0131 29.004C12.4661 28.8609 12.9179 28.7342 13.3617 28.6282C16.4281 27.8961 20.0901 27.4783 24 27.4783C27.9099 27.4783 31.5719 27.8961 34.6383 28.6282C35.082 28.7342 35.5339 28.8609 35.9868 29.004Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Al-Safa Travel</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Home</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Omrah Packages</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Hajj Packages</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Hotels</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Contact Us</a>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+<span class="truncate">Book Now</span>
+</button>
+</div>
+<div class="md:hidden">
+<span class="material-symbols-outlined text-2xl cursor-pointer">menu</span>
+</div>
+</header>
+<!-- Hero Search Section -->
+<div class="@container">
+<div class="p-4 md:p-8">
+<div class="flex flex-col gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-center justify-center p-8 md:py-20" data-alt="Abstract aerial view of clouds or Mecca crowd, conveying spirituality and travel" style='background-image: linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDIMYi4BYXVvEFOjPy65of-GlYCZbiTCKFaJzurUqzs_a6BE2B4gQdSVHYqqybQoml9xlQfXVUCOkxRBfQITE2ouPPX5bSrP_MMpkMXhmBQLkJXs9P1Z3ec2oF9wLZwppSn7Mni7dlFh4XpBtXPJfBgWuUfhtejO328LGQh-ZU4C309io6VqbdXxdN-6XpzPfoNTrwe5lpt1lKB-aSuZy5O-9qnbuTdLkkNeWjgR3NcqiS0-kSf1a26J4-vbJhSQaC8e9hVQuo8eolf");'>
+<div class="flex flex-col gap-3 text-center max-w-3xl">
+<h1 class="text-white text-3xl md:text-5xl font-black leading-tight tracking-[-0.033em]">
+                        How can we help you on your journey?
+                    </h1>
+<p class="text-gray-200 text-sm md:text-lg font-normal leading-relaxed">
+                        Find answers to common questions about Omrah, Hajj, visas, and travel preparations.
+                    </p>
+</div>
+<label class="flex flex-col min-w-40 h-14 w-full max-w-[580px] md:h-16 mt-4">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full shadow-lg">
+<div class="text-[#637588] flex border border-r-0 border-[#dce0e5] bg-white items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-gray-400">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-0 focus:ring-0 border border-[#dce0e5] bg-white focus:border-[#dce0e5] h-full placeholder:text-[#637588] px-4 border-l-0 text-base font-normal leading-normal" placeholder="Search for visa requirements, flight details..." value=""/>
+<div class="flex items-center justify-center rounded-r-lg border-l-0 border border-[#dce0e5] bg-white pr-2">
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/90 transition-colors">
+<span class="truncate">Search</span>
+</button>
+</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Main Content Layout -->
+<div class="layout-container flex grow flex-col px-4 md:px-10 lg:px-40 pb-20">
+<div class="layout-content-container flex flex-col md:flex-row gap-8 max-w-[1200px] mx-auto w-full">
+<!-- Sidebar Navigation (Desktop Sticky) -->
+<aside class="w-full md:w-64 flex-shrink-0 md:sticky md:top-24 h-fit">
+<div class="bg-surface-light dark:bg-surface-dark rounded-xl p-4 shadow-sm border border-[#e5e7eb] dark:border-[#2a3441]">
+<div class="flex flex-col gap-1">
+<div class="pb-4 pt-2 px-2 border-b border-[#f0f2f4] dark:border-[#2a3441] mb-2">
+<h3 class="text-[#111418] dark:text-white text-base font-bold">Categories</h3>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium transition-colors" href="#general">
+<span class="material-symbols-outlined text-[20px]">grid_view</span>
+<span class="text-sm">General Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#94a3b8] font-medium transition-colors" href="#omrah">
+<span class="material-symbols-outlined text-[20px]">mosque</span>
+<span class="text-sm">Omrah Packages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#94a3b8] font-medium transition-colors" href="#hajj">
+<span class="material-symbols-outlined text-[20px]">groups</span>
+<span class="text-sm">Hajj Packages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#94a3b8] font-medium transition-colors" href="#visas">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-sm">Visas &amp; Docs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[#f0f2f4] dark:hover:bg-[#2a3441] text-[#637588] dark:text-[#94a3b8] font-medium transition-colors" href="#booking">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+<span class="text-sm">Booking &amp; Payments</span>
+</a>
+</div>
+</div>
+<!-- Contact Support Card Small -->
+<div class="mt-6 bg-primary rounded-xl p-6 text-white text-center hidden md:block">
+<div class="size-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<h4 class="font-bold text-lg mb-1">Need help?</h4>
+<p class="text-sm text-white/80 mb-4">Our agents are here 24/7</p>
+<button class="w-full bg-white text-primary text-sm font-bold py-2 rounded-lg hover:bg-gray-50 transition-colors">Contact Us</button>
+</div>
+</aside>
+<!-- Main FAQ Content -->
+<main class="flex-1 flex flex-col gap-8">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 items-center text-sm">
+<a class="text-[#637588] dark:text-[#94a3b8] hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-[#637588] dark:text-[#94a3b8] material-symbols-outlined text-[14px]">chevron_right</span>
+<a class="text-[#637588] dark:text-[#94a3b8] hover:text-primary transition-colors" href="#">Help Center</a>
+<span class="text-[#637588] dark:text-[#94a3b8] material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-[#111418] dark:text-white font-medium">FAQ</span>
+</div>
+<!-- Section: General Overview -->
+<section class="flex flex-col gap-4" id="general">
+<h2 class="text-2xl font-bold tracking-tight text-[#111418] dark:text-white flex items-center gap-2">
+<span class="w-1.5 h-6 bg-primary rounded-full"></span>
+                        General Overview
+                    </h2>
+<div class="flex flex-col gap-3">
+<!-- Accordion Item -->
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md" open="">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">What services does Al-Safa Travel provide?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>We specialize in comprehensive travel packages for Hajj and Omrah pilgrimages. Our services include visa processing, flight bookings, hotel accommodations near the Haram, ground transportation in Saudi Arabia, and guided tours for religious sites (Ziyarat). We also offer customized packages to suit different budgets and group sizes.</p>
+</div>
+</details>
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">Is travel insurance included in the packages?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>Basic travel insurance is mandated by the Ministry of Hajj and Umrah for visa issuance and is included in your visa fee. However, we strongly recommend purchasing additional comprehensive travel insurance to cover trip cancellations, lost luggage, and medical emergencies beyond the basic coverage.</p>
+</div>
+</details>
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">Do you provide female guides for sisters?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>Yes, we have experienced female scholars and group leaders available for our larger group packages to assist sisters with religious questions and guidance throughout the rituals of Omrah and Hajj.</p>
+</div>
+</details>
+</div>
+</section>
+<!-- Section: Omrah Packages -->
+<section class="flex flex-col gap-4 pt-4 border-t border-dashed border-[#e5e7eb] dark:border-[#2a3441]" id="omrah">
+<h2 class="text-2xl font-bold tracking-tight text-[#111418] dark:text-white flex items-center gap-2">
+<span class="w-1.5 h-6 bg-primary rounded-full"></span>
+                        Omrah Packages
+                    </h2>
+<div class="flex flex-col gap-3">
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">What is the best time to perform Omrah?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>Omrah can be performed at any time of the year. However, the months of Rajab, Shaban, and especially Ramadan are considered highly meritorious. If you prefer fewer crowds and cooler weather, we recommend booking during the months of November through February.</p>
+</div>
+</details>
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">Can I customize my Omrah package duration?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>Absolutely. While our standard group packages are typically 7, 10, or 14 days, we offer "Custom FIT" (Free Independent Traveler) packages where you can choose your travel dates, duration, and specific hotels to match your schedule.</p>
+</div>
+</details>
+</div>
+</section>
+<!-- Section: Visas & Documentation -->
+<section class="flex flex-col gap-4 pt-4 border-t border-dashed border-[#e5e7eb] dark:border-[#2a3441]" id="visas">
+<h2 class="text-2xl font-bold tracking-tight text-[#111418] dark:text-white flex items-center gap-2">
+<span class="w-1.5 h-6 bg-primary rounded-full"></span>
+                        Visas &amp; Documentation
+                    </h2>
+<div class="flex flex-col gap-3">
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">How long does the Omrah visa processing take?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>With the new electronic visa system, processing is very fast. typically taking between 24 to 72 hours once all required documents are submitted. However, we recommend applying at least 2 weeks before your intended travel date to account for any system delays.</p>
+</div>
+</details>
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">Is the Meningitis vaccination mandatory?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>Yes, the Meningococcal Meningitis (ACWY) vaccination is a mandatory requirement for all pilgrims arriving for Hajj and Omrah. You must present a valid vaccination certificate obtained no less than 10 days and no more than 3 years before arrival.</p>
+</div>
+</details>
+<details class="group bg-surface-light dark:bg-surface-dark border border-[#e5e7eb] dark:border-[#2a3441] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md">
+<summary class="flex items-center justify-between p-5 cursor-pointer select-none">
+<h3 class="text-base md:text-lg font-semibold pr-4">Do I need a Mahram for Omrah?</h3>
+<div class="bg-primary/10 text-primary rounded-full p-1 transition-transform duration-300 expand-icon size-8 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+</div>
+</summary>
+<div class="px-5 pb-5 text-[#637588] dark:text-[#94a3b8] leading-relaxed border-t border-[#f0f2f4] dark:border-[#2a3441] pt-4">
+<p>Recent regulations by the Ministry of Hajj and Umrah have eased restrictions. Women aged 45 and over may travel in groups without a Mahram. For women under 45, regulations can vary based on nationality and current visa rules. Please contact our agents for the most up-to-date advice for your specific situation.</p>
+</div>
+</details>
+</div>
+</section>
+<!-- Still Need Help CTA -->
+<div class="mt-8 p-8 bg-[#111418] rounded-2xl text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6" data-alt="Dark abstract pattern background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBCY-KwH84_jFmva2rdaHeK0fXI13FRH1Ir165n32bKyckCKmZFMY9AFIhBTs5LVp5GEYX1-snDXW-ER1fncYulcRckqO5K3Dk8qodF-bRvuy2g1TuLBHllvls_Sl4mZKNCdmSg6z9p0E93K6Z572P2tyiWC-gC8Sfg2CrtLhhFSEpSjKqxJYGAjysYCep72Q2KhT5sPGqi_UqAIYUIF5Q1eru5NysdFSaO7pJAsnMXI_eXpgoX8gtOE7HzjMGSdJw-Q_-rVhcujC9M");'>
+<div class="flex flex-col gap-2">
+<h3 class="text-white text-2xl font-bold">Still have questions?</h3>
+<p class="text-gray-400 max-w-md">Can't find the answer you're looking for? Please chat to our friendly team.</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg transition-colors border border-white/10">
+                            Email Us
+                        </button>
+<button class="bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-lg shadow-primary/30">
+                            Call Support
+                        </button>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>
