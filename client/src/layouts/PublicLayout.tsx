@@ -23,11 +23,11 @@ const PublicLayout = () => {
                     </div>
 
                     <nav className="hidden lg:flex items-center gap-8">
-                        <a href="/#features" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Fonctionnalités</a>
-                        <a href="/#pricing" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Tarifs</a>
-                        <Link to="/demo" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Démo</Link>
-                        <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">À propos</Link>
-                        <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Contact</Link>
+                        <a href="/#features" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.saas_nav.features')}</a>
+                        <a href="/#pricing" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.saas_nav.pricing')}</a>
+                        <Link to="/demo" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.saas_nav.demo')}</Link>
+                        <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.nav.about')}</Link>
+                        <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.nav.contact')}</Link>
                     </nav>
 
                     <div className="flex items-center gap-3">
@@ -36,13 +36,13 @@ const PublicLayout = () => {
                         </button>
 
                         <Link to="/demo" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-4 border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors text-sm font-bold">
-                            Voir la démo
+                            {t('public.saas_nav.demo')}
                         </Link>
                         <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-200">
-                            Démarrer
+                            {t('public.saas_nav.get_started')}
                         </Link>
                         <Link to="/login/agency" className="flex items-center justify-center rounded-xl h-9 px-4 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-bold text-sm">
-                            Connexion
+                            {t('public.nav.login')}
                         </Link>
                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 text-gray-700">
                             <span className="material-symbols-outlined">menu</span>
@@ -53,20 +53,20 @@ const PublicLayout = () => {
                 {/* Mobile Menu */}
                 {isMenuOpen && (
                     <div className="lg:hidden absolute top-16 left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg z-50">
-                        <a href="/#features" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Fonctionnalités</a>
-                        <a href="/#pricing" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Tarifs</a>
-                        <Link to="/demo" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Démo</Link>
-                        <Link to="/about" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>À propos</Link>
-                        <Link to="/contact" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+                        <a href="/#features" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>{t('public.saas_nav.features')}</a>
+                        <a href="/#pricing" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>{t('public.saas_nav.pricing')}</a>
+                        <Link to="/demo" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>{t('public.saas_nav.demo')}</Link>
+                        <Link to="/about" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>{t('public.nav.about')}</Link>
+                        <Link to="/contact" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>{t('public.nav.contact')}</Link>
                         <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
                             <button onClick={toggleLanguage} className="py-2 px-3 bg-gray-100 rounded-lg text-sm font-bold">
                                 {language === 'fr' ? 'AR' : 'FR'}
                             </button>
                             <Link to="/agency-signup" className="flex-1 text-center py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-xl text-sm font-bold">
-                                Démarrer
+                                {t('public.saas_nav.get_started')}
                             </Link>
                             <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold">
-                                Connexion
+                                {t('public.nav.login')}
                             </Link>
                         </div>
                     </div>
