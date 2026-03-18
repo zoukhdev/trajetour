@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
 
-const Home = () => {
+const AgencyHome = () => {
     const {} = useLanguage();
     const navigate = useNavigate();
     const [destination, setDestination] = useState('omrah');
@@ -472,4 +472,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default AgencyHome;

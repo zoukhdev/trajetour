@@ -45,6 +45,7 @@ import ClientSignup from './pages/Auth/ClientSignup';
 import AgencySignup from './pages/Auth/AgencySignup';
 import ClientDashboard from './pages/Client/ClientDashboard';
 import AgencyDashboard from './pages/Agency/AgencyDashboard';
+import AgencyHome from './pages/Public/AgencyHome';
 import AgencyBookings from './pages/Agency/AgencyBookings';
 import AgencyPayments from './pages/Agency/AgencyPayments';
 import SlotBooking from './pages/Agency/SlotBooking';
@@ -152,6 +153,7 @@ function App() {
                     <Route path="documents" element={<DocumentReminders />} />
                     <Route path="new-booking" element={<NewBooking />} />
                     <Route path="bookings/:id" element={<OrderDetails />} />
+                    <Route path="landing" element={<AgencyHome />} />
                   </Route>
 
                   {/* Client Dashboard Routes */}

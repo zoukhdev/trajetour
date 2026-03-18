@@ -12,7 +12,8 @@ import {
     Plane,
     X,
     Languages,
-    CreditCard
+    CreditCard,
+    Globe
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -32,6 +33,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
         { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots' },
         { icon: Bell, label: t('common.notifications'), path: '/agency/notifications' },
         { icon: FileText, label: t('common.documents'), path: '/agency/documents' },
+        { icon: Globe, label: 'Page d\'accueil publique', path: '/agency/landing' },
     ];
 
     const toggleLanguage = () => {
