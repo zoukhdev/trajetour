@@ -105,7 +105,7 @@ export const agencySchema = z.object({
 export const multiTenantAgencySchema = z.object({
     name: z.string().min(2).max(255),
     subdomain: z.string().min(2).max(100).regex(/^[a-z0-9-]+$/, "Subdomain must contain only lowercase letters, numbers, and hyphens"),
-    dbUrl: z.string().url(),
+    dbUrl: z.string().url().optional(),
     ownerEmail: z.string().email().optional()
 });
 

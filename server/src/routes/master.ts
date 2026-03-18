@@ -14,7 +14,86 @@ router.post('/register-agency',
         const client = await masterPool.connect();
         try {
             await client.query('BEGIN');
-            const { name, subdomain, dbUrl, ownerEmail } = req.body;
+            let { name, subdomain, dbUrl, ownerEmail } = req.body;
+
+            // --- NEON API INTEGRATION ---
+            // If dbUrl is not provided, we automatically provision a new database branch on Neon
+            if (!dbUrl) {
+                const NEON_API_KEY = process.env.NEON_API_KEY;
+                const NEON_PROJECT_ID = process.env.NEON_PROJECT_ID;
+
+                if (!NEON_API_KEY || !NEON_PROJECT_ID) {
+                    throw new Error("Neon API credentials are not configured. Cannot auto-provision database.");
+                }
+
+                console.log(`☁️ Auto-provisioning Neon Database Branch for: ${subdomain}`);
+                
+                const axios = (await import('axios')).default;
+                
+                // 1. Create a new branch in the neon project
+                const createBranchRes = await axios.post(
+                    `https://ep-ancient-cake-agf81841.apirest.c-2.eu-central-1.aws.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches`,
+                    {
+                        branch: {
+                            name: `tenant_${subdomain}`,
+                            // Optional: you can specify a parent_id here to branch from a specific schema template
+                        },
+                        endpoints: [
+                            { type: "read_write" }
+                        ]
+                    },
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${NEON_API_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+
+                const branchId = createBranchRes.data.branch.id;
+                const endpointId = createBranchRes.data.endpoints[0].id;
+                const endpointHost = createBranchRes.data.endpoints[0].host;
+                
+                console.log(`✅ Branch created: ${branchId}, Endpoint: ${endpointHost}`);
+
+                // 2. We need the role/password to construct the URL
+                // By default Neon creates a role with the same name as the branch or project default.
+                // We'll query the roles for this branch to construct the connection string.
+                const rolesRes = await axios.get(
+                    `https://ep-ancient-cake-agf81841.apirest.c-2.eu-central-1.aws.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${NEON_API_KEY}`,
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+                
+                const roleName = rolesRes.data.roles[0].name;
+
+                // 3. We need to get the role password. Neon allows getting a password for a role
+                const passRes = await axios.post(
+                    `https://ep-ancient-cake-agf81841.apirest.c-2.eu-central-1.aws.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reveal_password`,
+                    {},
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${NEON_API_KEY}`,
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+
+                const rolePassword = passRes.data.password;
+
+                // 4. Construct the standard Neon postgres connection string
+                // format: postgres://[user]:[password]@[host]/[dbname]?sslmode=require
+                const dbName = 'neondb'; // Default neon DB name on new branches
+                dbUrl = `postgres://${roleName}:${rolePassword}@${endpointHost}/${dbName}?sslmode=require`;
+                
+                console.log(`✅ Auto-provisioning successful. Secured DB URL for ${subdomain}.`);
+            }
+            // --- END NEON API INTEGRATION ---
 
             // 1. Create the agency in the Master DB
             const result = await client.query(
