@@ -26,13 +26,81 @@ router.post('/register-agency',
 
             const newAgency = result.rows[0];
 
-            // 2. Log this action (Optional: implement platform-level audit logs)
-            console.log(`🚀 New agency registered: ${name} (${subdomain})`);
+            console.log(`🚀 New agency registered: ${name} (${subdomain}). Initializing tenant database...`);
+            
+            // 2. Automated Onboarding: Initialize Tenant Database
+            const { Pool } = await import('pg');
+            const fs = await import('fs');
+            const path = await import('path');
+            const bcrypt = (await import('bcrypt')).default;
+
+            const tenantPool = new Pool({
+                connectionString: dbUrl,
+                ssl: dbUrl.includes('localhost') ? false : { rejectUnauthorized: false }
+            });
+
+            try {
+                // Read the base schema
+                const schemaPath = path.join(process.cwd(), 'src', 'models', 'schema.sql');
+                const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+                
+                // Execute schema creation
+                await tenantPool.query(schemaSql);
+
+                // Run additional auto-migration steps from server.ts to ensure everything is latest
+                await tenantPool.query(`
+                    ALTER TABLE orders 
+                    ADD COLUMN IF NOT EXISTS passengers JSONB DEFAULT '[]'::jsonb,
+                    ADD COLUMN IF NOT EXISTS hotels JSONB DEFAULT '[]'::jsonb;
+                `);
+
+                // Ensure users table matches the latest constraints and columns
+                await tenantPool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS code VARCHAR(50);`);
+                try {
+                    await tenantPool.query('ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check');
+                } catch (e) { /* ignore */ }
+                await tenantPool.query(`
+                    ALTER TABLE users ADD CONSTRAINT users_role_check 
+                    CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'));
+                `);
+
+                // Ensure offers table matches latest
+                await tenantPool.query(`
+                    ALTER TABLE offers 
+                    ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
+                    ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
+                    ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb;
+                `);
+
+                // Create the tenant's admin user
+                const defaultPassword = 'Password123!';
+                const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+                const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
+                
+                await tenantPool.query(
+                    `INSERT INTO users (email, password_hash, username, role, permissions) 
+                     VALUES ($1, $2, $3, $4, $5::jsonb)
+                     ON CONFLICT (email) DO NOTHING`,
+                    [ownerEmail, hashedPassword, 'Admin', 'admin', permissions]
+                );
+
+                console.log(`✅ Tenant database for ${subdomain} initialized successfully.`);
+            } catch (initError: any) {
+                console.error(`❌ Failed to initialize tenant database for ${subdomain}:`, initError);
+                // We should probably rollback the master DB insertion if tenant DB fails
+                throw initError; 
+            } finally {
+                await tenantPool.end();
+            }
+
+            // 3. Log this action (Optional: implement platform-level audit logs)
+            console.log(`🎉 Agency Onboarding Complete: ${name} (${subdomain})`);
 
             await client.query('COMMIT');
             res.status(201).json({
-                message: 'Agency registered successfully on the platform',
-                agency: newAgency
+                message: 'Agency registered and database initialized successfully',
+                agency: newAgency,
+                defaultAdminPassword: 'Password123!'
             });
         } catch (error: any) {
             await client.query('ROLLBACK');
