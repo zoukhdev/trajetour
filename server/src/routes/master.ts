@@ -1,20 +1,19 @@
-import express from 'express';
+import express, { Request } from 'express';
 import { masterPool } from '../config/tenantPool.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { validate, multiTenantAgencySchema } from '../middleware/validation.js';
 
 const router = express.Router();
 
-// Register a new agency on the platform (Umbrella level)
+// Register a new agency on the platform (Public Onboarding)
+// Creates a new Neon database automatically
 router.post('/register-agency',
-    authMiddleware,
-    requirePermission('manage_users'), // Only platform admins
     validate(multiTenantAgencySchema),
-    async (req: AuthRequest, res, next) => {
+    async (req: Request, res, next) => {
         const client = await masterPool.connect();
         try {
             await client.query('BEGIN');
-            let { name, subdomain, dbUrl, ownerEmail } = req.body;
+            let { name, subdomain, dbUrl, ownerEmail, password, phone, address, contactName } = req.body;
 
             // --- NEON API INTEGRATION ---
             // If dbUrl is not provided, we automatically provision a new database branch on Neon
@@ -150,7 +149,7 @@ router.post('/register-agency',
                 `);
 
                 // Create the tenant's admin user
-                const defaultPassword = 'Password123!';
+                const defaultPassword = password || 'Password123!';
                 const hashedPassword = await bcrypt.hash(defaultPassword, 10);
                 const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
                 
@@ -158,7 +157,7 @@ router.post('/register-agency',
                     `INSERT INTO users (email, password_hash, username, role, permissions) 
                      VALUES ($1, $2, $3, $4, $5::jsonb)
                      ON CONFLICT (email) DO NOTHING`,
-                    [ownerEmail, hashedPassword, 'Admin', 'admin', permissions]
+                    [ownerEmail, hashedPassword, contactName || 'Admin', 'admin', permissions]
                 );
 
                 console.log(`✅ Tenant database for ${subdomain} initialized successfully.`);

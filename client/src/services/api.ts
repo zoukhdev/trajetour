@@ -132,7 +132,7 @@ export const authAPI = {
     },
 
     registerAgency: async (data: any) => {
-        const response = await api.post('/auth/register-agency', data);
+        const response = await api.post('/master/register-agency', data);
         return response.data;
     }
 };

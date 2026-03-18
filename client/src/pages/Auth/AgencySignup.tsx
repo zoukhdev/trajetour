@@ -38,10 +38,18 @@ const AgencySignup = () => {
         }
 
         try {
+            // Auto-generate subdomain from agency name (lowercase, alphanumeric + hyphens only)
+            const generatedSubdomain = formData.agencyName
+                .toLowerCase()
+                .replace(/[^a-z0-9]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+
             await authAPI.registerAgency({
-                agencyName: formData.agencyName,
+                name: formData.agencyName,
+                subdomain: generatedSubdomain,
                 contactName: formData.contactName,
-                email: formData.email,
+                ownerEmail: formData.email,
                 phone: formData.phone,
                 password: password,
                 address: formData.address
