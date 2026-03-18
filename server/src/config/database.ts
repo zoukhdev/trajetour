@@ -1,26 +1,54 @@
 import pkg from 'pg';
 import { config } from './env.js';
+import { getTenantPool } from './tenantPool.js';
+import { tenantContext } from '../middleware/tenant.js';
+
 const { Pool } = pkg;
 
-// Create PostgreSQL pool for Neon
-export const pool = new Pool({
+// Create default PostgreSQL pool
+export const defaultPool = new Pool({
     connectionString: config.databaseUrl
-    // SSL and other params are included in the connection string
 });
 
-// Test connection
-pool.on('connect', () => {
-    console.log('✅ Connected to Neon PostgreSQL database');
+defaultPool.on('connect', () => {
+    // console.log('✅ Connected to default PostgreSQL database');
 });
 
-pool.on('error', (err) => {
-    console.error('❌ Unexpected database error:', err);
+defaultPool.on('error', (err) => {
+    console.error('❌ Unexpected database error on default pool:', err);
 });
+
+// Proxy the default pool to seamlessly route queries/connections to tenant pools
+export const pool = new Proxy(defaultPool, {
+    get(target, prop) {
+        if (prop === 'query') {
+            return async function (text: string, params?: any[]) {
+                const store = tenantContext.getStore();
+                const subdomain = store?.subdomain || 'default';
+                const actualPool = await getTenantPool(subdomain);
+                return actualPool.query(text, params);
+            };
+        } else if (prop === 'connect') {
+            return async function () {
+                const store = tenantContext.getStore();
+                const subdomain = store?.subdomain || 'default';
+                const actualPool = await getTenantPool(subdomain);
+                return actualPool.connect();
+            };
+        }
+        
+        const origin = target[prop as keyof pkg.Pool];
+        if (typeof origin === 'function') {
+            return origin.bind(target);
+        }
+        return origin;
+    }
+}) as pkg.Pool;
 
 // Helper function to test connection
 export async function testConnection(): Promise<boolean> {
     try {
-        const client = await pool.connect();
+        const client = await defaultPool.connect();
         const result = await client.query('SELECT NOW()');
         client.release();
         console.log('✅ Database connection test successful:', result.rows[0].now);

@@ -47,3 +47,5 @@ coverage/
 *.bak
 
 mobile/android_backup_20251219181151
+
+mcp_settings.json

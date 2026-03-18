@@ -1,0 +1,69 @@
+﻿{
+  "app_id": "3f2695e3-6ce4-4b2f-afa4-a6d006526668",
+  "request": {
+    "spec": {
+      "name": "trajetour",
+      "region": "fra",
+      "domains": [
+        {
+          "domain": "trajetour.com",
+          "type": "PRIMARY",
+          "zone": "trajetour.com"
+        }
+      ],
+      "services": [
+        {
+          "name": "trajetour-server",
+          "github": {
+            "repo": "zoukhdev/trajetour",
+            "branch": "main",
+            "deploy_on_push": true
+          },
+          "build_command": "npm install && npm run build",
+          "run_command": "npm start",
+          "source_dir": "server",
+          "environment_slug": "node-js",
+          "instance_size_slug": "apps-s-1vcpu-0.5gb",
+          "instance_count": 1,
+          "http_port": 8080,
+          "envs": [
+            { "key": "NODE_ENV", "value": "production" },
+            { "key": "PORT", "value": "8080" },
+            { "key": "DATABASE_URL", "value": "postgresql://neondb_owner:npg_pMWw8Foc1CIQ@ep-ancient-cake-agf81841-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require" },
+            { "key": "JWT_SECRET", "value": "7a9f3e8c2b5d1a6e4f8c9a3b2d7e5f1c8a4b6d9e2f7a3c5b8d1e4f6a9c2b5d8e1f" },
+            { "key": "CLOUDINARY_CLOUD_NAME", "value": "wahat-alrajaa" },
+            { "key": "CLOUDINARY_API_KEY", "value": "294345535736317" },
+            { "key": "CLOUDINARY_API_SECRET", "value": "wjzF7RHiTM5RwkNStCbo4lK5iNk" },
+            { "key": "CLIENT_URL", "value": "https://trajetour.com" },
+            { "key": "ADMIN_EMAIL", "value": "admin@wahat-tour.com" },
+            { "key": "ADMIN_PASSWORD", "value": "Admin123!" }
+          ],
+          "routes": [
+            { "path": "/api", "preserve_path_prefix": true }
+          ]
+        }
+      ],
+      "static_sites": [
+        {
+          "name": "trajetour-client",
+          "github": {
+            "repo": "zoukhdev/trajetour",
+            "branch": "main",
+            "deploy_on_push": true
+          },
+          "source_dir": "client",
+          "build_command": "npm install --include=dev && npm run build",
+          "output_dir": "dist",
+          "environment_slug": "node-js",
+          "catchall_document": "index.html",
+          "envs": [
+            { "key": "VITE_API_URL", "value": "https://trajetour.com/api" }
+          ],
+          "routes": [
+            { "path": "/" }
+          ]
+        }
+      ]
+    }
+  }
+}

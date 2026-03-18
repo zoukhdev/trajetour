@@ -62,10 +62,15 @@ app.use(cors({
     credentials: true
 }));
 
+import { tenantMiddleware } from './middleware/tenant.js';
+
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// Tenant/Subdomain resolution (MUST be before routes)
+app.use(tenantMiddleware);
 
 // Health check
 app.get('/api/health', async (req, res) => {

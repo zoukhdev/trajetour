@@ -8,6 +8,7 @@ export const config = {
 
     // Database (Neon PostgreSQL)
     databaseUrl: process.env.DATABASE_URL || '',
+    masterDatabaseUrl: process.env.MASTER_DATABASE_URL || process.env.DATABASE_URL || '',
 
     // JWT
     jwt: {
