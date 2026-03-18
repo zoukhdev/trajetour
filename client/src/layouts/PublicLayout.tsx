@@ -11,40 +11,40 @@ const PublicLayout = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050914] font-public text-[#0e141b] dark:text-white flex flex-col" dir={direction}>
+        <div className="min-h-screen bg-white font-public text-gray-900 flex flex-col" dir={direction}>
             {/* Top Navigation */}
-            <header className="sticky top-0 z-50 w-full bg-[#050914]/80 backdrop-blur-xl border-b border-white/10">
+            <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100 shadow-sm">
                 <div className="px-4 md:px-10 lg:px-40 flex items-center justify-between h-16 max-w-[1440px] mx-auto">
-                    <div className="flex items-center gap-4 text-primary">
+                    <div className="flex items-center gap-4">
                         <Link to="/" className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-black text-sm">T</div>
-                            <h2 className="text-white text-xl font-bold leading-tight tracking-[-0.015em]">Trajetour</h2>
+                            <h2 className="text-gray-900 text-xl font-bold leading-tight tracking-[-0.015em]">Trajetour</h2>
                         </Link>
                     </div>
 
                     <nav className="hidden lg:flex items-center gap-8">
-                        <a href="/#features" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Fonctionnalités</a>
-                        <a href="/#pricing" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Tarifs</a>
-                        <Link to="/demo" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Démo</Link>
-                        <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">À propos</Link>
-                        <Link to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Contact</Link>
+                        <a href="/#features" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Fonctionnalités</a>
+                        <a href="/#pricing" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Tarifs</a>
+                        <Link to="/demo" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Démo</Link>
+                        <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">À propos</Link>
+                        <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">Contact</Link>
                     </nav>
 
                     <div className="flex items-center gap-3">
-                        <button onClick={toggleLanguage} className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-bold text-sm">
+                        <button onClick={toggleLanguage} className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors font-bold text-sm text-gray-600">
                             {language === 'fr' ? 'AR' : 'FR'}
                         </button>
 
-                        <Link to="/demo" className="hidden md:flex items-center justify-center overflow-hidden rounded-lg h-9 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors text-sm font-bold">
+                        <Link to="/demo" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-4 border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors text-sm font-bold">
                             Voir la démo
                         </Link>
-                        <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-500/20">
+                        <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-200">
                             Démarrer
                         </Link>
-                        <Link to="/login/agency" className="flex items-center justify-center rounded-lg h-9 px-4 bg-gray-100 dark:bg-gray-800 text-[#0e141b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold text-sm">
+                        <Link to="/login/agency" className="flex items-center justify-center rounded-xl h-9 px-4 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-bold text-sm">
                             Connexion
                         </Link>
-                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 text-[#0e141b] dark:text-white">
+                        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 text-gray-700">
                             <span className="material-symbols-outlined">menu</span>
                         </button>
                     </div>
@@ -52,20 +52,20 @@ const PublicLayout = () => {
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="lg:hidden absolute top-20 left-0 w-full bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 p-4 flex flex-col gap-4 shadow-lg z-50">
-                        <a href="/#features" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Fonctionnalités</a>
-                        <a href="/#pricing" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Tarifs</a>
-                        <Link to="/demo" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Démo</Link>
-                        <Link to="/about" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>À propos</Link>
-                        <Link to="/contact" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Contact</Link>
-                        <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <button onClick={toggleLanguage} className="py-2 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-bold">
+                    <div className="lg:hidden absolute top-16 left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg z-50">
+                        <a href="/#features" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Fonctionnalités</a>
+                        <a href="/#pricing" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Tarifs</a>
+                        <Link to="/demo" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Démo</Link>
+                        <Link to="/about" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>À propos</Link>
+                        <Link to="/contact" className="text-gray-700 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+                        <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
+                            <button onClick={toggleLanguage} className="py-2 px-3 bg-gray-100 rounded-lg text-sm font-bold">
                                 {language === 'fr' ? 'AR' : 'FR'}
                             </button>
-                            <Link to="/agency-signup" className="flex-1 text-center py-2 bg-primary text-white rounded-lg text-sm font-bold">
+                            <Link to="/agency-signup" className="flex-1 text-center py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-xl text-sm font-bold">
                                 Démarrer
                             </Link>
-                            <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 dark:bg-gray-800 text-[#0e141b] dark:text-white rounded-lg text-sm font-bold">
+                            <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold">
                                 Connexion
                             </Link>
                         </div>

@@ -50,25 +50,29 @@ const Home = () => {
             icon: LayoutDashboard,
             title: 'Dashboard Complet',
             desc: 'Tableau de bord en temps réel pour gérer vos réservations, clients et finances depuis un seul endroit.',
-            color: 'from-blue-500 to-cyan-500',
+            color: 'bg-blue-100 text-blue-600',
+            border: 'border-blue-200',
         },
         {
             icon: Globe,
             title: 'Multi-Tenant SaaS',
             desc: 'Chaque agence obtient son propre espace dédié avec sous-domaine personnalisé et base de données isolée.',
-            color: 'from-violet-500 to-purple-600',
+            color: 'bg-violet-100 text-violet-600',
+            border: 'border-violet-200',
         },
         {
             icon: Users,
             title: 'Gestion Clients',
             desc: 'CRM intégré pour suivre vos pèlerins, documents, paiements et communications.',
-            color: 'from-emerald-500 to-green-600',
+            color: 'bg-emerald-100 text-emerald-600',
+            border: 'border-emerald-200',
         },
         {
             icon: BarChart3,
             title: 'Rapports & Analytics',
             desc: 'Rapports financiers détaillés, commissions, revenus et statistiques de performance.',
-            color: 'from-orange-500 to-amber-500',
+            color: 'bg-orange-100 text-orange-600',
+            border: 'border-orange-200',
         },
     ];
 
@@ -78,8 +82,7 @@ const Home = () => {
             monthlyPrice: 2900,
             annualPrice: 24900,
             description: 'Idéal pour les petites agences',
-            color: 'border-gray-200',
-            badge: null,
+            highlight: false,
             features: [
                 'Jusqu\'à 100 réservations/mois',
                 '2 utilisateurs inclus',
@@ -93,8 +96,7 @@ const Home = () => {
             monthlyPrice: 7900,
             annualPrice: 69900,
             description: 'Pour les agences en croissance',
-            color: 'border-blue-500',
-            badge: 'Populaire',
+            highlight: true,
             features: [
                 'Réservations illimitées',
                 '10 utilisateurs inclus',
@@ -110,8 +112,7 @@ const Home = () => {
             monthlyPrice: 0,
             annualPrice: 0,
             description: 'Solutions sur mesure',
-            color: 'border-violet-500',
-            badge: 'Sur devis',
+            highlight: false,
             features: [
                 'Tout inclus en Professional',
                 'Utilisateurs illimités',
@@ -148,107 +149,123 @@ const Home = () => {
     ];
 
     return (
-        <div className="relative w-full overflow-x-hidden bg-[#050914]">
+        <div className="relative w-full overflow-x-hidden bg-white">
 
             {/* ─── HERO ──────────────────────────────────────────────── */}
-            <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-16 overflow-hidden">
-                {/* Animated gradient background */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(59,130,246,0.25),transparent)]" />
-                <div className="absolute top-1/4 -left-40 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+            <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 pt-24 pb-20 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
+                {/* Soft background blobs */}
+                <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-100 rounded-full blur-[120px] opacity-50 -translate-y-1/2" />
+                <div className="absolute top-1/2 right-0 w-96 h-96 bg-violet-100 rounded-full blur-[100px] opacity-40" />
 
                 {/* Grid pattern */}
                 <div
-                    className="absolute inset-0 opacity-[0.03]"
-                    style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '50px 50px' }}
+                    className="absolute inset-0 opacity-[0.04]"
+                    style={{ backgroundImage: 'linear-gradient(#1e40af 1px, transparent 1px), linear-gradient(90deg, #1e40af 1px, transparent 1px)', backgroundSize: '40px 40px' }}
                 />
 
                 <div className="relative z-10 text-center max-w-5xl mx-auto">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-sm font-medium mb-8">
-                        <Sparkles size={14} />
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold mb-8">
+                        <Sparkles size={14} className="text-blue-500" />
                         La plateforme SaaS #1 pour les agences de voyage Algériennes
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-black text-white leading-tight tracking-tight mb-6">
+                    <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight tracking-tight mb-6">
                         Gérez votre agence{' '}
-                        <span className="bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
                             intelligemment
                         </span>
                     </h1>
 
-                    <p className="text-gray-400 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-10">
+                    <p className="text-gray-500 text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed mb-10">
                         Trajetour est la solution SaaS complète pour digitaliser votre agence de voyage — réservations, clients, finances, et plus.
-                        <span className="text-white font-semibold"> Tout-en-un.</span>
+                        <span className="text-gray-800 font-semibold"> Tout-en-un.</span>
                     </p>
 
                     <div className="flex flex-wrap gap-4 justify-center mb-16">
                         <button
                             onClick={() => navigate('/agency-signup')}
-                            className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white text-lg font-bold rounded-2xl transition-all shadow-2xl shadow-blue-900/50 hover:shadow-blue-900/70 hover:scale-105"
+                            className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white text-lg font-bold rounded-2xl transition-all shadow-xl shadow-blue-200 hover:shadow-blue-300 hover:scale-105"
                         >
                             Commencer Gratuitement
                             <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
                         </button>
                         <button
                             onClick={() => navigate('/demo')}
-                            className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white text-lg font-bold rounded-2xl transition-all"
+                            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-gray-200 hover:border-blue-300 bg-white hover:bg-blue-50 text-gray-700 hover:text-blue-700 text-lg font-bold rounded-2xl transition-all shadow-sm"
                         >
-                            <Play size={18} className="text-blue-400" />
+                            <Play size={18} className="text-blue-500" />
                             Voir la Démo
                         </button>
                     </div>
 
-                    {/* Dashboard preview mock */}
-                    <div className="relative mx-auto max-w-4xl">
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#050914] via-transparent to-transparent z-10 pointer-events-none" style={{ top: '60%' }} />
-                        <div className="bg-[#0d1526] border border-white/10 rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
-                            {/* Fake browser bar */}
-                            <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-[#0a1020]">
-                                <div className="flex gap-1.5">
-                                    <div className="w-3 h-3 rounded-full bg-red-500/70" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500/70" />
-                                    <div className="w-3 h-3 rounded-full bg-green-500/70" />
-                                </div>
-                                <div className="flex-1 mx-4 bg-white/5 rounded-lg h-6 flex items-center px-3">
-                                    <span className="text-gray-500 text-xs">app.trajetour.com/agency/dashboard</span>
-                                </div>
+                    {/* Trust badges */}
+                    <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400">
+                        {['Sans carte de crédit', 'Déploiement instantané', 'Support inclus', 'Annulation libre'].map((b, i) => (
+                            <span key={i} className="flex items-center gap-1.5">
+                                <CheckCircle size={14} className="text-emerald-500" />
+                                {b}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Dashboard Preview */}
+                <div className="relative z-10 w-full max-w-5xl mx-auto mt-16 px-4">
+                    <div className="relative rounded-2xl border border-gray-200 bg-white shadow-2xl shadow-gray-200 overflow-hidden">
+                        {/* Fake browser bar */}
+                        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 bg-gray-50">
+                            <div className="flex gap-1.5">
+                                <div className="w-3 h-3 rounded-full bg-red-400" />
+                                <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                                <div className="w-3 h-3 rounded-full bg-green-400" />
                             </div>
-                            {/* Mock dashboard content */}
-                            <div className="p-6 grid grid-cols-3 gap-4">
+                            <div className="flex-1 mx-4 bg-white border border-gray-200 rounded-lg h-6 flex items-center px-3">
+                                <span className="text-gray-400 text-xs">app.trajetour.com/agency/dashboard</span>
+                            </div>
+                        </div>
+                        {/* Mock dashboard */}
+                        <div className="p-6 bg-gray-50">
+                            <div className="grid grid-cols-3 gap-4 mb-4">
                                 {[
-                                    { label: 'Réservations', value: '1,247', color: 'text-blue-400', bg: 'bg-blue-500/10' },
-                                    { label: 'Revenue (DA)', value: '8.4M', color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                                    { label: 'Clients', value: '342', color: 'text-violet-400', bg: 'bg-violet-500/10' },
+                                    { label: 'Réservations', value: '1,247', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100' },
+                                    { label: 'Revenus (DA)', value: '8.4M', color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100' },
+                                    { label: 'Clients', value: '342', color: 'text-violet-600', bg: 'bg-violet-50 border-violet-100' },
                                 ].map((card, i) => (
-                                    <div key={i} className={`${card.bg} border border-white/5 rounded-xl p-4`}>
+                                    <div key={i} className={`${card.bg} border rounded-xl p-4`}>
                                         <p className="text-gray-500 text-xs mb-1">{card.label}</p>
                                         <p className={`text-2xl font-black ${card.color}`}>{card.value}</p>
                                     </div>
                                 ))}
-                                <div className="col-span-3 bg-white/3 border border-white/5 rounded-xl p-4 h-28 flex items-end gap-1">
+                            </div>
+                            {/* Chart bars */}
+                            <div className="bg-white border border-gray-100 rounded-xl p-4">
+                                <p className="text-xs font-semibold text-gray-500 mb-3">Revenus mensuels</p>
+                                <div className="flex items-end gap-2 h-20">
                                     {[30, 45, 60, 40, 70, 55, 80, 65, 90, 75, 85, 95].map((h, i) => (
-                                        <div key={i} className="flex-1 bg-gradient-to-t from-blue-600 to-violet-500 rounded-t opacity-70" style={{ height: `${h}%` }} />
+                                        <div key={i} className="flex-1 bg-gradient-to-t from-blue-500 to-violet-400 rounded-t opacity-80" style={{ height: `${h}%` }} />
                                     ))}
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {/* Shadow glow underneath */}
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-10 bg-blue-200 blur-2xl opacity-30 rounded-full" />
                 </div>
             </section>
 
             {/* ─── STATS ─────────────────────────────────────────────── */}
-            <section id="stats-counter" className="py-20 px-4 border-y border-white/5">
+            <section id="stats-counter" className="py-20 px-4 bg-white border-y border-gray-100">
                 <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                     {[
-                        { value: counters.agencies + '+', label: 'Agences partenaires', icon: Building2 },
-                        { value: counters.bookings.toLocaleString() + '+', label: 'Réservations traitées', icon: Plane },
-                        { value: counters.revenue + '%', label: 'Satisfaction client', icon: TrendingUp },
+                        { value: counters.agencies + '+', label: 'Agences partenaires', icon: Building2, color: 'text-blue-600 bg-blue-50' },
+                        { value: counters.bookings.toLocaleString() + '+', label: 'Réservations traitées', icon: Plane, color: 'text-violet-600 bg-violet-50' },
+                        { value: counters.revenue + '%', label: 'Satisfaction client', icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
                     ].map((stat, i) => (
-                        <div key={i} className="flex flex-col items-center gap-3">
-                            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
-                                <stat.icon size={28} className="text-blue-400" />
+                        <div key={i} className="flex flex-col items-center gap-4">
+                            <div className={`w-14 h-14 rounded-2xl ${stat.color} flex items-center justify-center`}>
+                                <stat.icon size={28} />
                             </div>
-                            <div className="text-5xl font-black text-white">{stat.value}</div>
+                            <div className="text-5xl font-black text-gray-900">{stat.value}</div>
                             <div className="text-gray-500 font-medium">{stat.label}</div>
                         </div>
                     ))}
@@ -256,13 +273,13 @@ const Home = () => {
             </section>
 
             {/* ─── FEATURES ──────────────────────────────────────────── */}
-            <section className="py-24 px-4">
+            <section className="py-24 px-4 bg-gray-50">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <span className="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-semibold mb-4">
+                        <span className="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-bold mb-4">
                             FONCTIONNALITÉS
                         </span>
-                        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
                             Tout ce dont votre agence a besoin
                         </h2>
                         <p className="text-gray-500 text-xl max-w-2xl mx-auto">
@@ -275,22 +292,22 @@ const Home = () => {
                             <div
                                 key={i}
                                 onClick={() => setActiveFeature(i)}
-                                className={`p-8 rounded-2xl border cursor-pointer transition-all ${activeFeature === i
-                                    ? 'border-blue-500/50 bg-blue-500/5'
-                                    : 'border-white/5 bg-white/2 hover:border-white/10'
+                                className={`p-8 rounded-2xl border-2 cursor-pointer transition-all bg-white ${activeFeature === i
+                                    ? `${feature.border} shadow-lg`
+                                    : 'border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-md'
                                     }`}
                             >
-                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}>
-                                    <feature.icon size={24} className="text-white" />
+                                <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center mb-5`}>
+                                    <feature.icon size={24} />
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">{feature.title}</h3>
                                 <p className="text-gray-500 leading-relaxed">{feature.desc}</p>
                             </div>
                         ))}
                     </div>
 
-                    {/* Feature detail grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {/* Feature pills */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
                             { icon: CreditCard, label: 'Gestion des paiements' },
                             { icon: Bell, label: 'Notifications auto' },
@@ -301,11 +318,11 @@ const Home = () => {
                             { icon: Shield, label: 'RGPD compliant' },
                             { icon: Zap, label: 'Déploiement instantané' },
                         ].map((item, i) => (
-                            <div key={i} className="flex items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/2 hover:bg-white/5 transition-colors">
-                                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                                    <item.icon size={16} className="text-blue-400" />
+                            <div key={i} className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-blue-100 transition-all">
+                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                    <item.icon size={16} className="text-blue-600" />
                                 </div>
-                                <span className="text-gray-400 text-sm font-medium">{item.label}</span>
+                                <span className="text-gray-600 text-sm font-medium">{item.label}</span>
                             </div>
                         ))}
                     </div>
@@ -313,10 +330,10 @@ const Home = () => {
             </section>
 
             {/* ─── HOW IT WORKS ──────────────────────────────────────── */}
-            <section className="py-24 px-4 border-y border-white/5">
+            <section className="py-24 px-4 bg-white">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
                             Démarrez en moins de 5 minutes
                         </h2>
                         <p className="text-gray-500 text-xl">
@@ -324,39 +341,42 @@ const Home = () => {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {[
                             {
                                 step: '01',
                                 title: 'Créez votre compte',
                                 desc: 'Remplissez le formulaire d\'inscription avec les informations de votre agence.',
                                 icon: Building2,
+                                color: 'bg-blue-600',
                             },
                             {
                                 step: '02',
                                 title: 'Espace auto-configuré',
                                 desc: 'Votre sous-domaine et base de données sont provisionnés automatiquement en quelques secondes.',
                                 icon: Zap,
+                                color: 'bg-violet-600',
                             },
                             {
                                 step: '03',
                                 title: 'Gérez votre agence',
                                 desc: 'Connectez-vous à votre tableau de bord et commencez à gérer vos réservations immédiatement.',
                                 icon: LayoutDashboard,
+                                color: 'bg-emerald-600',
                             },
                         ].map((item, i) => (
-                            <div key={i} className="relative">
-                                {i < 2 && (
-                                    <div className="hidden md:block absolute top-8 left-full w-full h-px bg-gradient-to-r from-white/20 to-transparent z-0" />
-                                )}
-                                <div className="relative z-10 p-8 rounded-2xl border border-white/10 bg-[#0d1526]">
-                                    <div className="text-5xl font-black text-white/10 mb-4">{item.step}</div>
-                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center mb-4">
-                                        <item.icon size={24} className="text-white" />
-                                    </div>
-                                    <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                                    <p className="text-gray-500 leading-relaxed">{item.desc}</p>
+                            <div key={i} className="relative p-8 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+                                <div className="text-6xl font-black text-gray-100 mb-4 leading-none">{item.step}</div>
+                                <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center mb-4 shadow-lg`}>
+                                    <item.icon size={22} className="text-white" />
                                 </div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
+                                <p className="text-gray-500 leading-relaxed">{item.desc}</p>
+                                {i < 2 && (
+                                    <div className="hidden md:flex absolute -right-3 top-12 w-6 h-6 bg-blue-100 rounded-full items-center justify-center z-10">
+                                        <ChevronRight size={14} className="text-blue-600" />
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -364,25 +384,25 @@ const Home = () => {
             </section>
 
             {/* ─── PRICING ───────────────────────────────────────────── */}
-            <section className="py-24 px-4">
+            <section id="pricing" className="py-24 px-4 bg-gray-50">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-12">
-                        <span className="inline-block px-4 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm font-semibold mb-4">
+                        <span className="inline-block px-4 py-1.5 rounded-full bg-violet-100 text-violet-700 text-sm font-bold mb-4">
                             TARIFS
                         </span>
-                        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
                             Des tarifs simples et transparents
                         </h2>
                         <div className="flex items-center justify-center gap-4 mt-6">
-                            <span className={`text-sm font-medium ${!billingAnnual ? 'text-white' : 'text-gray-500'}`}>Mensuel</span>
+                            <span className={`text-sm font-semibold ${!billingAnnual ? 'text-gray-900' : 'text-gray-400'}`}>Mensuel</span>
                             <button
                                 onClick={() => setBillingAnnual(!billingAnnual)}
-                                className={`relative w-12 h-6 rounded-full transition-colors ${billingAnnual ? 'bg-blue-600' : 'bg-white/20'}`}
+                                className={`relative w-12 h-6 rounded-full transition-colors ${billingAnnual ? 'bg-blue-600' : 'bg-gray-300'}`}
                             >
-                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${billingAnnual ? 'translate-x-7' : 'translate-x-1'}`} />
+                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${billingAnnual ? 'translate-x-7' : 'translate-x-1'}`} />
                             </button>
-                            <span className={`text-sm font-medium ${billingAnnual ? 'text-white' : 'text-gray-500'}`}>
-                                Annuel <span className="text-green-400">(-20%)</span>
+                            <span className={`text-sm font-semibold ${billingAnnual ? 'text-gray-900' : 'text-gray-400'}`}>
+                                Annuel <span className="text-emerald-600 font-bold">(-20%)</span>
                             </span>
                         </div>
                     </div>
@@ -391,33 +411,37 @@ const Home = () => {
                         {plans.map((plan, i) => (
                             <div
                                 key={i}
-                                className={`relative p-8 rounded-2xl border-2 ${plan.color} ${i === 1 ? 'bg-[#0d1a2e]' : 'bg-[#0a1020]'} flex flex-col`}
+                                className={`relative p-8 rounded-2xl border-2 flex flex-col transition-all ${plan.highlight
+                                    ? 'border-blue-500 bg-gradient-to-b from-blue-600 to-violet-600 text-white shadow-2xl shadow-blue-200 scale-105'
+                                    : 'border-gray-100 bg-white shadow-sm hover:shadow-lg hover:border-gray-200'
+                                    }`}
                             >
-                                {plan.badge && (
-                                    <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold text-white ${i === 1 ? 'bg-gradient-to-r from-blue-600 to-violet-600' : 'bg-violet-600'}`}>
-                                        {plan.badge}
+                                {plan.highlight && (
+                                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-400 text-amber-900 text-xs font-black rounded-full uppercase tracking-wide">
+                                        ⭐ Populaire
                                     </div>
                                 )}
-                                <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
-                                <p className="text-gray-500 text-sm mb-6">{plan.description}</p>
+
+                                <h3 className={`text-xl font-bold mb-1 ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>{plan.name}</h3>
+                                <p className={`text-sm mb-6 ${plan.highlight ? 'text-blue-100' : 'text-gray-500'}`}>{plan.description}</p>
 
                                 <div className="mb-6">
                                     {plan.monthlyPrice > 0 ? (
                                         <>
-                                            <span className="text-4xl font-black text-white">
+                                            <span className={`text-4xl font-black ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>
                                                 {(billingAnnual ? plan.annualPrice : plan.monthlyPrice).toLocaleString()} DA
                                             </span>
-                                            <span className="text-gray-500 ml-1 text-sm">/{billingAnnual ? 'an' : 'mois'}</span>
+                                            <span className={`ml-1 text-sm ${plan.highlight ? 'text-blue-200' : 'text-gray-400'}`}>/{billingAnnual ? 'an' : 'mois'}</span>
                                         </>
                                     ) : (
-                                        <span className="text-2xl font-black text-white">Sur mesure</span>
+                                        <span className={`text-2xl font-black ${plan.highlight ? 'text-white' : 'text-gray-900'}`}>Sur mesure</span>
                                     )}
                                 </div>
 
                                 <ul className="flex flex-col gap-3 mb-8 flex-1">
                                     {plan.features.map((f, j) => (
-                                        <li key={j} className="flex items-start gap-2 text-gray-400 text-sm">
-                                            <CheckCircle size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                                        <li key={j} className={`flex items-start gap-2 text-sm ${plan.highlight ? 'text-blue-50' : 'text-gray-600'}`}>
+                                            <CheckCircle size={16} className={`flex-shrink-0 mt-0.5 ${plan.highlight ? 'text-blue-200' : 'text-emerald-500'}`} />
                                             {f}
                                         </li>
                                     ))}
@@ -425,9 +449,9 @@ const Home = () => {
 
                                 <button
                                     onClick={() => navigate(plan.monthlyPrice === 0 ? '/contact' : '/agency-signup')}
-                                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${i === 1
-                                        ? 'bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90 shadow-lg shadow-blue-900/50'
-                                        : 'border border-white/20 text-white hover:bg-white/10'
+                                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${plan.highlight
+                                        ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-md'
+                                        : 'bg-gray-900 text-white hover:bg-gray-800'
                                         }`}
                                 >
                                     {plan.monthlyPrice === 0 ? 'Nous contacter' : 'Commencer'}
@@ -440,27 +464,30 @@ const Home = () => {
             </section>
 
             {/* ─── TESTIMONIALS ──────────────────────────────────────── */}
-            <section className="py-24 px-4 border-y border-white/5">
+            <section className="py-24 px-4 bg-white">
                 <div className="max-w-6xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                        <span className="inline-block px-4 py-1.5 rounded-full bg-yellow-100 text-yellow-700 text-sm font-bold mb-4">
+                            TÉMOIGNAGES
+                        </span>
+                        <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
                             Ils nous font confiance
                         </h2>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {testimonials.map((t, i) => (
-                            <div key={i} className="p-8 rounded-2xl border border-white/10 bg-[#0d1526]">
+                            <div key={i} className="p-8 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-lg transition-shadow">
                                 <div className="flex gap-1 mb-4">
                                     {Array.from({ length: t.rating }).map((_, j) => (
                                         <Star key={j} size={16} className="fill-yellow-400 text-yellow-400" />
                                     ))}
                                 </div>
-                                <p className="text-gray-400 leading-relaxed mb-6 italic">"{t.text}"</p>
+                                <p className="text-gray-600 leading-relaxed mb-6 italic">"{t.text}"</p>
                                 <div className="flex items-center gap-3">
                                     <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full" />
                                     <div>
-                                        <p className="text-white font-bold text-sm">{t.name}</p>
-                                        <p className="text-gray-500 text-xs">{t.role}</p>
+                                        <p className="text-gray-900 font-bold text-sm">{t.name}</p>
+                                        <p className="text-gray-400 text-xs">{t.role}</p>
                                     </div>
                                 </div>
                             </div>
@@ -470,36 +497,30 @@ const Home = () => {
             </section>
 
             {/* ─── CTA ───────────────────────────────────────────────── */}
-            <section className="py-24 px-4">
+            <section className="py-24 px-4 bg-gradient-to-br from-blue-600 to-violet-600">
                 <div className="max-w-4xl mx-auto text-center">
-                    <div className="relative p-12 rounded-3xl overflow-hidden border border-white/10">
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-violet-600/20" />
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(59,130,246,0.15),transparent)]" />
-                        <div className="relative z-10">
-                            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-                                Prêt à digitaliser<br />votre agence ?
-                            </h2>
-                            <p className="text-gray-400 text-xl mb-8">
-                                Rejoignez plus de 120 agences qui font confiance à Trajetour
-                            </p>
-                            <div className="flex flex-wrap gap-4 justify-center">
-                                <button
-                                    onClick={() => navigate('/agency-signup')}
-                                    className="group inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-blue-600 to-violet-600 text-white font-bold text-lg rounded-2xl hover:opacity-90 transition-all shadow-2xl shadow-blue-900/50 hover:scale-105"
-                                >
-                                    Démarrer gratuitement
-                                    <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
-                                </button>
-                                <Link
-                                    to="/demo"
-                                    className="inline-flex items-center gap-2 px-10 py-4 border border-white/20 text-white font-bold text-lg rounded-2xl hover:bg-white/10 transition-all"
-                                >
-                                    Voir la démo
-                                </Link>
-                            </div>
-                            <p className="text-gray-600 text-sm mt-6">Aucune carte de crédit requise • Annulation à tout moment</p>
-                        </div>
+                    <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+                        Prêt à digitaliser<br />votre agence ?
+                    </h2>
+                    <p className="text-blue-100 text-xl mb-10">
+                        Rejoignez plus de 120 agences qui font confiance à Trajetour
+                    </p>
+                    <div className="flex flex-wrap gap-4 justify-center">
+                        <button
+                            onClick={() => navigate('/agency-signup')}
+                            className="group inline-flex items-center gap-2 px-10 py-4 bg-white text-blue-600 font-bold text-lg rounded-2xl hover:bg-blue-50 transition-all shadow-2xl hover:scale-105"
+                        >
+                            Démarrer gratuitement
+                            <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
+                        </button>
+                        <Link
+                            to="/demo"
+                            className="inline-flex items-center gap-2 px-10 py-4 border-2 border-white/40 text-white font-bold text-lg rounded-2xl hover:bg-white/10 transition-all"
+                        >
+                            Voir la démo
+                        </Link>
                     </div>
+                    <p className="text-blue-200 text-sm mt-6">Aucune carte de crédit requise • Annulation à tout moment</p>
                 </div>
             </section>
         </div>
