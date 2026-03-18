@@ -92,13 +92,18 @@ api.interceptors.response.use(
 
         if (error.response?.status === 401) {
             // Ignore 401 for initial auth check to avoid infinite redirect loops
-            // The AuthContext handles this gracefully
             if (error.config.url?.includes('/auth/me')) {
                 return Promise.reject(error);
             }
 
-            // Only redirect if not already on login page
-            if (!window.location.pathname.includes('/login')) {
+            // Public routes — never redirect to login from these pages
+            const publicPaths = ['/', '/demo', '/about', '/contact', '/faq', '/reviews',
+                '/packages', '/agency-signup', '/register', '/login'];
+            const isPublicPage = publicPaths.some(p =>
+                window.location.pathname === p || window.location.pathname.startsWith(p + '/')
+            );
+
+            if (!isPublicPage) {
                 console.error(`🚫 401 Unauthorized from: ${error.config.url}. Redirecting to login.`);
                 window.location.href = '/login';
             }
