@@ -33,13 +33,17 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
         const agencyCheck = await pool.query('SELECT id FROM agencies WHERE user_id = $1', [user.id]);
         const agencyId = agencyCheck.rows[0]?.id;
 
+        const { tenantContext } = await import('../middleware/tenant.js');
+        const currentTenant = tenantContext.getStore()?.subdomain || 'default';
+
         const token = generateToken({
             id: user.id,
             email: user.email,
             role: user.role,
             permissions: user.permissions || [],
             clientId,
-            agencyId
+            agencyId,
+            tenantId: currentTenant
         });
 
         res.cookie('token', token, {
@@ -99,13 +103,17 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
 
         await client.query('COMMIT');
 
+        const { tenantContext } = await import('../middleware/tenant.js');
+        const currentTenant = tenantContext.getStore()?.subdomain || 'default';
+
         // 4. Generate Token
         const token = generateToken({
             id: newUser.id,
             email: newUser.email,
             role: newUser.role,
             permissions: ['view_profile', 'view_bookings'],
-            clientId: clientResult.rows[0].id
+            clientId: clientResult.rows[0].id,
+            tenantId: currentTenant
         });
 
         res.cookie('token', token, {
@@ -170,13 +178,17 @@ router.post('/register-agency', validate(registerAgencySchema), async (req, res,
 
         await client.query('COMMIT');
 
+        const { tenantContext } = await import('../middleware/tenant.js');
+        const currentTenant = tenantContext.getStore()?.subdomain || 'default';
+
         // 4. Generate Token
         const token = generateToken({
             id: newUser.id,
             email: newUser.email,
             role: newUser.role,
             permissions: ['view_profile', 'view_bookings', 'manage_business'],
-            agencyId: agencyResult.rows[0].id
+            agencyId: agencyResult.rows[0].id,
+            tenantId: currentTenant
         });
 
         res.cookie('token', token, {

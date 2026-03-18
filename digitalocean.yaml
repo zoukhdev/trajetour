@@ -58,7 +58,7 @@ static_sites:
     catchall_document: index.html
     envs:
       - key: VITE_API_URL
-        value: https://trajetour.com/api
+        value: /api
 
 domains:
   - domain: trajetour.com

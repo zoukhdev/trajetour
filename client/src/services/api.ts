@@ -12,6 +12,27 @@ const api = axios.create({
     }
 });
 
+// Interceptor to inject x-tenant-id for multi-tenancy
+// This is primarily for local testing where subdomains might not be easy to configure.
+// It detects the current subdomain (if any) or defaults to 'default'.
+api.interceptors.request.use((config) => {
+    const hostname = window.location.hostname;
+    let tenantId = 'default';
+    
+    // Example: agency1.localhost or agency1.trajetour.com
+    if (hostname.split('.').length > 2) {
+        tenantId = hostname.split('.')[0];
+    } else if (localStorage.getItem('dev_tenant_id')) {
+        // Fallback for easy local dev testing
+        tenantId = localStorage.getItem('dev_tenant_id') as string;
+    }
+
+    if (config.headers) {
+        config.headers['X-Tenant-Id'] = tenantId;
+    }
+    return config;
+});
+
 // Add response interceptor for error handling
 api.interceptors.request.use(
     async (config) => {

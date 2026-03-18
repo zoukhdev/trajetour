@@ -8,6 +8,7 @@ export interface JWTPayload {
     permissions: string[];
     agencyId?: string; // Optional agency ID for non-admin users
     clientId?: string; // Optional client ID for client users
+    tenantId?: string; // Bind the token to a specific tenant/subdomain
 }
 
 export function generateToken(payload: JWTPayload): string {

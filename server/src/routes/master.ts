@@ -1,5 +1,5 @@
 import express from 'express';
-import { pool } from '../config/database.js';
+import { masterPool } from '../config/tenantPool.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { validate, multiTenantAgencySchema } from '../middleware/validation.js';
 
@@ -11,7 +11,7 @@ router.post('/register-agency',
     requirePermission('manage_users'), // Only platform admins
     validate(multiTenantAgencySchema),
     async (req: AuthRequest, res, next) => {
-        const client = await pool.connect();
+        const client = await masterPool.connect();
         try {
             await client.query('BEGIN');
             const { name, subdomain, dbUrl, ownerEmail } = req.body;
@@ -52,7 +52,7 @@ router.get('/agencies',
     requirePermission('manage_users'),
     async (req, res, next) => {
         try {
-            const result = await pool.query('SELECT * FROM agencies ORDER BY created_at DESC');
+            const result = await masterPool.query('SELECT * FROM agencies ORDER BY created_at DESC');
             res.json(result.rows);
         } catch (error) {
             next(error);
