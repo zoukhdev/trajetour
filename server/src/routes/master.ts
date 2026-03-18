@@ -32,7 +32,7 @@ router.post('/register-agency',
                 
                 // 1. Create a new branch in the neon project
                 const createBranchRes = await axios.post(
-                    `https://ep-ancient-cake-agf81841.apirest.c-2.eu-central-1.aws.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches`,
+                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches`,
                     {
                         branch: {
                             name: `tenant_${subdomain}`,
@@ -58,10 +58,8 @@ router.post('/register-agency',
                 console.log(`✅ Branch created: ${branchId}, Endpoint: ${endpointHost}`);
 
                 // 2. We need the role/password to construct the URL
-                // By default Neon creates a role with the same name as the branch or project default.
-                // We'll query the roles for this branch to construct the connection string.
                 const rolesRes = await axios.get(
-                    `https://ep-ancient-cake-agf81841.apirest.c-2.eu-central-1.aws.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles`,
+                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles`,
                     {
                         headers: {
                             'Authorization': `Bearer ${NEON_API_KEY}`,
@@ -72,9 +70,9 @@ router.post('/register-agency',
                 
                 const roleName = rolesRes.data.roles[0].name;
 
-                // 3. We need to get the role password. Neon allows getting a password for a role
+                // 3. We need to get the role password.
                 const passRes = await axios.post(
-                    `https://ep-ancient-cake-agf81841.apirest.c-2.eu-central-1.aws.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reveal_password`,
+                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reveal_password`,
                     {},
                     {
                         headers: {
