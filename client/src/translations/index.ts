@@ -153,7 +153,7 @@ export const translations = {
         },
         home: {
             hero: {
-                badge: 'La plateforme SaaS #1 pour les agences de voyage Algériennes',
+                badge: 'La plateforme #1 pour les agences de voyage Algériennes',
                 title_start: 'Gérez votre agence',
                 title_highlight: 'intelligemment',
                 subtitle: 'Trajetour est la solution SaaS complète pour digitaliser votre agence de voyage — réservations, clients, finances, et plus.',
@@ -166,6 +166,9 @@ export const translations = {
                 badge4: 'Annulation libre',
             },
             dashboard_preview: {
+                tab_dashboard: 'Tableau de bord',
+                tab_stats: 'Statistiques',
+                tab_reservations: 'Réservations',
                 bookings: 'Réservations',
                 revenue: 'Revenus (DA)',
                 clients: 'Clients',
@@ -530,7 +533,7 @@ export const translations = {
         },
         home: {
             hero: {
-                badge: 'منصة SaaS رقم 1 لوكالات السياحة الجزائرية',
+                badge: 'المنصة رقم 1 لوكالات السياحة الجزائرية',
                 title_start: 'أدِر وكالتك',
                 title_highlight: 'بذكاء',
                 subtitle: 'Trajetour هو الحل SaaS الشامل لرقمنة وكالتك السياحية — حجوزات، عملاء، مالية، والمزيد.',
@@ -543,6 +546,9 @@ export const translations = {
                 badge4: 'إلغاء مجاني',
             },
             dashboard_preview: {
+                tab_dashboard: 'لوحة التحكم',
+                tab_stats: 'إحصائيات',
+                tab_reservations: 'الحجوزات',
                 bookings: 'الحجوزات',
                 revenue: 'الإيرادات (دج)',
                 clients: 'العملاء',

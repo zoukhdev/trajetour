@@ -11,6 +11,7 @@ const Home = () => {
     const navigate = useNavigate();
     const { t } = useLanguage();
     const [activeFeature, setActiveFeature] = useState(0);
+    const [activeScreenshot, setActiveScreenshot] = useState(0);
     const [billingAnnual, setBillingAnnual] = useState(false);
     const [counters, setCounters] = useState({ agencies: 0, bookings: 0, revenue: 0 });
     const [countersStarted, setCountersStarted] = useState(false);
@@ -216,47 +217,63 @@ const Home = () => {
                     </div>
                 </div>
 
-                {/* Dashboard Preview */}
-                <div className="relative z-10 w-full max-w-5xl mx-auto mt-16 px-4">
-                    <div className="relative rounded-2xl border border-gray-200 bg-white shadow-2xl shadow-gray-200 overflow-hidden">
-                        {/* Fake browser bar */}
-                        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 bg-gray-50">
-                            <div className="flex gap-1.5">
-                                <div className="w-3 h-3 rounded-full bg-red-400" />
-                                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                                <div className="w-3 h-3 rounded-full bg-green-400" />
-                            </div>
-                            <div className="flex-1 mx-4 bg-white border border-gray-200 rounded-lg h-6 flex items-center px-3">
-                                <span className="text-gray-400 text-xs">app.trajetour.com/agency/dashboard</span>
-                            </div>
-                        </div>
-                        {/* Mock dashboard */}
-                        <div className="p-6 bg-gray-50">
-                            <div className="grid grid-cols-3 gap-4 mb-4">
-                                {[
-                                    { label: t('home.dashboard_preview.bookings'), value: '1,247', color: 'text-blue-600', bg: 'bg-blue-50 border-blue-100' },
-                                    { label: t('home.dashboard_preview.revenue'), value: '8.4M', color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100' },
-                                    { label: t('home.dashboard_preview.clients'), value: '342', color: 'text-violet-600', bg: 'bg-violet-50 border-violet-100' },
-                                ].map((card, i) => (
-                                    <div key={i} className={`${card.bg} border rounded-xl p-4`}>
-                                        <p className="text-gray-500 text-xs mb-1">{card.label}</p>
-                                        <p className={`text-2xl font-black ${card.color}`}>{card.value}</p>
-                                    </div>
-                                ))}
-                            </div>
-                            {/* Chart bars */}
-                            <div className="bg-white border border-gray-100 rounded-xl p-4">
-                                <p className="text-xs font-semibold text-gray-500 mb-3">{t('home.dashboard_preview.monthly_revenue')}</p>
-                                <div className="flex items-end gap-2 h-20">
-                                    {[30, 45, 60, 40, 70, 55, 80, 65, 90, 75, 85, 95].map((h, i) => (
-                                        <div key={i} className="flex-1 bg-gradient-to-t from-blue-500 to-violet-400 rounded-t opacity-80" style={{ height: `${h}%` }} />
-                                    ))}
-                                </div>
-                            </div>
+                {/* Dashboard Showcase Preview */}
+                <div className="relative z-10 w-full max-w-6xl mx-auto mt-16 px-4">
+                    
+                    {/* Tabs / Selectors */}
+                    <div className="flex justify-center mb-8 relative z-20">
+                        <div className="inline-flex bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-gray-200">
+                            {[
+                                { id: 0, label: t('home.dashboard_preview.tab_dashboard'), img: '/demo-dashboard-main.png' },
+                                { id: 1, label: t('home.dashboard_preview.tab_stats'), img: '/demo-dashboard-stats.png' },
+                                { id: 2, label: t('home.dashboard_preview.tab_reservations'), img: '/demo-dashboard-reservations.png' },
+                            ].map((tab, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setActiveScreenshot(idx)}
+                                    className={`px-5 py-2.5 text-sm md:text-base font-bold rounded-xl transition-all duration-300 whitespace-nowrap ${
+                                        activeScreenshot === idx
+                                            ? 'text-blue-700 bg-white shadow-sm ring-1 ring-gray-100 flex-1'
+                                            : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex-1'
+                                    }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
                         </div>
                     </div>
+
+                    <div className="relative rounded-t-[1.5rem] rounded-b-xl border border-gray-800 bg-[#0f172a] shadow-2xl shadow-slate-900/50 overflow-hidden min-h-[400px]">
+                        {/* Browser Top Bar */}
+                        <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-800 bg-[#1e293b]">
+                            <div className="flex gap-2">
+                                <div className="w-3 h-3 rounded-full bg-red-400" />
+                                <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                                <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                            </div>
+                            <div className="flex-1 mx-4 max-w-md bg-[#0f172a] border border-gray-700 rounded-md h-7 flex items-center px-3 mx-auto">
+                                <span className="text-gray-400 text-xs font-mono ml-2">app.trajetour.com/agency/dashboard</span>
+                            </div>
+                        </div>
+
+                        {/* Interactive Image Display */}
+                        <div className="relative w-full overflow-hidden bg-[#0f172a]">
+                            <img 
+                                src={
+                                    activeScreenshot === 0 ? '/demo-dashboard-main.png' :
+                                    activeScreenshot === 1 ? '/demo-dashboard-stats.png' :
+                                    '/demo-dashboard-reservations.png'
+                                }
+                                alt="Demo Dashboard Preview"
+                                className="w-full object-cover object-top transition-all duration-300"
+                            />
+                            {/* Subtle fade effect at bottom of image if it's long */}
+                            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none" />
+                        </div>
+                    </div>
+
                     {/* Shadow glow underneath */}
-                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-3/4 h-10 bg-blue-200 blur-2xl opacity-30 rounded-full" />
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[85%] h-24 bg-blue-500/20 blur-3xl rounded-[100%]" />
                 </div>
             </section>
 
