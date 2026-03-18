@@ -11,38 +11,38 @@ const PublicLayout = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background-light dark:bg-background-dark font-public text-[#0e141b] dark:text-white flex flex-col" dir={direction}>
+        <div className="min-h-screen bg-[#050914] font-public text-[#0e141b] dark:text-white flex flex-col" dir={direction}>
             {/* Top Navigation */}
-            <header className="sticky top-0 z-50 w-full bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800">
-                <div className="px-4 md:px-10 lg:px-40 flex items-center justify-between h-20 max-w-[1440px] mx-auto">
+            <header className="sticky top-0 z-50 w-full bg-[#050914]/80 backdrop-blur-xl border-b border-white/10">
+                <div className="px-4 md:px-10 lg:px-40 flex items-center justify-between h-16 max-w-[1440px] mx-auto">
                     <div className="flex items-center gap-4 text-primary">
                         <Link to="/" className="flex items-center gap-2">
-                            <div className="size-8 flex items-center justify-center text-primary">
-                                <span className="material-symbols-outlined text-3xl">mosque</span>
-                            </div>
-                            <h2 className="text-[#0e141b] dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Trajetour</h2>
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-black text-sm">T</div>
+                            <h2 className="text-white text-xl font-bold leading-tight tracking-[-0.015em]">Trajetour</h2>
                         </Link>
                     </div>
 
                     <nav className="hidden lg:flex items-center gap-8">
-                        <Link to="/packages/omrah" className="text-[#0e141b] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium">{t('public.nav.omrah')}</Link>
-                        <Link to="/packages/hajj" className="text-[#0e141b] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium">{t('public.nav.hajj')}</Link>
-                        <Link to="/about" className="text-[#0e141b] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium">{t('public.nav.about')}</Link>
-                        <Link to="/reviews" className="text-[#0e141b] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium">{t('public.nav.reviews')}</Link>
-                        <Link to="/faq" className="text-[#0e141b] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium">FAQ</Link>
-                        <Link to="/contact" className="text-[#0e141b] dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-medium">{t('public.nav.contact')}</Link>
+                        <a href="/#features" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Fonctionnalités</a>
+                        <a href="/#pricing" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Tarifs</a>
+                        <Link to="/demo" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Démo</Link>
+                        <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">À propos</Link>
+                        <Link to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm font-medium">Contact</Link>
                     </nav>
 
-                    <div className="flex items-center gap-4">
-                        <button onClick={toggleLanguage} className="flex items-center justify-center h-10 w-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-bold text-sm">
+                    <div className="flex items-center gap-3">
+                        <button onClick={toggleLanguage} className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-bold text-sm">
                             {language === 'fr' ? 'AR' : 'FR'}
                         </button>
 
-                        <Link to="/contact" className="hidden md:flex items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-500/20">
-                            <span className="truncate">{t('public.nav.book_now')}</span>
+                        <Link to="/demo" className="hidden md:flex items-center justify-center overflow-hidden rounded-lg h-9 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors text-sm font-bold">
+                            Voir la démo
                         </Link>
-                        <Link to="/login" className="flex items-center justify-center rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-[#0e141b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold text-sm">
-                            {t('public.nav.login')}
+                        <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-lg h-9 px-5 bg-primary hover:bg-blue-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-500/20">
+                            Démarrer
+                        </Link>
+                        <Link to="/login/agency" className="flex items-center justify-center rounded-lg h-9 px-4 bg-gray-100 dark:bg-gray-800 text-[#0e141b] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold text-sm">
+                            Connexion
                         </Link>
                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 text-[#0e141b] dark:text-white">
                             <span className="material-symbols-outlined">menu</span>
@@ -53,16 +53,20 @@ const PublicLayout = () => {
                 {/* Mobile Menu */}
                 {isMenuOpen && (
                     <div className="lg:hidden absolute top-20 left-0 w-full bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 p-4 flex flex-col gap-4 shadow-lg z-50">
-                        <Link to="/packages/omrah" className="text-[#0e141b] dark:text-gray-300 font-medium py-2">{t('public.nav.omrah')}</Link>
-                        <Link to="/packages/hajj" className="text-[#0e141b] dark:text-gray-300 font-medium py-2">{t('public.nav.hajj')}</Link>
-                        <Link to="/about" className="text-[#0e141b] dark:text-gray-300 font-medium py-2">{t('public.nav.about')}</Link>
-                        <Link to="/contact" className="text-[#0e141b] dark:text-gray-300 font-medium py-2">{t('public.nav.contact')}</Link>
-                        <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <button onClick={toggleLanguage} className="flex-1 py-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-bold">
-                                {language === 'fr' ? 'العربية' : 'Français'}
+                        <a href="/#features" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Fonctionnalités</a>
+                        <a href="/#pricing" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Tarifs</a>
+                        <Link to="/demo" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Démo</Link>
+                        <Link to="/about" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>À propos</Link>
+                        <Link to="/contact" className="text-[#0e141b] dark:text-gray-300 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+                        <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                            <button onClick={toggleLanguage} className="py-2 px-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-bold">
+                                {language === 'fr' ? 'AR' : 'FR'}
                             </button>
-                            <Link to="/login" className="flex-1 text-center py-2 bg-primary text-white rounded-lg text-sm font-bold">
-                                {t('public.nav.login')}
+                            <Link to="/agency-signup" className="flex-1 text-center py-2 bg-primary text-white rounded-lg text-sm font-bold">
+                                Démarrer
+                            </Link>
+                            <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 dark:bg-gray-800 text-[#0e141b] dark:text-white rounded-lg text-sm font-bold">
+                                Connexion
                             </Link>
                         </div>
                     </div>

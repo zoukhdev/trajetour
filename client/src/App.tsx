@@ -56,6 +56,7 @@ import FAQ from './pages/Public/FAQ';
 import BookingWizard from './pages/Public/Booking/BookingWizard';
 import AgencyLayout from './layouts/AgencyLayout';
 import ClientLayout from './layouts/ClientLayout';
+import DemoAgencyDashboard from './pages/Agency/DemoAgencyDashboard';
 
 function App() {
   return (
@@ -84,6 +85,9 @@ function App() {
                     <Route path="/register/agency" element={<AgencySignup />} />
                     <Route path="/agency-signup" element={<AgencySignup />} />
                   </Route>
+
+                  {/* Demo route - standalone, no public nav */}
+                  <Route path="/demo" element={<DemoAgencyDashboard />} />
 
                   {/* Admin/Staff Dashboard Routes */}
                   <Route path="/dashboard" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>

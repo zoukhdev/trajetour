@@ -68,17 +68,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return Array.isArray(user.permissions) && user.permissions.includes(permission);
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-                    <p className="mt-4 text-gray-600">Chargement...</p>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user, hasPermission, loading }}>
             {children}
