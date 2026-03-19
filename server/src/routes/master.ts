@@ -82,9 +82,9 @@ router.post('/register-agency',
                 
                 const roleName = rolesRes.data.roles[0].name;
 
-                // 3. We need to get the role password.
+                // 3. We need to get the role password (Neon reveal_password is removed/restricted, reset_password is the standard way to grab a freshly generated password for new branches).
                 const passRes = await axios.post(
-                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reveal_password`,
+                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reset_password`,
                     {},
                     {
                         headers: {
@@ -94,7 +94,7 @@ router.post('/register-agency',
                     }
                 );
 
-                const rolePassword = passRes.data.password;
+                const rolePassword = passRes.data.role.password;
 
                 // 4. Construct the standard Neon postgres connection string
                 // format: postgres://[user]:[password]@[host]/[dbname]?sslmode=require
