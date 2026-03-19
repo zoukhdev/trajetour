@@ -137,8 +137,30 @@ router.post('/register-agency',
                 const dbName = 'neondb'; // Default neon DB name on new branches
                 dbUrl = `postgres://${roleName}:${rolePassword}@${endpointHost}/${dbName}?sslmode=require`;
                 
+                // 4.5. Grant CREATE permissions on the public schema to the new role using the master DB owner credentials
+                // Because Neon copies roles, the new branch still has the master's db owner with its original password
+                if (process.env.DATABASE_URL) {
+                    try {
+                        console.log(`🔑 Granting schema permission to ${roleName}...`);
+                        const masterDbUrl = new URL(process.env.DATABASE_URL);
+                        masterDbUrl.hostname = endpointHost;
+                        
+                        const { Pool } = await import('pg');
+                        const adminPool = new Pool({
+                            connectionString: masterDbUrl.toString(),
+                            ssl: { rejectUnauthorized: false }
+                        });
+                        await adminPool.query(`GRANT ALL ON SCHEMA public TO "${roleName}"`);
+                        await adminPool.end();
+                        console.log(`✅ Granted schema permission to ${roleName}`);
+                    } catch (grantErr: any) {
+                        console.error('⚠️ Could not grant schema permission (might already have it):', grantErr.message);
+                    }
+                }
+
                 console.log(`✅ Auto-provisioning successful. Secured DB URL for ${subdomain}.`);
             }
+
             // --- END NEON API INTEGRATION ---
 
             const result = await client.query(
