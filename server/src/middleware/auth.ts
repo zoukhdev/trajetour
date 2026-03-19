@@ -14,10 +14,13 @@ export async function authMiddleware(
         const token = req.cookies.token;
 
         // DEBUG LOGGING
+        console.log(`\n======================================`);
         console.log(`🔒 Auth Check [${req.method} ${req.path}]`);
-        console.log('   Cookies:', req.cookies ? 'Present' : 'Missing');
-        console.log('   Token:', token ? 'Found' : 'Missing');
-
+        console.log(`   Host: ${req.headers.host}`);
+        console.log(`   Raw Cookie Header: ${req.headers.cookie}`);
+        console.log(`   Parsed Cookies:`, req.cookies);
+        console.log(`   Extracted Token:`, token ? 'Found (' + token.substring(0, 10) + '...)' : 'Missing');
+        console.log(`======================================\n`);
 
         if (!token) {
             res.status(401).json({ error: 'Authentication required' });

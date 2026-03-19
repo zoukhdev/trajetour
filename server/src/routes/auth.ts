@@ -46,10 +46,12 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
             tenantId: currentTenant
         });
 
+        const isProduction = config.nodeEnv === 'production';
         res.cookie('token', token, {
+            domain: isProduction ? '.trajetour.com' : undefined,
             httpOnly: true,
-            secure: config.nodeEnv === 'production',
-            sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
+            secure: isProduction,
+            sameSite: 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -116,10 +118,12 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
             tenantId: currentTenant
         });
 
+        const isProduction = config.nodeEnv === 'production';
         res.cookie('token', token, {
+            domain: isProduction ? '.trajetour.com' : undefined,
             httpOnly: true,
-            secure: config.nodeEnv === 'production',
-            sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
+            secure: isProduction,
+            sameSite: 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -191,10 +195,12 @@ router.post('/register-agency', validate(registerAgencySchema), async (req, res,
             tenantId: currentTenant
         });
 
+        const isProduction = config.nodeEnv === 'production';
         res.cookie('token', token, {
+            domain: isProduction ? '.trajetour.com' : undefined,
             httpOnly: true,
-            secure: config.nodeEnv === 'production',
-            sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
+            secure: isProduction,
+            sameSite: 'lax',
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -218,7 +224,10 @@ router.post('/register-agency', validate(registerAgencySchema), async (req, res,
 
 // Logout
 router.post('/logout', (req, res) => {
-    res.clearCookie('token');
+    const isProduction = config.nodeEnv === 'production';
+    res.clearCookie('token', {
+        domain: isProduction ? '.trajetour.com' : undefined
+    });
     res.json({ message: 'Logged out successfully' });
 });
 
