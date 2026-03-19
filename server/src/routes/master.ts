@@ -32,7 +32,6 @@ router.post('/register-agency',
                 
                 const axios = (await import('axios')).default;
                 
-                // 1. Create a new branch in the neon project
                 let createBranchRes;
                 try {
                     createBranchRes = await axios.post(
@@ -40,7 +39,6 @@ router.post('/register-agency',
                         {
                             branch: {
                                 name: `tenant_${subdomain}`,
-                                // Optional: you can specify a parent_id here to branch from a specific schema template
                             },
                             endpoints: [
                                 { type: "read_write" }
@@ -61,7 +59,8 @@ router.post('/register-agency',
                         throw err;
                     }
                     console.error("Neon API Branch Creation Error:", neonErr.response?.data || neonErr.message);
-                    const err = new Error("Failed to provision database. Please try again later.");
+                    const errMsg = neonErr.response?.data ? JSON.stringify(neonErr.response.data) : neonErr.message;
+                    const err = new Error(`Failed to provision database: ${errMsg}`);
                     (err as any).statusCode = 500;
                     throw err;
                 }
@@ -73,15 +72,24 @@ router.post('/register-agency',
                 console.log(`✅ Branch created: ${branchId}, Endpoint: ${endpointHost}`);
 
                 // 2. We need the role/password to construct the URL
-                const rolesRes = await axios.get(
-                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${NEON_API_KEY}`,
-                            'Accept': 'application/json'
+                let rolesRes;
+                try {
+                    rolesRes = await axios.get(
+                        `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${NEON_API_KEY}`,
+                                'Accept': 'application/json'
+                            }
                         }
-                    }
-                );
+                    );
+                } catch (e: any) {
+                    console.error("Neon API Roles Fetch Error:", e.response?.data || e.message);
+                    const errMsg = e.response?.data ? JSON.stringify(e.response.data) : e.message;
+                    const err = new Error(`Failed to fetch database role: ${errMsg}`);
+                    (err as any).statusCode = 500;
+                    throw err;
+                }
                 
                 const roleName = rolesRes.data.roles[0].name;
 
@@ -107,13 +115,19 @@ router.post('/register-agency',
                             console.log(`⏳ Branch is locked (423). Retrying in 2 seconds... (Attempt ${attempts}/10)`);
                             await new Promise(resolve => setTimeout(resolve, 2000));
                         } else {
-                            throw err; // Not a 423 error, rethrow
+                            console.error("Neon API Reset Password Error:", err.response?.data || err.message);
+                            const errMsg = err.response?.data ? JSON.stringify(err.response.data) : err.message;
+                            const newErr = new Error(`Failed to reset database password: ${errMsg}`);
+                            (newErr as any).statusCode = 500;
+                            throw newErr;
                         }
                     }
                 }
                 
                 if (!passRes) {
-                    throw new Error("Failed to reset role password after multiple attempts. Branch remains locked.");
+                    const err = new Error("Failed to reset role password after multiple attempts. Branch remains locked.");
+                    (err as any).statusCode = 500;
+                    throw err;
                 }
 
                 const rolePassword = passRes.data.role.password;
@@ -199,7 +213,9 @@ router.post('/register-agency',
             } catch (initError: any) {
                 console.error(`❌ Failed to initialize tenant database for ${subdomain}:`, initError);
                 // We should probably rollback the master DB insertion if tenant DB fails
-                throw initError; 
+                const newErr = new Error(`Failed to initialize tenant DB: ${initError.message}`);
+                (newErr as any).statusCode = 500;
+                throw newErr; 
             } finally {
                 await tenantPool.end();
             }
