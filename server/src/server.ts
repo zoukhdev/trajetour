@@ -449,6 +449,21 @@ app.listen(PORT, async () => {
         // Auto-run migrations (Inline for reliability)
         try {
             console.log('🔄 Auto-running database migrations...');
+            
+            // 0. Ensure master agencies table has multi-tenant columns
+            try {
+                await pool.query(`
+                    ALTER TABLE agencies 
+                    ADD COLUMN IF NOT EXISTS subdomain VARCHAR(100) UNIQUE,
+                    ADD COLUMN IF NOT EXISTS db_url TEXT,
+                    ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'ACTIVE',
+                    ADD COLUMN IF NOT EXISTS owner_email VARCHAR(255);
+                `);
+                console.log('✅ Agencies table master schema verified.');
+            } catch (err) {
+                // Ignore if table doesn't exist yet
+            }
+
             // 1. Ensure Rooms Table Exists and has columns
             await pool.query(`
                     CREATE TABLE IF NOT EXISTS rooms (
