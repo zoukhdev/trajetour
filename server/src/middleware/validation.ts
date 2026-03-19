@@ -110,7 +110,8 @@ export const multiTenantAgencySchema = z.object({
     password: z.string().min(6).optional(),
     phone: z.string().optional(),
     address: z.string().optional(),
-    contactName: z.string().optional()
+    contactName: z.string().optional(),
+    plan: z.enum(['Basic', 'Pro', 'Enterprise']).optional()
 });
 
 export const offerSchema = z.object({

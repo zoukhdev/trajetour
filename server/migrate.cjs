@@ -12,7 +12,8 @@ async function runMigration() {
             ADD COLUMN IF NOT EXISTS subdomain VARCHAR(100) UNIQUE,
             ADD COLUMN IF NOT EXISTS db_url TEXT,
             ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'ACTIVE',
-            ADD COLUMN IF NOT EXISTS owner_email VARCHAR(255);
+            ADD COLUMN IF NOT EXISTS owner_email VARCHAR(255),
+            ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'basic';
         `);
         console.log('✅ Altered agencies table successfully');
     } catch (err) {

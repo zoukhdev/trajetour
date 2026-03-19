@@ -13,7 +13,10 @@ router.post('/register-agency',
         const client = await masterPool.connect();
         try {
             await client.query('BEGIN');
-            let { name, subdomain, dbUrl, ownerEmail, password, phone, address, contactName } = req.body;
+            let { name, subdomain, dbUrl, ownerEmail, password, phone, address, contactName, plan } = req.body;
+        
+        // Default plan to Basic if not provided
+        plan = plan || 'Basic';
 
             // --- NEON API INTEGRATION ---
             // If dbUrl is not provided, we automatically provision a new database branch on Neon
@@ -126,10 +129,10 @@ router.post('/register-agency',
 
             // 1. Create the agency in the Master DB
             const result = await client.query(
-                `INSERT INTO agencies (name, subdomain, db_url, owner_email)
-                 VALUES ($1, $2, $3, $4)
+                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan)
+                 VALUES ($1, $2, $3, $4, $5)
                  RETURNING *`,
-                [name, subdomain.toLowerCase(), dbUrl, ownerEmail]
+                [name, subdomain.toLowerCase(), dbUrl, ownerEmail, plan]
             );
 
             const newAgency = result.rows[0];

@@ -6,17 +6,19 @@ import { authAPI } from '../../services/api';
 const AgencySignup = () => {
     const [formData, setFormData] = useState({
         agencyName: '',
-        licenseNumber: '', // Not used in API yet but kept for UI
+        licenseNumber: '',
         address: '',
         contactName: '',
-        position: '', // Not used
+        position: '',
         email: '',
-        phone: ''
+        phone: '',
+        plan: 'Basic'
     });
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isSuccess, setIsSuccess] = useState(false);
     const navigate = useNavigate();
     // Use t from context if available, otherwise mock or import
     // Assuming context is available
@@ -52,10 +54,11 @@ const AgencySignup = () => {
                 ownerEmail: formData.email,
                 phone: formData.phone,
                 password: password,
-                address: formData.address
+                address: formData.address,
+                plan: formData.plan
             });
-            // Redirect to login or success page
-            navigate('/login/agency');
+            // Show success alert/screen
+            setIsSuccess(true);
         } catch (err: any) {
             setError(err.response?.data?.error || 'Registration failed');
         } finally {
@@ -66,13 +69,30 @@ const AgencySignup = () => {
     return (
         <div className="flex px-4 py-8 min-h-screen bg-background-light dark:bg-background-dark items-center justify-center">
             <div className="max-w-[700px] w-full bg-white dark:bg-[#1a2634] rounded-2xl shadow-xl p-8 md:p-12 border border-blue-100 dark:border-gray-700">
-                <div className="mb-8">
-                    <span className="text-xs font-bold tracking-wider text-primary uppercase mb-2 block">{t('auth.partner_program')}</span>
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('auth.agency_title')}</h1>
-                    <p className="text-slate-500 dark:text-slate-400">{t('auth.agency_subtitle')}</p>
-                </div>
+                {isSuccess ? (
+                    <div className="text-center py-8">
+                        <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Registration Successful!</h2>
+                        <p className="text-slate-600 dark:text-slate-300 mb-8 max-w-md mx-auto">
+                            Your agency has been successfully registered and your dedicated database server is provisioning. You can now log in to the agency dashboard.
+                        </p>
+                        <Link to="/login/agency" className="btn-primary inline-flex items-center justify-center h-12 px-8 text-base font-bold">
+                            Go to Login
+                        </Link>
+                    </div>
+                ) : (
+                    <>
+                        <div className="mb-8">
+                            <span className="text-xs font-bold tracking-wider text-primary uppercase mb-2 block">{t('auth.partner_program')}</span>
+                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('auth.agency_title')}</h1>
+                            <p className="text-slate-500 dark:text-slate-400">{t('auth.agency_subtitle')}</p>
+                        </div>
 
-                <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
                     {error && <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">{error}</div>}
 
                     {/* Agency Info */}
@@ -129,6 +149,27 @@ const AgencySignup = () => {
                         </div>
                     </div>
 
+                    {/* Plan Selection */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">Subscription Plan</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {['Basic', 'Pro', 'Enterprise'].map((planOption) => (
+                                <div 
+                                    key={planOption}
+                                    onClick={() => setFormData({ ...formData, plan: planOption })}
+                                    className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${formData.plan === planOption ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'}`}
+                                >
+                                    <div className={`font-bold text-lg mb-1 ${formData.plan === planOption ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>
+                                        {planOption}
+                                    </div>
+                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                        {planOption === 'Basic' ? 'Start small, grow big.' : planOption === 'Pro' ? 'For growing businesses.' : 'Advanced features.'}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     <button disabled={loading} className="btn-primary h-12 w-full text-base font-bold mt-4 disabled:opacity-50">
                         {loading ? 'Processing...' : t('auth.submit_application')}
                     </button>
@@ -137,6 +178,8 @@ const AgencySignup = () => {
                         {t('auth.already_account')} <Link to="/login/agency" className="text-primary font-bold hover:underline">{t('auth.login_btn')}</Link>
                     </p>
                 </form>
+                    </>
+                )}
             </div>
         </div>
     );
