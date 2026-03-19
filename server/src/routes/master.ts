@@ -82,17 +82,36 @@ router.post('/register-agency',
                 
                 const roleName = rolesRes.data.roles[0].name;
 
-                // 3. We need to get the role password (Neon reveal_password is removed/restricted, reset_password is the standard way to grab a freshly generated password for new branches).
-                const passRes = await axios.post(
-                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reset_password`,
-                    {},
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${NEON_API_KEY}`,
-                            'Accept': 'application/json'
+                // 3. We need to get the role password, handling the 423 Locked state if branch isn't ready.
+                let passRes;
+                let attempts = 0;
+                while (attempts < 10) {
+                    try {
+                        passRes = await axios.post(
+                            `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reset_password`,
+                            {},
+                            {
+                                headers: {
+                                    'Authorization': `Bearer ${NEON_API_KEY}`,
+                                    'Accept': 'application/json'
+                                }
+                            }
+                        );
+                        break; // Success!
+                    } catch (err: any) {
+                        if (err.response?.status === 423) {
+                            attempts++;
+                            console.log(`⏳ Branch is locked (423). Retrying in 2 seconds... (Attempt ${attempts}/10)`);
+                            await new Promise(resolve => setTimeout(resolve, 2000));
+                        } else {
+                            throw err; // Not a 423 error, rethrow
                         }
                     }
-                );
+                }
+                
+                if (!passRes) {
+                    throw new Error("Failed to reset role password after multiple attempts. Branch remains locked.");
+                }
 
                 const rolePassword = passRes.data.role.password;
 
