@@ -4,20 +4,21 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Users Table
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'staff', 'caisser')),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client')),
     permissions JSONB DEFAULT '[]'::jsonb,
     avatar TEXT,
+    code VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Clients Table
-CREATE TABLE clients (
+CREATE TABLE IF NOT EXISTS clients (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     full_name VARCHAR(255) NOT NULL,
     mobile_number VARCHAR(20) NOT NULL,
@@ -29,7 +30,7 @@ CREATE TABLE clients (
 );
 
 -- Agencies Table
-CREATE TABLE agencies (
+CREATE TABLE IF NOT EXISTS agencies (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('Agence', 'Rabbateur')),
@@ -47,7 +48,7 @@ CREATE TABLE agencies (
 );
 
 -- Orders Table
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
     agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL,
@@ -63,7 +64,7 @@ CREATE TABLE orders (
 );
 
 -- Payments Table
-CREATE TABLE payments (
+CREATE TABLE IF NOT EXISTS payments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
     amount DECIMAL(12,2) NOT NULL,
@@ -78,7 +79,7 @@ CREATE TABLE payments (
 );
 
 -- Expenses Table
-CREATE TABLE expenses (
+CREATE TABLE IF NOT EXISTS expenses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     designation VARCHAR(255) NOT NULL,
     category VARCHAR(50) NOT NULL CHECK (category IN ('Bureau', 'Salaire', 'Transport', 'Autre')),
@@ -93,7 +94,7 @@ CREATE TABLE expenses (
 );
 
 -- Bank Accounts Table
-CREATE TABLE bank_accounts (
+CREATE TABLE IF NOT EXISTS bank_accounts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     type VARCHAR(20) NOT NULL CHECK (type IN ('Caisse', 'Bank')),
@@ -107,7 +108,7 @@ CREATE TABLE bank_accounts (
 );
 
 -- Transactions Table
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     type VARCHAR(10) NOT NULL CHECK (type IN ('IN', 'OUT')),
     amount DECIMAL(12,2) NOT NULL,
@@ -123,7 +124,7 @@ CREATE TABLE transactions (
 );
 
 -- Suppliers Table
-CREATE TABLE suppliers (
+CREATE TABLE IF NOT EXISTS suppliers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     contact_person VARCHAR(255),
@@ -135,7 +136,7 @@ CREATE TABLE suppliers (
 );
 
 -- Offers Table
-CREATE TABLE offers (
+CREATE TABLE IF NOT EXISTS offers (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     type VARCHAR(50) NOT NULL CHECK (type IN ('Omra', 'Haj', 'Voyage Organisé', 'Visa', 'Autre')),
@@ -154,7 +155,7 @@ CREATE TABLE offers (
 );
 
 -- Guide Expenses Table
-CREATE TABLE guide_expenses (
+CREATE TABLE IF NOT EXISTS guide_expenses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     guide_name VARCHAR(255) NOT NULL,
     trip_name VARCHAR(255) NOT NULL,
@@ -167,7 +168,7 @@ CREATE TABLE guide_expenses (
 );
 
 -- Discounts Table
-CREATE TABLE discounts (
+CREATE TABLE IF NOT EXISTS discounts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(255) NOT NULL,
     reference VARCHAR(50) UNIQUE NOT NULL,
@@ -181,7 +182,7 @@ CREATE TABLE discounts (
 );
 
 -- Taxes Table
-CREATE TABLE taxes (
+CREATE TABLE IF NOT EXISTS taxes (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     reference VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
@@ -193,7 +194,7 @@ CREATE TABLE taxes (
 );
 
 -- Audit Logs Table
-CREATE TABLE audit_logs (
+CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id),
     action VARCHAR(50) NOT NULL,
@@ -204,23 +205,23 @@ CREATE TABLE audit_logs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create Indexes for Performance
-CREATE INDEX idx_orders_client_id ON orders(client_id);
-CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
-CREATE INDEX idx_orders_status ON orders(status);
+-- Create Indexes for Performance (using IF NOT EXISTS)
+CREATE INDEX IF NOT EXISTS idx_orders_client_id ON orders(client_id);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 
-CREATE INDEX idx_payments_order_id ON payments(order_id);
-CREATE INDEX idx_payments_is_validated ON payments(is_validated);
+CREATE INDEX IF NOT EXISTS idx_payments_order_id ON payments(order_id);
+CREATE INDEX IF NOT EXISTS idx_payments_is_validated ON payments(is_validated);
 
-CREATE INDEX idx_expenses_created_by ON expenses(created_by);
-CREATE INDEX idx_expenses_expense_date ON expenses(expense_date DESC);
+CREATE INDEX IF NOT EXISTS idx_expenses_created_by ON expenses(created_by);
+CREATE INDEX IF NOT EXISTS idx_expenses_expense_date ON expenses(expense_date DESC);
 
-CREATE INDEX idx_transactions_account_id ON transactions(account_id);
-CREATE INDEX idx_transactions_date ON transactions(transaction_date DESC);
+CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON transactions(account_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transaction_date DESC);
 
-CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at DESC);
-CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -231,23 +232,25 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Apply updated_at triggers
+-- Apply updated_at triggers (drop first to allow re-creation safely)
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_clients_updated_at ON clients;
 CREATE TRIGGER update_clients_updated_at BEFORE UPDATE ON clients
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_agencies_updated_at ON agencies;
 CREATE TRIGGER update_agencies_updated_at BEFORE UPDATE ON agencies
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_orders_updated_at ON orders;
 CREATE TRIGGER update_orders_updated_at BEFORE UPDATE ON orders
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-
-
 -- Rooms Table
-CREATE TABLE rooms (
+CREATE TABLE IF NOT EXISTS rooms (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     offer_id UUID REFERENCES offers(id) ON DELETE CASCADE,
     hotel_name VARCHAR(255) NOT NULL,
@@ -260,7 +263,7 @@ CREATE TABLE rooms (
 );
 
 -- Supplier Contracts Table
-CREATE TABLE supplier_contracts (
+CREATE TABLE IF NOT EXISTS supplier_contracts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     supplier_id UUID REFERENCES suppliers(id) ON DELETE CASCADE,
     contract_type VARCHAR(50) NOT NULL CHECK (contract_type IN ('Rooms', 'Visa', 'Transportation', 'Flight', 'Food')),
@@ -276,10 +279,11 @@ CREATE TABLE supplier_contracts (
 );
 
 -- Indexes for supplier_contracts
-CREATE INDEX idx_supplier_contracts_supplier ON supplier_contracts(supplier_id);
-CREATE INDEX idx_supplier_contracts_type ON supplier_contracts(contract_type);
-CREATE INDEX idx_supplier_contracts_date ON supplier_contracts(date_purchased DESC);
+CREATE INDEX IF NOT EXISTS idx_supplier_contracts_supplier ON supplier_contracts(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_supplier_contracts_type ON supplier_contracts(contract_type);
+CREATE INDEX IF NOT EXISTS idx_supplier_contracts_date ON supplier_contracts(date_purchased DESC);
 
 -- Trigger for supplier_contracts updated_at
+DROP TRIGGER IF EXISTS update_supplier_contracts_updated_at ON supplier_contracts;
 CREATE TRIGGER update_supplier_contracts_updated_at BEFORE UPDATE ON supplier_contracts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
