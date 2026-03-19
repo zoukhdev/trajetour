@@ -186,14 +186,23 @@ router.post('/register-agency',
             });
 
             try {
-                // Read the base schema
-                const schemaPath = path.join(process.cwd(), 'src', 'models', 'schema.sql');
-                const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-                
-                // Execute schema creation
-                await tenantPool.query(schemaSql);
+                // Check if schema already exists (Neon branches are cloned from parent, so schema might already be there)
+                const tableCheckRes = await tenantPool.query(
+                    `SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'users'`
+                );
+                const schemaAlreadyExists = parseInt(tableCheckRes.rows[0].count, 10) > 0;
 
-                // Run additional auto-migration steps from server.ts to ensure everything is latest
+                if (!schemaAlreadyExists) {
+                    console.log(`📋 Schema not found, creating from scratch for ${subdomain}...`);
+                    // Read the base schema
+                    const schemaPath = path.join(process.cwd(), 'src', 'models', 'schema.sql');
+                    const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+                    await tenantPool.query(schemaSql);
+                } else {
+                    console.log(`✅ Schema already exists on branch for ${subdomain}, skipping creation.`);
+                }
+
+                // Always run safe migration steps (all use IF NOT EXISTS / ON CONFLICT)
                 await tenantPool.query(`
                     ALTER TABLE orders 
                     ADD COLUMN IF NOT EXISTS passengers JSONB DEFAULT '[]'::jsonb,
@@ -205,18 +214,22 @@ router.post('/register-agency',
                 try {
                     await tenantPool.query('ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check');
                 } catch (e) { /* ignore */ }
-                await tenantPool.query(`
-                    ALTER TABLE users ADD CONSTRAINT users_role_check 
-                    CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'));
-                `);
+                try {
+                    await tenantPool.query(`
+                        ALTER TABLE users ADD CONSTRAINT users_role_check 
+                        CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'));
+                    `);
+                } catch (e) { /* ignore if already exists */ }
 
                 // Ensure offers table matches latest
-                await tenantPool.query(`
-                    ALTER TABLE offers 
-                    ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
-                    ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
-                    ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb;
-                `);
+                try {
+                    await tenantPool.query(`
+                        ALTER TABLE offers 
+                        ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
+                        ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
+                        ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb;
+                    `);
+                } catch (e) { /* ignore */ }
 
                 // Create the tenant's admin user
                 const defaultPassword = password || 'Password123!';
