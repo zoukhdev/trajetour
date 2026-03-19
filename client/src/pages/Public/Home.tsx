@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
     LayoutDashboard, Users, Globe, Shield, Zap, BarChart3, CheckCircle, ArrowRight,
     Star, Building2, Plane, CreditCard, Bell, ChevronRight, Play, Sparkles,
-    TrendingUp, Clock, Database, Lock
+    TrendingUp, Clock, Database, Lock, Maximize2, X
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -12,6 +12,7 @@ const Home = () => {
     const { t } = useLanguage();
     const [activeFeature, setActiveFeature] = useState(0);
     const [activeScreenshot, setActiveScreenshot] = useState(0);
+    const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [billingAnnual, setBillingAnnual] = useState(false);
     const [counters, setCounters] = useState({ agencies: 0, bookings: 0, revenue: 0 });
     const [countersStarted, setCountersStarted] = useState(false);
@@ -152,6 +153,7 @@ const Home = () => {
     ];
 
     return (
+        <>
         <div className="relative w-full overflow-x-hidden bg-white">
 
             {/* ─── HERO ──────────────────────────────────────────────── */}
@@ -257,7 +259,10 @@ const Home = () => {
                         </div>
 
                         {/* Interactive Image Display */}
-                        <div className="relative w-full overflow-hidden bg-[#0f172a]">
+                        <div 
+                            className="relative w-full overflow-hidden bg-[#0f172a] group cursor-pointer"
+                            onClick={() => setIsLightboxOpen(true)}
+                        >
                             <img 
                                 src={
                                     activeScreenshot === 0 ? '/demo-dashboard-main.png' :
@@ -265,8 +270,15 @@ const Home = () => {
                                     '/demo-dashboard-reservations.png'
                                 }
                                 alt="Demo Dashboard Preview"
-                                className="w-full object-cover object-top transition-all duration-300"
+                                className="w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
                             />
+                            {/* Hover overlay for clicking */}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                <div className="bg-white/10 backdrop-blur-md rounded-full p-4 border border-white/20 shadow-2xl flex items-center gap-2 text-white font-medium">
+                                    <Maximize2 size={24} />
+                                    <span>Agrandir</span>
+                                </div>
+                            </div>
                             {/* Subtle fade effect at bottom of image if it's long */}
                             <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0f172a] to-transparent pointer-events-none" />
                         </div>
@@ -548,6 +560,36 @@ const Home = () => {
                 </div>
             </section>
         </div>
+        
+        {/* Lightbox Overlay */}
+        {isLightboxOpen && (
+            <div 
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 md:p-8"
+                onClick={() => setIsLightboxOpen(false)}
+            >
+                <button 
+                    className="absolute top-4 right-4 md:top-8 md:right-8 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition-colors backdrop-blur-md border border-white/10"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setIsLightboxOpen(false);
+                    }}
+                >
+                    <X size={28} />
+                </button>
+                
+                <img 
+                    src={
+                        activeScreenshot === 0 ? '/demo-dashboard-main.png' :
+                        activeScreenshot === 1 ? '/demo-dashboard-stats.png' :
+                        '/demo-dashboard-reservations.png'
+                    }
+                    alt="Zoomed Dashboard Preview"
+                    className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl ring-1 ring-white/20"
+                    onClick={(e) => e.stopPropagation()}
+                />
+            </div>
+        )}
+        </>
     );
 };
 
