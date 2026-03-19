@@ -141,10 +141,9 @@ router.post('/register-agency',
             }
             // --- END NEON API INTEGRATION ---
 
-            // 1. Create the agency in the Master DB
             const result = await client.query(
-                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan)
-                 VALUES ($1, $2, $3, $4, $5)
+                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan, type)
+                 VALUES ($1, $2, $3, $4, $5, 'Agence')
                  RETURNING *`,
                 [name, subdomain.toLowerCase(), dbUrl, ownerEmail, plan]
             );
