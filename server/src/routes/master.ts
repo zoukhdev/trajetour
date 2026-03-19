@@ -30,25 +30,38 @@ router.post('/register-agency',
                 const axios = (await import('axios')).default;
                 
                 // 1. Create a new branch in the neon project
-                const createBranchRes = await axios.post(
-                    `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches`,
-                    {
-                        branch: {
-                            name: `tenant_${subdomain}`,
-                            // Optional: you can specify a parent_id here to branch from a specific schema template
+                let createBranchRes;
+                try {
+                    createBranchRes = await axios.post(
+                        `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches`,
+                        {
+                            branch: {
+                                name: `tenant_${subdomain}`,
+                                // Optional: you can specify a parent_id here to branch from a specific schema template
+                            },
+                            endpoints: [
+                                { type: "read_write" }
+                            ]
                         },
-                        endpoints: [
-                            { type: "read_write" }
-                        ]
-                    },
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${NEON_API_KEY}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${NEON_API_KEY}`,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
                         }
+                    );
+                } catch (neonErr: any) {
+                    if (neonErr.response?.status === 409 && neonErr.response?.data?.message?.includes('already exists')) {
+                        const err = new Error('This subdomain is already taken. Please choose another one.');
+                        (err as any).statusCode = 400;
+                        throw err;
                     }
-                );
+                    console.error("Neon API Branch Creation Error:", neonErr.response?.data || neonErr.message);
+                    const err = new Error("Failed to provision database. Please try again later.");
+                    (err as any).statusCode = 500;
+                    throw err;
+                }
 
                 const branchId = createBranchRes.data.branch.id;
                 const endpointId = createBranchRes.data.endpoints[0].id;
@@ -182,6 +195,9 @@ router.post('/register-agency',
             await client.query('ROLLBACK');
             if (error.code === '23505') { // Unique violation
                 return res.status(400).json({ error: 'Subdomain already exists' });
+            }
+            if (error.statusCode) {
+                return res.status(error.statusCode).json({ error: error.message });
             }
             next(error);
         } finally {
