@@ -39,13 +39,16 @@ export async function getTenantPool(subdomain: string): Promise<pkg.Pool> {
         }
 
         const agency = res.rows[0];
-        if (agency.status !== 'ACTIVE') {
-            if (agency.status === 'PENDING') {
-                throw new Error(`Agency "${subdomain}" is awaiting approval. Please wait for confirmation.`);
-            } else if (agency.status === 'REJECTED') {
-                throw new Error(`Agency "${subdomain}" registration was rejected. Please contact support.`);
-            }
-            throw new Error(`Agency ${subdomain} is not active (status: ${agency.status}).`);
+        // PENDING agencies can log in to see their status — only REJECTED/SUSPENDED are hard-blocked
+        if (agency.status === 'REJECTED') {
+            throw new Error(`Votre demande d'inscription a été rejetée. Contactez le support pour plus d'informations.`);
+        }
+        if (agency.status === 'SUSPENDED') {
+            throw new Error(`Votre compte est suspendu. Contactez le support Trajetour.`);
+        }
+        // PENDING: allow login but db_url might be empty if not provisioned yet
+        if (!agency.db_url) {
+            throw new Error(`Votre espace de travail est encore en cours de provisionnement. Réessayez dans quelques minutes.`);
         }
 
         // Create new pool for the tenant
