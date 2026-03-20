@@ -176,8 +176,6 @@ router.post('/register-agency',
             
             // 2. Automated Onboarding: Initialize Tenant Database
             const { Pool } = await import('pg');
-            const fs = await import('fs');
-            const path = await import('path');
             const bcrypt = (await import('bcrypt')).default;
 
             const tenantPool = new Pool({
@@ -186,15 +184,13 @@ router.post('/register-agency',
             });
 
             try {
-                // Schema is fully idempotent (all CREATE TABLE IF NOT EXISTS, triggers use DROP IF EXISTS)
-                // So we always run it - it will safely skip already-existing objects
-                console.log(`📋 Running idempotent schema initialization for ${subdomain}...`);
-                const schemaPath = path.join(process.cwd(), 'src', 'models', 'schema.sql');
-                const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-                await tenantPool.query(schemaSql);
-                console.log(`✅ Schema initialized for ${subdomain}.`);
+                // Neon branches are full clones of the parent — schema, tables, triggers all already exist.
+                // We must NOT run DDL (schema.sql) because:
+                //   1. Tables already exist (would fail even with IF NOT EXISTS on triggers/constraints)
+                //   2. The role may lack ownership rights to alter inherited objects over the pooler
+                // We ONLY need to create the admin user via safe DML.
+                console.log(`📋 Skipping schema init (Neon branch already has parent schema). Creating admin user for ${subdomain}...`);
 
-                // Create the tenant's admin user
                 const defaultPassword = password || 'Password123!';
                 const hashedPassword = await bcrypt.hash(defaultPassword, 10);
                 const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
@@ -209,7 +205,6 @@ router.post('/register-agency',
                 console.log(`✅ Tenant database for ${subdomain} initialized successfully.`);
             } catch (initError: any) {
                 console.error(`❌ Failed to initialize tenant database for ${subdomain}:`, initError);
-                // We should probably rollback the master DB insertion if tenant DB fails
                 const newErr = new Error(`Failed to initialize tenant DB: ${initError.message}`);
                 (newErr as any).statusCode = 500;
                 throw newErr; 
