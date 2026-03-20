@@ -1,0 +1,100 @@
+trajetour-server 2026-03-19T22:48:20.535530693Z   __cf_bm: 'jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu'
+trajetour-server 2026-03-19T22:48:20.535533427Z }
+trajetour-server 2026-03-19T22:48:20.535536888Z    Extracted Token: Missing
+trajetour-server 2026-03-19T22:48:20.535539770Z ======================================
+trajetour-server 2026-03-19T22:48:20.535542258Z 
+trajetour-server 2026-03-19T22:48:20.536968445Z 📨 Request from Origin: Unknown -> GET /api/expenses
+trajetour-server 2026-03-19T22:48:20.537346475Z 
+trajetour-server 2026-03-19T22:48:20.537356738Z ======================================
+trajetour-server 2026-03-19T22:48:20.537360010Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-19T22:48:20.537362969Z    Host: trajetour.com
+trajetour-server 2026-03-19T22:48:20.537419109Z    Raw Cookie Header: __cf_bm=jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu
+trajetour-server 2026-03-19T22:48:20.537566233Z    Parsed Cookies: {
+trajetour-server 2026-03-19T22:48:20.537572111Z   __cf_bm: 'jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu'
+trajetour-server 2026-03-19T22:48:20.537574996Z }
+trajetour-server 2026-03-19T22:48:20.537624979Z    Extracted Token: Missing
+trajetour-server 2026-03-19T22:48:20.538351827Z ======================================
+trajetour-server 2026-03-19T22:48:20.538362799Z 
+trajetour-server 2026-03-19T22:48:20.539373990Z 📨 Request from Origin: Unknown -> GET /api/bank-accounts
+trajetour-server 2026-03-19T22:48:20.540476238Z 
+trajetour-server 2026-03-19T22:48:20.540489098Z ======================================
+trajetour-server 2026-03-19T22:48:20.540566734Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-19T22:48:20.540571640Z    Host: trajetour.com
+trajetour-server 2026-03-19T22:48:20.540592313Z    Raw Cookie Header: __cf_bm=jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu
+trajetour-server 2026-03-19T22:48:20.540676543Z    Parsed Cookies: {
+trajetour-server 2026-03-19T22:48:20.540682209Z   __cf_bm: 'jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu'
+trajetour-server 2026-03-19T22:48:20.540685052Z }
+trajetour-server 2026-03-19T22:48:20.540761737Z    Extracted Token: Missing
+trajetour-server 2026-03-19T22:48:20.540767319Z ======================================
+trajetour-server 2026-03-19T22:48:20.540770068Z 
+trajetour-server 2026-03-19T22:48:20.542568422Z 📨 Request from Origin: Unknown -> GET /api/orders
+trajetour-server 2026-03-19T22:48:20.542854883Z 
+trajetour-server 2026-03-19T22:48:20.542861986Z ======================================
+trajetour-server 2026-03-19T22:48:20.543475797Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-19T22:48:20.543487727Z    Host: trajetour.com
+trajetour-server 2026-03-19T22:48:20.543491164Z    Raw Cookie Header: __cf_bm=jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu
+trajetour-server 2026-03-19T22:48:20.543524743Z    Parsed Cookies: {
+trajetour-server 2026-03-19T22:48:20.543528318Z   __cf_bm: 'jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu'
+trajetour-server 2026-03-19T22:48:20.543530843Z }
+trajetour-server 2026-03-19T22:48:20.543533672Z    Extracted Token: Missing
+trajetour-server 2026-03-19T22:48:20.543545122Z ======================================
+trajetour-server 2026-03-19T22:48:20.543547509Z 
+trajetour-server 2026-03-19T22:48:20.545410790Z 📨 Request from Origin: Unknown -> GET /api/auth/me
+trajetour-server 2026-03-19T22:48:20.549167554Z 📨 Request from Origin: Unknown -> GET /api/suppliers
+trajetour-server 2026-03-19T22:48:20.549663787Z 
+trajetour-server 2026-03-19T22:48:20.549673217Z ======================================
+trajetour-server 2026-03-19T22:48:20.549675319Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-19T22:48:20.549676893Z    Host: trajetour.com
+trajetour-server 2026-03-19T22:48:20.549679339Z    Raw Cookie Header: __cf_bm=jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu
+trajetour-server 2026-03-19T22:48:20.549721815Z    Parsed Cookies: {
+trajetour-server 2026-03-19T22:48:20.549726402Z   __cf_bm: 'jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu'
+trajetour-server 2026-03-19T22:48:20.549729257Z }
+trajetour-server 2026-03-19T22:48:20.549763681Z    Extracted Token: Missing
+trajetour-server 2026-03-19T22:48:20.549767797Z ======================================
+trajetour-server 2026-03-19T22:48:20.549770109Z 
+trajetour-server 2026-03-19T22:48:20.551461201Z 📨 Request from Origin: Unknown -> GET /api/transactions
+trajetour-server 2026-03-19T22:48:20.552001181Z 
+trajetour-server 2026-03-19T22:48:20.552011345Z ======================================
+trajetour-server 2026-03-19T22:48:20.552078364Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-19T22:48:20.552294697Z    Host: trajetour.com
+trajetour-server 2026-03-19T22:48:20.552310824Z    Raw Cookie Header: __cf_bm=jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu
+trajetour-server 2026-03-19T22:48:20.553012537Z    Parsed Cookies: {
+trajetour-server 2026-03-19T22:48:20.553022063Z   __cf_bm: 'jv8qdAV2mCWqRfj3Mw6Qsx0vpREHSSwMWah8jtOChC0-1773959944-1.0.1.1-z9UeQk3l2aFv43xayj_tZ_XqQApruzv9aKU_R5_wiRAPGDbB4BOFRWCcKs4KOJI1Ulwv8DUgsa7xlDvZb3o.gvVzBOAv.26789W2TjLT4N7eHswq8UpKHRzLor5lcqVu'
+trajetour-server 2026-03-19T22:48:20.553024479Z }
+trajetour-server 2026-03-19T22:48:20.553036265Z    Extracted Token: Missing
+trajetour-server 2026-03-19T22:48:20.553051783Z ======================================
+trajetour-server 2026-03-19T22:48:20.553054413Z 
+trajetour-server 2026-03-19T22:48:20.556893619Z 📨 Request from Origin: Unknown -> GET /api/offers
+trajetour-server 2026-03-19T22:48:55.408384256Z 📨 Request from Origin: https://trajetour.com -> POST /api/master/register-agency
+trajetour-server 2026-03-19T22:48:55.474590431Z ☁️ Auto-provisioning Neon Database Branch for: atlas-voyages
+trajetour-server 2026-03-19T22:48:56.039570766Z ✅ Branch created: br-nameless-glitter-agabjaau, Endpoint: ep-young-poetry-ag9gm5jl.c-2.eu-central-1.aws.neon.tech
+trajetour-server 2026-03-19T22:48:56.547495766Z ⏳ Branch is locked (423). Retrying in 2 seconds... (Attempt 1/10)
+trajetour-server 2026-03-19T22:48:58.821491095Z 🔑 Granting schema permission to authenticator...
+trajetour-server 2026-03-19T22:48:58.876560447Z ✅ Granted schema permission to authenticator
+trajetour-server 2026-03-19T22:48:58.876723224Z ✅ Auto-provisioning successful. Secured DB URL for atlas-voyages.
+trajetour-server 2026-03-19T22:48:58.884173093Z 🚀 New agency registered: Atlas Voyages (atlas-voyages). Initializing tenant database...
+trajetour-server 2026-03-19T22:48:58.885374698Z 📋 Running idempotent schema initialization for atlas-voyages...
+trajetour-server 2026-03-19T22:48:58.933805773Z ❌ Failed to initialize tenant database for atlas-voyages: error: must be owner of table orders
+trajetour-server 2026-03-19T22:48:58.933836510Z     at /workspace/server/node_modules/pg-pool/index.js:45:11
+trajetour-server 2026-03-19T22:48:58.933838611Z     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+trajetour-server 2026-03-19T22:48:58.933841240Z     at async file:///workspace/server/dist/routes/master.js:157:13 {
+trajetour-server 2026-03-19T22:48:58.933843063Z   length: 89,
+trajetour-server 2026-03-19T22:48:58.933845069Z   severity: 'ERROR',
+trajetour-server 2026-03-19T22:48:58.933846936Z   code: '42501',
+trajetour-server 2026-03-19T22:48:58.933848728Z   detail: undefined,
+trajetour-server 2026-03-19T22:48:58.933850326Z   hint: undefined,
+trajetour-server 2026-03-19T22:48:58.933851845Z   position: undefined,
+trajetour-server 2026-03-19T22:48:58.933854267Z   internalPosition: undefined,
+trajetour-server 2026-03-19T22:48:58.933855850Z   internalQuery: undefined,
+trajetour-server 2026-03-19T22:48:58.933857492Z   where: undefined,
+trajetour-server 2026-03-19T22:48:58.933859008Z   schema: undefined,
+trajetour-server 2026-03-19T22:48:58.933861385Z   table: undefined,
+trajetour-server 2026-03-19T22:48:58.933864085Z   column: undefined,
+trajetour-server 2026-03-19T22:48:58.933866392Z   dataType: undefined,
+trajetour-server 2026-03-19T22:48:58.933868756Z   constraint: undefined,
+trajetour-server 2026-03-19T22:48:58.933875030Z   file: 'aclchk.c',
+trajetour-server 2026-03-19T22:48:58.933877941Z   line: '2981',
+trajetour-server 2026-03-19T22:48:58.933880604Z   routine: 'aclcheck_error'
+trajetour-server 2026-03-19T22:48:58.933883420Z }
+trajetour-server 2026-03-19T22:49:41.132413715Z 📨 Request from Origin: https://trajetour.com -> POST /api/master/register-agency
+trajetour-server 2026-03-19T22:49:41.158051029Z ☁️ Auto-provisioning Neon Database Branch for: atlas-voyages

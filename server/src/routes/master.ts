@@ -192,54 +192,72 @@ router.post('/register-agency',
 
             const newAgency = result.rows[0];
 
-            console.log(`🚀 New agency registered: ${name} (${subdomain}). Initializing tenant database...`);
-            
-            // 2. Automated Onboarding: Initialize Tenant Database
-            const { Pool } = await import('pg');
-            const bcrypt = (await import('bcrypt')).default;
+            console.log(`🚀 New agency registered: ${name} (${subdomain}). Will provision tenant admin in background...`);
 
-            const tenantPool = new Pool({
-                connectionString: dbUrl,
-                ssl: dbUrl.includes('localhost') ? false : { rejectUnauthorized: false }
-            });
-
-            try {
-                // Neon branches are full clones of the parent — schema, tables, triggers all already exist.
-                // We must NOT run DDL (schema.sql) because:
-                //   1. Tables already exist (would fail even with IF NOT EXISTS on triggers/constraints)
-                //   2. The role may lack ownership rights to alter inherited objects over the pooler
-                // We ONLY need to create the admin user via safe DML.
-                console.log(`📋 Skipping schema init (Neon branch already has parent schema). Creating admin user for ${subdomain}...`);
-
-                const defaultPassword = password || 'Password123!';
-                const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-                const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
-                
-                await tenantPool.query(
-                    `INSERT INTO users (email, password_hash, username, role, permissions) 
-                     VALUES ($1, $2, $3, $4, $5::jsonb)
-                     ON CONFLICT (email) DO NOTHING`,
-                    [ownerEmail, hashedPassword, contactName || 'Admin', 'admin', permissions]
-                );
-
-                console.log(`✅ Tenant database for ${subdomain} initialized successfully.`);
-            } catch (initError: any) {
-                console.error(`❌ Failed to initialize tenant database for ${subdomain}:`, initError);
-                const newErr = new Error(`Failed to initialize tenant DB: ${initError.message}`);
-                (newErr as any).statusCode = 500;
-                throw newErr; 
-            } finally {
-                await tenantPool.end();
-            }
-
-            // 3. Log this action (Optional: implement platform-level audit logs)
-            console.log(`🎉 Agency Onboarding Complete: ${name} (${subdomain})`);
-
+            // Commit the master DB transaction and respond immediately
             await client.query('COMMIT');
             res.status(201).json({
-                message: 'Agency registered and database initialized successfully',
+                message: 'Agency registered successfully! Your dashboard is being set up and will be ready in about 1-2 minutes.',
                 agency: newAgency,
-                defaultAdminPassword: 'Password123!'
+                loginEmail: ownerEmail,
+                loginPassword: password || 'Password123!'
+            });
+
+            // 2. Provision tenant admin user in the background (fire-and-forget)
+            // This runs AFTER the response is sent — no HTTP timeout concern
+            setImmediate(async () => {
+                console.log(`🔧 Background: provisioning admin user for ${subdomain}...`);
+                try {
+                    const { Pool } = await import('pg');
+                    const bcrypt = (await import('bcrypt')).default;
+
+                    // Wait for the Neon branch endpoint to be reachable
+                    // The branch was already created above; we just need it to be ready
+                    let connected = false;
+                    for (let attempt = 0; attempt < 30; attempt++) {
+                        const tenantPool = new Pool({
+                            connectionString: dbUrl,
+                            ssl: dbUrl.includes('localhost') ? false : { rejectUnauthorized: false },
+                            connectionTimeoutMillis: 5000,
+                        });
+                        try {
+                            await tenantPool.query('SELECT 1');
+                            await tenantPool.end();
+                            connected = true;
+                            console.log(`✅ Background: tenant DB connected for ${subdomain}`);
+                            break;
+                        } catch (connErr: any) {
+                            await tenantPool.end().catch(() => {});
+                            console.log(`⏳ Background: waiting for tenant DB (attempt ${attempt + 1}/30)...`);
+                            await new Promise(resolve => setTimeout(resolve, 5000));
+                        }
+                    }
+
+                    if (!connected) {
+                        console.error(`❌ Background: could not connect to tenant DB for ${subdomain} after waiting`);
+                        return;
+                    }
+
+                    const finalPool = new Pool({
+                        connectionString: dbUrl,
+                        ssl: dbUrl.includes('localhost') ? false : { rejectUnauthorized: false },
+                    });
+
+                    const defaultPassword = password || 'Password123!';
+                    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+                    const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
+
+                    await finalPool.query(
+                        `INSERT INTO users (email, password_hash, username, role, permissions) 
+                         VALUES ($1, $2, $3, $4, $5::jsonb)
+                         ON CONFLICT (email) DO NOTHING`,
+                        [ownerEmail, hashedPassword, contactName || 'Admin', 'admin', permissions]
+                    );
+                    await finalPool.end();
+                    console.log(`🎉 Background: admin user created for ${subdomain}! Agency fully onboarded.`);
+                } catch (bgErr: any) {
+                    console.error(`❌ Background provisioning failed for ${subdomain}:`, bgErr.message);
+                }
             });
         } catch (error: any) {
             await client.query('ROLLBACK');

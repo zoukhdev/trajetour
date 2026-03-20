@@ -1,0 +1,100 @@
+trajetour-server 2026-03-20T01:51:06.963241480Z 📨 Request from Origin: Unknown -> GET /api/suppliers
+trajetour-server 2026-03-20T01:51:06.964095366Z 
+trajetour-server 2026-03-20T01:51:06.964124060Z ======================================
+trajetour-server 2026-03-20T01:51:06.964127915Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.964130466Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.964135950Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.964317465Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.964348006Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.964351819Z }
+trajetour-server 2026-03-20T01:51:06.964360212Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.964370048Z ======================================
+trajetour-server 2026-03-20T01:51:06.964372485Z 
+trajetour-server 2026-03-20T01:51:06.965799844Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:06.971951117Z 📨 Request from Origin: Unknown -> GET /api/orders
+trajetour-server 2026-03-20T01:51:06.972376574Z 
+trajetour-server 2026-03-20T01:51:06.972389818Z ======================================
+trajetour-server 2026-03-20T01:51:06.972393492Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.972669565Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.972682314Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.972791608Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.972801874Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.972805108Z }
+trajetour-server 2026-03-20T01:51:06.972808319Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.972811078Z ======================================
+trajetour-server 2026-03-20T01:51:06.972813650Z 
+trajetour-server 2026-03-20T01:51:06.977297480Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:06.980369764Z 📨 Request from Origin: Unknown -> GET /api/agencies
+trajetour-server 2026-03-20T01:51:06.980770051Z 
+trajetour-server 2026-03-20T01:51:06.980781801Z ======================================
+trajetour-server 2026-03-20T01:51:06.980806581Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.980956676Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.981024870Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.981128564Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.981133245Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.981136260Z }
+trajetour-server 2026-03-20T01:51:06.981287561Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.981291903Z ======================================
+trajetour-server 2026-03-20T01:51:06.981294538Z 
+trajetour-server 2026-03-20T01:51:06.985725626Z 📨 Request from Origin: Unknown -> GET /api/bank-accounts
+trajetour-server 2026-03-20T01:51:06.985737822Z 
+trajetour-server 2026-03-20T01:51:06.985741102Z ======================================
+trajetour-server 2026-03-20T01:51:06.985744484Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.985747119Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.985750693Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.985753633Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.985756640Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.985759604Z }
+trajetour-server 2026-03-20T01:51:06.985762151Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.985770603Z ======================================
+trajetour-server 2026-03-20T01:51:06.985772384Z 
+trajetour-server 2026-03-20T01:51:06.986021757Z 📨 Request from Origin: Unknown -> GET /api/offers
+trajetour-server 2026-03-20T01:51:06.986794288Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:06.989291841Z 📨 Request from Origin: Unknown -> GET /api/users
+trajetour-server 2026-03-20T01:51:06.990000577Z 
+trajetour-server 2026-03-20T01:51:06.990011368Z ======================================
+trajetour-server 2026-03-20T01:51:06.990014674Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.990032610Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.990092726Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.990335177Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.990344291Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.990347353Z }
+trajetour-server 2026-03-20T01:51:06.990456315Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.990460798Z ======================================
+trajetour-server 2026-03-20T01:51:06.990463238Z 
+trajetour-server 2026-03-20T01:51:06.995103637Z 📨 Request from Origin: Unknown -> GET /api/clients
+trajetour-server 2026-03-20T01:51:06.995328452Z 
+trajetour-server 2026-03-20T01:51:06.995337367Z ======================================
+trajetour-server 2026-03-20T01:51:06.995343575Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.995406896Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.995412379Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.995539072Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.995545537Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.995547957Z }
+trajetour-server 2026-03-20T01:51:06.995550279Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.995552604Z ======================================
+trajetour-server 2026-03-20T01:51:06.995554982Z 
+trajetour-server 2026-03-20T01:51:06.998472171Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:06.998928097Z 📨 Request from Origin: Unknown -> GET /api/expenses
+trajetour-server 2026-03-20T01:51:06.999240793Z 
+trajetour-server 2026-03-20T01:51:06.999251674Z ======================================
+trajetour-server 2026-03-20T01:51:06.999327962Z 🔒 Auth Check [GET /]
+trajetour-server 2026-03-20T01:51:06.999336832Z    Host: trajetour-85x6v.ondigitalocean.app
+trajetour-server 2026-03-20T01:51:06.999374761Z    Raw Cookie Header: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8
+trajetour-server 2026-03-20T01:51:06.999468329Z    Parsed Cookies: {
+trajetour-server 2026-03-20T01:51:06.999474820Z   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImI4N2RjMzU1LWYwNzMtNDE4YS04YWIzLTA0Mzk0NWY4MTIzNiIsImVtYWlsIjoiYWltZW5AdHJhamV0b3VyLmNvbSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjpbIm1hbmFnZV91c2VycyIsIm1hbmFnZV9idXNpbmVzcyIsIm1hbmFnZV9maW5hbmNpYWxzIiwidmlld19yZXBvcnRzIl0sInRlbmFudElkIjoidHJhamV0b3VyLTg1eDZ2IiwiaWF0IjoxNzczOTUwNTkzLCJleHAiOjE3NzQ1NTUzOTN9.lxM0r4fa8jXx0x-pq__j5i7UpEfdud6hI1PQINomZY8'
+trajetour-server 2026-03-20T01:51:06.999477356Z }
+trajetour-server 2026-03-20T01:51:06.999480068Z    Extracted Token: Found (eyJhbGciOi...)
+trajetour-server 2026-03-20T01:51:06.999482435Z ======================================
+trajetour-server 2026-03-20T01:51:06.999484676Z 
+trajetour-server 2026-03-20T01:51:07.006446665Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.034438722Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.052221167Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.055492778Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.111724960Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.112968417Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.114086183Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.114577531Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.116113943Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.125958181Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
+trajetour-server 2026-03-20T01:51:07.127390803Z ⚠️ No agency found for subdomain: trajetour-85x6v, falling back to default db.
