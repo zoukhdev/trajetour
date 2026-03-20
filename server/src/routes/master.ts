@@ -93,10 +93,30 @@ router.post('/register-agency',
                 
                 const roleName = rolesRes.data.roles[0].name;
 
-                // 3. We need to get the role password, handling the 423 Locked state if branch isn't ready.
+                // 3. Poll for branch endpoint readiness before resetting password
+                console.log(`⏳ Waiting for Neon branch endpoint to become ready...`);
+                let endpointReady = false;
+                for (let i = 0; i < 30; i++) {
+                    try {
+                        const epRes = await axios.get(
+                            `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/endpoints`,
+                            { headers: { 'Authorization': `Bearer ${NEON_API_KEY}`, 'Accept': 'application/json' } }
+                        );
+                        const ep = epRes.data.endpoints?.find((e: any) => e.id === endpointId);
+                        if (ep && ep.current_state === 'idle') {
+                            console.log(`✅ Branch endpoint is ready (state: ${ep.current_state})`);
+                            endpointReady = true;
+                            break;
+                        }
+                        console.log(`⏳ Endpoint state: ${ep?.current_state || 'unknown'}. Waiting... (${i+1}/30)`);
+                    } catch (e) { /* ignore polling errors */ }
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                }
+
+                // 4. Reset password to get credentials (retry up to 30 times, 3s each = 90s max)
                 let passRes;
                 let attempts = 0;
-                while (attempts < 10) {
+                while (attempts < 30) {
                     try {
                         passRes = await axios.post(
                             `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles/${roleName}/reset_password`,
@@ -112,8 +132,8 @@ router.post('/register-agency',
                     } catch (err: any) {
                         if (err.response?.status === 423) {
                             attempts++;
-                            console.log(`⏳ Branch is locked (423). Retrying in 2 seconds... (Attempt ${attempts}/10)`);
-                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            console.log(`⏳ Branch is locked (423). Retrying in 3 seconds... (Attempt ${attempts}/30)`);
+                            await new Promise(resolve => setTimeout(resolve, 3000));
                         } else {
                             console.error("Neon API Reset Password Error:", err.response?.data || err.message);
                             const errMsg = err.response?.data ? JSON.stringify(err.response.data) : err.message;
