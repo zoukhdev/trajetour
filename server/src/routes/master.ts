@@ -298,7 +298,7 @@ router.get('/my-subscription',
     async (req: Request, res, next) => {
         try {
             const authReq = req as AuthRequest;
-            const tenantId = authReq.tenantId;
+            const tenantId = authReq.user?.tenantId;
 
             if (!tenantId) {
                 return res.status(400).json({ error: 'No tenant context found.' });
