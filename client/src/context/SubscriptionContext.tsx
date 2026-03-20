@@ -20,14 +20,14 @@ interface SubscriptionContextValue {
     subscription: Subscription | null;
     loading: boolean;
     isLocked: boolean; // true when status is NOT ACTIVE
-    refetch: () => void;
+    refetch: () => Promise<void>;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextValue>({
     subscription: null,
     loading: true,
     isLocked: false,
-    refetch: () => {},
+    refetch: () => Promise.resolve(),
 });
 
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
@@ -36,7 +36,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
     const fetchSub = () => {
         setLoading(true);
-        masterAPI.getMySubscription()
+        return masterAPI.getMySubscription()
             .then(data => setSubscription(data))
             .catch(() => setSubscription(null))
             .finally(() => setLoading(false));
