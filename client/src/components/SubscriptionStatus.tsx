@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { masterAPI } from '../../services/api';
-import { CreditCard, Shield, Clock, AlertTriangle, CheckCircle2, XCircle, Building2, Globe, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { masterAPI } from '../services/api';
+import { CreditCard, Shield, Clock, AlertTriangle, CheckCircle2, XCircle, Globe, ExternalLink } from 'lucide-react';
 
 interface Subscription {
     id: string;
@@ -33,7 +33,7 @@ const PLAN_FEATURES: Record<string, { features: string[]; price: string; color: 
     },
 };
 
-const STATUS_CONFIG: Record<string, { icon: JSX.Element; bg: string; border: string; text: string; title: string; description: string }> = {
+const STATUS_CONFIG: Record<string, { icon: React.ReactElement; bg: string; border: string; text: string; title: string; description: string }> = {
     PENDING: {
         icon: <Clock size={20} className="text-amber-600" />,
         bg: 'bg-amber-50',
@@ -75,8 +75,11 @@ const SubscriptionStatus = () => {
 
     useEffect(() => {
         masterAPI.getMySubscription()
-            .then(data => setSubscription(data))
-            .catch(err => setError(err?.response?.data?.error || 'Impossible de charger les informations d\'abonnement.'))
+            .then((data: Subscription) => setSubscription(data))
+            .catch((err: unknown) => {
+                const e = err as { response?: { data?: { error?: string } } };
+                setError(e?.response?.data?.error || 'Impossible de charger les informations d\'abonnement.');
+            })
             .finally(() => setLoading(false));
     }, []);
 

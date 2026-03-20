@@ -1,3 +1,4 @@
+import React from 'react';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -10,7 +11,7 @@ const PLAN_CONFIG: Record<string, {
     price: string;
     priceYear: string;
     gradient: string;
-    icon: JSX.Element;
+    icon: React.ReactElement;
     color: string;
     features: string[];
 }> = {
