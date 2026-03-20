@@ -450,19 +450,27 @@ app.listen(PORT, async () => {
         try {
             console.log('🔄 Auto-running database migrations...');
             
-            // 0. Ensure master agencies table has multi-tenant columns
+            // 0. Ensure master agencies table has all multi-tenant + registration workflow columns
             try {
                 await pool.query(`
                     ALTER TABLE agencies 
                     ADD COLUMN IF NOT EXISTS subdomain VARCHAR(100) UNIQUE,
                     ADD COLUMN IF NOT EXISTS db_url TEXT,
-                    ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'ACTIVE',
+                    ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'PENDING',
                     ADD COLUMN IF NOT EXISTS owner_email VARCHAR(255),
-                    ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'basic';
+                    ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'Basic',
+                    ADD COLUMN IF NOT EXISTS contact_name VARCHAR(255),
+                    ADD COLUMN IF NOT EXISTS neon_branch_id VARCHAR(100),
+                    ADD COLUMN IF NOT EXISTS db_provisioned_at TIMESTAMP WITH TIME ZONE,
+                    ADD COLUMN IF NOT EXISTS status_updated_at TIMESTAMP WITH TIME ZONE,
+                    ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
                 `);
+                // Fix status CHECK constraint to include all valid statuses
+                await pool.query(`ALTER TABLE agencies DROP CONSTRAINT IF EXISTS agencies_status_check;`);
+                await pool.query(`ALTER TABLE agencies ADD CONSTRAINT agencies_status_check CHECK (status IN ('ACTIVE', 'SUSPENDED', 'PENDING', 'REJECTED'));`);
                 console.log('✅ Agencies table master schema verified.');
-            } catch (err) {
-                // Ignore if table doesn't exist yet
+            } catch (err: any) {
+                console.warn('⚠️ Agencies migration warning (non-fatal):', err.message);
             }
 
             // 1. Ensure Rooms Table Exists and has columns

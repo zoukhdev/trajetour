@@ -39,8 +39,13 @@ export async function getTenantPool(subdomain: string): Promise<pkg.Pool> {
         }
 
         const agency = res.rows[0];
-        if (agency.status !== 'active') {
-            throw new Error(`Agency ${subdomain} is not active.`);
+        if (agency.status !== 'ACTIVE') {
+            if (agency.status === 'PENDING') {
+                throw new Error(`Agency "${subdomain}" is awaiting approval. Please wait for confirmation.`);
+            } else if (agency.status === 'REJECTED') {
+                throw new Error(`Agency "${subdomain}" registration was rejected. Please contact support.`);
+            }
+            throw new Error(`Agency ${subdomain} is not active (status: ${agency.status}).`);
         }
 
         // Create new pool for the tenant

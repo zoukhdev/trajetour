@@ -32,6 +32,7 @@ import SupplierContracts from './pages/Suppliers/SupplierContracts';
 import LogsPage from './pages/Logs/LogsPage';
 import { OfflineProvider } from './context/OfflineContext';
 import MasterAgencyList from './pages/Master/MasterAgencyList';
+import AgencyRegistrations from './pages/Master/AgencyRegistrations';
 
 // Public Pages
 import Home from './pages/Public/Home';
@@ -129,6 +130,7 @@ function App() {
                       <Route path="users" element={<UserList />} />
                       <Route path="logs" element={<LogsPage />} />
                       <Route path="master-agencies" element={<MasterAgencyList />} />
+                      <Route path="agency-registrations" element={<AgencyRegistrations />} />
                     </Route>
 
                     {/* Other Admin Tools */}

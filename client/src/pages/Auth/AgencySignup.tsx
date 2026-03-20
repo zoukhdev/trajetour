@@ -71,23 +71,36 @@ const AgencySignup = () => {
             <div className="max-w-[700px] w-full bg-white dark:bg-[#1a2634] rounded-2xl shadow-xl p-8 md:p-12 border border-blue-100 dark:border-gray-700">
                 {isSuccess ? (
                     <div className="text-center py-8">
-                        <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Inscription Réussie ! 🎉</h2>
-                        <p className="text-slate-600 dark:text-slate-300 mb-3 max-w-md mx-auto">
-                            Votre agence a été enregistrée avec succès. Votre espace de travail est en cours de préparation.
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Demande envoyée ! ✅</h2>
+                        <p className="text-slate-600 dark:text-slate-300 mb-5 max-w-md mx-auto">
+                            Votre demande d'inscription a été soumise avec succès. Notre équipe va examiner votre dossier.
                         </p>
-                        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-6 text-left max-w-sm mx-auto">
-                            <p className="text-sm font-bold text-blue-800 dark:text-blue-300 mb-2">⏱️ Prêt dans 1-2 minutes</p>
-                            <p className="text-sm text-blue-700 dark:text-blue-400">Vos identifiants de connexion :</p>
-                            <p className="text-sm font-mono text-blue-800 dark:text-blue-200 mt-1">📧 {formData.email}</p>
-                            <p className="text-sm font-mono text-blue-800 dark:text-blue-200">🔑 {password}</p>
+
+                        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5 mb-6 text-left max-w-sm mx-auto space-y-3">
+                            <div className="flex items-start gap-3">
+                                <span className="text-xl">⏳</span>
+                                <div>
+                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">Examen sous 24h ouvrables</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">Vous recevrez une confirmation par email une fois approuvé.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3 border-t border-amber-100 dark:border-amber-800 pt-3">
+                                <span className="text-xl">📧</span>
+                                <div>
+                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">Email de connexion</p>
+                                    <p className="text-xs font-mono text-amber-700 dark:text-amber-400 mt-0.5">{formData.email}</p>
+                                </div>
+                            </div>
                         </div>
-                        <Link to="/login/agency" className="btn-primary inline-flex items-center justify-center h-12 px-8 text-base font-bold">
-                            Se connecter au tableau de bord
+
+                        <p className="text-xs text-slate-400 mb-4">Une fois approuvé, connectez-vous avec l'email ci-dessus et votre mot de passe.</p>
+                        <Link to="/" className="btn-primary inline-flex items-center justify-center h-11 px-8 text-sm font-bold">
+                            Retour à l'accueil
                         </Link>
                     </div>
                 ) : (

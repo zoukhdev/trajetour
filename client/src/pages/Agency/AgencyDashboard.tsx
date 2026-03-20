@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { agenciesAPI, ordersAPI } from '../../services/api';
 import type { Agency, Order } from '../../types';
+import SubscriptionStatus from '../../components/SubscriptionStatus';
 
 const AgencyDashboard = () => {
     const { t } = useLanguage();
@@ -94,6 +95,9 @@ const AgencyDashboard = () => {
                         {t('agency_dashboard.new_booking')}
                     </Link>
                 </div>
+
+                {/* Subscription Status Banner */}
+                <SubscriptionStatus />
 
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

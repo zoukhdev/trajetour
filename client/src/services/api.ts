@@ -515,12 +515,25 @@ export const auditLogsAPI = {
 
 // Master Platform API (Multi-Tenancy)
 export const masterAPI = {
-    registerAgency: async (data: { name: string; subdomain: string; dbUrl: string; ownerEmail?: string }) => {
+    registerAgency: async (data: any) => {
         const response = await api.post('/master/register-agency', data);
         return response.data;
     },
-    getAgencies: async () => {
-        const response = await api.get('/master/agencies');
+    getAgencies: async (status?: string) => {
+        const params = status ? `?status=${status}` : '';
+        const response = await api.get(`/master/agencies${params}`);
+        return response.data;
+    },
+    getAgency: async (id: string) => {
+        const response = await api.get(`/master/agencies/${id}`);
+        return response.data;
+    },
+    updateAgencyStatus: async (id: string, status: string, rejection_reason?: string) => {
+        const response = await api.patch(`/master/agencies/${id}/status`, { status, rejection_reason });
+        return response.data;
+    },
+    getMySubscription: async () => {
+        const response = await api.get('/master/my-subscription');
         return response.data;
     }
 };
