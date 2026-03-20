@@ -13,6 +13,7 @@ export interface Subscription {
     db_provisioned_at: string | null;
     status_updated_at: string | null;
     rejection_reason: string | null;
+    payment_proof_url: string | null;
 }
 
 interface SubscriptionContextValue {

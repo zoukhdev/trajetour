@@ -2,6 +2,7 @@ import express, { Request } from 'express';
 import { masterPool } from '../config/tenantPool.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { validate, multiTenantAgencySchema } from '../middleware/validation.js';
+import { upload, uploadToCloudinary } from '../utils/fileUpload.js';
 
 const router = express.Router();
 
@@ -211,11 +212,11 @@ router.get('/agencies',
     async (req, res, next) => {
         try {
             const { status } = req.query;
-            let query = 'SELECT id, name, subdomain, owner_email, contact_name, phone, address, plan, status, created_at, db_provisioned_at, neon_branch_id FROM agencies ORDER BY created_at DESC';
+            let query = 'SELECT id, name, subdomain, owner_email, contact_name, phone, address, plan, status, created_at, db_provisioned_at, payment_proof_url, neon_branch_id FROM agencies ORDER BY created_at DESC';
             const params: any[] = [];
 
             if (status && status !== 'ALL') {
-                query = 'SELECT id, name, subdomain, owner_email, contact_name, phone, address, plan, status, created_at, db_provisioned_at, neon_branch_id FROM agencies WHERE status = $1 ORDER BY created_at DESC';
+                query = 'SELECT id, name, subdomain, owner_email, contact_name, phone, address, plan, status, created_at, db_provisioned_at, payment_proof_url, neon_branch_id FROM agencies WHERE status = $1 ORDER BY created_at DESC';
                 params.push((status as string).toUpperCase());
             }
 
@@ -306,7 +307,7 @@ router.get('/my-subscription',
 
             const result = await masterPool.query(
                 `SELECT id, name, subdomain, plan, status, owner_email,
-                        created_at, db_provisioned_at, status_updated_at, rejection_reason
+                        created_at, db_provisioned_at, status_updated_at, rejection_reason, payment_proof_url
                  FROM agencies WHERE subdomain = $1`,
                 [tenantId]
             );
@@ -316,6 +317,40 @@ router.get('/my-subscription',
             }
 
             res.json(result.rows[0]);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+// ─── POST /my-subscription/payment-proof ─────────────────────────────────────
+// Agency self-service: upload bank transfer proof
+router.post('/my-subscription/payment-proof',
+    authMiddleware,
+    upload.single('proof'),
+    async (req: Request, res, next) => {
+        try {
+            const authReq = req as AuthRequest;
+            const tenantId = authReq.user?.tenantId;
+
+            if (!tenantId) {
+                return res.status(400).json({ error: 'No tenant context found.' });
+            }
+
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded.' });
+            }
+
+            // Upload the file to Cloudinary
+            const uploadResult = await uploadToCloudinary(req.file.buffer, 'payment_proofs');
+            const fileUrl = uploadResult.secure_url;
+
+            await masterPool.query(
+                `UPDATE agencies SET payment_proof_url = $1 WHERE subdomain = $2`,
+                [fileUrl, tenantId]
+            );
+
+            res.json({ success: true, payment_proof_url: fileUrl });
         } catch (error) {
             next(error);
         }

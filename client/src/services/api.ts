@@ -535,5 +535,13 @@ export const masterAPI = {
     getMySubscription: async () => {
         const response = await api.get('/master/my-subscription');
         return response.data;
+    },
+    uploadPaymentProof: async (file: File) => {
+        const formData = new FormData();
+        formData.append('proof', file);
+        const response = await api.post('/master/my-subscription/payment-proof', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
     }
 };

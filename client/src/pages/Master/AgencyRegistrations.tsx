@@ -19,6 +19,7 @@ interface Agency {
     db_provisioned_at: string | null;
     status_updated_at: string | null;
     rejection_reason: string | null;
+    payment_proof_url: string | null;
     neon_branch_id: string | null;
 }
 
@@ -211,7 +212,8 @@ const AgencyRegistrations = () => {
                         return (
                             <div
                                 key={agency.id}
-                                className={`bg-white rounded-2xl border shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden ${
+                                onClick={() => setDetailModal(agency)}
+                                className={`bg-white rounded-2xl border shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer ${
                                     agency.status === 'PENDING' ? 'border-amber-200' : 'border-gray-100'
                                 }`}
                             >
@@ -300,7 +302,7 @@ const AgencyRegistrations = () => {
                                     </div>
 
                                     {/* Footer */}
-                                    <div className="flex items-center justify-between border-t border-gray-100 pt-3">
+                                    <div className="flex items-center justify-between border-t border-gray-100 pt-3" onClick={e => e.stopPropagation()}>
                                         <span className="text-xs text-gray-400">
                                             {new Date(agency.created_at).toLocaleDateString('fr-FR', {
                                                 day: 'numeric', month: 'short', year: 'numeric'
@@ -379,7 +381,6 @@ const AgencyRegistrations = () => {
                             rows={4}
                             className="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition"
                         />
-
                         <div className="flex gap-3 mt-5">
                             <button
                                 onClick={() => { setRejectModal({ open: false, agency: null }); setRejectionReason(''); }}
@@ -395,6 +396,105 @@ const AgencyRegistrations = () => {
                                 {actionLoading ? <RefreshCw size={15} className="animate-spin" /> : null}
                                 Confirmer le rejet
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Detail Modal */}
+            {detailModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setDetailModal(null)}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 md:p-8 overflow-y-auto max-h-[90vh]" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900">{detailModal.name}</h2>
+                                <p className="text-sm text-blue-600 font-medium mt-1">{detailModal.subdomain}.trajetour.com</p>
+                            </div>
+                            <button onClick={() => setDetailModal(null)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition">
+                                <XCircle size={24} />
+                            </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Contact</p>
+                                    <p className="text-sm font-medium text-gray-900">{detailModal.contact_name}</p>
+                                    <p className="text-sm text-gray-600">{detailModal.owner_email}</p>
+                                    <p className="text-sm text-gray-600">{detailModal.phone}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Adresse</p>
+                                    <p className="text-sm text-gray-800">{detailModal.address}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Plan choisi</p>
+                                    <p className="text-sm font-bold text-gray-900">{detailModal.plan} <span className="text-gray-500 font-normal">({PLAN_PRICES[detailModal.plan]})</span></p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Statut actuel</p>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${STATUS_STYLES[detailModal.status]?.bg} ${STATUS_STYLES[detailModal.status]?.text}`}>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[detailModal.status]?.dot}`} />
+                                        {STATUS_STYLES[detailModal.status]?.label}
+                                    </span>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Dates</p>
+                                    <p className="text-sm text-gray-600">Inscription: {new Date(detailModal.created_at).toLocaleString('fr-FR')}</p>
+                                    {detailModal.status_updated_at && <p className="text-sm text-gray-600">Modifié: {new Date(detailModal.status_updated_at).toLocaleString('fr-FR')}</p>}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Payment Proof Section */}
+                        <div className="border-t border-gray-100 pt-6 mb-6">
+                            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2 mb-4">
+                                <CreditCard size={16} /> Preuve de paiement
+                            </h3>
+                            {detailModal.payment_proof_url ? (
+                                <div className="rounded-xl overflow-hidden border border-gray-200">
+                                    <a href={detailModal.payment_proof_url} target="_blank" rel="noopener noreferrer" className="block w-full">
+                                        <img src={detailModal.payment_proof_url} alt="Preuve de paiement" className="w-full max-h-96 object-contain bg-gray-50 hover:opacity-90 transition" />
+                                    </a>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500">
+                                    Aucune preuve de paiement téléchargée par l'agence.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                            {detailModal.status === 'PENDING' && (
+                                <>
+                                    <button
+                                        onClick={() => { setDetailModal(null); setRejectModal({ open: true, agency: detailModal }); }}
+                                        disabled={!!actionLoading}
+                                        className="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition"
+                                    >
+                                        Rejeter
+                                    </button>
+                                    <button
+                                        onClick={() => { handleApprove(detailModal); setDetailModal(null); }}
+                                        disabled={!!actionLoading}
+                                        className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm transition"
+                                    >
+                                        Approuver l'agence
+                                    </button>
+                                </>
+                            )}
+                            {detailModal.status === 'ACTIVE' && (
+                                <button
+                                    onClick={() => { handleSuspend(detailModal); setDetailModal(null); }}
+                                    disabled={!!actionLoading}
+                                    className="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition"
+                                >
+                                    Suspendre l'agence
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

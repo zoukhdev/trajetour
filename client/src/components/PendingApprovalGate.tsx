@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
+import { masterAPI } from '../services/api';
 import {
     Clock, CheckCircle2, XCircle, AlertTriangle, CreditCard,
-    Shield, Zap, Crown, LogOut, RefreshCw, Phone, Mail, Globe
+    Shield, Zap, Crown, LogOut, RefreshCw, Phone, Mail, Globe, UploadCloud, FileImage
 } from 'lucide-react';
 
 const PLAN_CONFIG: Record<string, {
@@ -106,6 +107,24 @@ const StatusBanner = ({ status, rejectionReason }: { status: string; rejectionRe
 const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
     const { subscription, loading, isLocked, refetch } = useSubscription();
     const { logout, user } = useAuth();
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            setUploading(true);
+            await masterAPI.uploadPaymentProof(file);
+            await refetch();
+        } catch (err) {
+            console.error('Failed to upload proof:', err);
+            alert("Erreur lors de l'envoi de la preuve. Assurez-vous que l'image est valide et réessayez.");
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
 
     // Not locked — render normally
     if (!isLocked) return <>{children}</>;
@@ -285,6 +304,61 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                             ))}
                         </div>
                     </div>
+
+                    {/* Payment Proof Section */}
+                    {status === 'PENDING' && (
+                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
+                            <h3 className="font-black text-gray-900 text-xl mb-4 flex items-center gap-2">
+                                <CreditCard className="w-5 h-5 text-indigo-600" />
+                                Preuve de paiement
+                            </h3>
+                            <p className="text-gray-500 text-sm mb-6">
+                                Si vous effectuez un paiement par virement ou versement, vous pouvez nous transmettre la preuve ici pour accélérer l'activation de votre compte.
+                            </p>
+                            
+                            {subscription?.payment_proof_url ? (
+                                <div className="rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-6 flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white shrink-0 shadow-md">
+                                        <CheckCircle2 size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-emerald-900 text-lg">Preuve envoyée avec succès !</h4>
+                                        <p className="text-emerald-700 mt-1 text-sm font-medium">Nous validerons votre compte au plus vite.</p>
+                                    </div>
+                                    <div className="ml-auto w-16 h-16 rounded-lg overflow-hidden border border-emerald-200 shadow-sm hidden sm:block bg-white">
+                                        <a href={subscription.payment_proof_url} target="_blank" rel="noopener noreferrer">
+                                            <img src={subscription.payment_proof_url} alt="Reçu" className="w-full h-full object-cover hover:opacity-80 transition" />
+                                        </a>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div 
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center bg-gray-50 hover:bg-gray-100 hover:border-blue-400 transition cursor-pointer group"
+                                >
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleFileUpload} 
+                                        accept="image/*,.pdf" 
+                                        className="hidden" 
+                                    />
+                                    {uploading ? (
+                                        <div className="flex flex-col items-center justify-center text-blue-600">
+                                            <RefreshCw className="w-10 h-10 animate-spin mb-3" />
+                                            <p className="font-bold">Téléchargement en cours...</p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center text-gray-400 group-hover:text-blue-500 transition">
+                                            <UploadCloud className="w-10 h-10 mb-3" />
+                                            <p className="font-bold text-gray-600 group-hover:text-blue-600 text-lg">Cliquez pour ajouter votre reçu</p>
+                                            <p className="text-sm mt-1">Formats acceptés : JPG, PNG, PDF</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Contact Support */}
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl shadow-blue-900/20">
