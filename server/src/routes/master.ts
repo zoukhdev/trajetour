@@ -86,7 +86,7 @@ async function provisionAgencyDatabase(
         }
 
         if (!passRes) throw new Error('Branch remained locked after 30 attempts.');
-        const rolePassword = passRes.data.password;
+        const rolePassword = passRes.data.role.password;
         const dbUrl = `postgres://${roleName}:${rolePassword}@${endpointHost}/neondb?sslmode=require`;
 
         // 5. Update agency record with DB URL and mark provisioned
