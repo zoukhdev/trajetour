@@ -19,6 +19,7 @@ export interface User {
     avatar?: string;
     clientId?: string;
     agencyId?: string;
+    tenantId?: string; // Identifies which Neon branch DB this user belongs to
     firstName?: string;
     lastName?: string;
 }

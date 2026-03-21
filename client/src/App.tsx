@@ -41,7 +41,6 @@ import Packages from './pages/Public/Packages';
 import Reviews from './pages/Public/Reviews';
 import Contact from './pages/Public/Contact';
 import ClientLogin from './pages/Auth/ClientLogin';
-import AgencyLogin from './pages/Auth/AgencyLogin';
 import { ForgotPassword } from './pages/Auth/ForgotPassword';
 import { ResetPassword } from './pages/Auth/ResetPassword';
 import ClientSignup from './pages/Auth/ClientSignup';
