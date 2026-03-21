@@ -91,7 +91,7 @@ const ClientLogin = () => {
                                 <label className="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal" htmlFor="password">
                                     {t('auth.password')}
                                 </label>
-                                <a className="text-primary text-sm font-bold hover:underline" href="#">{t('auth.forgot_password')}</a>
+                                <Link className="text-primary text-sm font-bold hover:underline" to="/forgot-password">{t('auth.forgot_password')}</Link>
                             </div>
                             <div className="relative flex items-center">
                                 <span className="material-symbols-outlined absolute left-4 rtl:left-auto rtl:right-4 text-[#637588] dark:text-gray-500">lock</span>

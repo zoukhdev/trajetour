@@ -4,6 +4,69 @@ import { authMiddleware, requirePermission, AuthRequest } from '../middleware/au
 import { validate, paymentSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
+
+async function sendPaymentReceiptEmail(client: any, orderId: string, payment: any) {
+    if (!process.env.RESEND_API_KEY) return;
+    try {
+        const res = await client.query(`
+            SELECT o.reference, c.full_name as client_name, u.email, 
+                   (SELECT name FROM agencies WHERE id = o.agency_id) as agency_name
+            FROM orders o
+            JOIN clients c ON o.client_id = c.id
+            LEFT JOIN users u ON c.user_id = u.id
+            WHERE o.id = $1
+        `, [orderId]);
+        const info = res.rows[0];
+        if (info && info.email) {
+            const agencyName = info.agency_name || 'Votre Agence de Voyage';
+            await resend.emails.send({
+                from: `${agencyName} <hello@trajetour.com>`,
+                to: [info.email],
+                subject: `🧾 Reçu de paiement - Réservation ${info.reference}`,
+                html: `
+                    <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; color: #333; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h2 style="color: #10B981; margin-bottom: 5px;">Paiement Enregistré</h2>
+                            <p style="color: #64748b; font-size: 14px; margin-top: 0;">Référence: <strong>${info.reference}</strong></p>
+                        </div>
+                        <p>Bonjour <strong>${info.client_name}</strong>,</p>
+                        <p>Nous vous confirmons l'enregistrement de votre paiement de <strong>${parseFloat(payment.amount_dzd).toFixed(2)} DZD</strong> pour votre réservation avec <strong>${agencyName}</strong>.</p>
+                        
+                        <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                            <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Détails du paiement</h3>
+                            <table style="width: 100%; font-size: 14px;">
+                                <tr>
+                                    <td style="padding: 4px 0; color: #475569;">Montant :</td>
+                                    <td style="padding: 4px 0; text-align: right; font-weight: bold;">${parseFloat(payment.amount_dzd).toFixed(2)} DZD</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; color: #475569;">Méthode :</td>
+                                    <td style="padding: 4px 0; text-align: right;">${payment.method}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; color: #475569;">Date :</td>
+                                    <td style="padding: 4px 0; text-align: right;">${new Date(payment.payment_date).toLocaleDateString('fr-FR')}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #475569; line-height: 1.5;">Vous pouvez suivre l'état de votre réservation en vous connectant à votre espace client.</p>
+                        
+                        <div style="text-align: center; margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px;">
+                            <p style="font-size: 13px; color: #94a3b8;">Ce message est généré automatiquement par <a href="https://trajetour.com" style="color: #2563EB; text-decoration: none;">Trajetour</a> pour <strong>${agencyName}</strong>.</p>
+                        </div>
+                    </div>
+                `
+            });
+            console.log(`✅ Payment receipt email sent to ${info.email}`);
+        }
+    } catch (err) {
+        console.error('Failed to send payment receipt email:', err);
+    }
+}
 
 const router = express.Router();
 
@@ -225,6 +288,9 @@ router.post('/',
                 changes: newPayment,
                 ipAddress: req.ip
             });
+
+            // Send Payment Receipt Email async
+            sendPaymentReceiptEmail(client, orderId, newPayment);
 
             await client.query('COMMIT');
             res.status(201).json(mapPaymentResponse(newPayment));

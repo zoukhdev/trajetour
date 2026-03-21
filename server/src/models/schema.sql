@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
     permissions JSONB DEFAULT '[]'::jsonb,
     avatar TEXT,
     code VARCHAR(50),
+    reset_password_token VARCHAR(255),
+    reset_password_expires_at TIMESTAMP,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

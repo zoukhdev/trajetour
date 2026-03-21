@@ -42,6 +42,8 @@ import Reviews from './pages/Public/Reviews';
 import Contact from './pages/Public/Contact';
 import ClientLogin from './pages/Auth/ClientLogin';
 import AgencyLogin from './pages/Auth/AgencyLogin';
+import { ForgotPassword } from './pages/Auth/ForgotPassword';
+import { ResetPassword } from './pages/Auth/ResetPassword';
 import ClientSignup from './pages/Auth/ClientSignup';
 import AgencySignup from './pages/Auth/AgencySignup';
 import ClientDashboard from './pages/Client/ClientDashboard';
@@ -85,6 +87,8 @@ function App() {
                     <Route path="/login/agency" element={<AgencyLogin />} />
                     <Route path="/register" element={<ClientSignup />} />
                     <Route path="/register/agency" element={<AgencySignup />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/agency-signup" element={<AgencySignup />} />
                   </Route>
 

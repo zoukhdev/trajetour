@@ -77,7 +77,7 @@ const AgencyLogin = () => {
                         <div className="flex flex-col gap-2">
                             <div className="flex justify-between">
                                 <label className="text-sm font-bold text-slate-700 dark:text-slate-300">{t('auth.password')}</label>
-                                <a href="#" className="text-sm text-primary font-bold hover:underline">{t('auth.forgot_password')}</a>
+                                <Link to="/forgot-password" className="text-sm text-primary font-bold hover:underline">{t('auth.forgot_password')}</Link>
                             </div>
                             <input
                                 value={password}
