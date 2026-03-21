@@ -293,25 +293,88 @@ router.patch('/agencies/:id/status',
                     to: [agency.owner_email],
                     subject: '🎉 Votre agence Trajetour est activée !',
                     html: `
-                        <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; color: #333;">
-                            <h1 style="color: #2563eb;">Félicitations, ${agency.name} !</h1>
-                            <p>Nous avons bien reçu et validé votre preuve de paiement. Votre espace agence Trajetour est désormais <strong>entièrement activé</strong> et prêt à l'emploi.</p>
-                            <p>Vous pouvez vous connecter à votre espace d'administration exclusif via le lien ci-dessous :</p>
-                            
-                            <div style="text-align: center; margin: 30px 0;">
-                                <a href="${loginUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
-                                    Accéder à mon Dashboard
-                                </a>
-                            </div>
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <meta charset="utf-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        </head>
+                        <body style="margin: 0; padding: 0; background-color: #F8FAFC; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F8FAFC; padding: 40px 20px;">
+                                <tr>
+                                    <td align="center">
+                                        <!-- Logo / Header -->
+                                        <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+                                            <tr>
+                                                <td align="center" style="padding-bottom: 24px;">
+                                                    <span style="font-size: 28px; font-weight: 800; color: #2563EB; letter-spacing: -0.5px;">Trajetour</span>
+                                                </td>
+                                            </tr>
+                                        </table>
 
-                            <p style="background-color: #f3f4f6; padding: 15px; border-radius: 6px; font-size: 14px;">
-                                <strong>🔗 Votre lien de connexion unique :</strong><br/>
-                                <a href="${loginUrl}">${loginUrl}</a>
-                            </p>
+                                        <!-- Main Card -->
+                                        <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); border: 1px solid #E2E8F0;">
+                                            <tr>
+                                                <td style="padding: 40px;">
+                                                    <h1 style="margin: 0 0 20px 0; font-size: 24px; font-weight: 700; color: #0F172A; line-height: 1.3;">Bienvenue sur Trajetour, ${agency.name} ! 🎉</h1>
+                                                    
+                                                    <p style="margin: 0 0 16px 0; font-size: 16px; line-height: 1.6; color: #475569;">
+                                                        Nous avons l'immense plaisir de vous annoncer que votre agence a été <strong>approuvée et activée avec succès</strong>. Notre équipe a bien validé votre demande et votre base de données privée et sécurisée est maintenant prête.
+                                                    </p>
+                                                    
+                                                    <p style="margin: 0 0 32px 0; font-size: 16px; line-height: 1.6; color: #475569;">
+                                                        Vous pouvez dès à présent accéder à votre dashboard pour commencer à gérer vos réservations, vos clients, et propulser la croissance de votre agence.
+                                                    </p>
 
-                            <p>Si vous avez la moindre question, n'hésitez pas à nous contacter.</p>
-                            <p>L'équipe Trajetour</p>
-                        </div>
+                                                    <!-- CTA Button -->
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                        <tr>
+                                                            <td align="center">
+                                                                <a href="${loginUrl}" style="display: inline-block; background-color: #2563EB; color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);">
+                                                                    Accéder à votre Dashboard
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <!-- Subdomain Info Box -->
+                                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 40px; background-color: #F1F5F9; border-radius: 8px;">
+                                                        <tr>
+                                                            <td style="padding: 20px; text-align: center;">
+                                                                <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #64748B;">
+                                                                    Votre lien de connexion unique
+                                                                </p>
+                                                                <a href="${loginUrl}" style="margin: 0; font-size: 15px; font-weight: 500; color: #2563EB; text-decoration: none; word-break: break-all;">
+                                                                    ${loginUrl}
+                                                                </a>
+                                                                <p style="margin: 8px 0 0 0; font-size: 13px; color: #94A3B8;">
+                                                                    (Sauvegardez ce lien dans vos favoris)
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <!-- Footer -->
+                                        <table width="100%" max-width="600" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px;">
+                                            <tr>
+                                                <td align="center" style="padding-top: 32px;">
+                                                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #64748B;">
+                                                        Une question ? N'hésitez pas à répondre directement à cet email.
+                                                    </p>
+                                                    <p style="margin: 0; font-size: 14px; color: #94A3B8;">
+                                                        &copy; ${new Date().getFullYear()} Trajetour. Tous droits réservés.
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </body>
+                        </html>
                     `
                 }).then(res => {
                     console.log(`✉️ Email d'activation envoyé à ${agency.owner_email} (ID: ${res.data?.id})`);
