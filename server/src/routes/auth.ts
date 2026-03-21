@@ -4,6 +4,10 @@ import { config } from '../config/env.js';
 import { hashPassword, comparePassword } from '../utils/password.js';
 import { generateToken } from '../utils/jwt.js';
 import { validate, loginSchema, registerSchema, registerAgencySchema } from '../middleware/validation.js';
+import crypto from 'crypto';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
 
 const router = express.Router();
 
@@ -282,6 +286,92 @@ router.get('/me', async (req, res, next) => {
             firstName,
             lastName
         });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Forgot Password
+router.post('/forgot-password', async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ error: "L'e-mail est obligatoire." });
+
+        const result = await pool.query('SELECT id, username FROM users WHERE email = $1', [email]);
+        const user = result.rows[0];
+
+        // Do not reveal if the user exists or not for security, but proceed if they do
+        if (user) {
+            const token = crypto.randomBytes(32).toString('hex');
+            const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+            const expires = new Date(Date.now() + 3600000); // 1 hour
+
+            await pool.query(
+                'UPDATE users SET reset_password_token = $1, reset_password_expires_at = $2 WHERE id = $3',
+                [hashedToken, expires, user.id]
+            );
+
+            const { tenantContext } = await import('../middleware/tenant.js');
+            let subdomain = tenantContext.getStore()?.subdomain || 'www';
+            if (subdomain === 'api') subdomain = 'www';
+
+            const resetLink = `https://${subdomain}.trajetour.com/reset-password?token=${token}`;
+
+            if (process.env.RESEND_API_KEY) {
+                await resend.emails.send({
+                    from: 'Trajetour Sécurité <hello@trajetour.com>',
+                    to: [email],
+                    subject: '🔒 Réinitialisation de votre mot de passe',
+                    html: `
+                        <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; color: #333; padding: 20px;">
+                            <h2 style="color: #2563EB;">Réinitialisation de mot de passe</h2>
+                            <p>Bonjour ${user.username},</p>
+                            <p>Quelqu'un a demandé à réinitialiser votre mot de passe pour votre compte Trajetour. Si c'est vous, vous pouvez configurer un nouveau mot de passe en cliquant sur le bouton ci-dessous :</p>
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${resetLink}" style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+                                    Réinitialiser mon mot de passe
+                                </a>
+                            </div>
+                            <p>Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email.</p>
+                            <p style="font-size: 13px; color: #64748b;">Le lien expirera dans une heure.</p>
+                        </div>
+                    `
+                });
+            }
+        }
+
+        res.json({ message: "Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé." });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Reset Password
+router.post('/reset-password', async (req, res, next) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) return res.status(400).json({ error: "Token et nouveau mot de passe sont obligatoires." });
+
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const result = await pool.query(
+            'SELECT id FROM users WHERE reset_password_token = $1 AND reset_password_expires_at > NOW()',
+            [hashedToken]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).json({ error: "Le lien est invalide ou a expiré. Veuillez refaire une demande." });
+        }
+
+        const user = result.rows[0];
+        const newPasswordHash = await hashPassword(newPassword);
+
+        await pool.query(
+            'UPDATE users SET password_hash = $1, reset_password_token = NULL, reset_password_expires_at = NULL WHERE id = $2',
+            [newPasswordHash, user.id]
+        );
+
+        res.json({ message: "Votre mot de passe a été réinitialisé avec succès." });
     } catch (error) {
         next(error);
     }
