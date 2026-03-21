@@ -7,9 +7,9 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 const api = axios.create({
     baseURL: API_URL,
     withCredentials: true, // Send cookies with requests
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    // NOTE: Do NOT set Content-Type here. Axios will auto-set it correctly:
+    // - 'application/json' for plain objects
+    // - 'multipart/form-data' (with boundary) for FormData
 });
 
 // Interceptor to inject x-tenant-id for multi-tenancy
@@ -137,7 +137,13 @@ export const authAPI = {
     },
 
     registerAgency: async (data: any) => {
-        const response = await api.post('/master/register-agency', data);
+        const response = await api.post('/master/register-agency', data, {
+            headers: {
+                // Explicitly delete Content-Type so axios lets the browser
+                // set multipart/form-data with the correct boundary for FormData
+                'Content-Type': undefined
+            }
+        });
         return response.data;
     }
 };
@@ -540,7 +546,7 @@ export const masterAPI = {
         const formData = new FormData();
         formData.append('proof', file);
         const response = await api.post('/master/my-subscription/payment-proof', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
+            headers: { 'Content-Type': undefined } // Let browser set multipart/form-data with correct boundary
         });
         return response.data;
     }
