@@ -3,6 +3,9 @@ import { masterPool } from '../config/tenantPool.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { validate, multiTenantAgencySchema } from '../middleware/validation.js';
 import { upload, uploadToCloudinary } from '../utils/fileUpload.js';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
 
 const router = express.Router();
 
@@ -278,6 +281,43 @@ router.patch('/agencies/:id/status',
                 message: `Agency "${agency.name}" has been ${status === 'ACTIVE' ? 'approved' : status.toLowerCase()}.`,
                 agency
             });
+
+            // ─── Fire-and-forget: Send Email using Resend if APPROVED ───
+            if (status === 'ACTIVE' && process.env.RESEND_API_KEY) {
+                const loginUrl = `https://${agency.subdomain}.trajetour.com/login`;
+                
+                resend.emails.send({
+                    from: 'Trajetour <hello@trajetour.com>', 
+                    to: [agency.owner_email],
+                    subject: '🎉 Votre agence Trajetour est activée !',
+                    html: `
+                        <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; color: #333;">
+                            <h1 style="color: #2563eb;">Félicitations, ${agency.name} !</h1>
+                            <p>Nous avons bien reçu et validé votre preuve de paiement. Votre espace agence Trajetour est désormais <strong>entièrement activé</strong> et prêt à l'emploi.</p>
+                            <p>Vous pouvez vous connecter à votre espace d'administration exclusif via le lien ci-dessous :</p>
+                            
+                            <div style="text-align: center; margin: 30px 0;">
+                                <a href="${loginUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+                                    Accéder à mon Dashboard
+                                </a>
+                            </div>
+
+                            <p style="background-color: #f3f4f6; padding: 15px; border-radius: 6px; font-size: 14px;">
+                                <strong>🔗 Votre lien de connexion unique :</strong><br/>
+                                <a href="${loginUrl}">${loginUrl}</a>
+                            </p>
+
+                            <p>Si vous avez la moindre question, n'hésitez pas à nous contacter.</p>
+                            <p>L'équipe Trajetour</p>
+                        </div>
+                    `
+                }).then(res => {
+                    console.log(`✉️ Email d'activation envoyé à ${agency.owner_email} (ID: ${res.data?.id})`);
+                }).catch(err => {
+                    console.error(`❌ Erreur lors de l'envoi de l'email Resend :`, err);
+                });
+            }
+
         } catch (error) {
             next(error);
         }

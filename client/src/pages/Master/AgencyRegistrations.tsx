@@ -323,8 +323,9 @@ const AgencyRegistrations = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => handleApprove(agency)}
-                                                        disabled={isLoading}
-                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-semibold transition shadow-sm disabled:opacity-50"
+                                                        disabled={isLoading || !agency.db_provisioned_at}
+                                                        title={!agency.db_provisioned_at ? "Attendez que la base de données soit provisionnée" : "Approuver cette agence"}
+                                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-semibold transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <CheckCircle2 size={13} />}
                                                         Approuver
@@ -486,8 +487,9 @@ const AgencyRegistrations = () => {
                                     </button>
                                     <button
                                         onClick={() => { handleApprove(detailModal); setDetailModal(null); }}
-                                        disabled={!!actionLoading}
-                                        className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm transition"
+                                        disabled={!!actionLoading || !detailModal.db_provisioned_at}
+                                        title={!detailModal.db_provisioned_at ? "Attendez que la base de données soit provisionnée" : "Approuver cette agence"}
+                                        className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Approuver l'agence
                                     </button>
