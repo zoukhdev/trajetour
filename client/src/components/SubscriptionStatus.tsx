@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { masterAPI } from '../services/api';
-import { CreditCard, Shield, Clock, AlertTriangle, CheckCircle2, XCircle, Globe, ExternalLink } from 'lucide-react';
+import { CreditCard, Shield, Clock, AlertTriangle, CheckCircle2, XCircle, Globe, ExternalLink, Upload, Image, Loader2 } from 'lucide-react';
 
 interface Subscription {
     id: string;
@@ -13,18 +13,19 @@ interface Subscription {
     db_provisioned_at: string | null;
     status_updated_at: string | null;
     rejection_reason: string | null;
+    payment_proof_url: string | null;
 }
 
 const PLAN_FEATURES: Record<string, { features: string[]; price: string; color: string }> = {
     Basic: {
         price: '2 900 DA/mois',
         color: 'from-slate-500 to-slate-700',
-        features: ['Jusqu\'à 3 utilisateurs', 'Gestion des dossiers', 'Rapports de base', 'Support email'],
+        features: ["Jusqu'à 3 utilisateurs", 'Gestion des dossiers', 'Rapports de base', 'Support email'],
     },
     Pro: {
         price: '5 900 DA/mois',
         color: 'from-blue-500 to-indigo-700',
-        features: ['Jusqu\'à 10 utilisateurs', 'Toutes les fonctionnalités', 'Rapports avancés', 'Support prioritaire'],
+        features: ["Jusqu'à 10 utilisateurs", 'Toutes les fonctionnalités', 'Rapports avancés', 'Support prioritaire'],
     },
     Enterprise: {
         price: '12 900 DA/mois',
@@ -39,8 +40,8 @@ const STATUS_CONFIG: Record<string, { icon: React.ReactElement; bg: string; bord
         bg: 'bg-amber-50',
         border: 'border-amber-200',
         text: 'text-amber-800',
-        title: 'Demande en cours d\'examen',
-        description: 'Votre demande d\'inscription est en cours d\'examen par notre équipe. Vous serez notifié par email une fois la vérification terminée (généralement sous 24h ouvrables).',
+        title: "Demande en cours d'examen",
+        description: "Votre demande d'inscription est en cours d'examen par notre équipe. Vous serez notifié par email une fois la vérification terminée (généralement sous 24h ouvrables).",
     },
     ACTIVE: {
         icon: <CheckCircle2 size={20} className="text-emerald-600" />,
@@ -56,7 +57,7 @@ const STATUS_CONFIG: Record<string, { icon: React.ReactElement; bg: string; bord
         border: 'border-red-200',
         text: 'text-red-800',
         title: 'Demande rejetée',
-        description: 'Votre demande a été rejetée. Consultez le motif ci-dessous et contactez notre support pour plus d\'informations.',
+        description: "Votre demande a été rejetée. Consultez le motif ci-dessous et contactez notre support pour plus d'informations.",
     },
     SUSPENDED: {
         icon: <AlertTriangle size={20} className="text-orange-600" />,
@@ -73,19 +74,61 @@ const SubscriptionStatus = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
+    // Payment proof upload state
+    const [proofFile, setProofFile] = useState<File | null>(null);
+    const [proofPreview, setProofPreview] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [uploadSuccess, setUploadSuccess] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const fetchSubscription = () => {
+        setLoading(true);
         masterAPI.getMySubscription()
             .then((data: Subscription) => setSubscription(data))
             .catch((err: unknown) => {
                 const e = err as { response?: { data?: { error?: string } } };
-                setError(e?.response?.data?.error || 'Impossible de charger les informations d\'abonnement.');
+                setError(e?.response?.data?.error || "Impossible de charger les informations d'abonnement.");
             })
             .finally(() => setLoading(false));
+    };
+
+    useEffect(() => {
+        fetchSubscription();
     }, []);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setProofFile(file);
+        setUploadError(null);
+        setUploadSuccess(false);
+        const reader = new FileReader();
+        reader.onload = (ev) => setProofPreview(ev.target?.result as string);
+        reader.readAsDataURL(file);
+    };
+
+    const handleUpload = async () => {
+        if (!proofFile) return;
+        setUploading(true);
+        setUploadError(null);
+        try {
+            await masterAPI.uploadPaymentProof(proofFile);
+            setUploadSuccess(true);
+            setProofFile(null);
+            setProofPreview(null);
+            // Refresh to show proof
+            fetchSubscription();
+        } catch (err: any) {
+            setUploadError(err?.response?.data?.error || 'Erreur lors du téléchargement. Veuillez réessayer.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     if (loading) {
         return (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-pulse">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-pulse mb-6">
                 <div className="h-5 bg-gray-100 rounded w-48 mb-4" />
                 <div className="h-24 bg-gray-50 rounded-xl" />
             </div>
@@ -93,14 +136,14 @@ const SubscriptionStatus = () => {
     }
 
     if (error || !subscription) {
-        return null; // Silently fail — don't block the dashboard
+        return null;
     }
 
     const plan = PLAN_FEATURES[subscription.plan] || PLAN_FEATURES.Basic;
     const statusCfg = STATUS_CONFIG[subscription.status] || STATUS_CONFIG.PENDING;
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
             {/* Gradient Header */}
             <div className={`bg-gradient-to-r ${plan.color} p-5 text-white`}>
                 <div className="flex justify-between items-start">
@@ -146,6 +189,91 @@ const SubscriptionStatus = () => {
                         )}
                     </div>
                 </div>
+
+                {/* ─── Payment Proof Section — only for PENDING agencies ─── */}
+                {subscription.status === 'PENDING' && (
+                    <div className="border border-dashed border-amber-300 bg-amber-50/50 rounded-xl p-4">
+                        <p className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-2 mb-3">
+                            <CreditCard size={14} />
+                            Preuve de paiement
+                        </p>
+
+                        {subscription.payment_proof_url ? (
+                            // Already uploaded
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2 text-xs text-emerald-700 font-semibold mb-2">
+                                    <CheckCircle2 size={14} />
+                                    Reçu téléchargé — en attente de vérification par notre équipe
+                                </div>
+                                <a href={subscription.payment_proof_url} target="_blank" rel="noopener noreferrer" className="block">
+                                    <img
+                                        src={subscription.payment_proof_url}
+                                        alt="Preuve de paiement"
+                                        className="w-full max-h-48 object-contain rounded-lg border border-gray-200 bg-white hover:opacity-90 transition"
+                                    />
+                                </a>
+                            </div>
+                        ) : (
+                            // No proof — let the agency upload it now
+                            <div className="space-y-3">
+                                {!uploadSuccess && (
+                                    <div className="flex items-center gap-2 text-xs text-amber-700 font-semibold">
+                                        <AlertTriangle size={13} />
+                                        Aucune preuve de paiement reçue. Veuillez télécharger votre reçu pour accélérer la validation.
+                                    </div>
+                                )}
+
+                                {uploadSuccess && (
+                                    <div className="flex items-center gap-2 text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                                        <CheckCircle2 size={14} />
+                                        Reçu envoyé avec succès ! Notre équipe va procéder à la vérification.
+                                    </div>
+                                )}
+
+                                {proofPreview && (
+                                    <img
+                                        src={proofPreview}
+                                        alt="Aperçu"
+                                        className="w-full max-h-40 object-contain rounded-lg border border-gray-200 bg-white"
+                                    />
+                                )}
+
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    className="hidden"
+                                    onChange={handleFileChange}
+                                />
+
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="flex items-center gap-2 px-3 py-2 bg-white border border-amber-300 text-amber-700 rounded-lg text-xs font-semibold hover:bg-amber-50 transition flex-1 justify-center"
+                                    >
+                                        <Image size={13} />
+                                        {proofFile ? proofFile.name : 'Choisir un fichier (image ou PDF)'}
+                                    </button>
+
+                                    {proofFile && (
+                                        <button
+                                            onClick={handleUpload}
+                                            disabled={uploading}
+                                            className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition disabled:opacity-60"
+                                        >
+                                            {uploading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                                            {uploading ? 'Envoi...' : 'Envoyer'}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {uploadError && (
+                                    <p className="text-xs text-red-600 font-medium">{uploadError}</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* DB Provisioning Status */}
                 <div className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg ${
