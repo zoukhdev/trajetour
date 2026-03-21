@@ -40,12 +40,9 @@ async function provisionAgencyDatabase(
         const endpointHost = createBranchRes.data.endpoints[0].host;
         console.log(`✅ [BG] Branch created: ${branchId}`);
 
-        // 2. Fetch role name
-        const rolesRes = await axios.get(
-            `https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches/${branchId}/roles`,
-            { headers: { 'Authorization': `Bearer ${NEON_API_KEY}`, 'Accept': 'application/json' } }
-        );
-        const roleName = rolesRes.data.roles[0].name;
+        // 2. Determine correct role based on the master database connection
+        const masterDbUrl = new URL(process.env.DATABASE_URL || '');
+        const roleName = masterDbUrl.username || 'neondb_owner';
 
         // 3. Poll endpoint readiness (up to 90s)
         console.log(`⏳ [BG] Polling endpoint readiness for ${subdomain}...`);
