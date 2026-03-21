@@ -125,11 +125,16 @@ async function provisionAgencyDatabase(
         const hashedPassword = await bcrypt.hash(password || 'Password123!', 10);
         const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
 
+        const FinalUsername = contactName ? `${contactName.replace(/\s+/g, '_')}_${subdomain}` : `admin_${subdomain}`;
+
         await finalPool.query(
             `INSERT INTO users (email, password_hash, username, role, permissions) 
              VALUES ($1, $2, $3, 'admin', $4::jsonb)
-             ON CONFLICT (email) DO NOTHING`,
-            [ownerEmail, hashedPassword, contactName || 'Admin', permissions]
+             ON CONFLICT (email) DO UPDATE SET 
+                password_hash = EXCLUDED.password_hash,
+                role = 'admin',
+                permissions = EXCLUDED.permissions`,
+            [ownerEmail, hashedPassword, FinalUsername, permissions]
         );
         await finalPool.end();
 
