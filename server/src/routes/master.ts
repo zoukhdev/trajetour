@@ -208,10 +208,12 @@ router.post('/register-agency',
         } catch (error: any) {
             await client.query('ROLLBACK');
             if (error.code === '23505') {
-                return res.status(400).json({ error: 'Ce sous-domaine est déjà pris.' });
+                res.status(400).json({ error: 'Ce sous-domaine est déjà pris.' });
+                return;
             }
             if (error.statusCode) {
-                return res.status(error.statusCode).json({ error: error.message });
+                res.status(error.statusCode).json({ error: error.message });
+                return;
             }
             next(error);
         } finally {
