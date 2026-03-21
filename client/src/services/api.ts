@@ -29,6 +29,10 @@ api.interceptors.request.use((config) => {
 
     if (config.headers) {
         config.headers['X-Tenant-Id'] = tenantId;
+        // Strip Content-Type for FormData to let Axios handle the boundary correctly
+        if (config.data instanceof FormData) {
+            delete config.headers['Content-Type'];
+        }
     }
     return config;
 });
@@ -137,13 +141,7 @@ export const authAPI = {
     },
 
     registerAgency: async (data: any) => {
-        const response = await api.post('/master/register-agency', data, {
-            headers: {
-                // Explicitly delete Content-Type so axios lets the browser
-                // set multipart/form-data with the correct boundary for FormData
-                'Content-Type': undefined
-            }
-        });
+        const response = await api.post('/master/register-agency', data);
         return response.data;
     }
 };
@@ -522,9 +520,7 @@ export const auditLogsAPI = {
 // Master Platform API (Multi-Tenancy)
 export const masterAPI = {
     registerAgency: async (data: any) => {
-        const response = await api.post('/master/register-agency', data, {
-            headers: { 'Content-Type': undefined } // Let browser set correct multipart boundary
-        });
+        const response = await api.post('/master/register-agency', data);
         return response.data;
     },
     getAgencies: async (status?: string) => {
@@ -547,9 +543,7 @@ export const masterAPI = {
     uploadPaymentProof: async (file: File) => {
         const formData = new FormData();
         formData.append('proof', file);
-        const response = await api.post('/master/my-subscription/payment-proof', formData, {
-            headers: { 'Content-Type': undefined } // Let browser set multipart/form-data with correct boundary
-        });
+        const response = await api.post('/master/my-subscription/payment-proof', formData);
         return response.data;
     },
     sendProofReminder: async (id: string) => {

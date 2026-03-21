@@ -17,10 +17,14 @@ export const upload = multer({ storage: storage });
 
 export const uploadToCloudinary = (buffer: Buffer, folder: string): Promise<any> => {
     return new Promise((resolve, reject) => {
+        // Detect PDF by checking the first 4 bytes for '%PDF' header
+        const isPDF = buffer.slice(0, 4).toString() === '%PDF';
+
         const uploadStream = cloudinary.uploader.upload_stream(
             {
                 folder: folder,
-                resource_type: 'auto'
+                resource_type: 'image', // Needs to be image to allow format conversion
+                ...(isPDF && { format: 'jpg' }) // Force PDF to JPG
             },
             (error, result) => {
                 if (error) return reject(error);
