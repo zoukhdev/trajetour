@@ -20,6 +20,7 @@ interface Agency {
     status_updated_at: string | null;
     rejection_reason: string | null;
     payment_proof_url: string | null;
+    payment_method: string | null;
     neon_branch_id: string | null;
 }
 
@@ -433,6 +434,12 @@ const AgencyRegistrations = () => {
                             </div>
 
                             <div className="space-y-4">
+                                <div>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Méthode de Paiement</p>
+                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-blue-100 text-blue-800">
+                                        {detailModal.payment_method || 'Non spécifié'}
+                                    </span>
+                                </div>
                                 <div>
                                     <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Statut actuel</p>
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${STATUS_STYLES[detailModal.status]?.bg} ${STATUS_STYLES[detailModal.status]?.text}`}>

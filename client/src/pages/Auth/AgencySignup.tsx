@@ -12,8 +12,10 @@ const AgencySignup = () => {
         position: '',
         email: '',
         phone: '',
-        plan: 'Basic'
+        plan: 'Basic',
+        paymentMethod: 'Espèces'
     });
+    const [paymentProofFile, setPaymentProofFile] = useState<File | null>(null);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -47,16 +49,27 @@ const AgencySignup = () => {
                 .replace(/-+/g, '-')
                 .replace(/^-|-$/g, '');
 
-            await authAPI.registerAgency({
-                name: formData.agencyName,
-                subdomain: generatedSubdomain,
-                contactName: formData.contactName,
-                ownerEmail: formData.email,
-                phone: formData.phone,
-                password: password,
-                address: formData.address,
-                plan: formData.plan
-            });
+            if (formData.paymentMethod !== 'Espèces' && !paymentProofFile) {
+                setError('Veuillez joindre une preuve de paiement (Reçu).');
+                setLoading(false);
+                return;
+            }
+
+            const submitData = new FormData();
+            submitData.append('name', formData.agencyName);
+            submitData.append('subdomain', generatedSubdomain);
+            submitData.append('contactName', formData.contactName);
+            submitData.append('ownerEmail', formData.email);
+            submitData.append('phone', formData.phone);
+            submitData.append('password', password);
+            submitData.append('address', formData.address);
+            submitData.append('plan', formData.plan);
+            submitData.append('paymentMethod', formData.paymentMethod);
+            if (paymentProofFile) {
+                submitData.append('paymentProof', paymentProofFile);
+            }
+
+            await authAPI.registerAgency(submitData);
             // Show success alert/screen
             setIsSuccess(true);
         } catch (err: any) {
@@ -188,6 +201,61 @@ const AgencySignup = () => {
                             ))}
                         </div>
                     </div>
+
+                    {/* Payment Method Selection */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">Méthode de Paiement (Payment Method)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {['Espèces', 'Virement Bancaire', 'BaridiMob'].map((method) => (
+                                <div 
+                                    key={method}
+                                    onClick={() => setFormData({ ...formData, paymentMethod: method })}
+                                    className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${formData.paymentMethod === method ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'}`}
+                                >
+                                    <div className={`font-bold text-[15px] mb-1 ${formData.paymentMethod === method ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>
+                                        {method}
+                                    </div>
+                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                        {method === 'Espèces' ? 'Paiement en espèces au bureau' : method === 'Virement Bancaire' ? 'Virement bancaire classique' : 'Transfert rapide (Edahabia)'}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Conditional Payment Proof Upload */}
+                    {formData.paymentMethod !== 'Espèces' && (
+                        <div className="space-y-4 p-5 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900 rounded-xl">
+                            <div>
+                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-gray-200 mb-1">Preuve de paiement (Reçu) <span className="text-red-500">*</span></h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Veuillez joindre une capture d'écran, un reçu ou un PDF confirmant votre paiement.</p>
+                                
+                                <div className="flex items-center justify-center w-full">
+                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-slate-50 dark:bg-slate-800 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                            {paymentProofFile ? (
+                                                <>
+                                                    <svg className="w-8 h-8 mb-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                    <p className="text-sm font-semibold text-green-600 truncate max-w-full">{paymentProofFile.name}</p>
+                                                    <p className="text-xs text-slate-500 hidden sm:block">Cliquez pour remplacer</p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-8 h-8 mb-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                                    <p className="mb-2 text-sm text-slate-500 dark:text-slate-400"><span className="font-semibold">Cliquez pour uploader image/pdf</span> ou glissez le fichier ici</p>
+                                                </>
+                                            )}
+                                        </div>
+                                        <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => {
+                                            if (e.target.files && e.target.files[0]) {
+                                                setPaymentProofFile(e.target.files[0]);
+                                            }
+                                        }} />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <button disabled={loading} className="btn-primary h-12 w-full text-base font-bold mt-4 disabled:opacity-50">
                         {loading ? 'Processing...' : t('auth.submit_application')}

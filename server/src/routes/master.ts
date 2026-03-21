@@ -140,14 +140,30 @@ async function provisionAgencyDatabase(
 // Public registration. Creates agency in PENDING status, responds immediately,
 // provisions Neon DB in background.
 router.post('/register-agency',
-    validate(multiTenantAgencySchema),
-    async (req: Request, res, next) => {
+    upload.single('paymentProof'),
+    async (req: Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+        try {
+            await multiTenantAgencySchema.parseAsync(req.body);
+        } catch (error: any) {
+            res.status(400).json({ error: 'Validation failed', details: error.errors || error });
+            return;
+        }
+        
         const client = await masterPool.connect();
         try {
             await client.query('BEGIN');
-            let { name, subdomain, ownerEmail, password, phone, address, contactName, plan } = req.body;
+            let { name, subdomain, ownerEmail, password, phone, address, contactName, plan, paymentMethod } = req.body;
             plan = plan || 'Basic';
+            paymentMethod = paymentMethod || 'Espèces';
             subdomain = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+            let paymentProofUrl = null;
+            if (req.file) {
+                const uploadResult = await uploadToCloudinary(req.file.buffer, 'trajetour_receipts');
+                if (uploadResult && uploadResult.secure_url) {
+                    paymentProofUrl = uploadResult.secure_url;
+                }
+            }
 
             // Check subdomain availability
             const existing = await client.query('SELECT id FROM agencies WHERE subdomain = $1', [subdomain]);
@@ -159,10 +175,10 @@ router.post('/register-agency',
 
             // Insert agency with PENDING status — DB provisioning happens in background
             const result = await client.query(
-                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan, type, status, contact_name, phone, address)
-                 VALUES ($1, $2, '', $3, $4, 'Agence', 'PENDING', $5, $6, $7)
+                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan, type, status, contact_name, phone, address, payment_method, payment_proof_url)
+                 VALUES ($1, $2, '', $3, $4, 'Agence', 'PENDING', $5, $6, $7, $8, $9)
                  RETURNING *`,
-                [name, subdomain, ownerEmail, plan, contactName, phone, address]
+                [name, subdomain, ownerEmail, plan, contactName, phone, address, paymentMethod, paymentProofUrl]
             );
 
             const newAgency = result.rows[0];

@@ -111,7 +111,8 @@ export const multiTenantAgencySchema = z.object({
     phone: z.string().optional(),
     address: z.string().optional(),
     contactName: z.string().optional(),
-    plan: z.enum(['Basic', 'Pro', 'Enterprise']).optional()
+    plan: z.enum(['Basic', 'Pro', 'Enterprise']).optional(),
+    paymentMethod: z.enum(['Espèces', 'Virement Bancaire', 'BaridiMob']).optional()
 });
 
 export const offerSchema = z.object({
