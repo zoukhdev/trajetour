@@ -5,6 +5,9 @@ import { validate, orderSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { generateShortId } from '../utils/idGenerator.js';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
 
 const router = express.Router();
 
@@ -479,6 +482,65 @@ router.post('/',
                 changes: order,
                 ipAddress: req.ip
             });
+
+            // Email Notification: "New Booking Confirmed"
+            if (process.env.RESEND_API_KEY) {
+                try {
+                    // Fetch client email and agency name
+                    const emailRes = await client.query(`
+                        SELECT u.email, c.full_name as client_name, (SELECT name FROM agencies LIMIT 1) as agency_name
+                        FROM clients c
+                        LEFT JOIN users u ON c.user_id = u.id
+                        WHERE c.id = $1
+                    `, [clientId]);
+
+                    const clientInfo = emailRes.rows[0];
+
+                    if (clientInfo && clientInfo.email) {
+                        const agencyName = clientInfo.agency_name || 'Votre Agence de Voyage';
+                        
+                        await resend.emails.send({
+                            from: `${agencyName} <hello@trajetour.com>`,
+                            to: [clientInfo.email],
+                            subject: `✅ Confirmation de votre réservation - ${reference}`,
+                            html: `
+                                <div style="font-family: sans-serif; max-w: 600px; margin: 0 auto; color: #333; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+                                    <div style="text-align: center; margin-bottom: 20px;">
+                                        <h2 style="color: #2563EB; margin-bottom: 5px;">Réservation Confirmée !</h2>
+                                        <p style="color: #64748b; font-size: 14px; margin-top: 0;">Référence: <strong>${reference}</strong></p>
+                                    </div>
+                                    <p>Bonjour <strong>${clientInfo.client_name}</strong>,</p>
+                                    <p>Nous vous remercions pour votre confiance. Votre réservation avec <strong>${agencyName}</strong> a été enregistrée avec succès.</p>
+                                    
+                                    <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                                        <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Détails de la réservation</h3>
+                                        <table style="width: 100%; font-size: 14px;">
+                                            <tr>
+                                                <td style="padding: 4px 0; color: #475569;">Total du séjour :</td>
+                                                <td style="padding: 4px 0; text-align: right; font-weight: bold;">${serverCalculatedTotal.toFixed(2)} DZD</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 4px 0; color: #475569;">Statut :</td>
+                                                <td style="padding: 4px 0; text-align: right;"><span style="color: #d97706; font-weight: bold;">Non payé</span></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    
+                                    <p style="font-size: 14px; color: #475569; line-height: 1.5;">Veuillez noter que le paiement doit être effectué selon les termes convenus pour finaliser et valider complétement cette réservation.</p>
+                                    
+                                    <div style="text-align: center; margin-top: 30px; pt-4; border-top: 1px solid #eee;">
+                                        <p style="font-size: 13px; color: #94a3b8;">Ce message est généré automatiquement par <a href="https://trajetour.com" style="color: #2563EB; text-decoration: none;">Trajetour</a> pour <strong>${agencyName}</strong>.</p>
+                                    </div>
+                                </div>
+                            `
+                        });
+                        console.log(`✅ Booking confirmation email sent to ${clientInfo.email}`);
+                    }
+                } catch (emailErr) {
+                    console.error('Failed to send booking confirmation email:', emailErr);
+                    // Do not fail the transaction if email fails
+                }
+            }
 
             await client.query('COMMIT');
             res.status(201).json(mapOrderResponse(order));
