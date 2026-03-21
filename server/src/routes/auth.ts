@@ -66,7 +66,9 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
             role: user.role,
             permissions: Array.isArray(user.permissions) ? user.permissions : [],
             clientId,
-            agencyId
+            agencyId,
+            tenantId: currentTenant,
+            token
         });
     } catch (error) {
         console.error('❌ Login Error Details:', error);
@@ -283,6 +285,7 @@ router.get('/me', async (req, res, next) => {
             permissions: Array.isArray(user.permissions) ? user.permissions : [],
             clientId: user.client_id,
             agencyId: user.agency_id,
+            tenantId: decoded.tenantId || 'default',
             firstName,
             lastName
         });

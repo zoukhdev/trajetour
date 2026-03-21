@@ -62,6 +62,16 @@ import AgencyLayout from './layouts/AgencyLayout';
 import ClientLayout from './layouts/ClientLayout';
 import DemoAgencyDashboard from './pages/Agency/DemoAgencyDashboard';
 
+// Detect if we are on an agency subdomain
+const hostname = window.location.hostname;
+const parts = hostname.split('.');
+let isAgencyDomain = false;
+if (hostname.includes('.trajetour.com') && parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'app' && parts[0] !== 'api') {
+  isAgencyDomain = true;
+} else if (hostname.includes('localhost') && parts.length > 1 && parts[0] !== 'www') {
+  isAgencyDomain = true;
+}
+
 function App() {
   return (
     <Router>
@@ -73,7 +83,7 @@ function App() {
                 <Routes>
                   {/* Public Routes */}
                   <Route element={<PublicLayout />}>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={isAgencyDomain ? <AgencyHome /> : <Home />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/packages" element={<Packages />} />
                     <Route path="/packages/:type" element={<Packages />} />
@@ -82,9 +92,9 @@ function App() {
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/book/:id" element={<BookingWizard />} />
 
-                    {/* Auth Routes */}
+                    {/* Unified Auth Routes */}
                     <Route path="/login" element={<ClientLogin />} />
-                    <Route path="/login/agency" element={<AgencyLogin />} />
+                    <Route path="/login/agency" element={<ClientLogin />} />
                     <Route path="/register" element={<ClientSignup />} />
                     <Route path="/register/agency" element={<AgencySignup />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -149,7 +159,7 @@ function App() {
                   </Route>
 
                   {/* Agency Dashboard Routes */}
-                  <Route path="/agency" element={<ProtectedRoute role="agent"><AgencyLayout /></ProtectedRoute>}>
+                  <Route path="/agency" element={<ProtectedRoute><AgencyLayout /></ProtectedRoute>}>
                     <Route index element={<AgencyDashboard />} />
                     <Route path="bookings" element={<AgencyBookings />} />
                     <Route path="payments" element={<AgencyPayments />} />

@@ -23,14 +23,23 @@ const ClientLogin = () => {
                 return;
             }
 
-            // Role-based redirection
-            if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff' || user.role === 'caisser') {
-                navigate(redirectIdx || '/dashboard');
-            } else if (user.role === 'agent') {
-                navigate(redirectIdx || '/agency');
+            // Role-based redirection combined with Tenant Subdomain
+            if (user.tenantId && user.tenantId !== 'default') {
+                // If they logged in on an agency subdomain
+                if (user.role === 'client') {
+                    navigate(redirectIdx || '/client');
+                } else {
+                    // Agency Admin, Staff, or Agent goes to the Agency Dashboard
+                    navigate(redirectIdx || '/agency');
+                }
             } else {
-                // Default to client
-                navigate(redirectIdx || '/client');
+                // Master Domain login
+                if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff' || user.role === 'caisser') {
+                    navigate(redirectIdx || '/dashboard');
+                } else {
+                    // Fallback to client if anything else
+                    navigate(redirectIdx || '/client');
+                }
             }
         } catch (err: any) {
             setError(err.message || 'Login failed');
@@ -58,7 +67,7 @@ const ClientLogin = () => {
                             {t('auth.welcome_back')}
                         </h1>
                         <p className="text-[#637588] dark:text-gray-400 text-sm font-normal leading-normal">
-                            {t('auth.enter_details')}
+                            Veuillez vous connecter pour accéder à votre espace
                         </p>
                     </div>
 
