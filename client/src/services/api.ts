@@ -522,7 +522,9 @@ export const auditLogsAPI = {
 // Master Platform API (Multi-Tenancy)
 export const masterAPI = {
     registerAgency: async (data: any) => {
-        const response = await api.post('/master/register-agency', data);
+        const response = await api.post('/master/register-agency', data, {
+            headers: { 'Content-Type': undefined } // Let browser set correct multipart boundary
+        });
         return response.data;
     },
     getAgencies: async (status?: string) => {
@@ -548,6 +550,10 @@ export const masterAPI = {
         const response = await api.post('/master/my-subscription/payment-proof', formData, {
             headers: { 'Content-Type': undefined } // Let browser set multipart/form-data with correct boundary
         });
+        return response.data;
+    },
+    sendProofReminder: async (id: string) => {
+        const response = await api.post(`/master/agencies/${id}/send-proof-reminder`);
         return response.data;
     }
 };

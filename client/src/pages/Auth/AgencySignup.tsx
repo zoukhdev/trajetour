@@ -21,6 +21,7 @@ const AgencySignup = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
+    const [registeredSubdomain, setRegisteredSubdomain] = useState('');
     const navigate = useNavigate();
     // Use t from context if available, otherwise mock or import
     // Assuming context is available
@@ -70,7 +71,7 @@ const AgencySignup = () => {
             }
 
             await authAPI.registerAgency(submitData);
-            // Show success alert/screen
+            setRegisteredSubdomain(generatedSubdomain);
             setIsSuccess(true);
         } catch (err: any) {
             setError(err.response?.data?.error || 'Registration failed');
@@ -84,7 +85,7 @@ const AgencySignup = () => {
             <div className="max-w-[700px] w-full bg-white dark:bg-[#1a2634] rounded-2xl shadow-xl p-8 md:p-12 border border-blue-100 dark:border-gray-700">
                 {isSuccess ? (
                     <div className="text-center py-8">
-                        <div className="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -93,6 +94,24 @@ const AgencySignup = () => {
                         <p className="text-slate-600 dark:text-slate-300 mb-5 max-w-md mx-auto">
                             Votre demande d'inscription a été soumise avec succès. Notre équipe va examiner votre dossier.
                         </p>
+
+                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5 mb-4 text-left max-w-sm mx-auto space-y-3">
+                            <div className="flex items-start gap-3">
+                                <span className="text-xl">🔗</span>
+                                <div>
+                                    <p className="font-bold text-blue-800 dark:text-blue-300 text-sm">Votre lien de connexion unique</p>
+                                    <a
+                                        href={`https://${registeredSubdomain}.trajetour.com/login`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-mono text-blue-600 dark:text-blue-400 hover:underline break-all"
+                                    >
+                                        https://{registeredSubdomain}.trajetour.com/login
+                                    </a>
+                                    <p className="text-xs text-blue-600 dark:text-blue-500 mt-1">📌 Sauvegardez ce lien dans vos favoris</p>
+                                </div>
+                            </div>
+                        </div>
 
                         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5 mb-6 text-left max-w-sm mx-auto space-y-3">
                             <div className="flex items-start gap-3">
@@ -103,18 +122,27 @@ const AgencySignup = () => {
                                 </div>
                             </div>
                             <div className="flex items-start gap-3 border-t border-amber-100 dark:border-amber-800 pt-3">
-                                <span className="text-xl">📧</span>
+                                <span className="text-xl">📤</span>
                                 <div>
-                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">Email de connexion</p>
-                                    <p className="text-xs font-mono text-amber-700 dark:text-amber-400 mt-0.5">{formData.email}</p>
+                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">Preuve de paiement manquante ?</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">Connectez-vous via votre lien ci-dessus et téléchargez votre reçu depuis votre tableau de bord.</p>
                                 </div>
                             </div>
                         </div>
 
-                        <p className="text-xs text-slate-400 mb-4">Une fois approuvé, connectez-vous avec l'email ci-dessus et votre mot de passe.</p>
-                        <Link to="/" className="btn-primary inline-flex items-center justify-center h-11 px-8 text-sm font-bold">
-                            Retour à l'accueil
-                        </Link>
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <a
+                                href={`https://${registeredSubdomain}.trajetour.com/login`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-primary inline-flex items-center justify-center h-11 px-8 text-sm font-bold"
+                            >
+                                Se connecter maintenant
+                            </a>
+                            <Link to="/" className="inline-flex items-center justify-center h-11 px-8 text-sm font-bold border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                                Retour à l'accueil
+                            </Link>
+                        </div>
                     </div>
                 ) : (
                     <>

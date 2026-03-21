@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { masterAPI } from '../../services/api';
 import {
     Clock, CheckCircle2, XCircle, Globe, Mail, Phone, MapPin,
-    User, CreditCard, RefreshCw, Filter, AlertTriangle, Building2, Crown
+    User, CreditCard, RefreshCw, Filter, AlertTriangle, Building2, Crown, Send, ExternalLink
 } from 'lucide-react';
 
 interface Agency {
@@ -45,6 +45,8 @@ const AgencyRegistrations = () => {
     const [rejectModal, setRejectModal] = useState<{ open: boolean; agency: Agency | null }>({ open: false, agency: null });
     const [rejectionReason, setRejectionReason] = useState('');
     const [detailModal, setDetailModal] = useState<Agency | null>(null);
+    const [reminderLoading, setReminderLoading] = useState<string | null>(null);
+    const [reminderSent, setReminderSent] = useState<Record<string, boolean>>({});
 
     const fetchAgencies = useCallback(async () => {
         try {
@@ -100,6 +102,18 @@ const AgencyRegistrations = () => {
             console.error('Suspend failed:', err);
         } finally {
             setActionLoading(null);
+        }
+    };
+
+    const handleSendReminder = async (agency: Agency) => {
+        setReminderLoading(agency.id);
+        try {
+            await masterAPI.sendProofReminder(agency.id);
+            setReminderSent(prev => ({ ...prev, [agency.id]: true }));
+        } catch (err: any) {
+            alert(err?.response?.data?.error || 'Erreur lors de l\'envoi de l\'email.');
+        } finally {
+            setReminderLoading(null);
         }
     };
 
@@ -462,14 +476,54 @@ const AgencyRegistrations = () => {
                                 <CreditCard size={16} /> Preuve de paiement
                             </h3>
                             {detailModal.payment_proof_url ? (
-                                <div className="rounded-xl overflow-hidden border border-gray-200">
-                                    <a href={detailModal.payment_proof_url} target="_blank" rel="noopener noreferrer" className="block w-full">
-                                        <img src={detailModal.payment_proof_url} alt="Preuve de paiement" className="w-full max-h-96 object-contain bg-gray-50 hover:opacity-90 transition" />
+                                <div className="space-y-2">
+                                    <div className="rounded-xl overflow-hidden border border-gray-200">
+                                        <img
+                                            src={detailModal.payment_proof_url}
+                                            alt="Preuve de paiement"
+                                            className="w-full max-h-96 object-contain bg-gray-50"
+                                            onError={(e) => {
+                                                // If not an image (e.g. PDF), hide and show download link
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                            }}
+                                        />
+                                    </div>
+                                    <a
+                                        href={detailModal.payment_proof_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline mt-1"
+                                    >
+                                        <ExternalLink size={14} />
+                                        Ouvrir le reçu (nouvel onglet)
                                     </a>
                                 </div>
                             ) : (
-                                <div className="bg-gray-50 border border-dashed border-gray-300 rounded-xl p-6 text-center text-gray-500">
-                                    Aucune preuve de paiement téléchargée par l'agence.
+                                <div className="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-5 space-y-3">
+                                    <div className="flex items-center gap-2 text-amber-700 font-semibold text-sm">
+                                        <AlertTriangle size={16} />
+                                        Aucune preuve de paiement soumise par l'agence.
+                                    </div>
+                                    <p className="text-xs text-amber-600">
+                                        Envoyez un email de rappel à {detailModal.owner_email} pour les inviter à se connecter et télécharger leur reçu.
+                                    </p>
+                                    {reminderSent[detailModal.id] ? (
+                                        <div className="flex items-center gap-2 text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+                                            <CheckCircle2 size={13} />
+                                            Email de rappel envoyé à {detailModal.owner_email}
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleSendReminder(detailModal)}
+                                            disabled={reminderLoading === detailModal.id}
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition disabled:opacity-60"
+                                        >
+                                            {reminderLoading === detailModal.id
+                                                ? <RefreshCw size={13} className="animate-spin" />
+                                                : <Send size={13} />}
+                                            {reminderLoading === detailModal.id ? 'Envoi...' : 'Envoyer email de rappel'}
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
