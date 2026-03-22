@@ -82,21 +82,23 @@ const SubscriptionStatus = () => {
     const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Upgrade Request Modal State Point 2
     const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState('');
     const [upgradeNotes, setUpgradeNotes] = useState('');
     const [requesting, setRequesting] = useState(false);
     const [requestError, setRequestError] = useState<string | null>(null);
+    const [requestSuccess, setRequestSuccess] = useState(false);
 
     const handleUpgradeSubmit = async () => {
         if (!selectedPlan) return;
         setRequesting(true);
         setRequestError(null);
+        setRequestSuccess(false);
         try {
             await masterAPI.requestUpgrade(selectedPlan, upgradeNotes);
             setIsUpgradeModalOpen(false);
             setUpgradeNotes('');
+            setRequestSuccess(true);
             // Re-fetch or show success banner
         } catch (err: any) {
             setRequestError(err?.response?.data?.error || 'Failed submitting upgrade request.');
@@ -104,6 +106,7 @@ const SubscriptionStatus = () => {
             setRequesting(false);
         }
     };
+
 
     const fetchSubscription = () => {
         setLoading(true);
@@ -267,7 +270,19 @@ const SubscriptionStatus = () => {
             )}
 
             <div className="p-5 space-y-4">
+                {/* Success Banner */}
+                {requestSuccess && (
+                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-xl flex items-start gap-3 animate-scaleIn">
+                        <CheckCircle2 size={18} className="text-emerald-500 mt-0.5" />
+                        <div>
+                            <p className="font-bold text-sm">Demande envoyée !</p>
+                            <p className="text-xs opacity-90">Votre demande de surclassement a bien été soumise pour approbation.</p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Status Banner */}
+
                 <div className={`flex items-start gap-3 p-4 rounded-xl border ${statusCfg.bg} ${statusCfg.border}`}>
                     <div className="mt-0.5">{statusCfg.icon}</div>
                     <div>
