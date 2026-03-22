@@ -87,6 +87,30 @@ router.post('/',
                 return res.status(409).json({ error: 'Email already exists' });
             }
 
+            // Enforce Subscription Limits for Users/Staff
+            if (agencyId) {
+                const agencyRes = await client.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
+                if (agencyRes.rows.length > 0) {
+                    const sub = agencyRes.rows[0].subscription || 'Standard';
+                    
+                    const PLAN_LIMITS: { [key: string]: number } = {
+                        'Standard': 3,
+                        'Premium': 10,
+                        'Gold': 999999
+                    };
+
+                    const countRes = await client.query('SELECT COUNT(*) FROM users WHERE agency_id = $1', [agencyId]);
+                    const currentCount = parseInt(countRes.rows[0].count);
+
+                    if (currentCount >= (PLAN_LIMITS[sub] || 3)) {
+                        await client.query('ROLLBACK');
+                        return res.status(403).json({ 
+                            error: `Subscription Limit Reached: Your current ${sub} plan only allows up to ${PLAN_LIMITS[sub]} staff users.` 
+                        });
+                    }
+                }
+            }
+
             const hashedPassword = await bcrypt.hash(password, 10);
             const code = generateShortId();
 

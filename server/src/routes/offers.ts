@@ -95,6 +95,30 @@ router.post('/',
             const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing } = req.body;
             const agencyId = req.user!.agencyId;
 
+            // Enforce Subscription Limits for Offers/Packs
+            if (agencyId) {
+                const agencyRes = await client.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
+                if (agencyRes.rows.length > 0) {
+                    const sub = agencyRes.rows[0].subscription || 'Standard';
+                    
+                    const PLAN_LIMITS: { [key: string]: number } = {
+                        'Standard': 30,
+                        'Premium': 200,
+                        'Gold': 999999
+                    };
+
+                    const countRes = await client.query('SELECT COUNT(*) FROM offers WHERE agency_id = $1', [agencyId]);
+                    const currentCount = parseInt(countRes.rows[0].count);
+
+                    if (currentCount >= (PLAN_LIMITS[sub] || 30)) {
+                        await client.query('ROLLBACK');
+                        return res.status(403).json({ 
+                            error: `Subscription Limit Reached: Your current ${sub} plan only allows up to ${PLAN_LIMITS[sub]} offers.` 
+                        });
+                    }
+                }
+            }
+
             const result = await client.query(
                 `INSERT INTO offers (title, type, destination, price, start_date, end_date, hotel, transport, description, status, capacity, inclusions, room_pricing, agency_id)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
