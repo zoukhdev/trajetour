@@ -212,7 +212,7 @@ const SubscriptionStatus = () => {
                             <span className="text-sm font-bold">Plan {subscription.plan}</span>
                         </div>
                         <p className="text-xs mt-2 opacity-70">{plan.price}</p>
-                        {subscription.plan !== 'Gold' && subscription.status === 'ACTIVE' && (
+                        {subscription.plan !== 'Gold' && (subscription.status === 'ACTIVE' || subscription.status === 'PENDING') && (
                             <button
                                 onClick={() => setIsUpgradeModalOpen(true)}
                                 className="mt-2 inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow-sm transition"

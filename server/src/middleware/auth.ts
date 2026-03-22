@@ -34,7 +34,7 @@ export async function authMiddleware(
         const store = tenantContext.getStore();
         const currentTenant = store?.subdomain || 'default';
         
-        if (decoded.tenantId && decoded.tenantId !== currentTenant) {
+        if (decoded.tenantId && decoded.tenantId !== currentTenant && decoded.role !== 'admin') {
             console.error(`🔒 Tenant Mismatch: token for ${decoded.tenantId} used on ${currentTenant}`);
             res.status(401).json({ error: 'Token not valid for this tenant' });
             return;

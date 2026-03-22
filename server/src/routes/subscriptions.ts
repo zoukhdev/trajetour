@@ -1,5 +1,5 @@
 import express from 'express';
-import { defaultPool } from '../config/database.js';
+import { masterPool } from '../config/tenantPool.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { logAudit } from '../services/auditLog.js';
 import fs from 'fs';
@@ -23,7 +23,7 @@ router.post('/upgrade',
     requirePermission('manage_business'),
     async (req: AuthRequest, res, next) => {
         debugLog('🔍 /upgrade endpoint hit');
-        const client = await defaultPool.connect();
+        const client = await masterPool.connect();
         try {
             await client.query('BEGIN');
             const { requestedPlan, notes } = req.body;
@@ -82,7 +82,7 @@ router.get('/requests',
                 return res.status(403).json({ error: 'Unauthorized: Master Dashboard only' });
             }
 
-            const result = await defaultPool.query(`
+            const result = await masterPool.query(`
                 SELECT aa.*, a.name as agency_name 
                 FROM agency_approvals aa
                 JOIN agencies a ON aa.agency_id = a.id
@@ -101,7 +101,7 @@ router.get('/requests',
 router.put('/requests/:id',
     authMiddleware,
     async (req: AuthRequest, res, next) => {
-        const client = await defaultPool.connect();
+        const client = await masterPool.connect();
         try {
             if (req.user!.agencyId) return res.status(403).json({ error: 'Unauthorized: Master Dashboard only' });
 
