@@ -6,6 +6,7 @@ import {
     clientsAPI, ordersAPI, paymentsAPI, offersAPI, suppliersAPI,
     agenciesAPI, expensesAPI, usersAPI, transactionsAPI, bankAccountsAPI
 } from '../services/api';
+import { useAuth } from './AuthContext'; // Added
 
 interface DataContextType {
     clients: Client[];
@@ -501,14 +502,37 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const updateTax = (t: Tax) => setTaxes(prev => prev.map(x => x.id === t.id ? t : x));
     const deleteTax = (id: string) => setTaxes(prev => prev.filter(x => x.id !== id));
 
+    const { user: currentUser } = useAuth();
+
     const addBankAccount = (a: BankAccount) => setBankAccounts(prev => [...prev, a]);
     const updateBankAccount = (a: BankAccount) => setBankAccounts(prev => prev.map(x => x.id === a.id ? a : x));
     const deleteBankAccount = (id: string) => setBankAccounts(prev => prev.filter(x => x.id !== id));
 
+    const filteredClients = useMemo(() => currentUser?.agencyId ? clients.filter(c => (c as any).agencyId === currentUser.agencyId) : clients, [clients, currentUser]);
+    const filteredOrders = useMemo(() => currentUser?.agencyId ? orders.filter(o => o.agencyId === currentUser.agencyId) : orders, [orders, currentUser]);
+    const filteredExpenses = useMemo(() => currentUser?.agencyId ? expenses.filter(e => (e as any).agencyId === currentUser.agencyId) : expenses, [expenses, currentUser]);
+    const filteredTransactions = useMemo(() => currentUser?.agencyId ? transactions.filter(t => (t as any).agencyId === currentUser.agencyId) : transactions, [transactions, currentUser]);
+    const filteredUsers = useMemo(() => currentUser?.agencyId ? users.filter(u => u.agencyId === currentUser.agencyId) : users, [users, currentUser]);
+    const filteredSuppliers = useMemo(() => currentUser?.agencyId ? suppliers.filter(s => (s as any).agencyId === currentUser.agencyId) : suppliers, [suppliers, currentUser]);
+    const filteredOffers = useMemo(() => currentUser?.agencyId ? offers.filter(o => (o as any).agencyId === currentUser.agencyId) : offers, [offers, currentUser]);
+    const filteredDiscounts = useMemo(() => currentUser?.agencyId ? discounts.filter(d => (d as any).agencyId === currentUser.agencyId) : discounts, [discounts, currentUser]);
+    const filteredTaxes = useMemo(() => currentUser?.agencyId ? taxes.filter(t => (t as any).agencyId === currentUser.agencyId) : taxes, [taxes, currentUser]);
+    const filteredBankAccounts = useMemo(() => currentUser?.agencyId ? bankAccountsWithBalances.filter(b => (b as any).agencyId === currentUser.agencyId) : bankAccountsWithBalances, [bankAccountsWithBalances, currentUser]);
+
     return (
         <DataContext.Provider value={{
-            clients, agencies, orders, expenses, transactions, users, suppliers,
-            offers, guideExpenses, discounts, taxes, bankAccounts: bankAccountsWithBalances,
+            clients: filteredClients,
+            agencies,
+            orders: filteredOrders,
+            expenses: filteredExpenses,
+            transactions: filteredTransactions,
+            users: filteredUsers,
+            suppliers: filteredSuppliers,
+            offers: filteredOffers,
+            guideExpenses,
+            discounts: filteredDiscounts,
+            taxes: filteredTaxes,
+            bankAccounts: filteredBankAccounts,
             refreshData: loadData,
             refreshOrders: loadData,
             addClient, updateClient,

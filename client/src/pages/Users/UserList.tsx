@@ -14,18 +14,11 @@ const UserList = () => {
     const [viewingUser, setViewingUser] = useState<User | undefined>(undefined);
     const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
 
-    // Filter by Agency first if applicable
-    const agencyUsers = users.filter(u => {
-        if (currentUser?.agencyId) {
-            return u.agencyId === currentUser.agencyId;
-        }
-        return true; // Admin sees all
-    });
-
-    const filteredUsers = agencyUsers.filter(user =>
+    const filteredUsers = users.filter(user =>
         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+        
 
     const handleView = (user: User) => {
         setViewingUser(user);
