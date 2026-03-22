@@ -6,7 +6,17 @@ export type Permission =
     | 'manage_financials' // Expenses, Caisse
     | 'view_reports'
     | 'view_bookings'
-    | 'view_profile';
+    | 'view_profile'
+    | 'access_clients'
+    | 'access_orders'
+    | 'access_offers'
+    | 'access_suppliers'
+    | 'access_cash_register'
+    | 'access_expenses'
+    | 'access_rooming_list'
+    | 'access_discounts'
+    | 'access_reports'
+    | 'access_users';
 
 export interface User {
     id: string;

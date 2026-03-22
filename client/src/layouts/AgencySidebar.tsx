@@ -13,7 +13,14 @@ import {
     X,
     Languages,
     CreditCard,
-    Globe
+    Globe,
+    Users,
+    Package,
+    Briefcase,
+    Wallet,
+    BarChart,
+    Percent,
+    Bed
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -28,13 +35,31 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
 
     const menuItems = [
         { icon: LayoutDashboard, label: t('common.dashboard'), path: '/agency' },
-        { icon: ShoppingCart, label: t('common.my_bookings'), path: '/agency/bookings' },
-        { icon: CreditCard, label: 'Paiements', path: '/agency/payments' },
-        { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots' },
+        { icon: ShoppingCart, label: t('common.my_bookings'), path: '/agency/bookings', permission: 'access_orders' },
+        { icon: Users, label: 'Clients', path: '/agency/clients', permission: 'access_clients' },
+        { icon: Package, label: 'Offres / Packs', path: '/agency/offers', permission: 'access_offers' },
+        { icon: Briefcase, label: 'Fournisseurs', path: '/agency/suppliers', permission: 'access_suppliers' },
+        { icon: Wallet, label: 'Caisse', path: '/agency/cash-register', permission: 'access_cash_register' },
+        { icon: CreditCard, label: 'Dépenses', path: '/agency/expenses', permission: 'access_expenses' },
+        { icon: BarChart, label: 'Rapports', path: '/agency/reports', permission: 'access_reports' },
+        { icon: Percent, label: 'Remises', path: '/agency/discounts', permission: 'access_discounts' },
+        { icon: Percent, label: 'Taxes', path: '/agency/tax', permission: 'access_discounts' }, // Use same check or separate
+        { icon: Bed, label: 'Rooming List', path: '/agency/rooming-list', permission: 'access_rooming_list' },
+        { icon: Users, label: 'Staff / Agents', path: '/agency/users', permission: 'access_users' }, // Added target item
+        { icon: CreditCard, label: 'Paiements', path: '/agency/payments', permission: 'access_cash_register' },
+        { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots', permission: 'access_orders' },
         { icon: Bell, label: t('common.notifications'), path: '/agency/notifications' },
         { icon: FileText, label: t('common.documents'), path: '/agency/documents' },
         { icon: Globe, label: 'Page d\'accueil publique', path: '/agency/landing' },
     ];
+
+    const filteredMenuItems = menuItems.filter(item => {
+        if (!item.permission) return true;
+        // Agency Admin/Owner might have different role name, but typically they have all permissions or are 'admin'
+        // If owner has role 'admin' on their scope or is super_admin.
+        // Let's allow access if they have the permission string OR if they are 'admin'/'super_admin'
+        return user?.permissions?.includes(item.permission as any) || user?.role === 'admin' || user?.role === 'super_admin';
+    });
 
     const toggleLanguage = () => {
         setLanguage(language === 'fr' ? 'ar' : 'fr');
@@ -87,7 +112,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
 
                 {/* Navigation */}
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-                    {menuItems.map((item) => (
+                    {filteredMenuItems.map((item) => (
                         <NavLink
                             key={item.path}
                             to={item.path}

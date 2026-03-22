@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext'; // Added
 import type { User, UserRole, Permission } from '../../types';
 import { Shield, Check } from 'lucide-react';
 
@@ -9,37 +10,33 @@ interface UserFormProps {
 }
 
 const ALL_PERMISSIONS: { id: Permission; label: string }[] = [
-    { id: 'manage_users', label: 'Gérer les Utilisateurs' },
-    { id: 'manage_business', label: 'Gérer Clients/Agences/Commandes' },
-    { id: 'manage_financials', label: 'Gérer Finances (Caisse/Charges)' },
-    { id: 'view_reports', label: 'Voir les Rapports' },
+    { id: 'access_clients', label: 'Gestion des Clients' },
+    { id: 'access_orders', label: 'Commandes / Réservations' },
+    { id: 'access_offers', label: 'Offres / Packages' },
+    { id: 'access_suppliers', label: 'Fournisseurs & Contrats' },
+    { id: 'access_cash_register', label: 'Caisse (Caisse Register)' },
+    { id: 'access_expenses', label: 'Dépenses & Frais' },
+    { id: 'access_rooming_list', label: 'Rooming List' },
+    { id: 'access_discounts', label: 'Remises & Taxes' },
+    { id: 'access_reports', label: 'Rapports Financiers' },
+    { id: 'access_users', label: 'Gestion du Staff (Agents)' },
 ];
 
 const UserForm = ({ onClose, initialData }: UserFormProps) => {
     const { addUser, updateUser } = useData();
+    const { user: currentUser } = useAuth(); // Added
 
     const [formData, setFormData] = useState<Partial<User>>(
         initialData || {
             username: '',
             email: '',
             password: '',
-            role: 'staff',
+            role: 'agent', // Set default to agent for agency
             permissions: []
         }
     );
 
-    // Auto-select permissions based on role change
-    useEffect(() => {
-        if (!initialData) { // Only auto-set for new users or manual role change
-            if (formData.role === 'admin') {
-                setFormData(prev => ({ ...prev, permissions: ALL_PERMISSIONS.map(p => p.id) }));
-            } else if (formData.role === 'caisser') {
-                setFormData(prev => ({ ...prev, permissions: ['manage_financials'] }));
-            } else if (formData.role === 'staff') {
-                setFormData(prev => ({ ...prev, permissions: ['manage_business'] }));
-            }
-        }
-    }, [formData.role]);
+    // Auto-select permissions removed as per user request (manual checkboxes)
 
     const togglePermission = (permission: Permission) => {
         setFormData(prev => {
@@ -62,7 +59,8 @@ const UserForm = ({ onClose, initialData }: UserFormProps) => {
                 password: formData.password!, // In real app, hash this
                 role: formData.role as UserRole,
                 permissions: formData.permissions || [],
-                avatar: initialData?.avatar || `https://ui-avatars.com/api/?name=${formData.username}&background=random`
+                avatar: initialData?.avatar || `https://ui-avatars.com/api/?name=${formData.username}&background=random`,
+                agencyId: initialData?.agencyId || currentUser?.agencyId // Set agencyId from creator
             };
 
             if (initialData) {
@@ -84,7 +82,7 @@ const UserForm = ({ onClose, initialData }: UserFormProps) => {
                 <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
                     <div className="flex gap-4">
-                        {['admin', 'staff', 'caisser', 'agent'].map((role) => (
+                        {(currentUser?.agencyId ? ['agent'] : ['admin', 'staff', 'caisser', 'agent']).map((role) => (
                             <label key={role} className="flex items-center gap-2 cursor-pointer">
                                 <input
                                     type="radio"

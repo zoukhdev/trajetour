@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useData } from '../../context/DataContext';
+import { useAuth } from '../../context/AuthContext'; // Added
 import { Search, Plus, Trash2, Edit2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import UserForm from './UserForm';
@@ -7,12 +8,21 @@ import type { User } from '../../types';
 
 const UserList = () => {
     const { users, deleteUser } = useData();
+    const { user: currentUser } = useAuth(); // Added
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [viewingUser, setViewingUser] = useState<User | undefined>(undefined);
     const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
 
-    const filteredUsers = users.filter(user =>
+    // Filter by Agency first if applicable
+    const agencyUsers = users.filter(u => {
+        if (currentUser?.agencyId) {
+            return u.agencyId === currentUser.agencyId;
+        }
+        return true; // Admin sees all
+    });
+
+    const filteredUsers = agencyUsers.filter(user =>
         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -40,7 +50,9 @@ const UserList = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-800">Gestion des Utilisateurs</h1>
+                <h1 className="text-2xl font-bold text-gray-800">
+                    {currentUser?.agencyId ? "Gestion du Staff" : "Gestion des Utilisateurs"}
+                </h1>
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"

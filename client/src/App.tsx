@@ -158,15 +158,31 @@ function App() {
                   {/* Agency Dashboard Routes */}
                   <Route path="/agency" element={<ProtectedRoute><AgencyLayout /></ProtectedRoute>}>
                     <Route index element={<AgencyDashboard />} />
-                    <Route path="bookings" element={<AgencyBookings />} />
-                    <Route path="payments" element={<AgencyPayments />} />
-                    <Route path="slots" element={<SlotBooking />} />
+                    <Route path="bookings" element={<ProtectedRoute permission="access_orders"><AgencyBookings /></ProtectedRoute>} />
+                    <Route path="payments" element={<ProtectedRoute permission="access_cash_register"><AgencyPayments /></ProtectedRoute>} />
+                    <Route path="slots" element={<ProtectedRoute permission="access_orders"><SlotBooking /></ProtectedRoute>} />
                     <Route path="bookmarks" element={<div className="text-gray-500">Bookmarks</div>} />
                     <Route path="notifications" element={<Notifications />} />
                     <Route path="documents" element={<DocumentReminders />} />
                     <Route path="new-booking" element={<NewBooking />} />
                     <Route path="bookings/:id" element={<OrderDetails />} />
                     <Route path="landing" element={<AgencyHome />} />
+
+                    {/* Operational Modules Migrated to Agency */}
+                    <Route path="clients" element={<ProtectedRoute permission="access_clients"><ClientList /></ProtectedRoute>} />
+                    <Route path="offers" element={<ProtectedRoute permission="access_offers"><OfferList /></ProtectedRoute>} />
+                    <Route path="suppliers" element={<ProtectedRoute permission="access_suppliers"><SupplierList /></ProtectedRoute>} />
+                    <Route path="suppliers/:id/contracts" element={<ProtectedRoute permission="access_suppliers"><SupplierContracts /></ProtectedRoute>} />
+                    <Route path="cash-register" element={<ProtectedRoute permission="access_cash_register"><CaissePage /></ProtectedRoute>} />
+                    <Route path="expenses" element={<ProtectedRoute permission="access_expenses"><ExpenseList /></ProtectedRoute>} />
+                    <Route path="guide-expenses" element={<ProtectedRoute permission="access_expenses"><GuideExpenseList /></ProtectedRoute>} />
+                    <Route path="reports" element={<ProtectedRoute permission="access_reports"><ReportsPage /></ProtectedRoute>} />
+                    <Route path="reports/commissions" element={<ProtectedRoute permission="access_reports"><CommissionReport /></ProtectedRoute>} />
+                    <Route path="reports/revenue" element={<ProtectedRoute permission="access_reports"><RevenueReport /></ProtectedRoute>} />
+                    <Route path="discounts" element={<ProtectedRoute permission="access_discounts"><DiscountList /></ProtectedRoute>} />
+                    <Route path="tax" element={<ProtectedRoute permission="access_discounts"><TaxList /></ProtectedRoute>} />
+                    <Route path="rooming-list" element={<ProtectedRoute permission="access_rooming_list"><RoomingList /></ProtectedRoute>} />
+                    <Route path="users" element={<ProtectedRoute permission="access_users"><UserList /></ProtectedRoute>} />
                   </Route>
 
                   {/* Client Dashboard Routes */}
