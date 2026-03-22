@@ -183,11 +183,12 @@ router.post('/register-agency',
 
             // Insert agency with PENDING status — DB provisioning happens in background
             const result = await client.query(
-                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan, type, status, contact_name, phone, address, payment_method, payment_proof_url)
-                 VALUES ($1, $2, '', $3, $4, 'Agence', 'PENDING', $5, $6, $7, $8, $9)
+                `INSERT INTO agencies (name, subdomain, db_url, owner_email, plan, subscription, type, status, contact_name, phone, address, payment_method, payment_proof_url)
+                 VALUES ($1, $2, '', $3, $4, $4, 'Agence', 'PENDING', $5, $6, $7, $8, $9)
                  RETURNING *`,
                 [name, subdomain, ownerEmail, plan, contactName, phone, address, paymentMethod, paymentProofUrl]
             );
+
 
             const newAgency = result.rows[0];
             await client.query('COMMIT');

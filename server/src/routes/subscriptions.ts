@@ -114,9 +114,10 @@ router.put('/requests/:id',
             const approval = approvalRes.rows[0];
 
             if (status === 'APPROVED' && approval.type === 'UPGRADE_PLAN') {
-                // Perform the Actual Plan Upgrade
-                await client.query('UPDATE agencies SET subscription = $1 WHERE id = $2', [approval.requested_value, approval.agency_id]);
+                // Perform the Actual Plan Upgrade - Sync both columns
+                await client.query('UPDATE agencies SET plan = $1, subscription = $1 WHERE id = $2', [approval.requested_value, approval.agency_id]);
             }
+
 
             const result = await client.query(
                 `UPDATE agency_approvals SET status = $1, notes = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *`,
