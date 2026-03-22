@@ -82,6 +82,29 @@ const SubscriptionStatus = () => {
     const [uploadError, setUploadError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Upgrade Request Modal State Point 2
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('');
+    const [upgradeNotes, setUpgradeNotes] = useState('');
+    const [requesting, setRequesting] = useState(false);
+    const [requestError, setRequestError] = useState<string | null>(null);
+
+    const handleUpgradeSubmit = async () => {
+        if (!selectedPlan) return;
+        setRequesting(true);
+        setRequestError(null);
+        try {
+            await masterAPI.requestUpgrade(selectedPlan, upgradeNotes);
+            setIsUpgradeModalOpen(false);
+            setUpgradeNotes('');
+            // Re-fetch or show success banner
+        } catch (err: any) {
+            setRequestError(err?.response?.data?.error || 'Failed submitting upgrade request.');
+        } finally {
+            setRequesting(false);
+        }
+    };
+
     const fetchSubscription = () => {
         setLoading(true);
         masterAPI.getMySubscription()
@@ -186,9 +209,62 @@ const SubscriptionStatus = () => {
                             <span className="text-sm font-bold">Plan {subscription.plan}</span>
                         </div>
                         <p className="text-xs mt-2 opacity-70">{plan.price}</p>
+                        {subscription.plan !== 'Gold' && subscription.status === 'ACTIVE' && (
+                            <button
+                                onClick={() => setIsUpgradeModalOpen(true)}
+                                className="mt-2 inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-orange-500 hover:brightness-110 text-white px-3 py-1.5 rounded-xl text-xs font-black shadow-sm transition"
+                            >
+                                <ExternalLink size={12} />
+                                Upgrade Plan
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
+
+            {isUpgradeModalOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-xl animate-scaleIn">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-black text-slate-800">Upgrade Subscription</h3>
+                            <button onClick={() => setIsUpgradeModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+                                <XCircle size={24} />
+                            </button>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4">Select the plan you wish to request an upgrade to. Our team will approve it to apply pricing.</p>
+                        
+                        <div className="space-y-3">
+                            {['Premium', 'Gold'].filter(p => p !== subscription.plan).map(p => (
+                                <label key={p} className={`flex items-center justify-between p-4 border rounded-2xl cursor-pointer hover:border-blue-500 transition ${selectedPlan === p ? 'border-blue-600 bg-blue-50/30' : 'border-gray-200'}`}>
+                                    <div>
+                                        <p className="font-bold text-slate-800">{p}</p>
+                                        <p className="text-xs text-gray-500">{p === 'Premium' ? '200 listings & 10 users' : 'Unlimited capacity'}</p>
+                                    </div>
+                                    <input type="radio" name="plan" value={p} checked={selectedPlan === p} onChange={() => setSelectedPlan(p)} />
+                                </label>
+                            ))}
+                        </div>
+
+                        <textarea 
+                            className="w-full mt-4 p-3 border border-gray-200 rounded-xl text-sm"
+                            rows={3}
+                            placeholder="Add nodes or message (optional)..."
+                            value={upgradeNotes}
+                            onChange={(e) => setUpgradeNotes(e.target.value)}
+                        />
+
+                        {requestError && <p className="text-red-600 text-xs mt-2">{requestError}</p>}
+
+                        <button 
+                            onClick={handleUpgradeSubmit}
+                            disabled={!selectedPlan || requesting}
+                            className="w-full mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-2xl font-bold hover:brightness-110 disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                            {requesting ? <Loader2 size={16} className="animate-spin" /> : 'Submit Upgrade Request'}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="p-5 space-y-4">
                 {/* Status Banner */}

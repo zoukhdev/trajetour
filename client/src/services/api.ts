@@ -553,5 +553,17 @@ export const masterAPI = {
     sendProofReminder: async (id: string) => {
         const response = await api.post(`/master/agencies/${id}/send-proof-reminder`);
         return response.data;
+    },
+    requestUpgrade: async (requestedPlan: string, notes?: string) => {
+        const response = await api.post('/subscriptions/upgrade', { requestedPlan, notes });
+        return response.data;
+    },
+    getSubscriptionsRequests: async () => {
+        const response = await api.get('/subscriptions/requests');
+        return response.data;
+    },
+    updateRequestStatus: async (id: string, status: string, notes?: string) => {
+        const response = await api.put(`/subscriptions/requests/${id}`, { status, notes });
+        return response.data;
     }
 };

@@ -29,6 +29,7 @@ import notificationsRoutes from './routes/notifications.js';
 import offerHotelsRoutes from './routes/offerHotels.js';
 import passengersRoutes from './routes/passengers.js';
 import masterRoutes from './routes/master.js';
+import subscriptionRoutes from './routes/subscriptions.js';
 
 const app = express();
 
@@ -323,6 +324,7 @@ app.get('/api/debug/schema', async (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);

@@ -32,6 +32,8 @@ import SupplierContracts from './pages/Suppliers/SupplierContracts';
 import LogsPage from './pages/Logs/LogsPage';
 import { OfflineProvider } from './context/OfflineContext';
 import AgencyRegistrations from './pages/Master/AgencyRegistrations';
+import SubscriptionRequests from './pages/Master/SubscriptionRequests';
+
 
 // Public Pages
 import Home from './pages/Public/Home';
@@ -142,6 +144,8 @@ function App() {
                       <Route path="users" element={<UserList />} />
                       <Route path="logs" element={<LogsPage />} />
                       <Route path="master-agencies" element={<AgencyRegistrations />} />
+                      <Route path="master-subscriptions" element={<SubscriptionRequests />} />
+
                     </Route>
 
                     {/* Other Admin Tools */}
