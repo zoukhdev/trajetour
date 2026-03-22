@@ -150,12 +150,23 @@ async function provisionAgencyDatabase(
 router.post('/register-agency',
     upload.single('paymentProof'),
     async (req: Request, res: express.Response, next: express.NextFunction): Promise<void> => {
+        // Clean up subdomain before validation to prevent regex failure on capitalization/spaces
+        if (req.body.subdomain) {
+            req.body.subdomain = req.body.subdomain.toLowerCase()
+                .replace(/[^a-z0-9-]/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+
         try {
             await multiTenantAgencySchema.parseAsync(req.body);
         } catch (error: any) {
+            console.error('❌ multiTenantAgencySchema Validation Failed:', JSON.stringify(error.errors || error, null, 2));
             res.status(400).json({ error: 'Validation failed', details: error.errors || error });
             return;
         }
+
+
         
         const client = await masterPool.connect();
         try {
