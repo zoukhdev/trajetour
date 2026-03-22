@@ -59,7 +59,14 @@ router.post('/upgrade',
 
             await client.query('COMMIT');
             debugLog('   ✅ Transaction Committed');
-            res.status(201).json({ message: 'Upgrade request submitted successfully!', data: result.rows[0] });
+            res.status(201).json({ 
+                message: 'Upgrade request submitted successfully!', 
+                data: result.rows[0],
+                debug: {
+                    agencyId: agencyId,
+                    connectionString: (masterPool as any).options.connectionString
+                }
+            });
         } catch (error: any) {
             await client.query('ROLLBACK');
             debugLog(`   ❌ Error during /upgrade: ${error.message} - ${error.stack}`);
