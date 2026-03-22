@@ -1,5 +1,6 @@
 import pkg from 'pg';
 import { config } from './env.js';
+import { AppError } from '../middleware/errorHandler.js';
 
 const { Pool } = pkg;
 
@@ -41,18 +42,21 @@ export async function getTenantPool(subdomain: string): Promise<pkg.Pool> {
         const agency = res.rows[0];
         // PENDING agencies can log in to see their status — only REJECTED/SUSPENDED are hard-blocked
         if (agency.status === 'REJECTED') {
-            throw new Error(`Votre demande d'inscription a été rejetée. Contactez le support pour plus d'informations.`);
+            throw new AppError(403, `Votre demande d'inscription a été rejetée. Contactez le support pour plus d'informations.`);
         }
         if (agency.status === 'SUSPENDED') {
-            throw new Error(`Votre compte est suspendu. Contactez le support Trajetour.`);
+            throw new AppError(403, `Votre compte est suspendu. Contactez le support Trajetour.`);
         }
         // PENDING: allow login but db_url might be empty if not provisioned yet
         if (!agency.db_url) {
-            throw new Error(`Votre espace de travail est encore en cours de provisionnement. Réessayez dans quelques minutes.`);
+            throw new AppError(403, `Votre espace de travail est encore en cours de provisionnement. Réessayez dans quelques minutes.`);
         }
 
         // Create new pool for the tenant
-        const newPool = new Pool({ connectionString: agency.db_url });
+        const newPool = new Pool({ 
+            connectionString: agency.db_url,
+            ssl: agency.db_url.includes('neon.tech') ? { rejectUnauthorized: false } : undefined
+        });
         tenantPools[subdomain] = newPool;
         console.log(`✅ Created DB pool for tenant: ${subdomain}`);
 
