@@ -293,7 +293,11 @@ router.post('/register-agency',
         } catch (error: any) {
             await client.query('ROLLBACK');
             if (error.code === '23505') {
-                res.status(400).json({ error: 'Ce sous-domaine est déjà pris.' });
+                if (error.detail && error.detail.includes('owner_email')) {
+                    res.status(400).json({ error: 'Cette adresse e-mail est déjà utilisée.' });
+                } else {
+                    res.status(400).json({ error: 'Ce sous-domaine est déjà pris.' });
+                }
                 return;
             }
             if (error.statusCode) {
