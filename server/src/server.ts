@@ -324,6 +324,14 @@ app.get('/api/debug/schema', async (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.get('/api/debug-env', (req, res) => {
+    const { config } = require('./config/env.js');
+    res.json({
+        databaseUrl: config.databaseUrl,
+        masterDatabaseUrl: config.masterDatabaseUrl
+    });
+});
+
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/orders', ordersRoutes);
