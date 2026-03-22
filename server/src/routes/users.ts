@@ -17,7 +17,8 @@ const mapUserResponse = (row: any) => ({
     role: row.role,
     permissions: row.permissions,
     avatar: row.avatar,
-    createdAt: row.created_at
+    createdAt: row.created_at,
+    agencyId: row.agency_id
 });
 
 // Get all users
@@ -30,13 +31,26 @@ router.get('/',
             const limit = parseInt(req.query.limit as string) || 20;
             const offset = (page - 1) * limit;
 
-            const countResult = await pool.query('SELECT COUNT(*) FROM users');
+            let query = 'SELECT * FROM users';
+            let countQuery = 'SELECT COUNT(*) FROM users';
+            const params: any[] = [];
+
+            if (req.user!.agencyId) {
+                query += ' WHERE agency_id = $1';
+                countQuery += ' WHERE agency_id = $1';
+                params.push(req.user!.agencyId);
+            }
+
+            const countResult = await pool.query(countQuery, params);
             const total = parseInt(countResult.rows[0].count);
 
-            const result = await pool.query(
-                `SELECT * FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
-                [limit, offset]
-            );
+            const limitParamIndex = params.length + 1;
+            const offsetParamIndex = params.length + 2;
+            params.push(limit, offset);
+
+            query += ` ORDER BY created_at DESC LIMIT $${limitParamIndex} OFFSET $${offsetParamIndex}`;
+
+            const result = await pool.query(query, params);
 
             res.json({
                 data: result.rows.map(mapUserResponse),
@@ -64,6 +78,7 @@ router.post('/',
             await client.query('BEGIN');
 
             const { username, email, password, role, permissions } = req.body;
+            const agencyId = req.user!.agencyId || req.body.agencyId;
 
             // Check existing
             const existing = await client.query('SELECT id FROM users WHERE email = $1', [email]);
@@ -76,10 +91,10 @@ router.post('/',
             const code = generateShortId();
 
             const result = await client.query(
-                `INSERT INTO users (username, email, password_hash, role, permissions, code)
-                 VALUES ($1, $2, $3, $4, $5, $6)
+                `INSERT INTO users (username, email, password_hash, role, permissions, code, agency_id)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)
                  RETURNING *`,
-                [username, email, hashedPassword, role, JSON.stringify(permissions || []), code]
+                [username, email, hashedPassword, role, JSON.stringify(permissions || []), code, agencyId || null]
             );
 
             const newUser = result.rows[0];

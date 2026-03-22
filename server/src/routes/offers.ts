@@ -22,7 +22,8 @@ const mapOfferResponse = (row: any) => ({
     createdAt: row.created_at,
     disponibilite: row.capacity, // Map DB capacity to frontend disponibilite
     inclusions: row.inclusions || {},
-    roomPricing: row.room_pricing || []
+    roomPricing: row.room_pricing || [],
+    agencyId: row.agency_id
 });
 
 // Get all offers (with filters) - PUBLIC
@@ -31,12 +32,29 @@ router.get('/',
     async (req: express.Request, res, next) => {
         try {
             const status = req.query.status as string;
-            let query = 'SELECT * FROM offers';
+            // Optionally authenticate to read agency filter, since endpoint is public
+            // (Assumes auth middleware would set req.user if present, or we check manually)
+            const token = req.cookies?.token;
+            let authenticatedUser: any = null;
+            if (token) {
+                const { verifyToken } = await import('../utils/jwt.js');
+                try { authenticatedUser = verifyToken(token); } catch (e) { /* ignore */ }
+            }
+
+            let query = 'SELECT * FROM offers WHERE 1=1';
             const params: any[] = [];
+            let paramIndex = 1;
 
             if (status) {
-                query += ' WHERE status = $1';
+                query += ` AND status = $${paramIndex}`;
                 params.push(status);
+                paramIndex++;
+            }
+
+            if (authenticatedUser?.agencyId) {
+                query += ` AND agency_id = $${paramIndex}`;
+                params.push(authenticatedUser.agencyId);
+                paramIndex++;
             }
 
             query += ' ORDER BY created_at DESC';
@@ -73,12 +91,13 @@ router.post('/',
         try {
             await client.query('BEGIN');
             const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing } = req.body;
+            const agencyId = req.user!.agencyId;
 
             const result = await client.query(
-                `INSERT INTO offers (title, type, destination, price, start_date, end_date, hotel, transport, description, status, capacity, inclusions, room_pricing)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                `INSERT INTO offers (title, type, destination, price, start_date, end_date, hotel, transport, description, status, capacity, inclusions, room_pricing, agency_id)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                  RETURNING *`,
-                [title, type, destination, price, startDate, endDate, hotel, transport, description, status || 'Draft', disponibilite || 0, inclusions || {}, JSON.stringify(roomPricing || [])]
+                [title, type, destination, price, startDate, endDate, hotel, transport, description, status || 'Draft', disponibilite || 0, inclusions || {}, JSON.stringify(roomPricing || []), agencyId || null]
             );
             const newOffer = result.rows[0];
 

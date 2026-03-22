@@ -28,24 +28,45 @@ router.get('/',
             const search = req.query.search as string || '';
             const offset = (page - 1) * limit;
 
-            let query = 'SELECT COUNT(*) FROM clients';
-            let params: any[] = [];
+            let query = 'SELECT COUNT(*) FROM clients WHERE 1=1';
+            const params: any[] = [];
+            let paramIndex = 1;
 
             if (search) {
-                query += ' WHERE full_name ILIKE $1 OR mobile_number ILIKE $1';
-                params = [`%${search}%`];
+                query += ` AND (full_name ILIKE $${paramIndex} OR mobile_number ILIKE $${paramIndex})`;
+                params.push(`%${search}%`);
+                paramIndex++;
+            }
+
+            if (req.user?.agencyId) {
+                query += ` AND agency_id = $${paramIndex}`;
+                params.push(req.user.agencyId);
+                paramIndex++;
             }
 
             const countResult = await pool.query(query, params);
             const total = parseInt(countResult.rows[0].count);
 
-            query = search
-                ? 'SELECT * FROM clients WHERE full_name ILIKE $1 OR mobile_number ILIKE $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3'
-                : 'SELECT * FROM clients ORDER BY created_at DESC LIMIT $1 OFFSET $2';
+            query = 'SELECT * FROM clients WHERE 1=1';
+            const fetchParams: any[] = [];
+            let fetchParamIndex = 1;
 
-            params = search ? [`%${search}%`, limit, offset] : [limit, offset];
+            if (search) {
+                query += ` AND (full_name ILIKE $${fetchParamIndex} OR mobile_number ILIKE $${fetchParamIndex})`;
+                fetchParams.push(`%${search}%`);
+                fetchParamIndex++;
+            }
 
-            const result = await pool.query(query, params);
+            if (req.user?.agencyId) {
+                query += ` AND agency_id = $${fetchParamIndex}`;
+                fetchParams.push(req.user.agencyId);
+                fetchParamIndex++;
+            }
+
+            query += ` ORDER BY created_at DESC LIMIT $${fetchParamIndex} OFFSET $${fetchParamIndex + 1}`;
+            fetchParams.push(limit, offset);
+
+            const result = await pool.query(query, fetchParams);
 
             res.json({
                 data: result.rows.map(mapClientResponse),
@@ -95,12 +116,13 @@ router.post('/',
             await client.query('BEGIN');
 
             const { fullName, mobileNumber, type, passportNumber, passportExpiry } = req.body;
+            const agencyId = req.user?.agencyId;
 
             const result = await client.query(
-                `INSERT INTO clients (full_name, mobile_number, type, passport_number, passport_expiry)
-                 VALUES ($1, $2, $3, $4, $5)
+                `INSERT INTO clients (full_name, mobile_number, type, passport_number, passport_expiry, agency_id)
+                 VALUES ($1, $2, $3, $4, $5, $6)
                  RETURNING *`,
-                [fullName, mobileNumber, type, passportNumber || null, passportExpiry || null]
+                [fullName, mobileNumber, type, passportNumber || null, passportExpiry || null, agencyId || null]
             );
 
             const newClient = result.rows[0];

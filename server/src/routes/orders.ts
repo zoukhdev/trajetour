@@ -105,14 +105,15 @@ router.get('/',
             const params: any[] = [];
 
             // Role-based automatic filtering
-            if (req.user?.role === 'client') {
-                filterClause += ` AND o.client_id = $${params.length + 1}`;
-                params.push(req.user.clientId);
-            } else if (req.user?.role === 'agent') {
+            if (req.user?.agencyId) {
+                // If user belongs to an agency, strictly enforce their agency ID scope
                 filterClause += ` AND o.agency_id = $${params.length + 1}`;
                 params.push(req.user.agencyId);
+            } else if (req.user?.role === 'client') {
+                filterClause += ` AND o.client_id = $${params.length + 1}`;
+                params.push(req.user.clientId);
             } else if (req.user?.role === 'admin' || req.user?.role === 'staff' || req.user?.permissions.includes('manage_business')) {
-                // Admin/Staff/Business Managers can use query filters
+                // Admin/Staff/Business Managers with no agency context can filter freely for dashboard operations
                 if (queryClientId) {
                     filterClause += ` AND o.client_id = $${params.length + 1}`;
                     params.push(queryClientId);
@@ -122,7 +123,7 @@ router.get('/',
                     params.push(queryAgencyId);
                 }
             } else {
-                // Other roles (e.g. caisser) might need specific filters or manage_business permission
+                // Other roles might need specific filters or manage_business permission
                 return res.status(403).json({ error: 'Insufficient permissions to view orders' });
             }
 
@@ -188,7 +189,7 @@ router.get('/missing-documents',
             const params: any[] = [];
 
             // Role-based filtering
-            if (req.user?.role === 'agent') {
+            if (req.user?.agencyId) {
                 filterClause += ` AND o.agency_id = $${params.length + 1}`;
                 params.push(req.user.agencyId);
             } else if (req.user?.role !== 'admin' && req.user?.role !== 'staff') {

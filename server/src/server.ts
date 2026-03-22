@@ -540,8 +540,11 @@ app.listen(PORT, async () => {
             try {
                 // Add code column if missing
                 await pool.query(`
-                    ALTER TABLE users ADD COLUMN IF NOT EXISTS code VARCHAR(50);
+                    ALTER TABLE users 
+                    ADD COLUMN IF NOT EXISTS code VARCHAR(50),
+                    ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL;
                 `);
+                await pool.query(`CREATE INDEX IF NOT EXISTS idx_users_agency_id ON users(agency_id);`);
 
                 // Update role constraint (Drop old one and add new one)
                 // We attempt to drop standard names, if it fails then we catch individually
@@ -561,17 +564,31 @@ app.listen(PORT, async () => {
             console.error('❌ Database migration failed:', err);
         }
 
-        // 5. Update Offers Table columns check
+            // 5. Update Offers Table columns check
+            try {
+                await pool.query(`
+                    ALTER TABLE offers 
+                    ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
+                    ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
+                    ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb,
+                    ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL;
+                `);
+                await pool.query(`CREATE INDEX IF NOT EXISTS idx_offers_agency_id ON offers(agency_id);`);
+                console.log('✅ Offers table columns verified.');
+            } catch (err) {
+            console.error('❌ Offers table migration failed:', err);
+        }
+
+          // 4. Update Clients Table
         try {
             await pool.query(`
-                ALTER TABLE offers 
-                ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
-                ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
-                ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb;
+                ALTER TABLE clients 
+                ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL;
             `);
-            console.log('✅ Offers table columns verified.');
+            await pool.query(`CREATE INDEX IF NOT EXISTS idx_clients_agency_id ON clients(agency_id);`);
+            console.log('✅ Clients table verified.');
         } catch (err) {
-            console.error('❌ Offers table migration failed:', err);
+            console.error('❌ Clients table migration failed:', err);
         }
 
         // 10. Create/Update offer_hotels table for age-based pricing from rooming list

@@ -96,7 +96,7 @@ router.get('/',
             let paramIndex = 1;
 
             // Permission Filter
-            if (req.user?.role === 'agent') {
+            if (req.user?.agencyId) {
                 query += ` AND o.agency_id = $${paramIndex}`;
                 params.push(req.user.agencyId);
                 paramIndex++;
