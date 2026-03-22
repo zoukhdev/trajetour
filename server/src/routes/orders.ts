@@ -105,10 +105,12 @@ router.get('/',
             const params: any[] = [];
 
             // Role-based automatic filtering
-            if (req.user?.agencyId) {
-                // If user belongs to an agency, strictly enforce their agency ID scope
+            const resolvedAgencyId = req.user?.agencyId || (req as any).tenantAgencyId;
+
+            if (resolvedAgencyId) {
+                // If user belongs to an agency (via token OR tenant context), strictly enforce scope
                 filterClause += ` AND o.agency_id = $${params.length + 1}`;
-                params.push(req.user.agencyId);
+                params.push(resolvedAgencyId);
             } else if (req.user?.role === 'client') {
                 filterClause += ` AND o.client_id = $${params.length + 1}`;
                 params.push(req.user.clientId);

@@ -51,9 +51,11 @@ router.get('/',
                 paramIndex++;
             }
 
-            if (authenticatedUser?.agencyId) {
+            const resolvedAgencyId = authenticatedUser?.agencyId || (req as any).tenantAgencyId;
+
+            if (resolvedAgencyId) {
                 query += ` AND agency_id = $${paramIndex}`;
-                params.push(authenticatedUser.agencyId);
+                params.push(resolvedAgencyId);
                 paramIndex++;
             }
 

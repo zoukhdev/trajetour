@@ -1,9 +1,14 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { Request, Response, NextFunction } from 'express';
+import { pool } from '../config/database.js';
 
-export const tenantContext = new AsyncLocalStorage<{ subdomain: string }>();
+export const tenantContext = new AsyncLocalStorage<{ subdomain: string; agencyId?: string }>();
 
-export function tenantMiddleware(req: Request, res: Response, next: NextFunction) {
+export interface TenantRequest extends Request {
+    tenantAgencyId?: string;
+}
+
+export async function tenantMiddleware(req: TenantRequest, res: Response, next: NextFunction) {
     const host = req.headers.host || '';
     let subdomain = 'default';
     
@@ -17,7 +22,20 @@ export function tenantMiddleware(req: Request, res: Response, next: NextFunction
         }
     }
 
-    tenantContext.run({ subdomain }, () => {
+    let agencyId: string | undefined = undefined;
+    if (subdomain !== 'default') {
+        try {
+            const result = await pool.query('SELECT id FROM agencies WHERE subdomain = $1', [subdomain]);
+            if (result.rows.length > 0) {
+                agencyId = result.rows[0].id;
+                req.tenantAgencyId = agencyId; // Attach to request for easy endpoint access
+            }
+        } catch (err) {
+            console.error('❌ Tenant lookup failed for:', subdomain, err);
+        }
+    }
+
+    tenantContext.run({ subdomain, agencyId }, () => {
         next();
     });
 }

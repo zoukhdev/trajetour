@@ -38,9 +38,10 @@ router.get('/',
                 paramIndex++;
             }
 
-            if (req.user?.agencyId) {
+            const resolvedAgencyId = req.user?.agencyId || (req as any).tenantAgencyId;
+            if (resolvedAgencyId) {
                 query += ` AND agency_id = $${paramIndex}`;
-                params.push(req.user.agencyId);
+                params.push(resolvedAgencyId);
                 paramIndex++;
             }
 
@@ -57,9 +58,10 @@ router.get('/',
                 fetchParamIndex++;
             }
 
-            if (req.user?.agencyId) {
+            const resolvedAgencyIdFetch = req.user?.agencyId || (req as any).tenantAgencyId;
+            if (resolvedAgencyIdFetch) {
                 query += ` AND agency_id = $${fetchParamIndex}`;
-                fetchParams.push(req.user.agencyId);
+                fetchParams.push(resolvedAgencyIdFetch);
                 fetchParamIndex++;
             }
 

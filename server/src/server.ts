@@ -50,15 +50,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'capacitor://localhost',      // Capacitor iOS
-        'http://localhost',            // Capacitor Android (HTTP)
-        'https://localhost',           // Capacitor Android (HTTPS) - REQUIRED!
-        'ionic://localhost',           // Ionic Capacitor
-        config.clientUrl               // Vercel production URL
-    ],
+    origin: true,
     credentials: true
 }));
 

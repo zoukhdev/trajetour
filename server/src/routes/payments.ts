@@ -96,9 +96,10 @@ router.get('/',
             let paramIndex = 1;
 
             // Permission Filter
-            if (req.user?.agencyId) {
+            const resolvedAgencyId = req.user?.agencyId || (req as any).tenantAgencyId;
+            if (resolvedAgencyId) {
                 query += ` AND o.agency_id = $${paramIndex}`;
-                params.push(req.user.agencyId);
+                params.push(resolvedAgencyId);
                 paramIndex++;
             }
 
