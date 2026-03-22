@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { masterAPI } from '../../services/api';
 import {
     Clock, CheckCircle2, XCircle, Globe, Mail, Phone, MapPin,
-    User, CreditCard, RefreshCw, Filter, AlertTriangle, Building2, Crown, Send, ExternalLink
+    User, CreditCard, RefreshCw, Filter, AlertTriangle, Building2, Crown, Send, ExternalLink, Plus, Trash2
 } from 'lucide-react';
+import Modal from '../../components/Modal';
+import MasterAgencyForm from './MasterAgencyForm';
 
 interface Agency {
     id: string;
@@ -43,6 +45,7 @@ const AgencyRegistrations = () => {
     const [filter, setFilter] = useState<string>('ALL');
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [rejectModal, setRejectModal] = useState<{ open: boolean; agency: Agency | null }>({ open: false, agency: null });
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
     const [detailModal, setDetailModal] = useState<Agency | null>(null);
     const [reminderLoading, setReminderLoading] = useState<string | null>(null);
@@ -98,8 +101,23 @@ const AgencyRegistrations = () => {
         try {
             await masterAPI.updateAgencyStatus(agency.id, 'SUSPENDED');
             await fetchAgencies();
+            setDetailModal(null);
         } catch (err) {
             console.error('Suspend failed:', err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleDelete = async (agency: Agency) => {
+        if (!window.confirm(`Voulez-vous DÉFINITIVEMENT SUPPRIMER l'agence "${agency.name}" de la plateforme SaaS ?\nCeci supprimera l'accès au domaine.`)) return;
+        setActionLoading(agency.id);
+        try {
+            await masterAPI.deleteAgency(agency.id);
+            await fetchAgencies();
+            setDetailModal(null);
+        } catch (err) {
+            console.error('Delete failed:', err);
         } finally {
             setActionLoading(null);
         }
@@ -141,18 +159,27 @@ const AgencyRegistrations = () => {
                         <span className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
                             <Building2 size={22} />
                         </span>
-                        Demandes d'inscription
+                        Toutes les Agences
                     </h1>
-                    <p className="text-gray-500 mt-1 ml-1">Gérez les demandes d'inscription des nouvelles agences.</p>
+                    <p className="text-gray-500 mt-1 ml-1">Gérez l'ensemble des agences locataires et validez les inscriptions.</p>
                 </div>
-                <button
-                    onClick={fetchAgencies}
-                    disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium shadow-sm"
-                >
-                    <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                    Actualiser
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={fetchAgencies}
+                        disabled={loading}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium shadow-sm"
+                    >
+                        <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+                        Actualiser
+                    </button>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold font-medium shadow-sm transition"
+                    >
+                        <Plus size={18} />
+                        Ajouter
+                    </button>
+                </div>
             </div>
 
             {/* Stats Row */}
@@ -562,39 +589,69 @@ const AgencyRegistrations = () => {
                         </div>
 
                         {/* Actions */}
-                        <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                            {detailModal.status === 'PENDING' && (
-                                <>
+                        <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                            <button
+                                onClick={() => handleDelete(detailModal)}
+                                disabled={!!actionLoading}
+                                className="px-4 py-2 rounded-xl flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold transition text-sm"
+                            >
+                                <Trash2 size={16} /> Supprimer
+                            </button>
+                            
+                            <div className="flex gap-3">
+                                {detailModal.status === 'PENDING' && (
+                                    <>
+                                        <button
+                                            onClick={() => { setDetailModal(null); setRejectModal({ open: true, agency: detailModal }); }}
+                                            disabled={!!actionLoading}
+                                            className="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition"
+                                        >
+                                            Rejeter
+                                        </button>
+                                        <button
+                                            onClick={() => handleApprove(detailModal)}
+                                            disabled={!!actionLoading || !detailModal.db_provisioned_at}
+                                            title={!detailModal.db_provisioned_at ? "Attendez que la base de données soit provisionnée" : "Approuver cette agence"}
+                                            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Approuver l'agence
+                                        </button>
+                                    </>
+                                )}
+                                {detailModal.status === 'ACTIVE' && (
                                     <button
-                                        onClick={() => { setDetailModal(null); setRejectModal({ open: true, agency: detailModal }); }}
+                                        onClick={() => handleSuspend(detailModal)}
                                         disabled={!!actionLoading}
-                                        className="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition"
+                                        className="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition"
                                     >
-                                        Rejeter
+                                        Suspendre l'agence
                                     </button>
+                                )}
+                                {(detailModal.status === 'REJECTED' || detailModal.status === 'SUSPENDED') && (
                                     <button
-                                        onClick={() => { handleApprove(detailModal); setDetailModal(null); }}
-                                        disabled={!!actionLoading || !detailModal.db_provisioned_at}
-                                        title={!detailModal.db_provisioned_at ? "Attendez que la base de données soit provisionnée" : "Approuver cette agence"}
-                                        className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                        onClick={() => handleApprove(detailModal)}
+                                        disabled={!!actionLoading}
+                                        className="px-5 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition disabled:opacity-50"
                                     >
-                                        Approuver l'agence
+                                        Réactiver l'agence
                                     </button>
-                                </>
-                            )}
-                            {detailModal.status === 'ACTIVE' && (
-                                <button
-                                    onClick={() => { handleSuspend(detailModal); setDetailModal(null); }}
-                                    disabled={!!actionLoading}
-                                    className="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition"
-                                >
-                                    Suspendre l'agence
-                                </button>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
+
+            <Modal
+                isOpen={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
+                title="Ajouter une Agence (Provisionnement manuel)"
+            >
+                <MasterAgencyForm onSuccess={() => {
+                    setIsAddModalOpen(false);
+                    fetchAgencies();
+                }} onCancel={() => setIsAddModalOpen(false)} />
+            </Modal>
         </div>
     );
 };

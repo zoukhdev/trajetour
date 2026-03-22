@@ -42,7 +42,6 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             title: 'AGENCES & CLIENTS',
             items: [
                 { icon: Building2, label: 'Toutes les Agences', path: '/dashboard/master-agencies', permission: 'manage_business' },
-                { icon: PlusCircle, label: 'Inscriptions', path: '/dashboard/agency-registrations', permission: 'manage_users' },
                 { icon: FileText, label: t('common.reports'), path: '/dashboard/reports', permission: 'view_reports' },
                 { icon: BarChart, label: 'Commissions', path: '/dashboard/reports/commissions', permission: 'view_reports' },
                 { icon: BarChart, label: 'Revenus Master', path: '/dashboard/reports/revenue', permission: 'view_reports' },

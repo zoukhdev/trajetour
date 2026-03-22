@@ -536,6 +536,10 @@ export const masterAPI = {
         const response = await api.patch(`/master/agencies/${id}/status`, { status, rejection_reason });
         return response.data;
     },
+    deleteAgency: async (id: string) => {
+        const response = await api.delete(`/master/agencies/${id}`);
+        return response.data;
+    },
     getMySubscription: async () => {
         const response = await api.get('/master/my-subscription');
         return response.data;

@@ -483,6 +483,33 @@ router.get('/agencies/:id',
     }
 );
 
+// ─── DELETE /agencies/:id ───────────────────────────────────────────────────
+// Delete an agency from the master database
+router.delete('/agencies/:id',
+    authMiddleware,
+    requirePermission('manage_agencies'),
+    async (req: Request, res, next) => {
+        try {
+            const { id } = req.params;
+            const result = await masterPool.query(
+                `DELETE FROM agencies WHERE id = $1 RETURNING id`,
+                [id]
+            );
+            
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'Agency not found.' });
+            }
+
+            // Note: Does not automatically drop the associated Neon DB branch to prevent 
+            // accidental permanent data loss. Only removes it from the master platform.
+            
+            res.json({ success: true, message: 'Agency deleted successfully.' });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 // ─── GET /my-subscription ────────────────────────────────────────────────────
 // Agency self-service: get own subscription info (no master permission needed)
 router.get('/my-subscription',
