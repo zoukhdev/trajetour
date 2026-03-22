@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Calendar } from 'lucide-react';
 import Modal from '../../components/Modal';
 import { paymentsAPI } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const AgencyPayments = () => {
+    const { user } = useAuth();
     const [payments, setPayments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
@@ -19,9 +21,13 @@ const AgencyPayments = () => {
                 page: pagination.page,
                 limit: pagination.limit,
                 status: filters.status === 'all' ? undefined : (filters.status || undefined),
-                clientName: filters.clientName || undefined
+                clientName: filters.clientName || undefined,
+                agencyId: user?.agencyId || undefined
             });
-            setPayments(res.data);
+            const data = Array.isArray(res.data) ? res.data : [];
+            const filtered = user?.agencyId ? data.filter((p: any) => (p.agencyId || p.agency_id) === user.agencyId) : data;
+            
+            setPayments(filtered);
             setPagination(prev => ({ ...prev, ...res.pagination }));
         } catch (error) {
             console.error("Failed to fetch payments", error);

@@ -44,6 +44,9 @@ const AgencyBookings = () => {
     };
 
     const filteredOrders = orders.filter(order => {
+        const orderAgencyId = order.agencyId || (order as any).agency_id;
+        if (user?.agencyId && orderAgencyId !== user.agencyId) return false;
+        
         if (!searchTerm) return true;
         const search = searchTerm.toLowerCase();
         return (
