@@ -23,6 +23,15 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
 
         const user = result.rows[0];
         if (!user) {
+            // Check if they are an agency owner trying to log in via the master domain
+            const { tenantContext } = await import('../middleware/tenant.js');
+            const currentTenant = tenantContext.getStore()?.subdomain || 'default';
+            if (currentTenant === 'default') {
+                const agencyCheck = await pool.query('SELECT subdomain FROM agencies WHERE owner_email = $1 LIMIT 1', [email]);
+                if (agencyCheck.rows.length > 0) {
+                    return res.status(403).json({ error: 'agency_redirect', subdomain: agencyCheck.rows[0].subdomain });
+                }
+            }
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 

@@ -4,7 +4,7 @@ import { authAPI } from '../services/api';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<User | null>;
+    login: (email: string, password: string) => Promise<User>;
     logout: () => void;
     isAuthenticated: boolean;
     hasPermission: (permission: Permission) => boolean;
@@ -40,14 +40,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkAuth();
     }, []);
 
-    const login = async (email: string, password: string): Promise<User | null> => {
+    const login = async (email: string, password: string): Promise<User> => {
         try {
             const userData = await authAPI.login(email, password);
             setUser(userData);
             return userData;
         } catch (error) {
             console.error('Login failed:', error);
-            return null;
+            throw error;
         }
     };
 

@@ -246,13 +246,34 @@ const AgencyRegistrations = () => {
                                         <div className="flex-1 min-w-0 pr-3">
                                             <h3 className="font-bold text-gray-900 text-lg truncate">{agency.name}</h3>
                                             <a
-                                                href={`https://${agency.subdomain}.trajetour.com`}
+                                                href={(() => {
+                                                    const currentHost = window.location.host;
+                                                    const protocol = window.location.protocol;
+                                                    if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                                        const portMatch = currentHost.match(/:\d+/);
+                                                        const port = portMatch ? portMatch[0] : '';
+                                                        return `${protocol}//${agency.subdomain}.localhost${port}`;
+                                                    } else {
+                                                        const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                                        return `${protocol}//${agency.subdomain}.${baseDomain}`;
+                                                    }
+                                                })()}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-blue-500 text-sm hover:underline flex items-center gap-1 mt-0.5"
                                             >
                                                 <Globe size={12} />
-                                                {agency.subdomain}.trajetour.com
+                                                {(() => {
+                                                    const currentHost = window.location.host;
+                                                    if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                                        const portMatch = currentHost.match(/:\d+/);
+                                                        const port = portMatch ? portMatch[0] : '';
+                                                        return `${agency.subdomain}.localhost${port}`;
+                                                    } else {
+                                                        const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                                        return `${agency.subdomain}.${baseDomain}`;
+                                                    }
+                                                })()}
                                             </a>
                                         </div>
                                         <div className="flex flex-col items-end gap-2 shrink-0">
@@ -423,7 +444,19 @@ const AgencyRegistrations = () => {
                         <div className="flex justify-between items-start mb-6">
                             <div>
                                 <h2 className="text-2xl font-bold text-gray-900">{detailModal.name}</h2>
-                                <p className="text-sm text-blue-600 font-medium mt-1">{detailModal.subdomain}.trajetour.com</p>
+                                <p className="text-sm text-blue-600 font-medium mt-1">
+                                    {(() => {
+                                        const currentHost = window.location.host;
+                                        if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                            const portMatch = currentHost.match(/:\d+/);
+                                            const port = portMatch ? portMatch[0] : '';
+                                            return `${detailModal.subdomain}.localhost${port}`;
+                                        } else {
+                                            const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                            return `${detailModal.subdomain}.${baseDomain}`;
+                                        }
+                                    })()}
+                                </p>
                             </div>
                             <button onClick={() => setDetailModal(null)} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition">
                                 <XCircle size={24} />

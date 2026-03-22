@@ -18,31 +18,51 @@ const ClientLogin = () => {
         e.preventDefault();
         try {
             const user = await login(email, password);
-            if (!user) {
-                setError('Login failed: Invalid credentials');
-                return;
+            if (!user) return; // Should not happen since we throw now
+
+            // Single unified redirection structure based on strictly defined roles
+            if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff' || user.role === 'caisser') {
+                if (user.tenantId && user.tenantId !== 'default') {
+                    // It's an agency admin/staff
+                    navigate(redirectIdx || '/agency');
+                } else {
+                    // It's a master admin
+                    navigate(redirectIdx || '/dashboard');
+                }
+            } else if (user.role === 'agent') {
+                navigate(redirectIdx || '/agency');
+            } else {
+                // Client
+                navigate(redirectIdx || '/client');
             }
 
-            // Role-based redirection combined with Tenant Subdomain
-            if (user.tenantId && user.tenantId !== 'default') {
-                // If they logged in on an agency subdomain
-                if (user.role === 'client') {
-                    navigate(redirectIdx || '/client');
-                } else {
-                    // Agency Admin, Staff, or Agent goes to the Agency Dashboard
-                    navigate(redirectIdx || '/agency');
-                }
-            } else {
-                // Master Domain login
-                if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff' || user.role === 'caisser') {
-                    navigate(redirectIdx || '/dashboard');
-                } else {
-                    // Fallback to client if anything else
-                    navigate(redirectIdx || '/client');
-                }
-            }
         } catch (err: any) {
-            setError(err.message || 'Login failed');
+            // Check if the server signaled an agency redirect (meaning they are on the master domain
+            // but belong strictly to an agency subdomain)
+            if (err.response?.data?.error === 'agency_redirect' && err.response?.data?.subdomain) {
+                const sub = err.response.data.subdomain;
+                 // Assuming production domains end in .trajetour.com, otherwise use localhost logic.
+                 // We will construct the redirect URL dynamically:
+                 const currentHost = window.location.host;
+                 const protocol = window.location.protocol;
+                 
+                 // If currently on master like test.localhost or trajetour.com
+                 let newHost = '';
+                 if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                     const portMatch = currentHost.match(/:\d+/);
+                     const port = portMatch ? portMatch[0] : '';
+                     newHost = `${sub}.localhost${port}`;
+                 } else {
+                     // Production
+                     const baseDomain = currentHost.split('.').slice(-2).join('.'); // trajetour.com
+                     newHost = `${sub}.${baseDomain}`;
+                 }
+                 
+                 window.location.href = `${protocol}//${newHost}/login`;
+                 return;
+            }
+
+            setError(err.response?.data?.error || err.message || 'Login failed');
         }
     };
 
@@ -132,9 +152,9 @@ const ClientLogin = () => {
                                 {t('auth.register_prompt')}
                                 <Link className="text-primary font-bold hover:underline ml-1" to="/register">{t('auth.register_link')}</Link>
                             </p>
-                            <p className="text-[#637588] dark:text-gray-400 text-sm mt-2">
-                                {t('auth.agency_prompt')}
-                                <Link className="text-primary font-bold hover:underline ml-1" to="/login/agency">{t('auth.agency_link')}</Link>
+                            <p className="text-[#637588] dark:text-gray-400 text-sm mt-3 border-t border-gray-100 dark:border-gray-800 pt-3">
+                                Vous êtes une agence ? 
+                                <Link className="text-primary font-bold hover:underline ml-1" to="/register/agency">Inscrivez-vous ici</Link>
                             </p>
                         </div>
                     </form>

@@ -101,12 +101,33 @@ const AgencySignup = () => {
                                 <div>
                                     <p className="font-bold text-blue-800 dark:text-blue-300 text-sm">Votre lien de connexion unique</p>
                                     <a
-                                        href={`https://${registeredSubdomain}.trajetour.com/login`}
+                                        href={(() => {
+                                            const currentHost = window.location.host;
+                                            const protocol = window.location.protocol;
+                                            if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                                const portMatch = currentHost.match(/:\d+/);
+                                                const port = portMatch ? portMatch[0] : '';
+                                                return `${protocol}//${registeredSubdomain}.localhost${port}/login`;
+                                            } else {
+                                                const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                                return `${protocol}//${registeredSubdomain}.${baseDomain}/login`;
+                                            }
+                                        })()}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-xs font-mono text-blue-600 dark:text-blue-400 hover:underline break-all"
                                     >
-                                        https://{registeredSubdomain}.trajetour.com/login
+                                        {(() => {
+                                            const currentHost = window.location.host;
+                                            if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                                const portMatch = currentHost.match(/:\d+/);
+                                                const port = portMatch ? portMatch[0] : '';
+                                                return `${registeredSubdomain}.localhost${port}/login`;
+                                            } else {
+                                                const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                                return `${registeredSubdomain}.${baseDomain}/login`;
+                                            }
+                                        })()}
                                     </a>
                                     <p className="text-xs text-blue-600 dark:text-blue-500 mt-1">📌 Sauvegardez ce lien dans vos favoris</p>
                                 </div>
@@ -132,7 +153,18 @@ const AgencySignup = () => {
 
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <a
-                                href={`https://${registeredSubdomain}.trajetour.com/login`}
+                                href={(() => {
+                                    const currentHost = window.location.host;
+                                    const protocol = window.location.protocol;
+                                    if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                        const portMatch = currentHost.match(/:\d+/);
+                                        const port = portMatch ? portMatch[0] : '';
+                                        return `${protocol}//${registeredSubdomain}.localhost${port}/login`;
+                                    } else {
+                                        const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                        return `${protocol}//${registeredSubdomain}.${baseDomain}/login`;
+                                    }
+                                })()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="btn-primary inline-flex items-center justify-center h-11 px-8 text-sm font-bold"

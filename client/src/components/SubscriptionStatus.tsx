@@ -156,11 +156,26 @@ const SubscriptionStatus = () => {
                         <div className="flex items-center gap-2 mt-1">
                             <Globe size={13} className="opacity-70" />
                             <a
-                                href={`https://${subscription.subdomain}.trajetour.com`}
+                                href={(() => {
+                                    const currentHost = window.location.host;
+                                    const protocol = window.location.protocol;
+                                    
+                                    if (currentHost.includes('localhost') || currentHost.includes('127.0.0.1')) {
+                                        const portMatch = currentHost.match(/:\d+/);
+                                        const port = portMatch ? portMatch[0] : '';
+                                        return `${protocol}//${subscription.subdomain}.localhost${port}`;
+                                    } else {
+                                        const baseDomain = currentHost.split('.').slice(-2).join('.');
+                                        return `${protocol}//${subscription.subdomain}.${baseDomain}`;
+                                    }
+                                })()}
                                 className="text-sm opacity-80 hover:opacity-100 underline"
                                 target="_blank" rel="noreferrer"
                             >
-                                {subscription.subdomain}.trajetour.com
+                                {subscription.subdomain}.
+                                {window.location.host.includes('localhost') 
+                                    ? 'localhost' 
+                                    : window.location.host.split('.').slice(-2).join('.')}
                             </a>
                             <ExternalLink size={11} className="opacity-60" />
                         </div>
