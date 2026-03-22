@@ -1,0 +1,10 @@
+in the master dashboard add a section where it shows new agencies registrations and to accept or reject the agency registrations + the subscription plan they chose
+in the master dashboard add a button to create a new tour package and to accept or reject the tour package registrations done by the agencies
+in the master dashboard add a section to show the list of agencies and their status
+in the master dashboard add a section to show the list of tour packages and their status
+in the master dashboard add a section to show the agencies payments status and the amount paid and the amount due
+in the master dashboard add a section to show the tour packages payments status and the amount paid and the amount due
+
+_______________________________________________________________________________________________
+
+in the agency dashboard 

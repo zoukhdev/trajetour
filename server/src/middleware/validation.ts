@@ -113,8 +113,9 @@ export const multiTenantAgencySchema = z.object({
     contactName: z.string().optional(),
     plan: z.string().optional(),
 
-    paymentMethod: z.enum(['Espèces', 'Virement Bancaire', 'BaridiMob']).optional()
+    paymentMethod: z.string().optional()
 });
+
 
 export const offerSchema = z.object({
     title: z.string().min(2).max(255),
