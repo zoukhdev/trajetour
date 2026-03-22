@@ -1,7 +1,8 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import { pool } from '../config/database.js';
+import { pool, defaultPool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
+
 import { validate, userSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
 
@@ -89,8 +90,9 @@ router.post('/',
 
             // Enforce Subscription Limits for Users/Staff
             if (agencyId) {
-                const agencyRes = await client.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
+                const agencyRes = await defaultPool.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
                 if (agencyRes.rows.length > 0) {
+
                     const sub = agencyRes.rows[0].subscription || 'Standard';
                     
                     const PLAN_LIMITS: { [key: string]: number } = {

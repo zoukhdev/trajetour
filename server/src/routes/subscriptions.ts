@@ -1,7 +1,8 @@
 import express from 'express';
-import { pool } from '../config/database.js';
+import { defaultPool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 import { logAudit } from '../services/auditLog.js';
+
 
 const router = express.Router();
 
@@ -10,13 +11,14 @@ router.post('/upgrade',
     authMiddleware,
     requirePermission('manage_business'),
     async (req: AuthRequest, res, next) => {
-        const client = await pool.connect();
+        const client = await defaultPool.connect();
         try {
             await client.query('BEGIN');
             const { requestedPlan, notes } = req.body;
-            const agencyId = req.user!.agencyId;
+            const agencyId = req.user!.agencyId || (req as any).tenantAgencyId;
 
             if (!agencyId) return res.status(401).json({ error: 'Agency Context required' });
+
 
             const currentRes = await client.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
             const currentPlan = currentRes.rows[0]?.subscription || 'Standard';
@@ -56,7 +58,7 @@ router.get('/requests',
             // Must be admin of master staff (req.user!.agencyId === null means master dashboard)
             if (req.user!.agencyId) return res.status(403).json({ error: 'Unauthorized: Master Dashboard only' });
 
-            const result = await pool.query(`
+            const result = await defaultPool.query(`
                 SELECT aa.*, a.name as agency_name 
                 FROM agency_approvals aa
                 JOIN agencies a ON aa.agency_id = a.id
@@ -73,7 +75,7 @@ router.get('/requests',
 router.put('/requests/:id',
     authMiddleware,
     async (req: AuthRequest, res, next) => {
-        const client = await pool.connect();
+        const client = await defaultPool.connect();
         try {
             if (req.user!.agencyId) return res.status(403).json({ error: 'Unauthorized: Master Dashboard only' });
 
