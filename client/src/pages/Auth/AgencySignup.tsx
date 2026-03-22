@@ -74,8 +74,16 @@ const AgencySignup = () => {
             setRegisteredSubdomain(generatedSubdomain);
             setIsSuccess(true);
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Registration failed');
+            const details = err.response?.data?.details;
+            let errorMsg = err.response?.data?.error || 'Registration failed';
+            if (details && Array.isArray(details)) {
+                errorMsg += " : " + details.map((d: any) => `${d.path?.join('.') || 'field'}: ${d.message}`).join(', ');
+            } else if (details && typeof details === 'object') {
+                errorMsg += " : " + JSON.stringify(details);
+            }
+            setError(errorMsg);
         } finally {
+
             setLoading(false);
         }
     };
