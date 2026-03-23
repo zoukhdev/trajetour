@@ -460,11 +460,16 @@ app.listen(PORT, async () => {
                     ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'PENDING',
                     ADD COLUMN IF NOT EXISTS owner_email VARCHAR(255),
                     ADD COLUMN IF NOT EXISTS plan VARCHAR(50) DEFAULT 'Basic',
+                    ADD COLUMN IF NOT EXISTS subscription VARCHAR(50) DEFAULT 'Standard',
                     ADD COLUMN IF NOT EXISTS contact_name VARCHAR(255),
                     ADD COLUMN IF NOT EXISTS neon_branch_id VARCHAR(100),
                     ADD COLUMN IF NOT EXISTS db_provisioned_at TIMESTAMP WITH TIME ZONE,
                     ADD COLUMN IF NOT EXISTS status_updated_at TIMESTAMP WITH TIME ZONE,
-                    ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
+                    ADD COLUMN IF NOT EXISTS rejection_reason TEXT,
+                    ADD COLUMN IF NOT EXISTS payment_method VARCHAR(100),
+                    ADD COLUMN IF NOT EXISTS payment_proof_url TEXT,
+                    ADD COLUMN IF NOT EXISTS phone VARCHAR(50),
+                    ADD COLUMN IF NOT EXISTS address TEXT;
                 `);
                 // Fix status CHECK constraint to include all valid statuses
                 await pool.query(`ALTER TABLE agencies DROP CONSTRAINT IF EXISTS agencies_status_check;`);
@@ -472,6 +477,29 @@ app.listen(PORT, async () => {
                 console.log('✅ Agencies table master schema verified.');
             } catch (err: any) {
                 console.warn('⚠️ Agencies migration warning (non-fatal):', err.message);
+            }
+
+            // 0b. Auto-create agency_approvals table (required for upgrade plan workflow)
+            try {
+                await pool.query(`
+                    CREATE TABLE IF NOT EXISTS agency_approvals (
+                        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                        agency_id UUID NOT NULL REFERENCES agencies(id) ON DELETE CASCADE,
+                        type VARCHAR(50) NOT NULL DEFAULT 'UPGRADE_PLAN',
+                        current_value TEXT,
+                        requested_value TEXT,
+                        status VARCHAR(20) NOT NULL DEFAULT 'PENDING'
+                            CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+                        notes TEXT,
+                        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                    );
+                `);
+                await pool.query(`CREATE INDEX IF NOT EXISTS idx_agency_approvals_agency_id ON agency_approvals(agency_id);`);
+                await pool.query(`CREATE INDEX IF NOT EXISTS idx_agency_approvals_status ON agency_approvals(status);`);
+                console.log('✅ agency_approvals table verified.');
+            } catch (err: any) {
+                console.warn('⚠️ agency_approvals migration warning (non-fatal):', err.message);
             }
 
             // 1. Ensure Rooms Table Exists and has columns

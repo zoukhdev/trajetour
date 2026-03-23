@@ -27,18 +27,22 @@ router.post('/upgrade',
         try {
             await client.query('BEGIN');
             const { requestedPlan, notes } = req.body;
-            const agencyId = req.user!.agencyId || (req as any).tenantAgencyId;
+            const agencyId = req.user!.agencyId || req.tenantAgencyId;
 
-            debugLog(`   Agency ID: ${agencyId}`);
+            debugLog(`   JWT agencyId: ${req.user!.agencyId}`);
+            debugLog(`   Tenant agencyId (from subdomain): ${req.tenantAgencyId}`);
+            debugLog(`   Resolved Agency ID: ${agencyId}`);
             if (!agencyId) {
-                debugLog('   ❌ Agency context required 401');
-                return res.status(401).json({ error: 'Agency Context required' });
+                debugLog('   ❌ Neither JWT agencyId nor tenantAgencyId resolved. Check tenant middleware.');
+                return res.status(401).json({ error: 'Agency Context required: could not determine agency from session or subdomain' });
             }
 
-            const currentRes = await client.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
-            const currentPlan = currentRes.rows[0]?.subscription || 'Standard';
+            const currentRes = await client.query(
+                `SELECT COALESCE(subscription, plan, 'Standard') as current_plan FROM agencies WHERE id = $1`,
+                [agencyId]
+            );
+            const currentPlan = currentRes.rows[0]?.current_plan || 'Standard';
             debugLog(`   Current Plan: ${currentPlan}, Requested: ${requestedPlan}`);
-
 
             const result = await client.query(
                 `INSERT INTO agency_approvals (agency_id, type, current_value, requested_value, status, notes)

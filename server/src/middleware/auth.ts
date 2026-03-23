@@ -3,6 +3,7 @@ import { verifyToken, JWTPayload } from '../utils/jwt.js';
 
 export interface AuthRequest extends Request {
     user?: JWTPayload;
+    tenantAgencyId?: string; // Set by tenantMiddleware from subdomain lookup in master DB
 }
 
 export async function authMiddleware(
