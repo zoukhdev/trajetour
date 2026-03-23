@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
+import { settingsAPI } from '../../services/api';
 
 const AgencyHome = () => {
     const {} = useLanguage();
@@ -9,9 +10,28 @@ const AgencyHome = () => {
     const [destination, setDestination] = useState('omrah');
     const [date, setDate] = useState('');
     const [statsVisible, setStatsVisible] = useState(false);
+    
+    // Dynamic settings state
+    const [settings, setSettings] = useState<any>(null);
+    const [slides, setSlides] = useState<any[]>([]);
 
     // Animated counter for stats
     const [stats, setStats] = useState({ clients: 0, packages: 0, years: 0, satisfaction: 0 });
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await settingsAPI.getHomepageSettings();
+                if (response.settings) setSettings(response.settings);
+                if (response.slides && response.slides.length > 0) {
+                    setSlides(response.slides.filter((s: any) => s.isActive));
+                }
+            } catch (error) {
+                console.error('Failed to fetch homepage settings:', error);
+            }
+        };
+        fetchSettings();
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -127,11 +147,29 @@ const AgencyHome = () => {
         }
     ];
 
+    const heroImage = slides.length > 0 && slides[0].imageUrl ? slides[0].imageUrl : '/hajj-hero.png';
+    const heroTitle = slides.length > 0 && slides[0].title ? slides[0].title : 'Votre Voyage Spirituel Commence Ici';
+    const heroDescription = slides.length > 0 && slides[0].description ? slides[0].description : 'Organisation professionnelle de Omrah & Hajj avec plus de 10 ans d\'expérience';
+    const displayName = settings?.displayName || 'Trajetour';
+
     return (
-        <div className="relative w-full overflow-hidden">
+        <div className="agency-home relative w-full overflow-hidden">
+            {settings?.primaryColor && (
+                <style dangerouslySetInnerHTML={{
+                    __html: `
+                        .agency-home .text-primary { color: ${settings.primaryColor} !important; }
+                        .agency-home .bg-primary { background-color: ${settings.primaryColor} !important; }
+                        .agency-home .from-primary { --tw-gradient-from: ${settings.primaryColor} var(--tw-gradient-from-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+                        .agency-home .border-primary { border-color: ${settings.primaryColor} !important; }
+                        .agency-home .focus\\:border-primary:focus { border-color: ${settings.primaryColor} !important; }
+                        .agency-home .focus\\:ring-primary:focus { --tw-ring-color: ${settings.primaryColor} !important; }
+                    `
+                }} />
+            )}
+
             {/* Hero Section with Parallax Effect */}
             <div className="relative w-full min-h-[700px] flex flex-col items-center justify-center px-4 bg-cover bg-center bg-no-repeat bg-fixed"
-                style={{ backgroundImage: 'linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%), url("/hajj-hero.png")' }}>
+                style={{ backgroundImage: `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%), url("${heroImage}")` }}>
 
                 {/* Animated Background Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 animate-pulse-slow"></div>
@@ -145,16 +183,12 @@ const AgencyHome = () => {
                         </span>
                     </div>
 
-                    <h1 className="text-white text-5xl md:text-7xl font-black leading-tight tracking-tight drop-shadow-2xl font-display">
-                        Votre Voyage Spirituel <br />
-                        <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-                            Commence Ici
-                        </span>
+                    <h1 className="text-white text-5xl md:text-7xl font-black leading-tight tracking-tight drop-shadow-2xl font-display whitespace-pre-wrap">
+                        {heroTitle}
                     </h1>
 
-                    <h2 className="text-gray-100 text-xl md:text-2xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
-                        Organisation professionnelle de <span className="font-bold text-yellow-400">Omrah & Hajj</span> avec
-                        plus de 10 ans d'expérience
+                    <h2 className="text-gray-100 text-xl md:text-2xl font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-lg whitespace-pre-wrap">
+                        {heroDescription}
                     </h2>
 
                     <div className="flex flex-wrap gap-4 justify-center mt-4">
@@ -381,7 +415,7 @@ const AgencyHome = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-                            Pourquoi Choisir Trajetour ?
+                            Pourquoi Choisir {displayName} ?
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
                             Votre confiance est notre priorité absolue
