@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import MasterAgencyForm from './MasterAgencyForm';
+import toast from 'react-hot-toast';
 
 interface Agency {
     id: string;
@@ -73,8 +74,10 @@ const AgencyRegistrations = () => {
         try {
             await masterAPI.updateAgencyStatus(agency.id, 'ACTIVE');
             await fetchAgencies();
-        } catch (err) {
+            toast.success('Agence approuvée avec succès');
+        } catch (err: any) {
             console.error('Approve failed:', err);
+            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de l\'approbation');
         } finally {
             setActionLoading(null);
         }
@@ -88,8 +91,10 @@ const AgencyRegistrations = () => {
             setRejectModal({ open: false, agency: null });
             setRejectionReason('');
             await fetchAgencies();
-        } catch (err) {
+            toast.success('Agence rejetée');
+        } catch (err: any) {
             console.error('Reject failed:', err);
+            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors du rejet');
         } finally {
             setActionLoading(null);
         }
@@ -102,8 +107,10 @@ const AgencyRegistrations = () => {
             await masterAPI.updateAgencyStatus(agency.id, 'SUSPENDED');
             await fetchAgencies();
             setDetailModal(null);
-        } catch (err) {
+            toast.success('Agence suspendue');
+        } catch (err: any) {
             console.error('Suspend failed:', err);
+            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suspension');
         } finally {
             setActionLoading(null);
         }
@@ -116,8 +123,10 @@ const AgencyRegistrations = () => {
             await masterAPI.deleteAgency(agency.id);
             await fetchAgencies();
             setDetailModal(null);
-        } catch (err) {
+            toast.success('Agence supprimée');
+        } catch (err: any) {
             console.error('Delete failed:', err);
+            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suppression');
         } finally {
             setActionLoading(null);
         }
