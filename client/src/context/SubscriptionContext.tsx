@@ -44,7 +44,9 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => { fetchSub(); }, []);
 
-    const isLocked = !loading && (subscription?.status !== 'ACTIVE');
+    // isLocked is true ONLY when we have successfully fetched the subscription AND it's not ACTIVE.
+    // If subscription is null (no agency context, or a transient fetch error), we do NOT lock.
+    const isLocked = !loading && subscription !== null && subscription.status !== 'ACTIVE';
 
     return (
         <SubscriptionContext.Provider value={{ subscription, loading, isLocked, refetch: fetchSub }}>
