@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { Request, Response, NextFunction } from 'express';
-import { pool } from '../config/database.js';
+import { masterPool } from '../config/tenantPool.js'; // MUST use masterPool - agencies table only exists in master DB
 
 export const tenantContext = new AsyncLocalStorage<{ subdomain: string; agencyId?: string }>();
 
@@ -36,7 +36,7 @@ export async function tenantMiddleware(req: Request, res: Response, next: NextFu
     let agencyId: string | undefined = undefined;
     if (subdomain !== 'default') {
         try {
-            const result = await pool.query('SELECT id FROM agencies WHERE subdomain = $1', [subdomain]);
+            const result = await masterPool.query('SELECT id FROM agencies WHERE subdomain = $1', [subdomain]);
             if (result.rows.length > 0) {
                 agencyId = result.rows[0].id;
                 req.tenantAgencyId = agencyId; // Attach to request for easy endpoint access

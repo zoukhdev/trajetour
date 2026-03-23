@@ -1,5 +1,6 @@
 import express from 'express';
 import { pool } from '../config/database.js';
+import { masterPool } from '../config/tenantPool.js';
 import { config } from '../config/env.js';
 import { hashPassword, comparePassword } from '../utils/password.js';
 import { generateToken } from '../utils/jwt.js';
@@ -43,17 +44,40 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
         const clientCheck = await pool.query('SELECT id FROM clients WHERE user_id = $1', [user.id]);
         const clientId = clientCheck.rows[0]?.id;
 
-        const agencyCheck = await pool.query('SELECT id FROM agencies WHERE user_id = $1', [user.id]);
-        const agencyId = agencyCheck.rows[0]?.id;
-
+        // Look up agency in master DB first (handles both old-style user_id link and new SaaS flow by owner_email)
+        // IMPORTANT: We use masterPool here, NOT `pool`, because `pool` is a tenant-aware proxy that routes
+        // to the Neon tenant DB when on a subdomain. The tenant DB has no `agencies` table.
+        let agencyId: string | undefined = undefined;
         const { tenantContext } = await import('../middleware/tenant.js');
         const currentTenant = tenantContext.getStore()?.subdomain || 'default';
+
+        if (currentTenant !== 'default') {
+            // For SaaS agency subdomains: look up agency by subdomain in master DB
+            const agencyBySubdomain = await masterPool.query(
+                'SELECT id FROM agencies WHERE subdomain = $1',
+                [currentTenant]
+            );
+            agencyId = agencyBySubdomain.rows[0]?.id;
+        } else {
+            // For default/master domain: look up by user_id (old-style or B2B agency)
+            const agencyByUser = await masterPool.query(
+                'SELECT id FROM agencies WHERE user_id = $1',
+                [user.id]
+            );
+            agencyId = agencyByUser.rows[0]?.id;
+        }
+
+        // Ensure agency admins logging into their own subdomain have manage_business permission
+        let effectivePermissions: string[] = Array.isArray(user.permissions) ? user.permissions : [];
+        if (agencyId && !effectivePermissions.includes('manage_business')) {
+            effectivePermissions = [...effectivePermissions, 'manage_business'];
+        }
 
         const token = generateToken({
             id: user.id,
             email: user.email,
             role: user.role,
-            permissions: user.permissions || [],
+            permissions: effectivePermissions,
             clientId,
             agencyId,
             tenantId: currentTenant
@@ -73,7 +97,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
             email: user.email,
             username: user.username,
             role: user.role,
-            permissions: Array.isArray(user.permissions) ? user.permissions : [],
+            permissions: effectivePermissions,
             clientId,
             agencyId,
             tenantId: currentTenant,
