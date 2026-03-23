@@ -339,7 +339,7 @@ router.get('/agencies',
 // Approve or reject an agency registration (master admin only)
 router.patch('/agencies/:id/status',
     authMiddleware,
-    requirePermission('manage_agencies'),
+    requirePermission('manage_users'),
     async (req: Request, res, next) => {
         try {
             const { id } = req.params;
@@ -503,7 +503,7 @@ router.get('/agencies/:id',
 // Delete an agency from the master database
 router.delete('/agencies/:id',
     authMiddleware,
-    requirePermission('manage_agencies'),
+    requirePermission('manage_users'),
     async (req: Request, res, next) => {
         try {
             const { id } = req.params;
@@ -595,7 +595,7 @@ router.post('/my-subscription/payment-proof',
 // Master only: send an email to an agency asking them to re-upload their proof
 router.post('/agencies/:id/send-proof-reminder',
     authMiddleware,
-    requirePermission('manage_agencies'),
+    requirePermission('manage_users'),
     async (req: Request, res, next) => {
         try {
             const { id } = req.params;
