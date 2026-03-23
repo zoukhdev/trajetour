@@ -339,7 +339,7 @@ router.get('/agencies',
 // Approve or reject an agency registration (master admin only)
 router.patch('/agencies/:id/status',
     authMiddleware,
-    requirePermission('manage_users'),
+    requirePermission('manage_agencies'),
     async (req: Request, res, next) => {
         try {
             const { id } = req.params;
