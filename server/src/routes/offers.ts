@@ -24,7 +24,8 @@ const mapOfferResponse = (row: any) => ({
     disponibilite: row.capacity, // Map DB capacity to frontend disponibilite
     inclusions: row.inclusions || {},
     roomPricing: row.room_pricing || [],
-    agencyId: row.agency_id
+    agencyId: row.agency_id,
+    isFeatured: row.is_featured || false
 });
 
 // Get all offers (with filters) - PUBLIC
@@ -180,6 +181,49 @@ router.put('/:id',
                 entityType: 'offer',
                 entityId: updatedOffer.id,
                 changes: updatedOffer,
+                ipAddress: req.ip
+            });
+
+            await client.query('COMMIT');
+            res.json(mapOfferResponse(updatedOffer));
+        } catch (error) {
+            await client.query('ROLLBACK');
+            next(error);
+        } finally {
+            client.release();
+    }
+);
+
+// Toggle featured status of an offer
+router.patch('/:id/featured',
+    authMiddleware,
+    requirePermission('manage_business'),
+    async (req: AuthRequest, res, next) => {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            const { isFeatured } = req.body;
+
+            const result = await client.query(
+                `UPDATE offers 
+                 SET is_featured = $1
+                 WHERE id = $2
+                 RETURNING *`,
+                [isFeatured, req.params.id]
+            );
+
+            if (result.rows.length === 0) {
+                await client.query('ROLLBACK');
+                return res.status(404).json({ error: 'Offer not found' });
+            }
+            const updatedOffer = result.rows[0];
+
+            await logAudit(client, {
+                userId: req.user!.id,
+                action: 'UPDATE_FEATURED',
+                entityType: 'offer',
+                entityId: updatedOffer.id,
+                changes: { isFeatured },
                 ipAddress: req.ip
             });
 

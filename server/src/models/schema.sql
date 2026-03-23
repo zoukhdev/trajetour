@@ -289,3 +289,32 @@ CREATE INDEX IF NOT EXISTS idx_supplier_contracts_date ON supplier_contracts(dat
 DROP TRIGGER IF EXISTS update_supplier_contracts_updated_at ON supplier_contracts;
 CREATE TRIGGER update_supplier_contracts_updated_at BEFORE UPDATE ON supplier_contracts
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Agency Settings Table
+CREATE TABLE IF NOT EXISTS agency_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    logo_url TEXT,
+    display_name VARCHAR(255),
+    slogan VARCHAR(255),
+    primary_color VARCHAR(50) DEFAULT '#3B82F6',
+    contact_email VARCHAR(255),
+    contact_phone VARCHAR(50),
+    contact_address TEXT,
+    map_embed_url TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Agency Hero Slides Table
+CREATE TABLE IF NOT EXISTS agency_hero_slides (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    image_url TEXT NOT NULL,
+    title VARCHAR(255),
+    description TEXT,
+    cta_text VARCHAR(50),
+    cta_url VARCHAR(255),
+    order_index INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT true
+);
+
+-- Offers Table Additions
+ALTER TABLE offers ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;

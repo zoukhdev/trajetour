@@ -261,6 +261,7 @@ export interface Offer {
     price_per_person?: number;
     start_date?: string; // API snake_case
     end_date?: string;   // API snake_case
+    isFeatured?: boolean;
 }
 
 export interface GuideExpense {

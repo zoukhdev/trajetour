@@ -277,6 +277,23 @@ export const offersAPI = {
     delete: async (id: string) => {
         const response = await api.delete(`/offers/${id}`);
         return response.data;
+    },
+
+    toggleFeatured: async (id: string, isFeatured: boolean) => {
+        const response = await api.patch(`/offers/${id}/featured`, { isFeatured });
+        return response.data;
+    }
+};
+
+// Settings (Homepage) API
+export const settingsAPI = {
+    getHomepageSettings: async () => {
+        const response = await api.get('/settings/homepage');
+        return response.data; // { settings: {}, slides: [] }
+    },
+    updateHomepageSettings: async (data: { settings: any, slides: any[] }) => {
+        const response = await api.post('/settings/homepage', data);
+        return response.data;
     }
 };
 

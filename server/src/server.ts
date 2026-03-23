@@ -30,6 +30,7 @@ import offerHotelsRoutes from './routes/offerHotels.js';
 import passengersRoutes from './routes/passengers.js';
 import masterRoutes from './routes/master.js';
 import subscriptionRoutes from './routes/subscriptions.js';
+import settingsRoutes from './routes/settings.js';
 
 const app = express();
 
@@ -332,6 +333,7 @@ app.get('/api/debug-env', (req, res) => {
 });
 
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);

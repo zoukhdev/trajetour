@@ -58,6 +58,7 @@ import NewBooking from './pages/Agency/NewBooking';
 import MyBookings from './pages/Client/MyBookings';
 import FAQ from './pages/Public/FAQ';
 import BookingWizard from './pages/Public/Booking/BookingWizard';
+import HomepageBuilder from './pages/Agency/HomepageBuilder';
 import AgencyLayout from './layouts/AgencyLayout';
 import ClientLayout from './layouts/ClientLayout';
 import DemoAgencyDashboard from './pages/Agency/DemoAgencyDashboard';
@@ -171,6 +172,7 @@ function App() {
                     <Route path="new-booking" element={<NewBooking />} />
                     <Route path="bookings/:id" element={<OrderDetails />} />
                     <Route path="landing" element={<AgencyHome />} />
+                    <Route path="homepage-builder" element={<HomepageBuilder />} />
 
                     {/* Operational Modules Migrated to Agency */}
                     <Route path="clients" element={<ProtectedRoute permission="access_clients"><ClientList /></ProtectedRoute>} />

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useData } from '../../context/DataContext';
-import { Plus, Search, Tag, Calendar, MapPin, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, Tag, Calendar, MapPin, Trash2, Edit, Star } from 'lucide-react';
 import Modal from '../../components/Modal';
 import OfferForm from './OfferForm';
 import type { Offer } from '../../types';
+import { offersAPI } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const OfferList = () => {
-    const { offers, deleteOffer } = useData();
+    const { offers, deleteOffer, refreshData } = useData();
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingOffer, setEditingOffer] = useState<Offer | undefined>(undefined);
@@ -19,6 +21,17 @@ const OfferList = () => {
     const handleDelete = (id: string) => {
         if (confirm('Êtes-vous sûr de vouloir supprimer cette offre ?')) {
             deleteOffer(id);
+        }
+    };
+
+    const handleToggleFeatured = async (offer: Offer) => {
+        try {
+            await offersAPI.toggleFeatured(offer.id, !offer.isFeatured);
+            refreshData();
+            toast.success(`Offre ${!offer.isFeatured ? 'mise en vedette' : 'retirée des vedettes'}`);
+        } catch (error) {
+            console.error('Error toggling featured status:', error);
+            toast.error('Erreur lors de la modification du statut en vedette');
         }
     };
 
@@ -128,6 +141,13 @@ const OfferList = () => {
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
+                                                    onClick={() => handleToggleFeatured(offer)}
+                                                    className={`p-2 rounded-lg transition-colors ${offer.isFeatured ? 'text-yellow-500 hover:bg-yellow-50' : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'}`}
+                                                    title={offer.isFeatured ? 'Retirer des vedettes' : 'Mettre en vedette'}
+                                                >
+                                                    <Star size={18} fill={offer.isFeatured ? "currentColor" : "none"} />
+                                                </button>
+                                                <button
                                                     onClick={() => handleEdit(offer)}
                                                     className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                 >
@@ -191,6 +211,12 @@ const OfferList = () => {
                                         {offer.disponibilite} places
                                     </span>
                                     <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => handleToggleFeatured(offer)} 
+                                            className={`font-medium text-sm flex items-center gap-1 ${offer.isFeatured ? 'text-yellow-600' : 'text-gray-500 hover:text-yellow-600'}`}
+                                        >
+                                            <Star size={16} fill={offer.isFeatured ? "currentColor" : "none"} />
+                                        </button>
                                         <button onClick={() => handleEdit(offer)} className="text-blue-600 font-medium text-sm flex items-center gap-1">
                                             <Edit size={16} /> Modifier
                                         </button>

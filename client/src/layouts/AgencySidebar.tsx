@@ -50,6 +50,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
         { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots', permission: 'access_orders' },
         { icon: Bell, label: t('common.notifications'), path: '/agency/notifications' },
         { icon: FileText, label: t('common.documents'), path: '/agency/documents' },
+        { icon: Globe, label: 'Personnaliser l\'Accueil', path: '/agency/homepage-builder' },
         { icon: Globe, label: 'Page d\'accueil publique', path: '/agency/landing' },
     ];
 
