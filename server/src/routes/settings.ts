@@ -5,6 +5,38 @@ import { authMiddleware, requirePermission } from '../middleware/auth.js';
 const router = express.Router();
 
 /**
+ * Helper to map DB snake_case to frontend camelCase
+ */
+const mapSettingsToClient = (dbSettings: any) => {
+    if (!dbSettings) return {};
+    return {
+        id: dbSettings.id,
+        logoUrl: dbSettings.logo_url || '',
+        displayName: dbSettings.display_name || '',
+        slogan: dbSettings.slogan || '',
+        primaryColor: dbSettings.primary_color || '#3B82F6',
+        contactEmail: dbSettings.contact_email || '',
+        contactPhone: dbSettings.contact_phone || '',
+        contactAddress: dbSettings.contact_address || '',
+        mapEmbedUrl: dbSettings.map_embed_url || '',
+        updatedAt: dbSettings.updated_at
+    };
+};
+
+const mapSlideToClient = (row: any) => {
+    return {
+        id: row.id,
+        imageUrl: row.image_url || '',
+        title: row.title || '',
+        description: row.description || '',
+        ctaText: row.cta_text || '',
+        ctaUrl: row.cta_url || '',
+        orderIndex: row.order_index,
+        isActive: row.is_active
+    };
+};
+
+/**
  * @route   GET /api/settings/homepage
  * @desc    Get homepage settings and hero slides for the tenant
  * @access  Public (so the public homepage can access them)
@@ -12,10 +44,10 @@ const router = express.Router();
 router.get('/homepage', async (req, res) => {
     try {
         const settingsResult = await pool.query(`SELECT * FROM agency_settings ORDER BY updated_at DESC LIMIT 1`);
-        const settings = settingsResult.rows[0] || {};
+        const settings = mapSettingsToClient(settingsResult.rows[0]);
 
         const slidesResult = await pool.query(`SELECT * FROM agency_hero_slides ORDER BY order_index ASC`);
-        const slides = slidesResult.rows;
+        const slides = slidesResult.rows.map(mapSlideToClient);
 
         res.json({ settings, slides });
     } catch (err: any) {
@@ -53,14 +85,14 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = $9
             `, [
-                settings.logo_url || null, 
-                settings.display_name || null, 
+                settings.logoUrl || settings.logo_url || null, 
+                settings.displayName || settings.display_name || null, 
                 settings.slogan || null, 
-                settings.primary_color || '#3B82F6', 
-                settings.contact_email || null, 
-                settings.contact_phone || null, 
-                settings.contact_address || null, 
-                settings.map_embed_url || null,
+                settings.primaryColor || settings.primary_color || '#3B82F6', 
+                settings.contactEmail || settings.contact_email || null, 
+                settings.contactPhone || settings.contact_phone || null, 
+                settings.contactAddress || settings.contact_address || null, 
+                settings.mapEmbedUrl || settings.map_embed_url || null,
                 settingsId
             ]);
         } else {
@@ -69,14 +101,14 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 RETURNING id
             `, [
-                settings.logo_url || null, 
-                settings.display_name || null, 
+                settings.logoUrl || settings.logo_url || null, 
+                settings.displayName || settings.display_name || null, 
                 settings.slogan || null, 
-                settings.primary_color || '#3B82F6', 
-                settings.contact_email || null, 
-                settings.contact_phone || null, 
-                settings.contact_address || null, 
-                settings.map_embed_url || null
+                settings.primaryColor || settings.primary_color || '#3B82F6', 
+                settings.contactEmail || settings.contact_email || null, 
+                settings.contactPhone || settings.contact_phone || null, 
+                settings.contactAddress || settings.contact_address || null, 
+                settings.mapEmbedUrl || settings.map_embed_url || null
             ]);
             settingsId = insertRes.rows[0].id;
         }
@@ -91,13 +123,13 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
                     INSERT INTO agency_hero_slides (image_url, title, description, cta_text, cta_url, order_index, is_active)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)
                 `, [
-                    slide.image_url,
+                    slide.imageUrl || slide.image_url || null,
                     slide.title || null,
                     slide.description || null,
-                    slide.cta_text || null,
-                    slide.cta_url || null,
+                    slide.ctaText || slide.cta_text || null,
+                    slide.ctaUrl || slide.cta_url || null,
                     i,
-                    slide.is_active !== undefined ? slide.is_active : true
+                    slide.isActive !== undefined ? slide.isActive : (slide.is_active !== undefined ? slide.is_active : true)
                 ]);
             }
         }
@@ -108,7 +140,10 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
         const updatedSettings = await client.query(`SELECT * FROM agency_settings WHERE id = $1`, [settingsId]);
         const updatedSlides = await client.query(`SELECT * FROM agency_hero_slides ORDER BY order_index ASC`);
 
-        res.json({ settings: updatedSettings.rows[0], slides: updatedSlides.rows });
+        res.json({ 
+            settings: mapSettingsToClient(updatedSettings.rows[0]), 
+            slides: updatedSlides.rows.map(mapSlideToClient) 
+        });
 
     } catch (err: any) {
         await client.query('ROLLBACK');
