@@ -172,7 +172,7 @@ const AgencyHome = () => {
                 style={{ backgroundImage: `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%), url("${heroImage}")` }}>
 
                 {/* Animated Background Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 animate-pulse-slow"></div>
+                <div className="absolute inset-0 bg-primary/20 to-purple-600/20 animate-pulse-slow"></div>
 
                 <div className="flex flex-col gap-8 text-center max-w-[1000px] z-10 animate-fade-in-up">
                     {/* Badge */}
@@ -194,7 +194,7 @@ const AgencyHome = () => {
                     <div className="flex flex-wrap gap-4 justify-center mt-4">
                         <button
                             onClick={() => navigate('/packages')}
-                            className="group inline-flex items-center justify-center rounded-xl h-14 px-10 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-lg font-bold shadow-2xl shadow-blue-900/50 transition-all hover:scale-105 hover:shadow-blue-900/70"
+                            className="group inline-flex items-center justify-center rounded-xl h-14 px-10 bg-primary filter hover:brightness-110 text-white text-lg font-bold shadow-2xl shadow-primary/50 transition-all hover:scale-105"
                         >
                             Découvrir nos Offres
                             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
@@ -237,7 +237,7 @@ const AgencyHome = () => {
             <div className="w-full px-4 -mt-20 relative z-30 flex justify-center">
                 <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-6xl border border-gray-100 dark:border-gray-700 backdrop-blur-xl">
                     <h3 className="text-xl font-bold mb-6 text-[#0e141b] dark:text-white flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                             <MapPin className="text-primary" size={20} />
                         </div>
                         Rechercher Votre Voyage Idéal
@@ -294,7 +294,7 @@ const AgencyHome = () => {
                         <div className="flex items-end">
                             <button
                                 onClick={handleSearch}
-                                className="w-full h-12 px-6 bg-gradient-to-r from-primary to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 flex items-center justify-center gap-2"
+                                className="w-full h-12 px-6 bg-primary filter hover:brightness-110 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 flex items-center justify-center gap-2"
                             >
                                 Rechercher
                                 <ArrowRight size={18} />
@@ -305,7 +305,7 @@ const AgencyHome = () => {
             </div>
 
             {/* Stats Counter Section */}
-            <section id="stats-section" className="py-20 bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+            <section id="stats-section" className="py-20 bg-primary text-white">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div className="text-center transform hover:scale-110 transition-transform">
@@ -347,7 +347,7 @@ const AgencyHome = () => {
             <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <span className="inline-block px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-primary rounded-full text-sm font-bold mb-4">
+                        <span className="inline-block px-4 py-2 bg-white/20 text-white rounded-full text-sm font-bold mb-4">
                             NOS MEILLEURES OFFRES
                         </span>
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
@@ -376,7 +376,7 @@ const AgencyHome = () => {
                                     </div>
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {pkg.features.map((feature, idx) => (
-                                            <span key={idx} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium">
+                                            <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                                                 {feature}
                                             </span>
                                         ))}
@@ -388,7 +388,7 @@ const AgencyHome = () => {
                                         </div>
                                         <button
                                             onClick={() => navigate('/packages')}
-                                            className="px-6 py-2 bg-primary hover:bg-blue-700 text-white rounded-xl font-bold transition-colors"
+                                            className="px-6 py-2 bg-primary filter hover:brightness-110 text-white rounded-xl font-bold transition-colors"
                                         >
                                             Réserver
                                         </button>
@@ -478,7 +478,7 @@ const AgencyHome = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <section className="py-20 px-4 bg-primary text-white">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-4xl md:text-5xl font-black mb-6">
                         Prêt à Commencer Votre Voyage Spirituel ?
@@ -489,7 +489,7 @@ const AgencyHome = () => {
                     <div className="flex flex-wrap gap-4 justify-center">
                         <button
                             onClick={() => navigate('/contact')}
-                            className="px-10 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl"
+                            className="px-10 py-4 bg-white text-primary rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl"
                         >
                             Demander un Devis Gratuit
                         </button>

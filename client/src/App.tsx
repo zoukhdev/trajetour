@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { Toaster } from 'react-hot-toast';
 import MainLayout from './layouts/MainLayout';
 import PublicLayout from './layouts/PublicLayout';
 // import Login from './pages/Login';
@@ -81,6 +82,7 @@ function App() {
           <DataProvider>
             <ExchangeRateProvider>
               <OfflineProvider>
+                <Toaster position="top-right" />
                 <Routes>
                   {/* Public Routes */}
                   <Route element={<PublicLayout />}>
