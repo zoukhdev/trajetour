@@ -294,6 +294,14 @@ export const settingsAPI = {
     updateHomepageSettings: async (data: { settings: any, slides: any[] }) => {
         const response = await api.post('/settings/homepage', data);
         return response.data;
+    },
+    uploadLogo: async (file: File) => {
+        const formData = new FormData();
+        formData.append('logo', file);
+        const response = await api.post('/settings/upload-logo', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data; // { logoUrl: '...' }
     }
 };
 

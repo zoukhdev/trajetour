@@ -57,6 +57,53 @@ router.get('/homepage', async (req, res) => {
 });
 
 /**
+ * @route   POST /api/settings/upload-logo
+ * @desc    Upload agency logo to Cloudinary
+ * @access  Private (Admin only)
+ */
+router.post('/upload-logo', 
+    authMiddleware, 
+    requirePermission('manage_business'),
+    async (req, res, next) => {
+        try {
+            const { upload } = await import('../utils/fileUpload.js');
+            const uploadMiddleware = upload.single('logo');
+            uploadMiddleware(req, res, (err) => {
+                if (err) return res.status(400).json({ message: 'File upload failed: ' + err.message });
+                next();
+            });
+        } catch (e) {
+            next(e);
+        }
+    },
+    async (req: any, res) => {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        try {
+            const { uploadToCloudinary } = await import('../utils/fileUpload.js');
+            const folder = `trajetour/agencies/${(req as any).tenantAgencyId || 'default'}`;
+            const uploadResult = await uploadToCloudinary(req.file.buffer, folder);
+
+            // Update DB
+            await pool.query(
+                `UPDATE agency_settings SET logo_url = $1, updated_at = CURRENT_TIMESTAMP WHERE id = (SELECT id FROM agency_settings LIMIT 1)`,
+                [uploadResult.secure_url]
+            );
+
+            res.json({ 
+                message: 'Logo uploaded successfully', 
+                logoUrl: uploadResult.secure_url 
+            });
+        } catch (err: any) {
+            console.error('Error uploading logo:', err.message);
+            res.status(500).json({ message: 'Error uploading to Cloudinary' });
+        }
+    }
+);
+
+/**
  * @route   POST /api/settings/homepage
  * @desc    Update homepage settings and hero slides
  * @access  Private (Admin only)

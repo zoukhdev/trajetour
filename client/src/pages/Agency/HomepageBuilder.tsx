@@ -8,6 +8,7 @@ export default function HomepageBuilder() {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
     
     const [settings, setSettings] = useState({
         logoUrl: '',
@@ -80,6 +81,34 @@ export default function HomepageBuilder() {
         setSlides(newSlides);
     };
 
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Basic validation
+        if (!file.type.startsWith('image/')) {
+            toast.error('Please upload an image file');
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            toast.error('File size must be less than 2MB');
+            return;
+        }
+
+        try {
+            setUploading(true);
+            const { logoUrl } = await settingsAPI.uploadLogo(file);
+            setSettings({ ...settings, logoUrl });
+            toast.success('Logo uploaded and updated successfully!');
+        } catch (error) {
+            console.error('Error uploading logo:', error);
+            toast.error('Failed to upload logo');
+        } finally {
+            setUploading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -128,14 +157,20 @@ export default function HomepageBuilder() {
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <input
-                                            type="text"
-                                            value={settings.logoUrl}
-                                            onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
-                                            placeholder="https://example.com/logo.png"
-                                            className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">Provide a URL for your logo (SVG or PNG recommended).</p>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="relative flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition">
+                                                <ImageIcon size={16} />
+                                                {uploading ? 'Uploading...' : 'Upload Logo'}
+                                                <input
+                                                    type="file"
+                                                    onChange={handleLogoUpload}
+                                                    accept="image/*"
+                                                    disabled={uploading}
+                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                                />
+                                            </label>
+                                            <p className="text-xs text-gray-500">SVG, PNG or JPG (Max 2MB)</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -190,21 +225,6 @@ export default function HomepageBuilder() {
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Logo URL</label>
-                                <input
-                                    type="text"
-                                    value={settings.logoUrl}
-                                    onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
-                                    placeholder="https://example.com/logo.png"
-                                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                                />
-                                {settings.logoUrl && (
-                                    <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 flex justify-center">
-                                        <img src={settings.logoUrl} alt="Logo Preview" className="h-16 object-contain max-w-full" onError={(e) => (e.currentTarget.style.display = 'none')} />
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
 
