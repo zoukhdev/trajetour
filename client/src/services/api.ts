@@ -533,7 +533,7 @@ export const masterAPI = {
         return response.data;
     },
     updateAgencyStatus: async (id: string, status: string, rejection_reason?: string) => {
-        const response = await api.put(`/master/agencies/${id}/status`, { status, rejection_reason });
+        const response = await api.patch(`/master/agencies/${id}/status`, { status, rejection_reason });
         return response.data;
     },
     deleteAgency: async (id: string) => {
