@@ -191,6 +191,7 @@ router.put('/:id',
             next(error);
         } finally {
             client.release();
+        }
     }
 );
 

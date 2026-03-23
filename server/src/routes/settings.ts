@@ -1,6 +1,6 @@
 import express from 'express';
 import { pool } from '../config/database.js';
-import { requireAuth, requireApproveOrGold } from '../middleware/auth.js';
+import { authMiddleware, requirePermission } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -29,7 +29,7 @@ router.get('/homepage', async (req, res) => {
  * @desc    Update homepage settings and hero slides
  * @access  Private (Admin only)
  */
-router.post('/homepage', requireAuth, requireApproveOrGold, async (req, res) => {
+router.post('/homepage', authMiddleware, requirePermission('manage_business'), async (req, res) => {
     // Basic auth check already done by middleware, you might also want to restrict to 'manage_business' permission
     const { settings, slides } = req.body;
     
