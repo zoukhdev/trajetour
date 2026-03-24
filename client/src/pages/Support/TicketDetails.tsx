@@ -61,7 +61,7 @@ export default function TicketDetails() {
             setNewMsg('');
         } catch (err) {
             console.error('Failed to send message', err);
-            alert('Erreur lors de l\\'envoi du message');
+            alert("Erreur lors de l'envoi du message");
         }
     };
 
@@ -95,11 +95,11 @@ export default function TicketDetails() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-xl font-bold text-gray-900">{ticket.title}</h1>
-                            <span className={\`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase \${
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${
                                 ticket.status === 'open' ? 'bg-amber-100 text-amber-700' :
                                 ticket.status === 'resolved' ? 'bg-green-100 text-green-700' :
                                 'bg-gray-100 text-gray-700'
-                            }\`}>
+                            }`}>
                                 {ticket.status === 'open' ? 'Ouvert' : ticket.status === 'resolved' ? 'Résolu' : 'Fermé'}
                             </span>
                         </div>
@@ -142,8 +142,8 @@ export default function TicketDetails() {
                         const isMine = user?.id === msg.sender_id || (user?.role === 'admin' && msg.role === 'admin');
                         
                         return (
-                            <div key={msg.id || i} className={\`flex \${isMine ? 'justify-end' : 'justify-start'}\`}>
-                                <div className={\`flex gap-3 max-w-[80%] \${isMine ? 'flex-row-reverse' : 'flex-row'}\`}>
+                            <div key={msg.id || i} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`flex gap-3 max-w-[80%] ${isMine ? 'flex-row-reverse' : 'flex-row'}`}>
                                     <div className="flex-shrink-0 mt-1 w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
                                         <UserCircle size={20} />
                                     </div>
@@ -153,12 +153,12 @@ export default function TicketDetails() {
                                                 {msg.sender_name || (msg.role === 'admin' ? 'Support Trajetour' : 'Contact Agence')}
                                             </p>
                                         )}
-                                        <div className={\`px-4 py-2.5 rounded-2xl shadow-sm \${
+                                        <div className={`px-4 py-2.5 rounded-2xl shadow-sm ${
                                             isMine ? 'bg-blue-600 text-white rounded-tr-sm' : 'bg-white text-gray-800 border border-gray-100 rounded-tl-sm'
-                                        }\`}>
+                                        }`}>
                                             <p className="whitespace-pre-wrap leading-relaxed text-[15px]">{msg.content}</p>
                                         </div>
-                                        <div className={\`text-[10px] text-gray-400 mt-1 \${isMine ? 'text-right mr-1' : 'ml-1'}\`}>
+                                        <div className={`text-[10px] text-gray-400 mt-1 ${isMine ? 'text-right mr-1' : 'ml-1'}`}>
                                             {format(new Date(msg.created_at), 'dd MMM HH:mm', { locale: fr })}
                                         </div>
                                     </div>

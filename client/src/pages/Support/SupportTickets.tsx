@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { supportAPI, masterAPI } from '../../services/api';
-import { Plus, MessageSquare, Clock, CheckCircle, Search, User, Filter, AlertCircle } from 'lucide-react';
+import { Plus, MessageSquare, Clock, CheckCircle, Search, User, Filter, AlertCircle, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -145,11 +145,11 @@ export default function SupportTickets() {
                                 className="p-4 hover:bg-gray-50 cursor-pointer transition-colors flex items-center justify-between"
                             >
                                 <div className="flex items-start gap-4">
-                                    <div className={\`p-2 rounded-lg \${
+                                    <div className={`p-2 rounded-lg ${
                                         ticket.status === 'open' ? 'bg-amber-100 text-amber-600' :
                                         ticket.status === 'resolved' ? 'bg-green-100 text-green-600' :
                                         'bg-gray-100 text-gray-600'
-                                    }\`}>
+                                    }`}>
                                         {ticket.status === 'open' ? <AlertCircle size={20} /> : <CheckCircle size={20} />}
                                     </div>
                                     <div>
