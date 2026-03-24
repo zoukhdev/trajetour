@@ -48,9 +48,18 @@ const UserList = () => {
     };
 
     const isAgency = !!currentUser?.agencyId;
-    const currentUsersCount = users.length;
+    // Owner = the currently logged-in user; they are always shown but don't consume a plan seat
+    const staffUsers = users.filter(u => u.id !== currentUser?.id);
+    const currentUsersCount = staffUsers.length; // excludes owner
     const maxUsers = isAgency && subscription ? (PLAN_LIMITS[subscription.plan] || 3) : Infinity;
     const isLimitReached = isAgency && currentUsersCount >= maxUsers;
+
+    const getRoleBadgeClass = (role: string) => {
+        if (role === 'admin') return 'bg-purple-50 text-purple-700 border-purple-100';
+        if (role === 'caisser') return 'bg-green-50 text-green-700 border-green-100';
+        if (role === 'staff') return 'bg-orange-50 text-orange-700 border-orange-100';
+        return 'bg-blue-50 text-blue-700 border-blue-100';
+    };
 
     return (
         <div className="space-y-6">
@@ -59,12 +68,13 @@ const UserList = () => {
                     <h1 className="text-2xl font-bold text-gray-800">
                         {isAgency ? "Gestion du Staff" : "Gestion des Utilisateurs"}
                     </h1>
-                    {isAgency && subscription && (
-                        <p className={`text-sm mt-1 font-medium ${isLimitReached ? 'text-red-500' : 'text-gray-500'}`}>
-                            {currentUsersCount} / {maxUsers === Infinity ? '∞' : maxUsers} utilisateurs ({subscription.plan})
-                            {isLimitReached && " - Limite atteinte !"}
-                        </p>
-                    )}
+                        {isAgency && subscription && (
+                            <p className={`text-sm mt-1 font-medium ${isLimitReached ? 'text-red-500' : 'text-gray-500'}`}>
+                                {currentUsersCount} / {maxUsers === Infinity ? '\u221e' : maxUsers} agents ({subscription.plan})
+                                {isLimitReached && ' - Limite atteinte !'}
+                                {!isLimitReached && ` - ${maxUsers === Infinity ? '' : (maxUsers - currentUsersCount) + ' restant(s)'}`}
+                            </p>
+                        )}
                 </div>
                 <button
                     onClick={() => !isLimitReached && setIsModalOpen(true)}
@@ -107,8 +117,10 @@ const UserList = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {filteredUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-gray-50/80 transition-colors">
+                            {filteredUsers.map((user) => {
+                                const isOwner = user.id === currentUser?.id;
+                                return (
+                                <tr key={user.id} className={`hover:bg-gray-50/80 transition-colors ${isOwner ? 'bg-blue-50/30' : ''}`}>
                                     <td className="hidden md:table-cell px-6 py-4 font-mono text-sm text-gray-600">
                                         #{user.code || user.id.substring(0, 8)}
                                     </td>
@@ -126,14 +138,16 @@ const UserList = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize border ${user.role === 'admin'
-                                            ? 'bg-purple-50 text-purple-700 border-purple-100'
-                                            : user.role === 'caisser'
-                                                ? 'bg-green-50 text-green-700 border-green-100'
-                                                : 'bg-blue-50 text-blue-700 border-blue-100'
-                                            }`}>
-                                            {user.role}
-                                        </span>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize border ${getRoleBadgeClass(user.role)}`}>
+                                                {user.role}
+                                            </span>
+                                            {isOwner && (
+                                                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                    Propri&#233;taire
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="hidden md:table-cell px-6 py-4">
                                         <div className="flex flex-wrap gap-1">
@@ -154,7 +168,7 @@ const UserList = () => {
                                             <button
                                                 onClick={() => handleView(user)}
                                                 className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                title="Voir les détails"
+                                                title="Voir les d&#233;tails"
                                             >
                                                 <Search size={18} />
                                             </button>
@@ -165,7 +179,8 @@ const UserList = () => {
                                             >
                                                 <Edit2 size={18} />
                                             </button>
-                                            {user.role !== 'admin' && (
+                                            {/* Owner cannot be deleted */}
+                                            {!isOwner && user.role !== 'admin' && (
                                                 <button
                                                     onClick={() => handleDelete(user.id)}
                                                     className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -177,7 +192,8 @@ const UserList = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

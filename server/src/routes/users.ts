@@ -37,9 +37,10 @@ router.get('/',
             const params: any[] = [];
 
             if (req.user!.agencyId) {
-                query += ' WHERE agency_id = $1';
-                countQuery += ' WHERE agency_id = $1';
-                params.push(req.user!.agencyId);
+                // Include all staff of this agency AND the owner (who may have agency_id = NULL)
+                query += ' WHERE (agency_id = $1 OR id = $2)';
+                countQuery += ' WHERE (agency_id = $1 OR id = $2)';
+                params.push(req.user!.agencyId, req.user!.id);
             }
 
             const countResult = await pool.query(countQuery, params);
