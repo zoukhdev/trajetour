@@ -136,7 +136,7 @@ router.post('/tickets/:id/messages', async (req: AuthRequest, res) => {
 
         // Add sender info to payload
         const msg = msgResult.rows[0];
-        msg.sender_name = req.user?.username;
+        msg.sender_name = req.user?.email;
 
         res.status(201).json(msg);
     } catch (err: any) {
