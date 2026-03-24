@@ -43,16 +43,19 @@ router.get('/tickets', async (req: AuthRequest, res) => {
 router.post('/tickets', async (req: AuthRequest, res) => {
     try {
         const { title, message } = req.body;
-        const { role, agencyId: rawAgencyId, id: userId } = req.user!;
+        const { role, agencyId: rawAgencyId, id: userId, email } = req.user!;
         
         const agencyId = rawAgencyId === 'null' ? null : rawAgencyId;
-        if (role !== 'admin' && !agencyId) {
-            return res.status(403).json({ error: 'Agency required' });
-        }
 
-        const targetAgencyId = role === 'admin' ? req.body.agencyId : agencyId;
-        if (!targetAgencyId) {
-            return res.status(400).json({ error: 'Agency ID required' });
+        // For agency users: always use their own agencyId
+        // For admin: must supply agencyId in body (targeting a specific agency)
+        let targetAgencyId: string | null = null;
+        if (role !== 'admin') {
+            if (!agencyId) return res.status(403).json({ error: 'Agency ID manquant' });
+            targetAgencyId = agencyId;
+        } else {
+            targetAgencyId = req.body.agencyId || null;
+            if (!targetAgencyId) return res.status(400).json({ error: 'Agency ID requis pour admin' });
         }
 
         await masterPool.query('BEGIN');
@@ -101,7 +104,15 @@ router.get('/tickets/:id', async (req: AuthRequest, res) => {
         );
 
         const msgsResult = await masterPool.query(
-            `SELECT m.*, u.username as sender_name FROM support_messages m LEFT JOIN users u ON m.sender_id = u.id WHERE m.ticket_id = $1 ORDER BY m.created_at ASC`, [id]
+            `SELECT m.*,
+                    CASE 
+                        WHEN m.role = 'admin' THEN 'Support Trajetour'
+                        ELSE COALESCE(a.subdomain, 'Agence')
+                    END as sender_name
+             FROM support_messages m
+             LEFT JOIN support_tickets t2 ON m.ticket_id = t2.id
+             LEFT JOIN agencies a ON t2.agency_id = a.id
+             WHERE m.ticket_id = $1 ORDER BY m.created_at ASC`, [id]
         );
 
         res.json({ ticket, messages: msgsResult.rows });

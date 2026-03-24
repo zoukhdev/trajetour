@@ -153,10 +153,12 @@ function App() {
 
                     </Route>
 
+                    {/* Support - accessible to all authenticated dashboard users */}
+                    <Route path="support" element={<SupportTickets />} />
+                    <Route path="support/:id" element={<TicketDetails />} />
+
                     {/* Other Admin Tools */}
                     <Route element={<ProtectedRoute permission="manage_business" />}>
-                      <Route path="support" element={<SupportTickets />} />
-                      <Route path="support/:id" element={<TicketDetails />} />
                       <Route path="payments" element={<PaymentList />} />
                       <Route path="payments/reports" element={<PaymentReports />} />
                       <Route path="stats" element={<div className="text-gray-500">Statistiques</div>} />
