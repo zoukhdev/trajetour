@@ -32,8 +32,11 @@ export default function SupportTickets() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const basePath = location.pathname.startsWith('/dashboard') ? '/dashboard/support' : '/agency/support';
-    const isAdmin = user?.role === 'admin';
+    const isMasterDashboard = location.pathname.startsWith('/dashboard');
+    const basePath = isMasterDashboard ? '/dashboard/support' : '/agency/support';
+    // A user is the platform admin ONLY if they're on the /dashboard path AND have no agencyId
+    // Agency users may have role='admin' in their own tenant DB but they always have an agencyId
+    const isAdmin = isMasterDashboard && (user?.role === 'admin' || user?.role === 'super_admin') && !user?.agencyId;
 
     useEffect(() => {
         fetchTickets();
