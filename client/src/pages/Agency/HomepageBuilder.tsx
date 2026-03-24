@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { settingsAPI } from '../../services/api';
+import { settingsAPI, offersAPI } from '../../services/api';
 import { Save, Image as ImageIcon, Plus, Trash2, Palette, MapPin, Type, Edit3, Phone, Mail } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
@@ -23,10 +23,36 @@ export default function HomepageBuilder() {
     });
 
     const [slides, setSlides] = useState<any[]>([]);
+    const [offers, setOffers] = useState<any[]>([]);
+    const [loadingOffers, setLoadingOffers] = useState(false);
 
     useEffect(() => {
         fetchSettings();
+        fetchOffers();
     }, []);
+
+    const fetchOffers = async () => {
+        try {
+            setLoadingOffers(true);
+            const data = await offersAPI.getAll();
+            setOffers(data.filter((o: any) => o.status === 'Published'));
+        } catch (error) {
+            console.error('Error fetching offers:', error);
+        } finally {
+            setLoadingOffers(false);
+        }
+    };
+
+    const handleToggleFeatured = async (offerId: string, isFeatured: boolean) => {
+        try {
+            await offersAPI.toggleFeatured(offerId, isFeatured);
+            setOffers(offers.map(o => o.id === offerId ? { ...o, isFeatured } : o));
+            toast.success(isFeatured ? 'Offer featured on homepage' : 'Offer removed from featured');
+        } catch (error) {
+            console.error('Error toggling featured status:', error);
+            toast.error('Failed to update offer status');
+        }
+    };
 
     const fetchSettings = async () => {
         try {

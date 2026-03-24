@@ -49,7 +49,41 @@ router.get('/homepage', async (req, res) => {
         const slidesResult = await pool.query(`SELECT * FROM agency_hero_slides ORDER BY order_index ASC`);
         const slides = slidesResult.rows.map(mapSlideToClient);
 
-        res.json({ settings, slides });
+        // Fetch featured offers
+        const offersResult = await pool.query(`
+            SELECT * FROM offers 
+            WHERE status = 'Published' 
+            ORDER BY is_featured DESC, created_at DESC 
+            LIMIT 6
+        `);
+        
+        // Map offers to client format (similar to what is in offers.ts)
+        const featuredOffers = offersResult.rows.map(row => {
+            const startDate = new Date(row.start_date);
+            const endDate = new Date(row.end_date);
+            const durationDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+            
+            // Extract some features
+            const features = [];
+            if (row.hotel) features.push(row.hotel.substring(0, 20));
+            if (row.transport) features.push(row.transport.substring(0, 20));
+            if (row.capacity > 0) features.push(`${row.capacity} places`);
+
+            return {
+                id: row.id,
+                title: row.title,
+                type: row.type,
+                destination: row.destination,
+                price: parseFloat(row.price).toLocaleString(),
+                duration: row.duration || `${durationDays} jours`,
+                rating: 5.0, 
+                features: features.slice(0, 3).length > 0 ? features.slice(0, 3) : ['Accompagnement', 'Hôtel inclus', 'Assistance'],
+                image: row.image_url || '/kaaba-night.png',
+                isFeatured: row.is_featured
+            };
+        });
+
+        res.json({ settings, slides, featuredOffers });
     } catch (err: any) {
         console.error('Error fetching homepage settings:', err.message);
         res.status(500).json({ message: 'Server error fetching settings' });

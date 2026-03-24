@@ -17,20 +17,20 @@ interface Subscription {
 }
 
 const PLAN_FEATURES: Record<string, { features: string[]; price: string; color: string }> = {
-    Basic: {
+    Standard: {
         price: '2 900 DA/mois',
         color: 'from-slate-500 to-slate-700',
-        features: ["Jusqu'à 3 utilisateurs", 'Gestion des dossiers', 'Rapports de base', 'Support email'],
+        features: ["Jusqu'à 3 utilisateurs", '30 Offres maximum', 'Gestion des dossiers', 'Support email'],
     },
-    Pro: {
+    Premium: {
         price: '5 900 DA/mois',
         color: 'from-blue-500 to-indigo-700',
-        features: ["Jusqu'à 10 utilisateurs", 'Toutes les fonctionnalités', 'Rapports avancés', 'Support prioritaire'],
+        features: ["Jusqu'à 10 utilisateurs", '200 Offres maximum', 'Rapports avancés', 'Support prioritaire'],
     },
-    Enterprise: {
+    Gold: {
         price: '12 900 DA/mois',
         color: 'from-purple-500 to-violet-800',
-        features: ['Utilisateurs illimités', 'Fonctionnalités exclusives', 'API personnalisée', 'Support dédié 24/7'],
+        features: ['Utilisateurs illimités', 'Offres illimitées', 'API personnalisée', 'Support dédié 24/7'],
     },
 };
 
@@ -165,7 +165,7 @@ const SubscriptionStatus = () => {
         return null;
     }
 
-    const plan = PLAN_FEATURES[subscription.plan] || PLAN_FEATURES.Basic;
+    const plan = PLAN_FEATURES[subscription.plan] || PLAN_FEATURES.Standard;
     const statusCfg = STATUS_CONFIG[subscription.status] || STATUS_CONFIG.PENDING;
 
     return (

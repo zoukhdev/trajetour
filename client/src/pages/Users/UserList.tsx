@@ -5,10 +5,17 @@ import { Search, Plus, Trash2, Edit2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import UserForm from './UserForm';
 import type { User } from '../../types';
+import { useSubscription } from '../../context/SubscriptionContext';
 
+const PLAN_LIMITS: Record<string, number> = {
+    Standard: 3,
+    Premium: 10,
+    Gold: Infinity
+};
 const UserList = () => {
     const { users, deleteUser } = useData();
     const { user: currentUser } = useAuth(); // Added
+    const { subscription } = useSubscription();
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [viewingUser, setViewingUser] = useState<User | undefined>(undefined);
@@ -40,15 +47,34 @@ const UserList = () => {
         setEditingUser(undefined);
     };
 
+    const isAgency = !!currentUser?.agencyId;
+    const currentUsersCount = users.length;
+    const maxUsers = isAgency && subscription ? (PLAN_LIMITS[subscription.plan] || 3) : Infinity;
+    const isLimitReached = isAgency && currentUsersCount >= maxUsers;
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-800">
-                    {currentUser?.agencyId ? "Gestion du Staff" : "Gestion des Utilisateurs"}
-                </h1>
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-800">
+                        {isAgency ? "Gestion du Staff" : "Gestion des Utilisateurs"}
+                    </h1>
+                    {isAgency && subscription && (
+                        <p className={`text-sm mt-1 font-medium ${isLimitReached ? 'text-red-500' : 'text-gray-500'}`}>
+                            {currentUsersCount} / {maxUsers === Infinity ? '∞' : maxUsers} utilisateurs ({subscription.plan})
+                            {isLimitReached && " - Limite atteinte !"}
+                        </p>
+                    )}
+                </div>
                 <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    onClick={() => !isLimitReached && setIsModalOpen(true)}
+                    disabled={isLimitReached}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                        isLimitReached 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70' 
+                            : 'bg-primary text-white hover:bg-blue-700'
+                    }`}
+                    title={isLimitReached ? "Vous avez atteint la limite d'utilisateurs de votre forfait." : ""}
                 >
                     <Plus size={20} />
                     <span>Nouvel Utilisateur</span>

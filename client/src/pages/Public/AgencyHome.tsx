@@ -14,6 +14,7 @@ const AgencyHome = () => {
     // Dynamic settings state
     const [settings, setSettings] = useState<any>(null);
     const [slides, setSlides] = useState<any[]>([]);
+    const [popularPackages, setPopularPackages] = useState<any[]>([]);
 
     // Animated counter for stats
     const [stats, setStats] = useState({ clients: 0, packages: 0, years: 0, satisfaction: 0 });
@@ -25,6 +26,9 @@ const AgencyHome = () => {
                 if (response.settings) setSettings(response.settings);
                 if (response.slides && response.slides.length > 0) {
                     setSlides(response.slides.filter((s: any) => s.isActive));
+                }
+                if (response.featuredOffers && response.featuredOffers.length > 0) {
+                    setPopularPackages(response.featuredOffers);
                 }
             } catch (error) {
                 console.error('Failed to fetch homepage settings:', error);
@@ -93,35 +97,7 @@ const AgencyHome = () => {
         navigate(path);
     };
 
-    const popularPackages = [
-        {
-            id: 1,
-            title: 'Omrah VIP Ramadan',
-            price: '350,000',
-            image: '/kaaba-night.png',
-            duration: '15 jours',
-            rating: 4.9,
-            features: ['5★ Hotels', 'Vol direct', 'Guide FR/AR']
-        },
-        {
-            id: 2,
-            title: 'Hajj Premium 2026',
-            price: '680,000',
-            image: '/masjid-haram-aerial.png',
-            duration: '21 jours',
-            rating: 5.0,
-            features: ['Tout inclus', 'Groupe VIP', 'Assistance 24/7']
-        },
-        {
-            id: 3,
-            title: 'Omrah Économique',
-            price: '180,000',
-            image: '/masjid-nabawi-green-dome.png',
-            duration: '10 jours',
-            rating: 4.7,
-            features: ['3★ Hotels', 'Petit groupe', 'Visa inclus']
-        }
-    ];
+    // Testimonials or other sections could remain hardcoded or be dynamic later
 
     const testimonials = [
         {
@@ -375,7 +351,7 @@ const AgencyHome = () => {
                                         <span className="text-sm">{pkg.duration}</span>
                                     </div>
                                     <div className="flex flex-wrap gap-2 mb-4">
-                                        {pkg.features.map((feature, idx) => (
+                                        {pkg.features.map((feature: string, idx: number) => (
                                             <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
                                                 {feature}
                                             </span>
