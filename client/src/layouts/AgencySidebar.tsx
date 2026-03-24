@@ -192,7 +192,16 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.username}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">{t('common.agent')}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">
+                                {({
+                                    admin: 'Administrateur',
+                                    super_admin: 'Super Admin',
+                                    agent: 'Agent',
+                                    staff: 'Staff',
+                                    caisser: 'Caissier',
+                                    manager: 'Manager',
+                                } as Record<string, string>)[user?.role || ''] || user?.role || 'Agent'}
+                            </p>
                         </div>
                     </div>
 
