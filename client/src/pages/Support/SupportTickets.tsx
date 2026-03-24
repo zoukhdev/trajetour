@@ -224,8 +224,8 @@ export default function SupportTickets() {
                             </button>
                         </div>
                         <form onSubmit={handleCreateTicket} className="space-y-4">
-                            {/* Admin only: pick the target agency */}
-                            {isAdmin && (
+                            {/* Admin: pick target agency | Agency: show read-only sender info */}
+                            {isAdmin ? (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Agence concernee</label>
                                     <select
@@ -239,6 +239,17 @@ export default function SupportTickets() {
                                             <option key={a.id} value={a.id}>{a.name}</option>
                                         ))}
                                     </select>
+                                </div>
+                            ) : (
+                                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex items-start gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                        <User size={16} className="text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-gray-900">{user?.username}</p>
+                                        <p className="text-xs text-gray-500">{user?.email}</p>
+                                        <p className="text-xs text-blue-600 mt-0.5">Ce ticket sera envoye au support Trajetour</p>
+                                    </div>
                                 </div>
                             )}
                             <div>
