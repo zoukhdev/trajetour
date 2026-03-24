@@ -592,3 +592,30 @@ export const masterAPI = {
         return response.data;
     }
 };
+
+export const supportAPI = {
+    getTickets: async () => {
+        const response = await api.get('/support/tickets');
+        return response.data;
+    },
+    getTicket: async (id: string) => {
+        const response = await api.get(`/support/tickets/${id}`);
+        return response.data;
+    },
+    createTicket: async (title: string, message: string, agencyId?: string) => {
+        const response = await api.post('/support/tickets', { title, message, agencyId });
+        return response.data;
+    },
+    addMessage: async (id: string, content: string) => {
+        const response = await api.post(`/support/tickets/${id}/messages`, { content });
+        return response.data;
+    },
+    updateStatus: async (id: string, status: string) => {
+        const response = await api.patch(`/support/tickets/${id}/status`, { status });
+        return response.data;
+    },
+    getUnreadCount: async () => {
+        const response = await api.get('/support/unread-count');
+        return response.data;
+    }
+};

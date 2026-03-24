@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useState, useEffect } from 'react';
+import { supportAPI } from '../services/api';
 import {
     LayoutDashboard,
     ShoppingCart,
@@ -20,7 +22,8 @@ import {
     Wallet,
     BarChart,
     Percent,
-    Bed
+    Bed,
+    HelpCircle
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -32,6 +35,23 @@ interface AgencySidebarProps {
 const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
     const { user, logout } = useAuth();
     const { language, setLanguage, t } = useLanguage();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const res = await supportAPI.getUnreadCount();
+                setUnreadCount(res.count);
+            } catch (err) {
+                console.error('Failed to fetch unread sum', err);
+            }
+        };
+        fetchUnread();
+        
+        // Optional: Add polling
+        const interval = setInterval(fetchUnread, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const menuItems = [
         { icon: LayoutDashboard, label: t('common.dashboard'), path: '/agency' },
@@ -48,6 +68,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
         { icon: Users, label: 'Staff / Agents', path: '/agency/users', permission: 'access_users' }, // Added target item
         { icon: CreditCard, label: 'Paiements', path: '/agency/payments', permission: 'access_cash_register' },
         { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots', permission: 'access_orders' },
+        { icon: HelpCircle, label: 'Support & Aide', path: '/agency/support', badge: unreadCount },
         { icon: Bell, label: t('common.notifications'), path: '/agency/notifications' },
         { icon: FileText, label: t('common.documents'), path: '/agency/documents' },
         { icon: Globe, label: 'Personnaliser l\'Accueil', path: '/agency/homepage-builder' },
@@ -126,7 +147,12 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
                             )}
                         >
                             <item.icon size={20} className="transition-transform duration-200 group-hover:scale-110" />
-                            <span>{item.label}</span>
+                            <span className="flex-1">{item.label}</span>
+                            {!!(item as any).badge && (
+                                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {(item as any).badge}
+                                </span>
+                            )}
                         </NavLink>
                     ))}
                 </nav>

@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { useState, useEffect } from 'react';
+import { supportAPI } from '../services/api';
 import {
     LayoutDashboard,
     Users,
@@ -36,6 +38,23 @@ interface SidebarProps {
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     const { user, logout, hasPermission } = useAuth();
     const { language, setLanguage, t } = useLanguage();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnread = async () => {
+            try {
+                const res = await supportAPI.getUnreadCount();
+                setUnreadCount(res.count);
+            } catch (err) {
+                console.error('Failed to fetch unread sum', err);
+            }
+        };
+        fetchUnread();
+        
+        // Optional: Add polling
+        const interval = setInterval(fetchUnread, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
     const sections = [
         {
@@ -54,7 +73,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             items: [
                 { icon: UserCircle, label: 'Utilisateurs (Master)', path: '/dashboard/users', permission: 'manage_users' },
                 { icon: Activity, label: "Journal d'activité", path: '/dashboard/logs', permission: 'manage_users' },
-                { icon: HelpCircle, label: t('common.support'), path: '/dashboard/support', permission: 'manage_business' },
+                { icon: HelpCircle, label: t('common.support'), path: '/dashboard/support', permission: 'manage_business', badge: unreadCount },
             ]
         }
     ];
@@ -156,7 +175,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                             )}
                                         >
                                             <item.icon size={18} className={cn("transition-transform duration-200 group-hover:scale-110 rtl:rotate-180", ({ isActive }: { isActive: boolean }) => isActive && "text-primary")} />
-                                            <span className="relative z-10">{item.label}</span>
+                                            <span className="relative z-10 flex-1">{item.label}</span>
+                                            {!!(item as any).badge && (
+                                                <span className="relative z-10 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                                    {(item as any).badge}
+                                                </span>
+                                            )}
                                         </NavLink>
                                     ))}
                                 </div>

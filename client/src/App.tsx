@@ -34,6 +34,8 @@ import LogsPage from './pages/Logs/LogsPage';
 import { OfflineProvider } from './context/OfflineContext';
 import AgencyRegistrations from './pages/Master/AgencyRegistrations';
 import SubscriptionRequests from './pages/Master/SubscriptionRequests';
+import SupportTickets from './pages/Support/SupportTickets';
+import TicketDetails from './pages/Support/TicketDetails';
 
 
 // Public Pages
@@ -153,7 +155,8 @@ function App() {
 
                     {/* Other Admin Tools */}
                     <Route element={<ProtectedRoute permission="manage_business" />}>
-                      <Route path="support" element={<div className="text-gray-500">Support & Videos</div>} />
+                      <Route path="support" element={<SupportTickets />} />
+                      <Route path="support/:id" element={<TicketDetails />} />
                       <Route path="payments" element={<PaymentList />} />
                       <Route path="payments/reports" element={<PaymentReports />} />
                       <Route path="stats" element={<div className="text-gray-500">Statistiques</div>} />
@@ -175,6 +178,8 @@ function App() {
                     <Route path="bookings/:id" element={<OrderDetails />} />
                     <Route path="landing" element={<AgencyHome />} />
                     <Route path="homepage-builder" element={<HomepageBuilder />} />
+                    <Route path="support" element={<SupportTickets />} />
+                    <Route path="support/:id" element={<TicketDetails />} />
 
                     {/* Operational Modules Migrated to Agency */}
                     <Route path="clients" element={<ProtectedRoute permission="access_clients"><ClientList /></ProtectedRoute>} />

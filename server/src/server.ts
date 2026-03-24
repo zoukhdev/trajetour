@@ -31,6 +31,7 @@ import passengersRoutes from './routes/passengers.js';
 import masterRoutes from './routes/master.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 import settingsRoutes from './routes/settings.js';
+import supportRoutes from './routes/support.js';
 
 const app = express();
 
@@ -353,6 +354,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/passengers', passengersRoutes);
 app.use('/api/master', masterRoutes);
+app.use('/api/support', supportRoutes);
 // Note: Other routes (users, agencies, expenses, etc.) follow the same pattern
 // They need to be created following the clients.ts template
 
