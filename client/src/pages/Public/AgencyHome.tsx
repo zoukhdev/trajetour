@@ -18,7 +18,7 @@ const AgencyHome = () => {
     const [popularPackages, setPopularPackages] = useState<any[]>([]);
 
     // Animated counter for stats
-    const [stats, setStats] = useState({ clients: 0, packages: 0, years: 0, satisfaction: 0 });
+    const [stats, setStats] = useState<Record<string, number>>({ clients: 0, packages: 0, years: 0, satisfaction: 0 });
 
     useEffect(() => {
         const fetchSettings = async () => {
