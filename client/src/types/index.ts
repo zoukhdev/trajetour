@@ -262,6 +262,7 @@ export interface Offer {
     start_date?: string; // API snake_case
     end_date?: string;   // API snake_case
     isFeatured?: boolean;
+    imageUrl?: string;
 }
 
 export interface GuideExpense {

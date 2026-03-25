@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Image as ImageIcon, Upload } from 'lucide-react';
 import type { Offer } from '../../types';
 
 interface OfferHotel {
@@ -31,8 +31,11 @@ interface OfferFormProps {
 }
 
 const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
-    const { addOffer, updateOffer } = useData();
+    const { addOffer, updateOffer, uploadOfferImage } = useData();
     const [currentStep, setCurrentStep] = useState(1);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const [formData, setFormData] = useState<Partial<Offer>>({
         title: '',
@@ -58,6 +61,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
             diner: false,
             bagages: false,
         },
+        isFeatured: false,
     });
 
     useEffect(() => {
@@ -77,8 +81,23 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                     bagages: false,
                 },
             });
+            if (initialData.imageUrl) {
+                setImagePreview(initialData.imageUrl);
+            }
         }
     }, [initialData]);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     // Hotels state for age-based pricing
     const [hotels, setHotels] = useState<OfferHotel[]>([]);
@@ -199,26 +218,35 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setIsUploading(true);
 
         try {
-            // Only update the offer details here. 
-            // Hotels are managed instantly via separate API calls in this improved version.
+            let savedOffer: Offer;
+
             if (initialData) {
-                await updateOffer({ ...initialData, ...formData } as Offer);
+                savedOffer = { ...initialData, ...formData } as Offer;
+                await updateOffer(savedOffer);
             } else {
-                const newOffer: Offer = {
-                    id: Math.random().toString(36).substr(2, 9),
-                    ...formData as Omit<Offer, 'id'>
-                };
-                await addOffer(newOffer);
-                // Note: For new offers, we can't add rooms yet until offer ID exists. 
-                // UX: User should create offer first, then edit to add rooms.
+                const tempId = Math.random().toString(36).substr(2, 9);
+                const offerToCreate = {
+                    ...formData,
+                    id: tempId
+                } as Offer;
+                savedOffer = await addOffer(offerToCreate);
+            }
+
+            // Upload image if selected
+            if (imageFile && (savedOffer.id || initialData?.id)) {
+                const targetId = savedOffer.id || initialData!.id!;
+                await uploadOfferImage(targetId, imageFile);
             }
 
             onClose();
         } catch (error) {
             console.error('Failed to save offer:', error);
             alert('Erreur lors de l\'enregistrement de l\'offre. Veuillez vérifier les champs et réessayer.');
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -243,6 +271,14 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
     };
 
 
+
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: checked
+        }));
+    };
 
     const goToNextStep = (e?: React.MouseEvent<HTMLButtonElement>) => {
         e?.preventDefault();
@@ -278,46 +314,104 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations de base</h3>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Titre de l'offre</label>
-                        <input
-                            type="text"
-                            name="title"
-                            required
-                            value={formData.title}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                            placeholder="Ex: Omra Ramadan 2024"
-                        />
-                    </div>
+                    <div className="flex flex-col md:flex-row gap-6">
+                        <div className="flex-1 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Titre de l'offre</label>
+                                <input
+                                    type="text"
+                                    name="title"
+                                    required
+                                    value={formData.title}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    placeholder="Ex: Omra Ramadan 2024"
+                                />
+                            </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                            <select
-                                name="type"
-                                value={formData.type}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                            >
-                                <option value="Omra">Omra</option>
-                                <option value="Haj">Haj</option>
-                                <option value="Voyage Organisé">Voyage Organisé</option>
-                                <option value="Visa">Visa</option>
-                                <option value="Autre">Autre</option>
-                            </select>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                    <select
+                                        name="type"
+                                        value={formData.type}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    >
+                                        <option value="Omra">Omra</option>
+                                        <option value="Haj">Haj</option>
+                                        <option value="Voyage Organisé">Voyage Organisé</option>
+                                        <option value="Visa">Visa</option>
+                                        <option value="Autre">Autre</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+                                    <input
+                                        type="text"
+                                        name="destination"
+                                        required
+                                        value={formData.destination}
+                                        onChange={handleChange}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                        placeholder="Ex: La Mecque"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 mt-4">
+                                <input
+                                    type="checkbox"
+                                    id="isFeatured"
+                                    name="isFeatured"
+                                    checked={formData.isFeatured || false}
+                                    onChange={handleCheckboxChange}
+                                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
+                                />
+                                <label htmlFor="isFeatured" className="text-sm font-medium text-gray-700 cursor-pointer">
+                                    Mettre en avant cette offre sur la page d'accueil (Packages Populaires)
+                                </label>
+                            </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
-                            <input
-                                type="text"
-                                name="destination"
-                                required
-                                value={formData.destination}
-                                onChange={handleChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                                placeholder="Ex: La Mecque"
-                            />
+
+                        {/* Image Upload Section */}
+                        <div className="w-full md:w-48">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Photo de l'offre</label>
+                            <div className="relative group">
+                                <div className={`aspect-[4/3] w-full border-2 border-dashed rounded-xl overflow-hidden flex flex-col items-center justify-center transition-all ${imagePreview ? 'border-primary/50 bg-primary/5' : 'border-gray-300 bg-gray-50 hover:border-primary/50'}`}>
+                                    {imagePreview ? (
+                                        <>
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                            <button
+                                                type="button"
+                                                onClick={() => { setImageFile(null); setImagePreview(null); }}
+                                                className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm text-red-500 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="text-center p-4">
+                                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
+                                                <ImageIcon className="text-gray-400" size={20} />
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 font-medium">PNG, JPG up to 5MB</p>
+                                        </div>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                                {!imagePreview && (
+                                    <div className="mt-2 flex items-center justify-center gap-1.5 text-primary text-xs font-semibold">
+                                        <Upload size={14} />
+                                        <span>Choisir une photo</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -630,8 +724,10 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                     ) : (
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors"
+                            disabled={isUploading}
+                            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
+                            {isUploading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                             {initialData ? 'Mettre à jour' : 'Créer l\'Offre'}
                         </button>
                     )}

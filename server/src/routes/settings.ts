@@ -70,7 +70,7 @@ router.get('/homepage', async (req, res) => {
         // Fetch featured offers
         const offersResult = await pool.query(`
             SELECT * FROM offers 
-            WHERE status = 'Published' 
+            WHERE status = 'Active' 
             ORDER BY is_featured DESC, created_at DESC 
             LIMIT 6
         `);

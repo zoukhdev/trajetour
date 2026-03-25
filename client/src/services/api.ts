@@ -282,6 +282,12 @@ export const offersAPI = {
     toggleFeatured: async (id: string, isFeatured: boolean) => {
         const response = await api.patch(`/offers/${id}/featured`, { isFeatured });
         return response.data;
+    },
+    uploadImage: async (id: string, formData: FormData) => {
+        const response = await api.post(`/offers/${id}/upload`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
     }
 };
 

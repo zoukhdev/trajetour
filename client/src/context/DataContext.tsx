@@ -52,6 +52,7 @@ interface DataContextType {
     addOffer: (offer: Offer) => Promise<Offer>;
     updateOffer: (offer: Offer) => Promise<void>;
     deleteOffer: (id: string) => Promise<void>;
+    uploadOfferImage: (id: string, file: File) => Promise<string>;
 
     addGuideExpense: (expense: GuideExpense) => void;
     updateGuideExpense: (expense: GuideExpense) => void;
@@ -473,6 +474,14 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
         await offersAPI.delete(id);
         setOffers(prev => prev.filter(o => o.id !== id));
     };
+    const uploadOfferImage = async (id: string, file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        const response = await offersAPI.uploadImage(id, formData);
+        const imageUrl = response.imageUrl;
+        setOffers(prev => prev.map(o => o.id === id ? { ...o, imageUrl } : o));
+        return imageUrl;
+    };
 
     // LEGACY (Still LocalStorage for now)
     const addGuideExpense = (expense: GuideExpense) => {
@@ -541,7 +550,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
             addExpense, updateExpense, deleteExpense,
             addUser, updateUser, deleteUser,
             addSupplier, updateSupplier, deleteSupplier,
-            addOffer, updateOffer, deleteOffer,
+            addOffer, updateOffer, deleteOffer, uploadOfferImage,
             addGuideExpense, updateGuideExpense, deleteGuideExpense,
             addDiscount, updateDiscount, deleteDiscount,
             addTax, updateTax, deleteTax,
