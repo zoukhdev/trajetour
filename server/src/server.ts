@@ -604,9 +604,12 @@ app.listen(PORT, async () => {
                     ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
                     ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
                     ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb,
-                    ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL;
+                    ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL,
+                    ADD COLUMN IF NOT EXISTS image_url TEXT,
+                    ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
                 `);
                 await pool.query(`CREATE INDEX IF NOT EXISTS idx_offers_agency_id ON offers(agency_id);`);
+                await pool.query(`CREATE INDEX IF NOT EXISTS idx_offers_is_featured ON offers(is_featured);`);
                 console.log('✅ Offers table columns verified.');
             } catch (err) {
             console.error('❌ Offers table migration failed:', err);
