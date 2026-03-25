@@ -67,11 +67,11 @@ router.get('/homepage', async (req, res) => {
         const slidesResult = await pool.query(`SELECT * FROM agency_hero_slides ORDER BY order_index ASC`);
         const slides = slidesResult.rows.map(mapSlideToClient);
 
-        // Fetch featured offers
+        // Fetch ONLY featured offers (explicitly marked as featured), any active/published status
         const offersResult = await pool.query(`
             SELECT * FROM offers 
-            WHERE status = 'Active' 
-            ORDER BY is_featured DESC, created_at DESC 
+            WHERE is_featured = true AND LOWER(status) NOT IN ('draft', 'cancelled')
+            ORDER BY created_at DESC 
             LIMIT 6
         `);
         
