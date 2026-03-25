@@ -1,5 +1,5 @@
 import express from 'express';
-import { pool, defaultPool } from '../config/database.js';
+import { pool, defaultPool, masterPool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 
 import { validate, offerSchema } from '../middleware/validation.js';
@@ -94,52 +94,40 @@ router.post('/',
     async (req: AuthRequest, res, next) => {
         const client = await pool.connect();
         try {
-            await client.query('BEGIN');
-            const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing, imageUrl, isFeatured } = req.body;
+            const { 
+                title, type, destination, price, startDate, endDate, hotel, 
+                transport, description, status, disponibilite, inclusions, 
+                roomPricing, room_pricing, imageUrl, isFeatured 
+            } = req.body;
+            
             const agencyId = req.user!.agencyId;
 
-            // Enforce Subscription Limits for Offers/Packs
+            // Safe parsing for inclusions and roomPricing if they are already strings
+            const parsedInclusions = typeof inclusions === 'string' ? JSON.parse(inclusions) : (inclusions || {});
+            const actualRoomPricing = roomPricing || room_pricing;
+            const parsedRoomPricing = typeof actualRoomPricing === 'string' ? JSON.parse(actualRoomPricing) : (actualRoomPricing || []);
+
+            await client.query('BEGIN');
+            
+            // Enforce Subscription Limits
             if (agencyId) {
-                const agencyRes = await defaultPool.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
-                if (agencyRes.rows.length > 0) {
-                        const sub = agencyRes.rows[0].subscription || 'Standard';
-
-                    
-                    const PLAN_LIMITS: { [key: string]: number } = {
-                        'Standard': 30,
-                        'Premium': 200,
-                        'Gold': 999999
-                    };
-
-                    const countRes = await client.query('SELECT COUNT(*) FROM offers WHERE agency_id = $1', [agencyId]);
-                    const currentCount = parseInt(countRes.rows[0].count);
-
-                    if (currentCount >= (PLAN_LIMITS[sub] || 30)) {
-                        await client.query('ROLLBACK');
-                        return res.status(403).json({ 
-                            error: `Subscription Limit Reached: Your current ${sub} plan only allows up to ${PLAN_LIMITS[sub]} offers.` 
-                        });
-                    }
+                // IMPORTANT: Use masterPool to check subscription as agencies table is in the master DB
+                const agencyRes = await masterPool.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
+                const sub = agencyRes.rows[0]?.subscription || 'Standard';
+                const PLAN_LIMITS: { [key: string]: number } = { 'Standard': 30, 'Premium': 200, 'Gold': 999999 };
+                const countRes = await client.query('SELECT COUNT(*) FROM offers WHERE agency_id = $1', [agencyId]);
+                if (parseInt(countRes.rows[0].count) >= (PLAN_LIMITS[sub] || 30)) {
+                    await client.query('ROLLBACK');
+                    return res.status(403).json({ error: `Subscription Limit Reached: Your current ${sub} plan only allows up to ${PLAN_LIMITS[sub]} offers.` });
                 }
             }
 
             const queryParams = [
-                title, 
-                type, 
-                destination, 
-                price || 0, 
-                startDate, 
-                endDate, 
-                hotel || '', 
-                transport || 'Avion', 
-                description || '', 
-                status || 'Draft', 
-                disponibilite || 0, 
-                JSON.stringify(inclusions || {}), 
-                JSON.stringify(roomPricing || []), 
-                agencyId || null, 
-                imageUrl || null, 
-                isFeatured === true
+                title, type, destination, price || 0, startDate, endDate, hotel || '', 
+                transport || 'Avion', description || '', status || 'Draft', 
+                disponibilite || 0, JSON.stringify(parsedInclusions), 
+                JSON.stringify(parsedRoomPricing), agencyId || null, 
+                imageUrl || null, isFeatured === true
             ];
 
             const result = await client.query(
@@ -148,8 +136,8 @@ router.post('/',
                  RETURNING *`,
                 queryParams
             );
+            
             const newOffer = result.rows[0];
-
             await logAudit(client, {
                 userId: req.user!.id,
                 action: 'CREATE',
@@ -182,31 +170,28 @@ router.put('/:id',
     async (req: AuthRequest, res, next) => {
         const client = await pool.connect();
         try {
-            await client.query('BEGIN');
-            const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing, imageUrl, isFeatured } = req.body;
+            const { 
+                title, type, destination, price, startDate, endDate, hotel, 
+                transport, description, status, disponibilite, inclusions, 
+                roomPricing, room_pricing, imageUrl, isFeatured 
+            } = req.body;
 
+            // Safe parsing
+            const parsedInclusions = typeof inclusions === 'string' ? JSON.parse(inclusions) : (inclusions || {});
+            const actualRoomPricing = roomPricing || room_pricing;
+            const parsedRoomPricing = typeof actualRoomPricing === 'string' ? JSON.parse(actualRoomPricing) : (actualRoomPricing || []);
+
+            await client.query('BEGIN');
             const result = await client.query(
                 `UPDATE offers 
                  SET title=$1, type=$2, destination=$3, price=$4, start_date=$5, end_date=$6, hotel=$7, transport=$8, description=$9, status=$10, capacity=$11, inclusions=$12, room_pricing=$13, image_url=$14, is_featured=$15
                  WHERE id=$16
                  RETURNING *`,
                 [
-                    title, 
-                    type, 
-                    destination, 
-                    price, 
-                    startDate, 
-                    endDate, 
-                    hotel, 
-                    transport, 
-                    description, 
-                    status, 
-                    disponibilite, 
-                    JSON.stringify(inclusions || {}), 
-                    JSON.stringify(roomPricing || []), 
-                    imageUrl, 
-                    isFeatured || false, 
-                    req.params.id
+                    title, type, destination, price, startDate, endDate, hotel, transport, 
+                    description, status, disponibilite, JSON.stringify(parsedInclusions), 
+                    JSON.stringify(parsedRoomPricing), imageUrl, 
+                    isFeatured || false, req.params.id
                 ]
             );
 
@@ -214,8 +199,8 @@ router.put('/:id',
                 await client.query('ROLLBACK');
                 return res.status(404).json({ error: 'Offer not found' });
             }
-            const updatedOffer = result.rows[0];
 
+            const updatedOffer = result.rows[0];
             await logAudit(client, {
                 userId: req.user!.id,
                 action: 'UPDATE',
@@ -324,6 +309,21 @@ router.post('/:id/upload',
                 imageUrl: uploadResult.secure_url,
                 offer: mapOfferResponse(result.rows[0])
             });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+// Manual Migration (Emergency fix for out-of-sync tenant DBs)
+router.post('/migrate-db',
+    authMiddleware,
+    requirePermission('manage_business'),
+    async (req: AuthRequest, res, next) => {
+        try {
+            const { migrateTenantDatabase } = await import('../services/dbMigrations.js');
+            await migrateTenantDatabase(pool);
+            res.json({ message: 'Database migration completed successfully' });
         } catch (error) {
             next(error);
         }

@@ -237,11 +237,10 @@ export default function HomepageBuilder() {
                                 </div>
                             </div>
 
-                            {/* Premium Branding */}
-                            <div className={`pt-4 border-t dark:border-gray-700 space-y-4 ${!isPremium ? 'opacity-50 pointer-events-none' : ''}`}>
+                            {/* Premium Branding (Democratized) */}
+                            <div className={`pt-4 border-t dark:border-gray-700 space-y-4`}>
                                 <div className="flex items-center justify-between">
                                     <label className="text-xs font-semibold text-gray-500 uppercase">Premium Theme</label>
-                                    {!isPremium && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded">GOLD</span>}
                                 </div>
                                 
                                 <div className="grid grid-cols-2 gap-3">
@@ -349,7 +348,7 @@ export default function HomepageBuilder() {
                                     offers.map(offer => (
                                         <div key={offer.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${offer.isFeatured ? 'bg-amber-50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/50 shadow-sm' : 'bg-gray-50 dark:bg-gray-900/40 border-gray-100 dark:border-gray-700'}`}>
                                             <div className="w-12 h-12 rounded-lg bg-white dark:bg-gray-800 overflow-hidden flex-shrink-0">
-                                                {offer.mainImage ? <img src={offer.mainImage} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="m-auto text-gray-400" />}
+                                                {offer.imageUrl ? <img src={offer.imageUrl} className="w-full h-full object-cover" /> : <ImageIcon size={16} className="m-auto text-gray-400" />}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-bold truncate">{offer.title}</p>
@@ -371,8 +370,8 @@ export default function HomepageBuilder() {
                 </div>
             </div>
 
-            {/* Interactive Sections (Stats & FAQ) */}
-            <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8 ${!isPremium ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+            {/* Interactive Sections (Stats & FAQ) - Democratized */}
+            <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><ShieldCheck size={20} className="text-blue-500" /> Trust Stats</h2>
@@ -414,8 +413,8 @@ export default function HomepageBuilder() {
                 </div>
             </div>
 
-            {/* Testimonials */}
-            <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 ${!isPremium ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+            {/* Testimonials - Democratized */}
+            <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700`}>
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><MessageSquare size={20} className="text-indigo-500" /> Customer Testimonials</h2>
                     <button onClick={() => setSettings({...settings, testimonials: [...settings.testimonials, {name: '', role: '', content: '', avatar: ''}]})} className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition">Add Review</button>
@@ -439,8 +438,8 @@ export default function HomepageBuilder() {
                 </div>
             </div>
 
-            {/* Bottom Grid: SEO & Conversion */}
-            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 ${!isPremium ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
+            {/* Bottom Grid: SEO & Conversion - Democratized */}
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                     <h2 className="text-lg font-bold mb-6 flex items-center gap-2"><Search size={20} className="text-red-500" /> SEO & Social Metadata</h2>
                     <div className="space-y-4">

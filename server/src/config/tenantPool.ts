@@ -1,6 +1,7 @@
 import pkg from 'pg';
 import { config } from './env.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { migrateTenantDatabase } from '../services/dbMigrations.js';
 
 const { Pool } = pkg;
 
@@ -59,6 +60,11 @@ export async function getTenantPool(subdomain: string): Promise<pkg.Pool> {
         });
         tenantPools[subdomain] = newPool;
         console.log(`✅ Created DB pool for tenant: ${subdomain}`);
+
+        // Async migration — avoid blocking the first request
+        migrateTenantDatabase(newPool).catch(err => {
+            console.error(`⚠️ Failed to migrate database for ${subdomain}:`, err);
+        });
 
         return newPool;
     } catch (error) {

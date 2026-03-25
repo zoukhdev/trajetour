@@ -119,7 +119,7 @@ export const multiTenantAgencySchema = z.object({
 
 export const offerSchema = z.object({
     title: z.string().min(2).max(255),
-    type: z.enum(['Omra', 'Haj', 'Voyage Organisé', 'Vols', 'Visa']),
+    type: z.enum(['Omra', 'Haj', 'Voyage Organisé', 'Visa', 'Autre', 'Vols']), // Added Vols for compatibility, Autre/Visa for DB match
     destination: z.string().min(2),
     price: z.number().nonnegative().default(0),
     startDate: z.string(),
@@ -129,12 +129,9 @@ export const offerSchema = z.object({
     description: z.string().optional(),
     status: z.enum(['Active', 'Draft', 'Archived']).optional(),
     disponibilite: z.number().int().nonnegative().optional(),
-    inclusions: z.record(z.boolean()).optional(),
-    roomPricing: z.array(z.object({
-        roomType: z.string(),
-        price: z.number().positive(),
-        capacity: z.number().int().positive()
-    })).optional()
+    inclusions: z.any().optional(), // Allow any type and handle parsing in the route
+    roomPricing: z.any().optional(),
+    room_pricing: z.any().optional() // Handle snake_case from frontend
 });
 
 // Validation Middleware
