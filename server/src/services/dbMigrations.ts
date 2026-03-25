@@ -90,7 +90,48 @@ export async function migrateTenantDatabase(pool: pkg.Pool) {
             ADD COLUMN IF NOT EXISTS payment_id UUID;
         `);
 
+        // Agency Settings & Hero Slides (for homepage builder)
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS agency_settings (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                display_name VARCHAR(255),
+                primary_color VARCHAR(20) DEFAULT '#3b82f6',
+                secondary_color VARCHAR(20) DEFAULT '#10b981',
+                logo_url TEXT,
+                og_image_url TEXT,
+                seo_title TEXT,
+                seo_description TEXT,
+                font_family VARCHAR(100) DEFAULT 'Inter',
+                border_radius VARCHAR(20) DEFAULT '12px',
+                video_url TEXT,
+                whatsapp_number VARCHAR(30),
+                newsletter_enabled BOOLEAN DEFAULT false,
+                trust_stats JSONB DEFAULT '[]'::jsonb,
+                testimonials JSONB DEFAULT '[]'::jsonb,
+                faqs JSONB DEFAULT '[]'::jsonb,
+                analytics_ga_id VARCHAR(100),
+                custom_scripts TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS agency_hero_slides (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                title TEXT,
+                description TEXT,
+                image_url TEXT,
+                cta_text VARCHAR(100),
+                cta_link TEXT,
+                is_active BOOLEAN DEFAULT true,
+                order_index INTEGER DEFAULT 0,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+
         console.log('✅ Tenant-level migrations completed.');
+
     } catch (error) {
         console.error('❌ Tenant migration failed:', error);
         throw error;

@@ -61,45 +61,61 @@ const mapSlideToClient = (row: any) => {
  */
 router.get('/homepage', async (req, res) => {
     try {
-        const settingsResult = await pool.query(`SELECT * FROM agency_settings ORDER BY updated_at DESC LIMIT 1`);
-        const settings = mapSettingsToClient(settingsResult.rows[0]);
+        // Gracefully handle missing tables (new tenant DBs)
+        let settings = null;
+        let slides: any[] = [];
 
-        const slidesResult = await pool.query(`SELECT * FROM agency_hero_slides ORDER BY order_index ASC`);
-        const slides = slidesResult.rows.map(mapSlideToClient);
+        try {
+            const settingsResult = await pool.query(`SELECT * FROM agency_settings ORDER BY updated_at DESC LIMIT 1`);
+            settings = mapSettingsToClient(settingsResult.rows[0]);
+        } catch (e) {
+            console.warn('[settings/homepage] agency_settings table not found, using defaults');
+        }
+
+        try {
+            const slidesResult = await pool.query(`SELECT * FROM agency_hero_slides ORDER BY order_index ASC`);
+            slides = slidesResult.rows.map(mapSlideToClient);
+        } catch (e) {
+            console.warn('[settings/homepage] agency_hero_slides table not found, using empty');
+        }
 
         // Fetch ONLY featured offers (explicitly marked as featured), any active/published status
-        const offersResult = await pool.query(`
-            SELECT * FROM offers 
-            WHERE is_featured = true AND LOWER(status) NOT IN ('draft', 'cancelled')
-            ORDER BY created_at DESC 
-            LIMIT 6
-        `);
-        
-        // Map offers to client format (similar to what is in offers.ts)
-        const featuredOffers = offersResult.rows.map(row => {
-            const startDate = new Date(row.start_date);
-            const endDate = new Date(row.end_date);
-            const durationDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
-            
-            // Extract some features
-            const features = [];
-            if (row.hotel) features.push(row.hotel.substring(0, 20));
-            if (row.transport) features.push(row.transport.substring(0, 20));
-            if (row.capacity > 0) features.push(`${row.capacity} places`);
+        let featuredOffers: any[] = [];
+        try {
+            const offersResult = await pool.query(`
+                SELECT * FROM offers 
+                WHERE is_featured = true AND LOWER(status) NOT IN ('draft', 'cancelled')
+                ORDER BY created_at DESC 
+                LIMIT 6
+            `);
 
-            return {
-                id: row.id,
-                title: row.title,
-                type: row.type,
-                destination: row.destination,
-                price: parseFloat(row.price).toLocaleString(),
-                duration: row.duration || `${durationDays} jours`,
-                rating: 5.0, 
-                features: features.slice(0, 3).length > 0 ? features.slice(0, 3) : ['Accompagnement', 'Hôtel inclus', 'Assistance'],
-                image: row.image_url || '/kaaba-night.png',
-                isFeatured: row.is_featured
-            };
-        });
+            const durationDays = (start: Date, end: Date) =>
+                Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 3600 * 24)));
+
+            featuredOffers = offersResult.rows.map(row => {
+                const startDate = new Date(row.start_date);
+                const endDate = new Date(row.end_date);
+                const features = [];
+                if (row.hotel) features.push(row.hotel.substring(0, 20));
+                if (row.transport) features.push(row.transport.substring(0, 20));
+                if (row.capacity > 0) features.push(`${row.capacity} places`);
+
+                return {
+                    id: row.id,
+                    title: row.title,
+                    type: row.type,
+                    destination: row.destination,
+                    price: parseFloat(row.price).toLocaleString(),
+                    duration: row.duration || `${durationDays(startDate, endDate)} jours`,
+                    rating: 5.0,
+                    features: features.slice(0, 3).length > 0 ? features.slice(0, 3) : ['Accompagnement', 'Hôtel inclus', 'Assistance'],
+                    image: row.image_url || '/kaaba-night.png',
+                    isFeatured: row.is_featured
+                };
+            });
+        } catch (e) {
+            console.warn('[settings/homepage] offers table not found or query failed');
+        }
 
         res.json({ settings, slides, featuredOffers });
     } catch (err: any) {
