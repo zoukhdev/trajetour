@@ -95,7 +95,7 @@ router.post('/',
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing, imageUrl } = req.body;
+            const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing, imageUrl, isFeatured } = req.body;
             const agencyId = req.user!.agencyId;
 
             // Enforce Subscription Limits for Offers/Packs
@@ -124,10 +124,10 @@ router.post('/',
             }
 
             const result = await client.query(
-                `INSERT INTO offers (title, type, destination, price, start_date, end_date, hotel, transport, description, status, capacity, inclusions, room_pricing, agency_id, image_url)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+                `INSERT INTO offers (title, type, destination, price, start_date, end_date, hotel, transport, description, status, capacity, inclusions, room_pricing, agency_id, image_url, is_featured)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
                  RETURNING *`,
-                [title, type, destination, price, startDate, endDate, hotel, transport, description, status || 'Draft', disponibilite || 0, inclusions || {}, JSON.stringify(roomPricing || []), agencyId || null, imageUrl || null]
+                [title, type, destination, price, startDate, endDate, hotel, transport, description, status || 'Draft', disponibilite || 0, inclusions || {}, JSON.stringify(roomPricing || []), agencyId || null, imageUrl || null, isFeatured || false]
             );
             const newOffer = result.rows[0];
 
@@ -160,14 +160,14 @@ router.put('/:id',
         const client = await pool.connect();
         try {
             await client.query('BEGIN');
-            const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing, imageUrl } = req.body;
+            const { title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, roomPricing, imageUrl, isFeatured } = req.body;
 
             const result = await client.query(
                 `UPDATE offers 
-                 SET title=$1, type=$2, destination=$3, price=$4, start_date=$5, end_date=$6, hotel=$7, transport=$8, description=$9, status=$10, capacity=$11, inclusions=$12, room_pricing=$13, image_url=$14
-                 WHERE id=$15
+                 SET title=$1, type=$2, destination=$3, price=$4, start_date=$5, end_date=$6, hotel=$7, transport=$8, description=$9, status=$10, capacity=$11, inclusions=$12, room_pricing=$13, image_url=$14, is_featured=$15
+                 WHERE id=$16
                  RETURNING *`,
-                [title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, JSON.stringify(roomPricing), imageUrl, req.params.id]
+                [title, type, destination, price, startDate, endDate, hotel, transport, description, status, disponibilite, inclusions, JSON.stringify(roomPricing), imageUrl, isFeatured || false, req.params.id]
             );
 
             if (result.rows.length === 0) {

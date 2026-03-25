@@ -288,6 +288,23 @@ export const offersAPI = {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         return response.data;
+    },
+    // Room management for offers
+    getAvailableRooms: async (offerId: string) => {
+        const response = await api.get(`/offers/${offerId}/available-rooms`);
+        return response.data; // { rooms: [], debug: {} }
+    },
+    getOfferHotels: async (offerId: string) => {
+        const response = await api.get(`/offers/${offerId}/hotels`);
+        return response.data; // { hotels: [] }
+    },
+    addRoomToOffer: async (offerId: string, roomId: string) => {
+        const response = await api.post(`/offers/${offerId}/hotels`, { room_id: roomId });
+        return response.data;
+    },
+    removeRoomFromOffer: async (assignmentId: string) => {
+        const response = await api.delete(`/offers/hotels/${assignmentId}`);
+        return response.data;
     }
 };
 

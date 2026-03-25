@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useData } from '../../context/DataContext';
 import { Plus, X, Image as ImageIcon, Upload } from 'lucide-react';
 import type { Offer } from '../../types';
+import { offersAPI } from '../../services/api';
 
 interface OfferHotel {
     id: string; // Assignment ID
@@ -23,6 +24,11 @@ interface Room {
     infant_price: number;
     child_price: number;
     adult_price: number;
+    pricing?: {
+        adult: number;
+        child: number;
+        infant: number;
+    };
 }
 
 interface OfferFormProps {
@@ -107,6 +113,8 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
     const [selectedHotelFilter, setSelectedHotelFilter] = useState<string>('');
     const [selectedRoomId, setSelectedRoomId] = useState<string>('');
     const [isAddingRoom, setIsAddingRoom] = useState(false);
+    const [offerId, setOfferId] = useState<string | null>(initialData?.id || null);
+    const [isSavingStep1, setIsSavingStep1] = useState(false);
 
     // Derived state for unique hotel names
     const uniqueHotels = Array.from(new Set(availableRooms.map(r => r.hotel_name))).sort();
@@ -118,93 +126,58 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
 
     const [roomsDebugInfo, setRoomsDebugInfo] = useState<any>(null); // Store debug feedback
 
-    // Fetch hotels when editing
-    useEffect(() => {
-        if (initialData?.id) {
-            fetchOfferHotels(initialData.id);
-            if (currentStep === 2) {
-                fetchAvailableRooms(initialData.id);
-            }
-        }
-    }, [initialData, currentStep]);
-
-    const fetchOfferHotels = async (offerId: string) => {
+    const fetchOfferHotels = async (oid: string) => {
         try {
-            const response = await fetch(`/api/offers/${offerId}/hotels`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
+            const data = await offersAPI.getOfferHotels(oid);
             setHotels(data.hotels || []);
         } catch (error) {
-            console.error('Error fetching hotels:', error);
+            console.error('Error fetching offer hotels:', error);
         }
     };
 
-    const fetchAvailableRooms = async (offerId: string) => {
+    const fetchAvailableRooms = async (oid: string) => {
         try {
-            // Fetch ALL active rooms from the proven /api/rooms endpoint
-            const response = await fetch(`/api/rooms`, {
-                credentials: 'include'
-            });
-            const allRooms = await response.json();
-
-            // Fetch rooms already assigned to THIS offer
-            const assignedResponse = await fetch(`/api/offers/${offerId}/hotels`, {
-                credentials: 'include'
-            });
-            const assignedData = await assignedResponse.json();
-            const assignedRoomIds = (assignedData.hotels || []).map((h: any) => h.room_id);
-
-            // Filter out already-assigned rooms
-            const available = allRooms.filter((room: any) =>
-                !assignedRoomIds.includes(room.id)
-            );
-
-            setAvailableRooms(available);
-            setRoomsDebugInfo({
-                totalInDb: allRooms.length,
-                activeInDb: allRooms.length,
-                foundAvailable: available.length
-            });
-            console.log('Rooms fetched:', { total: allRooms.length, available: available.length, assigned: assignedRoomIds.length });
+            const data = await offersAPI.getAvailableRooms(oid);
+            setAvailableRooms(data.rooms || []);
+            if (data.debug) {
+                setRoomsDebugInfo(data.debug);
+            }
         } catch (error) {
             console.error('Error fetching available rooms:', error);
         }
     };
 
+    // Fetch data whenever ID or step changes
+    useEffect(() => {
+        if (offerId) {
+            fetchOfferHotels(offerId);
+            if (currentStep === 2) {
+                fetchAvailableRooms(offerId);
+            }
+        }
+    }, [offerId, currentStep]);
+
     const addRoomToOffer = async () => {
-        if (!selectedRoomId || !initialData?.id) return;
+        if (!selectedRoomId || !offerId) return;
 
         try {
-            const response = await fetch(`/api/offers/${initialData.id}/hotels`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ room_id: selectedRoomId })
-            });
-
-            if (response.ok) {
-                await fetchOfferHotels(initialData.id);
-                await fetchAvailableRooms(initialData.id);
-                setIsAddingRoom(false);
-                setSelectedRoomId('');
-            }
+            await offersAPI.addRoomToOffer(offerId, selectedRoomId);
+            await fetchOfferHotels(offerId);
+            await fetchAvailableRooms(offerId);
+            setIsAddingRoom(false);
+            setSelectedRoomId('');
         } catch (error) {
             console.error('Error adding room:', error);
-            alert('Erreur lors de l\'ajout du voyage');
+            alert('Erreur lors de l\'ajout de la chambre');
         }
     };
 
     const removeHotel = async (assignmentId: string) => {
-        if (!initialData?.id) return;
-
+        if (!offerId) return;
         try {
-            await fetch(`/api/offers/hotels/${assignmentId}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
-            await fetchOfferHotels(initialData.id);
-            await fetchAvailableRooms(initialData.id);
+            await offersAPI.removeRoomFromOffer(assignmentId);
+            await fetchOfferHotels(offerId);
+            await fetchAvailableRooms(offerId);
         } catch (error) {
             alert('Erreur lors de la suppression');
         }
@@ -215,36 +188,29 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         return new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 0 }).format(price);
     };
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsUploading(true);
 
         try {
-            let savedOffer: Offer;
-
-            if (initialData) {
-                savedOffer = { ...initialData, ...formData } as Offer;
-                await updateOffer(savedOffer);
-            } else {
-                const tempId = Math.random().toString(36).substr(2, 9);
-                const offerToCreate = {
-                    ...formData,
-                    id: tempId
+            // If we're at Step 2 and clicking save, we finalize the whole offer (inclusions etc)
+            if (offerId) {
+                const finalOffer = { 
+                    ...initialData, 
+                    ...formData, 
+                    id: offerId 
                 } as Offer;
-                savedOffer = await addOffer(offerToCreate);
+                await updateOffer(finalOffer);
+                
+                // Final image upload if changed at the very end (though we do it in Step 1 too)
+                if (imageFile) {
+                    await uploadOfferImage(offerId, imageFile);
+                }
             }
-
-            // Upload image if selected
-            if (imageFile && (savedOffer.id || initialData?.id)) {
-                const targetId = savedOffer.id || initialData!.id!;
-                await uploadOfferImage(targetId, imageFile);
-            }
-
             onClose();
         } catch (error) {
-            console.error('Failed to save offer:', error);
-            alert('Erreur lors de l\'enregistrement de l\'offre. Veuillez vérifier les champs et réessayer.');
+            console.error('Failed to finalize offer:', error);
+            alert('Erreur lors de l\'enregistrement final.');
         } finally {
             setIsUploading(false);
         }
@@ -280,14 +246,37 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
         }));
     };
 
-    const goToNextStep = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    const goToNextStep = async (e?: React.MouseEvent<HTMLButtonElement>) => {
         e?.preventDefault();
         if (currentStep === 1) {
             if (!formData.title || !formData.destination || !formData.startDate || !formData.endDate) {
                 alert('Veuillez remplir tous les champs obligatoires');
                 return;
             }
-            setCurrentStep(2);
+            
+            try {
+                setIsSavingStep1(true);
+                let saved: Offer;
+                if (offerId) {
+                    saved = { ...initialData, ...formData, id: offerId } as Offer;
+                    await updateOffer(saved);
+                } else {
+                    saved = await addOffer(formData as Offer);
+                    setOfferId(saved.id);
+                }
+                
+                // Upload image if selected during first step save
+                if (imageFile) {
+                    await uploadOfferImage(saved.id, imageFile);
+                }
+                
+                setCurrentStep(2);
+            } catch (error) {
+                console.error('Failed to save step 1:', error);
+                alert('Erreur lors de l\'enregistrement de l\'offre.');
+            } finally {
+                setIsSavingStep1(false);
+            }
         }
     };
 
@@ -717,9 +706,10 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                         <button
                             type="button"
                             onClick={goToNextStep}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                            disabled={isSavingStep1}
+                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 font-medium transition-colors disabled:opacity-50"
                         >
-                            Suivant
+                            {isSavingStep1 ? 'Enregistrement...' : 'Suivant'}
                         </button>
                     ) : (
                         <button
