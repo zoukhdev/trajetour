@@ -1,7 +1,7 @@
 import express from 'express';
 import { pool, defaultPool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
-
+import { upload } from '../utils/fileUpload.js';
 import { validate, offerSchema } from '../middleware/validation.js';
 import { logAudit } from '../services/auditLog.js';
 
@@ -26,8 +26,10 @@ const mapOfferResponse = (row: any) => ({
     roomPricing: row.room_pricing || [],
     agencyId: row.agency_id,
     isFeatured: row.is_featured || false,
-    imageUrl: row.image_url
+    imageUrl: row.image_url,
+    image: row.image_url // Compatibility with Packages.tsx
 });
+
 
 // Get all offers (with filters) - PUBLIC
 router.get('/',
@@ -277,18 +279,7 @@ router.patch('/:id/featured',
 router.post('/:id/upload',
     authMiddleware,
     requirePermission('manage_business'),
-    async (req, res, next) => {
-        try {
-            const { upload } = await import('../utils/fileUpload.js');
-            const uploadMiddleware = upload.single('image');
-            uploadMiddleware(req, res, (err) => {
-                if (err) return res.status(400).json({ message: 'File upload failed: ' + err.message });
-                next();
-            });
-        } catch (e) {
-            next(e);
-        }
-    },
+    upload.single('image'),
     async (req: any, res, next) => {
         if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
         
@@ -297,6 +288,7 @@ router.post('/:id/upload',
             const folder = `trajetour/offers/${req.params.id}`;
             const uploadResult = await uploadToCloudinary(req.file.buffer, folder);
 
+            // Execute update in current tenant pool
             const result = await pool.query(
                 'UPDATE offers SET image_url = $1 WHERE id = $2 RETURNING *',
                 [uploadResult.secure_url, req.params.id]
@@ -310,10 +302,12 @@ router.post('/:id/upload',
                 offer: mapOfferResponse(result.rows[0])
             });
         } catch (error) {
+            console.error('❌ Error uploading offer image:', error);
             next(error);
         }
     }
 );
+
 
 // Manual Migration (Emergency fix for out-of-sync tenant DBs)
 router.post('/migrate-db',
