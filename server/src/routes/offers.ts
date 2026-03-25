@@ -1,5 +1,5 @@
 import express from 'express';
-import { pool, defaultPool, masterPool } from '../config/database.js';
+import { pool, defaultPool } from '../config/database.js';
 import { authMiddleware, requirePermission, AuthRequest } from '../middleware/auth.js';
 
 import { validate, offerSchema } from '../middleware/validation.js';
@@ -112,7 +112,7 @@ router.post('/',
             // Enforce Subscription Limits
             if (agencyId) {
                 // IMPORTANT: Use masterPool to check subscription as agencies table is in the master DB
-                const agencyRes = await masterPool.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
+                const agencyRes = await defaultPool.query('SELECT subscription FROM agencies WHERE id = $1', [agencyId]);
                 const sub = agencyRes.rows[0]?.subscription || 'Standard';
                 const PLAN_LIMITS: { [key: string]: number } = { 'Standard': 30, 'Premium': 200, 'Gold': 999999 };
                 const countRes = await client.query('SELECT COUNT(*) FROM offers WHERE agency_id = $1', [agencyId]);
