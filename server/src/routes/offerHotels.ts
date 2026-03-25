@@ -127,17 +127,23 @@ router.get('/:offerId/available-rooms',
     async (req: AuthRequest, res, next) => {
         try {
             const { offerId } = req.params;
-            console.log(`[DEBUG] Fetching available rooms for Offer: ${offerId}`);
+            const agencyId = (req as any).user?.agencyId;
 
             // 1. Get raw count (Debug)
             const countAll = await pool.query('SELECT COUNT(*) FROM rooms');
             // 2. Get active count (Debug) - using robust status check
-            const countActive = await pool.query("SELECT COUNT(*) FROM rooms WHERE (status IS NULL OR UPPER(status) = 'ACTIVE' OR status = '')");
+            let activeQuery = "SELECT COUNT(*) FROM rooms WHERE (status IS NULL OR UPPER(status) = 'ACTIVE' OR status = '')";
+            const activeParams: any[] = [];
+            if (agencyId) {
+                activeQuery += " AND agency_id = $1";
+                activeParams.push(agencyId);
+            }
+            const countActive = await pool.query(activeQuery, activeParams);
 
-            console.log(`[DEBUG] Diagnostic: Total Rooms in DB: ${countAll.rows[0].count}, Active (Relaxed): ${countActive.rows[0].count}`);
+            console.log(`[DEBUG] Diagnostic: Total Rooms in DB: ${countAll.rows[0].count}, Active for Agency ${agencyId}: ${countActive.rows[0].count}`);
 
-            const result = await pool.query(
-                `SELECT 
+            let query = `
+                SELECT 
                     r.id,
                     r.hotel_name,
                     r.room_number,
@@ -151,9 +157,17 @@ router.get('/:offerId/available-rooms',
                  AND r.id NOT IN (
                      SELECT room_id FROM offer_hotels WHERE offer_id = $1
                  )
-                 ORDER BY r.hotel_name, r.room_number ASC`,
-                [offerId]
-            );
+            `;
+            const params: any[] = [offerId];
+
+            if (agencyId) {
+                query += ` AND r.agency_id = $${params.length + 1}`;
+                params.push(agencyId);
+            }
+
+            query += ` ORDER BY r.hotel_name, r.room_number ASC`;
+
+            const result = await pool.query(query, params);
 
             const rooms = result.rows.map(row => ({
                 id: row.id,

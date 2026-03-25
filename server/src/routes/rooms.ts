@@ -18,9 +18,15 @@ router.get('/', authMiddleware, async (req, res) => {
                 AND o.status != 'Cancelled'
             ) as occupied_count
             FROM rooms r
-            WHERE r.status = 'ACTIVE'
+            WHERE (r.status IS NULL OR UPPER(r.status) = 'ACTIVE' OR r.status = '')
         `;
         const params: any[] = [];
+        
+        const agencyId = (req as any).user?.agencyId;
+        if (agencyId) {
+            query += ` AND r.agency_id = $${params.length + 1}`;
+            params.push(agencyId);
+        }
 
         if (offerId) {
             params.push(offerId);
@@ -46,10 +52,11 @@ router.get('/', authMiddleware, async (req, res) => {
 router.post('/', authMiddleware, requireRole(['staff', 'agent']), async (req, res) => {
     try {
         const { offerId, hotelName, roomNumber, capacity, gender, price, pricing } = req.body;
+        const agencyId = (req as any).user?.agencyId;
 
         const result = await pool.query(
-            `INSERT INTO rooms (offer_id, hotel_name, room_number, capacity, gender, price, pricing)
-             VALUES ($1, $2, $3, $4, $5, $6, $7)
+            `INSERT INTO rooms (offer_id, hotel_name, room_number, capacity, gender, price, pricing, agency_id)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
              RETURNING *`,
             [
                 offerId || null,
@@ -58,7 +65,8 @@ router.post('/', authMiddleware, requireRole(['staff', 'agent']), async (req, re
                 capacity,
                 gender,
                 price || 0,
-                pricing ? JSON.stringify(pricing) : JSON.stringify({ adult: price || 0, child: 0, infant: 0 })
+                pricing ? JSON.stringify(pricing) : JSON.stringify({ adult: price || 0, child: 0, infant: 0 }),
+                agencyId || null
             ]
         );
 
