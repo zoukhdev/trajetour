@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { settingsAPI, offersAPI } from '../../services/api';
-import { Save, Image as ImageIcon, Plus, Trash2, Palette, MapPin, Type, Edit3, Phone, Mail } from 'lucide-react';
+import { Save, Image as ImageIcon, Plus, Trash2, Palette, MapPin, Type, Edit3, Phone, Mail, Video, Layout, Languages, ShieldCheck, Smartphone, Lock, Globe, MessageSquare, Megaphone, Share2, BarChart3, HelpCircle, Star, Hash, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { useSubscription } from '../../context/SubscriptionContext';
 
 export default function HomepageBuilder() {
     const { user } = useAuth();
@@ -19,8 +20,34 @@ export default function HomepageBuilder() {
         contactPhone: '',
         contactAddress: '',
         mapEmbedUrl: '',
-        socialLinks: { facebook: '', instagram: '', twitter: '' }
+        socialLinks: { facebook: '', instagram: '', twitter: '' },
+        // Premium Branding
+        fontFamily: 'Inter',
+        videoUrl: '',
+        secondaryColor: '#10B981',
+        borderRadius: '8px',
+        // SEO & Analytics
+        seoTitle: '',
+        seoDescription: '',
+        analyticsGaId: '',
+        analyticsFbId: '',
+        analyticsTiktokId: '',
+        ogImageUrl: '',
+        // Interactive Blocks
+        testimonials: [] as any[],
+        faqs: [] as any[],
+        trustStats: [] as any[],
+        // Conversion
+        whatsappNumber: '',
+        whatsappMessage: '',
+        newsletterEnabled: false,
+        customScripts: '',
+        // Multilingual
+        translations: {} as any
     });
+
+    const { subscription } = useSubscription();
+    const isPremium = subscription?.plan === 'Pro' || subscription?.plan === 'Enterprise' || subscription?.plan === 'Gold';
 
     const [slides, setSlides] = useState<any[]>([]);
     const [offers, setOffers] = useState<any[]>([]);
@@ -75,6 +102,47 @@ export default function HomepageBuilder() {
     };
 
     const handleSave = async () => {
+        // --- Premium Validation Logic ---
+        if (isPremium) {
+            // Video URL validation
+            if (settings.videoUrl && !settings.videoUrl.startsWith('http')) {
+                toast.error('Video URL must be a valid link (starting with http/https)');
+                return;
+            }
+
+            // WhatsApp validation (alphanumeric and spaces/plus only)
+            if (settings.whatsappNumber && !/^[0-9+\s]+$/.test(settings.whatsappNumber)) {
+                toast.error('WhatsApp number should contain only digits, plus, and spaces');
+                return;
+            }
+
+            // Google Analytics validation (G-XXXXX or UA-XXXXX)
+            if (settings.analyticsGaId && !/^(G-|UA-)[A-Z0-9-]+$/i.test(settings.analyticsGaId)) {
+                toast.error('Google Analytics ID format is invalid (should be G-XXXXX or UA-XXXXX)');
+                return;
+            }
+
+            // SEO Length warnings (not blockers, just suggestions)
+            if (settings.seoTitle && settings.seoTitle.length > 70) {
+                toast.error('SEO Title is long (ideal: < 70 chars)');
+            }
+            if (settings.seoDescription && settings.seoDescription.length > 160) {
+                toast.error('SEO Description is long (ideal: < 160 chars)');
+            }
+
+            // Clean empty FAQ/Testimonials/Stats
+            const cleanedFaqs = settings.faqs?.filter((f: any) => f.question && f.answer) || [];
+            const cleanedStats = settings.trustStats?.filter((s: any) => s.label && s.value) || [];
+            const cleanedTesimonials = settings.testimonials?.filter((t: any) => t.name && t.content) || [];
+
+            setSettings({
+                ...settings,
+                faqs: cleanedFaqs,
+                trustStats: cleanedStats,
+                testimonials: cleanedTesimonials
+            });
+        }
+
         try {
             setSaving(true);
             await settingsAPI.updateHomepageSettings({
@@ -233,8 +301,13 @@ export default function HomepageBuilder() {
                                 </div>
                             </div>
 
+                                </div>
+                            </div>
+
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Primary Color</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                    <Palette size={14} /> Primary Color
+                                </label>
                                 <div className="flex items-center gap-3">
                                     <input
                                         type="color"
@@ -251,6 +324,94 @@ export default function HomepageBuilder() {
                                 </div>
                             </div>
 
+                            {/* Premium Branding Section */}
+                            <div className={`pt-4 border-t border-gray-100 dark:border-gray-700 space-y-4 ${!isPremium ? 'opacity-60 relative' : ''}`}>
+                                {!isPremium && (
+                                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 dark:bg-gray-800/40 backdrop-blur-[1px] rounded-xl">
+                                        <div className="bg-white dark:bg-gray-800 shadow-xl border border-blue-100 dark:border-blue-900 rounded-lg py-2 px-4 flex items-center gap-2">
+                                            <Lock size={14} className="text-blue-500" />
+                                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">GOLD / Enterprise only</span>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                        <Type size={14} /> Font Family
+                                    </label>
+                                    <select
+                                        disabled={!isPremium}
+                                        value={settings.fontFamily}
+                                        onChange={(e) => setSettings({ ...settings, fontFamily: e.target.value })}
+                                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    >
+                                        <option value="Inter">Inter (Sans-serif)</option>
+                                        <option value="Roboto">Roboto</option>
+                                        <option value="Outfit">Outfit</option>
+                                        <option value="Playfair Display">Playfair Display (Serif)</option>
+                                        <option value="Montserrat">Montserrat</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                        <Palette size={14} /> Secondary Color
+                                    </label>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            disabled={!isPremium}
+                                            type="color"
+                                            value={settings.secondaryColor}
+                                            onChange={(e) => setSettings({ ...settings, secondaryColor: e.target.value })}
+                                            className="h-10 w-10 border-0 rounded overflow-hidden cursor-pointer disabled:opacity-50"
+                                        />
+                                        <input
+                                            disabled={!isPremium}
+                                            type="text"
+                                            value={settings.secondaryColor}
+                                            onChange={(e) => setSettings({ ...settings, secondaryColor: e.target.value })}
+                                            className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white uppercase disabled:opacity-50"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                        <Layout size={14} /> Border Radius
+                                    </label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {['0px', '4px', '8px', '16px', '9999px'].map(radius => (
+                                            <button
+                                                key={radius}
+                                                disabled={!isPremium}
+                                                onClick={() => setSettings({ ...settings, borderRadius: radius })}
+                                                className={`px-2 py-1.5 text-xs font-medium rounded-md border transition-all ${settings.borderRadius === radius ? 'bg-blue-600 border-blue-600 text-white shadow-sm' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-500'}`}
+                                            >
+                                                {radius === '9999px' ? 'Full' : radius === '0px' ? 'Square' : radius}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                        <Video size={14} /> Hero Video Background
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Video size={16} className="text-gray-400" />
+                                        </div>
+                                        <input
+                                            disabled={!isPremium}
+                                            type="text"
+                                            value={settings.videoUrl || ''}
+                                            onChange={(e) => setSettings({ ...settings, videoUrl: e.target.value })}
+                                            placeholder="YouTube or direct MP4 link"
+                                            className="pl-10 w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:opacity-50"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -456,6 +617,354 @@ export default function HomepageBuilder() {
                                 ))}
                             </div>
                         )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Premium Interactive Sections: Testimonials, FAQ, Trust Stats */}
+            <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 ${!isPremium ? 'opacity-60 grayscale-[0.5] relative' : ''}`}>
+                {!isPremium && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/10 backdrop-blur-[1px] rounded-xl">
+                        <div className="bg-white dark:bg-gray-800 shadow-2xl border border-blue-200 dark:border-blue-900 rounded-xl p-6 flex flex-col items-center gap-3">
+                            <Lock size={32} className="text-blue-500" />
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">GOLD / Enterprise Feature</h3>
+                            <p className="text-sm text-gray-500 text-center max-w-[250px]">Unlock Testimonials, FAQ, and Trust Statistics to build more credibility.</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Trust Stats */}
+                <div className="lg:col-span-1 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-lg font-semibold flex items-center gap-2">
+                            <ShieldCheck size={20} className="text-blue-500" />
+                            Trust Statistics
+                        </h2>
+                        <button 
+                            disabled={!isPremium}
+                            onClick={() => setSettings({...settings, trustStats: [...(settings.trustStats || []), { label: 'Tourists', value: '10K+' }]})}
+                            className="p-1 text-blue-600 hover:bg-blue-50 rounded disabled:opacity-50"
+                        >
+                            <Plus size={18} />
+                        </button>
+                    </div>
+                    <div className="space-y-3">
+                        {(settings.trustStats || []).map((stat: any, idx: number) => (
+                            <div key={idx} className="flex gap-2 items-center bg-gray-50 dark:bg-gray-900/40 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+                                <div className="flex-1 grid grid-cols-2 gap-2">
+                                    <input 
+                                        disabled={!isPremium}
+                                        value={stat.value} 
+                                        onChange={(e) => {
+                                            const newStats = [...settings.trustStats];
+                                            newStats[idx].value = e.target.value;
+                                            setSettings({...settings, trustStats: newStats});
+                                        }}
+                                        placeholder="10K+" 
+                                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded px-2 py-1 text-xs" 
+                                    />
+                                    <input 
+                                        disabled={!isPremium}
+                                        value={stat.label} 
+                                        onChange={(e) => {
+                                            const newStats = [...settings.trustStats];
+                                            newStats[idx].label = e.target.value;
+                                            setSettings({...settings, trustStats: newStats});
+                                        }}
+                                        placeholder="Happy Customers" 
+                                        className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded px-2 py-1 text-xs" 
+                                    />
+                                </div>
+                                <button onClick={() => {
+                                    const newStats = settings.trustStats.filter((_: any, i: number) => i !== idx);
+                                    setSettings({...settings, trustStats: newStats});
+                                }} className="text-red-400 hover:text-red-600">
+                                    <Trash2 size={14} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* FAQ Section */}
+                <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-lg font-semibold flex items-center gap-2">
+                            <HelpCircle size={20} className="text-amber-500" />
+                            FAQ Management
+                        </h2>
+                        <button 
+                            disabled={!isPremium}
+                            onClick={() => setSettings({...settings, faqs: [...(settings.faqs || []), { question: '', answer: '' }]})}
+                            className="bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400 px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 disabled:opacity-50"
+                        >
+                            <Plus size={16} /> Add FAQ
+                        </button>
+                    </div>
+                    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {(settings.faqs || []).map((faq: any, idx: number) => (
+                            <div key={idx} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-200 dark:border-gray-700 relative group">
+                                <button 
+                                    onClick={() => {
+                                        const newFaqs = settings.faqs.filter((_: any, i: number) => i !== idx);
+                                        setSettings({...settings, faqs: newFaqs});
+                                    }} 
+                                    className="absolute -top-2 -right-2 p-1 bg-red-100 text-red-600 rounded-full opacity-0 group-hover:opacity-100 shadow-sm"
+                                >
+                                    <Trash2 size={12} />
+                                </button>
+                                <input 
+                                    disabled={!isPremium}
+                                    value={faq.question} 
+                                    onChange={(e) => {
+                                        const newFaqs = [...settings.faqs];
+                                        newFaqs[idx].question = e.target.value;
+                                        setSettings({...settings, faqs: newFaqs});
+                                    }}
+                                    placeholder="Question..." 
+                                    className="w-full bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600 mb-2 p-1 font-semibold text-sm" 
+                                />
+                                <textarea 
+                                    disabled={!isPremium}
+                                    value={faq.answer} 
+                                    onChange={(e) => {
+                                        const newFaqs = [...settings.faqs];
+                                        newFaqs[idx].answer = e.target.value;
+                                        setSettings({...settings, faqs: newFaqs});
+                                    }}
+                                    placeholder="Answer..." 
+                                    className="w-full bg-white dark:bg-gray-800 border-0 p-1 text-xs text-gray-500 resize-none h-16" 
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Testimonials */}
+            <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-8 ${!isPremium ? 'opacity-60 grayscale-[0.5] relative' : ''}`}>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-semibold flex items-center gap-2">
+                        <MessageSquare size={20} className="text-blue-500" />
+                        Client Testimonials
+                    </h2>
+                    <button 
+                        disabled={!isPremium}
+                        onClick={() => setSettings({...settings, testimonials: [...(settings.testimonials || []), { name: '', role: '', content: '', rating: 5, avatar: '' }]})}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 disabled:opacity-50"
+                    >
+                        <Plus size={16} /> Add Testimonial
+                    </button>
+                    {!isPremium && <span className="absolute top-2 right-2 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded">PREMIUM</span>}
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 font-medium">
+                    {(settings.testimonials || []).map((t: any, idx: number) => (
+                        <div key={idx} className="p-4 bg-gray-50 dark:bg-gray-900/40 rounded-xl border border-gray-200 dark:border-gray-700 relative group">
+                            <button 
+                                onClick={() => {
+                                    const newT = settings.testimonials.filter((_: any, i: number) => i !== idx);
+                                    setSettings({...settings, testimonials: newT});
+                                }} 
+                                className="absolute -top-2 -right-2 p-1 bg-red-100 text-red-600 rounded-full opacity-0 group-hover:opacity-100 shadow-sm"
+                            >
+                                <Trash2 size={12} />
+                            </button>
+                            <div className="flex gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0">
+                                    <input 
+                                        type="text" 
+                                        value={t.avatar} 
+                                        onChange={(e) => {
+                                            const newT = [...settings.testimonials];
+                                            newT[idx].avatar = e.target.value;
+                                            setSettings({...settings, testimonials: newT});
+                                        }}
+                                        placeholder="Img" 
+                                        className="w-full h-full rounded-full text-[10px] text-center bg-transparent" 
+                                    />
+                                </div>
+                                <div className="flex-1">
+                                    <input 
+                                        disabled={!isPremium}
+                                        value={t.name} 
+                                        onChange={(e) => {
+                                            const newT = [...settings.testimonials];
+                                            newT[idx].name = e.target.value;
+                                            setSettings({...settings, testimonials: newT});
+                                        }}
+                                        placeholder="Client Name" 
+                                        className="w-full bg-transparent font-bold text-sm" 
+                                    />
+                                    <input 
+                                        disabled={!isPremium}
+                                        value={t.role} 
+                                        onChange={(e) => {
+                                            const newT = [...settings.testimonials];
+                                            newT[idx].role = e.target.value;
+                                            setSettings({...settings, testimonials: newT});
+                                        }}
+                                        placeholder="Traveler" 
+                                        className="w-full bg-transparent text-xs text-gray-400" 
+                                    />
+                                </div>
+                            </div>
+                            <textarea 
+                                disabled={!isPremium}
+                                value={t.content} 
+                                onChange={(e) => {
+                                    const newT = [...settings.testimonials];
+                                    newT[idx].content = e.target.value;
+                                    setSettings({...settings, testimonials: newT});
+                                }}
+                                placeholder="Write the testimonial here..." 
+                                className="w-full bg-transparent text-xs text-gray-500 h-20 resize-none italic" 
+                            />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* SEO & Conversion Footer Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                {/* SEO & Marketing Section */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+                            <Search size={20} />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white uppercase tracking-wider">SEO & Marketing</h2>
+                            <p className="text-sm text-gray-500">Boost your visibility on Search Engines</p>
+                        </div>
+                        {!isPremium && <span className="ml-auto bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded">GOLD</span>}
+                    </div>
+
+                    <div className={`space-y-6 ${!isPremium ? 'opacity-60 grayscale-[0.5] relative' : ''}`}>
+                        {!isPremium && (
+                            <div className="absolute inset-0 z-10 flex items-center justify-center bg-transparent">
+                                <div className="bg-white/90 dark:bg-gray-800/90 shadow-2xl border border-purple-200 dark:border-purple-900 rounded-xl p-4 flex flex-col items-center gap-3">
+                                    <Lock size={24} className="text-purple-500" />
+                                    <p className="text-sm font-bold text-gray-900 dark:text-white">Upgrade to Pro/Enterprise</p>
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta Title</label>
+                                <input
+                                    disabled={!isPremium}
+                                    type="text"
+                                    value={settings.seoTitle || ''}
+                                    onChange={(e) => setSettings({ ...settings, seoTitle: e.target.value })}
+                                    placeholder="Agency Name | Best Tours in Region"
+                                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Meta Description</label>
+                                <textarea
+                                    disabled={!isPremium}
+                                    value={settings.seoDescription || ''}
+                                    onChange={(e) => setSettings({ ...settings, seoDescription: e.target.value })}
+                                    rows={3}
+                                    placeholder="Describe your agency for Google search results..."
+                                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Google Analytics ID</label>
+                                    <input
+                                        disabled={!isPremium}
+                                        type="text"
+                                        value={settings.analyticsGaId || ''}
+                                        onChange={(e) => setSettings({ ...settings, analyticsGaId: e.target.value })}
+                                        placeholder="G-XXXXXX"
+                                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">OpenGraph Image URL</label>
+                                    <input
+                                        disabled={!isPremium}
+                                        type="text"
+                                        value={settings.ogImageUrl || ''}
+                                        onChange={(e) => setSettings({ ...settings, ogImageUrl: e.target.value })}
+                                        placeholder="https://example.com/social-preview.jpg"
+                                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Conversion Tools */}
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+                            <MessageSquare size={20} />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-semibold text-gray-900 dark:text-white uppercase tracking-wider">Conversion Tools</h2>
+                            <p className="text-sm text-gray-500">Turn visitors into customers</p>
+                        </div>
+                        {!isPremium && <span className="ml-auto bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded">GOLD</span>}
+                    </div>
+
+                    <div className={`space-y-6 ${!isPremium ? 'opacity-60 grayscale-[0.5] relative' : ''}`}>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                        <Phone size={14} /> WhatsApp Number
+                                    </label>
+                                    <input
+                                        disabled={!isPremium}
+                                        type="text"
+                                        value={settings.whatsappNumber || ''}
+                                        onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
+                                        placeholder="+212 600 000 000"
+                                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-2">
+                                        <Layout size={14} /> Custom Footer Script
+                                    </label>
+                                    <textarea
+                                        disabled={!isPremium}
+                                        value={settings.customScripts || ''}
+                                        onChange={(e) => setSettings({ ...settings, customScripts: e.target.value })}
+                                        rows={1}
+                                        placeholder="<script>...</script>"
+                                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-gray-900 dark:bg-black text-green-500 font-mono text-xs"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
+                                <div className="flex items-center gap-3">
+                                    <Mail size={18} className="text-blue-500" />
+                                    <div>
+                                        <p className="text-xs font-semibold text-gray-900 dark:text-white">Newsletter Subscription</p>
+                                        <p className="text-[10px] text-gray-500">Collect emails from your footer</p>
+                                    </div>
+                                </div>
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        disabled={!isPremium}
+                                        checked={settings.newsletterEnabled || false}
+                                        onChange={(e) => setSettings({ ...settings, newsletterEnabled: e.target.checked })}
+                                        className="sr-only peer"
+                                    />
+                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

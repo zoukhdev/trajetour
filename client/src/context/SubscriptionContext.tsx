@@ -20,6 +20,7 @@ interface SubscriptionContextValue {
     subscription: Subscription | null;
     loading: boolean;
     isLocked: boolean; // true when status is NOT ACTIVE
+    isPremium: boolean; // true for GOLD and ENTERPRISE
     refetch: () => Promise<void>;
 }
 
@@ -27,6 +28,7 @@ const SubscriptionContext = createContext<SubscriptionContextValue>({
     subscription: null,
     loading: true,
     isLocked: false,
+    isPremium: false,
     refetch: () => Promise.resolve(),
 });
 
@@ -45,11 +47,12 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => { fetchSub(); }, []);
 
     // isLocked is true ONLY when we have successfully fetched the subscription AND it's not ACTIVE.
-    // If subscription is null (no agency context, or a transient fetch error), we do NOT lock.
     const isLocked = !loading && subscription !== null && subscription.status !== 'ACTIVE';
+    // isPremium is true for GOLD and ENTERPRISE plans
+    const isPremium = subscription?.plan === 'GOLD' || subscription?.plan === 'ENTERPRISE';
 
     return (
-        <SubscriptionContext.Provider value={{ subscription, loading, isLocked, refetch: fetchSub }}>
+        <SubscriptionContext.Provider value={{ subscription, loading, isLocked, isPremium, refetch: fetchSub }}>
             {children}
         </SubscriptionContext.Provider>
     );

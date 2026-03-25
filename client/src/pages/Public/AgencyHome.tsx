@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
+import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight, HelpCircle, ChevronDown, ChevronUp, MessageCircle, Mail } from 'lucide-react';
 import { settingsAPI } from '../../services/api';
 
 const AgencyHome = () => {
@@ -10,6 +10,7 @@ const AgencyHome = () => {
     const [destination, setDestination] = useState('omrah');
     const [date, setDate] = useState('');
     const [statsVisible, setStatsVisible] = useState(false);
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
     
     // Dynamic settings state
     const [settings, setSettings] = useState<any>(null);
@@ -54,29 +55,34 @@ const AgencyHome = () => {
     }, [statsVisible]);
 
     const animateStats = () => {
+        if (!settings?.trustStats || settings.trustStats.length === 0) return;
+        
         const duration = 2000;
         const steps = 60;
         const interval = duration / steps;
 
-        const targets = { clients: 5000, packages: 150, years: 10, satisfaction: 98 };
-        let current = { clients: 0, packages: 0, years: 0, satisfaction: 0 };
+        const initialStats = settings.trustStats.reduce((acc: any, stat: any) => {
+            acc[stat.label] = 0;
+            return acc;
+        }, {});
+        
+        setStats(initialStats);
 
         const timer = setInterval(() => {
-            current.clients = Math.min(current.clients + targets.clients / steps, targets.clients);
-            current.packages = Math.min(current.packages + targets.packages / steps, targets.packages);
-            current.years = Math.min(current.years + targets.years / steps, targets.years);
-            current.satisfaction = Math.min(current.satisfaction + targets.satisfaction / steps, targets.satisfaction);
+            let allDone = true;
+            const newStats = { ...stats };
 
-            setStats({
-                clients: Math.floor(current.clients),
-                packages: Math.floor(current.packages),
-                years: Math.floor(current.years),
-                satisfaction: Math.floor(current.satisfaction)
+            settings.trustStats.forEach((stat: any) => {
+                const target = parseInt(stat.value.replace(/[^0-9]/g, '')) || 0;
+                const increment = target / steps;
+                if (stats[stat.label] < target) {
+                    newStats[stat.label] = Math.min(stats[stat.label] + increment, target);
+                    allDone = false;
+                }
             });
 
-            if (current.clients >= targets.clients) {
-                clearInterval(timer);
-            }
+            setStats(newStats);
+            if (allDone) clearInterval(timer);
         }, interval);
     };
 
@@ -128,24 +134,89 @@ const AgencyHome = () => {
     const heroDescription = slides.length > 0 && slides[0].description ? slides[0].description : 'Organisation professionnelle de Omrah & Hajj avec plus de 10 ans d\'expérience';
     const displayName = settings?.displayName || 'Trajetour';
 
+    // Dynamic SEO & Scripts Injection
+    useEffect(() => {
+        if (!settings) return;
+
+        // Meta tags
+        if (settings.seoTitle) document.title = settings.seoTitle;
+        
+        const updateMeta = (name: string, content: string, property = false) => {
+            let el = document.querySelector(property ? `meta[property="${name}"]` : `meta[name="${name}"]`);
+            if (!el) {
+                el = document.createElement('meta');
+                if (property) el.setAttribute('property', name);
+                else el.setAttribute('name', name);
+                document.head.appendChild(el);
+            }
+            el.setAttribute('content', content);
+        };
+
+        if (settings.seoDescription) updateMeta('description', settings.seoDescription);
+        if (settings.ogImageUrl) updateMeta('og:image', settings.ogImageUrl, true);
+
+        // Google Analytics
+        if (settings.analyticsGaId) {
+            const script1 = document.createElement('script');
+            script1.async = true;
+            script1.src = `https://www.googletagmanager.com/gtag/js?id=${settings.analyticsGaId}`;
+            document.head.appendChild(script1);
+
+            const script2 = document.createElement('script');
+            script2.text = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${settings.analyticsGaId}');`;
+            document.head.appendChild(script2);
+        }
+
+        // Custom Scripts
+        if (settings.customScripts) {
+            const script = document.createElement('script');
+            script.innerHTML = settings.customScripts; // Changed text to innerHTML for safety with script content
+            document.head.appendChild(script);
+        }
+
+        // Custom Font
+        if (settings.fontFamily && settings.fontFamily !== 'Inter') {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `https://fonts.googleapis.com/css2?family=${settings.fontFamily.replace(/ /g, '+')}:wght@400;700;900&display=swap`;
+            document.head.appendChild(link);
+        }
+
+    }, [settings]);
+
     return (
         <div className="agency-home relative w-full overflow-hidden">
-            {settings?.primaryColor && (
+
+            {settings ? (
                 <style dangerouslySetInnerHTML={{
                     __html: `
-                        .agency-home .text-primary { color: ${settings.primaryColor} !important; }
-                        .agency-home .bg-primary { background-color: ${settings.primaryColor} !important; }
-                        .agency-home .from-primary { --tw-gradient-from: ${settings.primaryColor} var(--tw-gradient-from-position) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
-                        .agency-home .border-primary { border-color: ${settings.primaryColor} !important; }
-                        .agency-home .focus\\:border-primary:focus { border-color: ${settings.primaryColor} !important; }
-                        .agency-home .focus\\:ring-primary:focus { --tw-ring-color: ${settings.primaryColor} !important; }
+                        :root {
+                            --primary-color: ${settings.primaryColor || '#3b82f6'};
+                            --secondary-color: ${settings.secondaryColor || '#10b981'};
+                            --border-radius: ${settings.borderRadius || '12px'};
+                        }
+                        .agency-home { font-family: '${settings.fontFamily || 'Inter'}', sans-serif !important; }
+                        .agency-home .text-primary { color: var(--primary-color) !important; }
+                        .agency-home .bg-primary { background-color: var(--primary-color) !important; }
+                        .agency-home .btn-primary, .agency-home .rounded-xl, .agency-home .rounded-2xl { border-radius: var(--border-radius) !important; }
+                        .agency-home .from-primary { --tw-gradient-from: var(--primary-color) !important; }
+                        .agency-home .border-primary { border-color: var(--primary-color) !important; }
                     `
                 }} />
-            )}
+            ) : null}
 
-            {/* Hero Section with Parallax Effect */}
-            <div className="relative w-full min-h-[700px] flex flex-col items-center justify-center px-4 bg-cover bg-center bg-no-repeat bg-fixed"
-                style={{ backgroundImage: `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%), url("${heroImage}")` }}>
+            {/* Hero Section with Parallax or Video Background */}
+            <div className="relative w-full min-h-[750px] flex flex-col items-center justify-center px-4 bg-cover bg-center bg-no-repeat bg-fixed overflow-hidden"
+                style={{ backgroundImage: settings?.videoUrl ? 'none' : `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%), url("${heroImage}")` }}>
+
+                {settings?.videoUrl && (
+                    <div className="absolute inset-0 z-0">
+                        <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+                            <source src={settings.videoUrl} type="video/mp4" />
+                        </video>
+                        <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+                    </div>
+                )}
 
                 {/* Animated Background Overlay */}
                 <div className="absolute inset-0 bg-primary/20 to-purple-600/20 animate-pulse-slow"></div>
@@ -280,41 +351,42 @@ const AgencyHome = () => {
                 </div>
             </div>
 
-            {/* Stats Counter Section */}
-            <section id="stats-section" className="py-20 bg-primary text-white">
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div className="text-center transform hover:scale-110 transition-transform">
-                            <div className="flex items-center justify-center mb-4">
-                                <Users className="text-yellow-400" size={48} />
-                            </div>
-                            <div className="text-5xl font-black mb-2">{stats.clients.toLocaleString()}+</div>
-                            <div className="text-blue-100 text-lg font-medium">Pèlerins Satisfaits</div>
-                        </div>
-
-                        <div className="text-center transform hover:scale-110 transition-transform">
-                            <div className="flex items-center justify-center mb-4">
-                                <Plane className="text-yellow-400" size={48} />
-                            </div>
-                            <div className="text-5xl font-black mb-2">{stats.packages}+</div>
-                            <div className="text-blue-100 text-lg font-medium">Packages Disponibles</div>
-                        </div>
-
-                        <div className="text-center transform hover:scale-110 transition-transform">
-                            <div className="flex items-center justify-center mb-4">
-                                <Award className="text-yellow-400" size={48} />
-                            </div>
-                            <div className="text-5xl font-black mb-2">{stats.years}+</div>
-                            <div className="text-blue-100 text-lg font-medium">Années d'Expérience</div>
-                        </div>
-
-                        <div className="text-center transform hover:scale-110 transition-transform">
-                            <div className="flex items-center justify-center mb-4">
-                                <TrendingUp className="text-yellow-400" size={48} />
-                            </div>
-                            <div className="text-5xl font-black mb-2">{stats.satisfaction}%</div>
-                            <div className="text-blue-100 text-lg font-medium">Taux de Satisfaction</div>
-                        </div>
+            {/* Dynamic Stats Counter Section */}
+            <section id="stats-section" className="py-20 bg-primary text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                <div className="max-w-7xl mx-auto px-4 relative z-10">
+                    <div className={`grid grid-cols-2 md:grid-cols-${(settings?.trustStats?.length || 4)} gap-8`}>
+                        {settings?.trustStats && settings.trustStats.length > 0 ? (
+                            settings.trustStats.map((stat: any, idx: number) => (
+                                <div key={idx} className="text-center transform hover:scale-110 transition-transform">
+                                    <div className="text-5xl font-black mb-2">{stat.value}</div>
+                                    <div className="text-blue-100 text-lg font-medium">{stat.label}</div>
+                                </div>
+                            ))
+                        ) : (
+                            <>
+                                <div className="text-center transform hover:scale-110 transition-transform">
+                                    <div className="flex items-center justify-center mb-4"><Users className="text-yellow-400" size={48} /></div>
+                                    <div className="text-5xl font-black mb-2">5,000+</div>
+                                    <div className="text-blue-100 text-lg font-medium">Pèlerins Satisfaits</div>
+                                </div>
+                                <div className="text-center transform hover:scale-110 transition-transform">
+                                    <div className="flex items-center justify-center mb-4"><Plane className="text-yellow-400" size={48} /></div>
+                                    <div className="text-5xl font-black mb-2">150+</div>
+                                    <div className="text-blue-100 text-lg font-medium">Packages</div>
+                                </div>
+                                <div className="text-center transform hover:scale-110 transition-transform">
+                                    <div className="flex items-center justify-center mb-4"><Award className="text-yellow-400" size={48} /></div>
+                                    <div className="text-5xl font-black mb-2">10+</div>
+                                    <div className="text-blue-100 text-lg font-medium">Années d'Expérience</div>
+                                </div>
+                                <div className="text-center transform hover:scale-110 transition-transform">
+                                    <div className="flex items-center justify-center mb-4"><TrendingUp className="text-yellow-400" size={48} /></div>
+                                    <div className="text-5xl font-black mb-2">98%</div>
+                                    <div className="text-blue-100 text-lg font-medium">Satisfaction</div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </section>
@@ -430,21 +502,21 @@ const AgencyHome = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {testimonials.map((testimonial, idx) => (
+                        {(settings?.testimonials?.length > 0 ? settings.testimonials : testimonials).map((testimonial: any, idx: number) => (
                             <div key={idx} className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all border border-gray-100 dark:border-gray-700">
                                 <div className="flex gap-1 mb-4">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
+                                    {[...Array(testimonial.rating || 5)].map((_, i) => (
                                         <Star key={i} size={20} className="text-yellow-500 fill-yellow-500" />
                                     ))}
                                 </div>
                                 <p className="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
-                                    "{testimonial.text}"
+                                    "{testimonial.content || testimonial.text}"
                                 </p>
                                 <div className="flex items-center gap-4">
-                                    <img src={testimonial.avatar} alt={testimonial.name} className="w-12 h-12 rounded-full" />
+                                    <img src={testimonial.avatar || `https://ui-avatars.com/api/?name=${testimonial.name}&background=random`} alt={testimonial.name} className="w-12 h-12 rounded-full" />
                                     <div>
                                         <p className="font-bold text-gray-900 dark:text-white">{testimonial.name}</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.location}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role || testimonial.location}</p>
                                     </div>
                                 </div>
                             </div>
@@ -452,6 +524,65 @@ const AgencyHome = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Dynamic FAQ Section */}
+            {settings?.faqs && settings.faqs.length > 0 && (
+                <section className="py-20 px-4 bg-white dark:bg-gray-900">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="text-center mb-12">
+                            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">Questions Fréquentes</h2>
+                            <p className="text-gray-500">Tout ce que vous devez savoir sur nos services</p>
+                        </div>
+                        <div className="space-y-4">
+                            {settings.faqs.map((faq: any, idx: number) => (
+                                <div key={idx} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                                    <button 
+                                        onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                                        className="w-full flex items-center justify-between p-5 text-left bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 transition-colors"
+                                    >
+                                        <span className="font-bold text-gray-900 dark:text-white">{faq.question}</span>
+                                        {openFaq === idx ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                                    </button>
+                                    {openFaq === idx && (
+                                        <div className="p-5 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-gray-100 dark:border-gray-800">
+                                            {faq.answer}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Newsletter Section */}
+            {settings?.newsletterEnabled && (
+                <section className="py-16 px-4 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-100 dark:border-gray-700">
+                    <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
+                        <div className="flex-1">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Restez Informé</h3>
+                            <p className="text-gray-500">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres exclusives.</p>
+                        </div>
+                        <div className="w-full md:w-auto flex gap-2">
+                            <input type="email" placeholder="Votre email" className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 min-w-[250px]" />
+                            <button className="bg-primary text-white px-6 py-3 rounded-lg font-bold">S'abonner</button>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Floating WhatsApp Button */}
+            {settings?.whatsappNumber && (
+                <a 
+                    href={`https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center"
+                >
+                    <MessageCircle size={28} />
+                    <span className="absolute -top-2 -left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full animate-bounce">Direct</span>
+                </a>
+            )}
 
             {/* CTA Section */}
             <section className="py-20 px-4 bg-primary text-white">

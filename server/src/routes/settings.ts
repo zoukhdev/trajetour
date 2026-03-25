@@ -19,6 +19,24 @@ const mapSettingsToClient = (dbSettings: any) => {
         contactPhone: dbSettings.contact_phone || '',
         contactAddress: dbSettings.contact_address || '',
         mapEmbedUrl: dbSettings.map_embed_url || '',
+        fontFamily: dbSettings.font_family || 'Inter',
+        videoUrl: dbSettings.video_url || '',
+        secondaryColor: dbSettings.secondary_color || '#10B981',
+        borderRadius: dbSettings.border_radius || '8px',
+        seoTitle: dbSettings.seo_title || '',
+        seoDescription: dbSettings.seo_description || '',
+        analyticsGaId: dbSettings.analytics_ga_id || '',
+        analyticsFbId: dbSettings.analytics_fb_id || '',
+        analyticsTiktokId: dbSettings.analytics_tiktok_id || '',
+        ogImageUrl: dbSettings.og_image_url || '',
+        testimonials: dbSettings.testimonials || [],
+        faqs: dbSettings.faqs || [],
+        trustStats: dbSettings.trust_stats || [],
+        whatsappNumber: dbSettings.whatsapp_number || '',
+        whatsappMessage: dbSettings.whatsapp_message || '',
+        newsletterEnabled: dbSettings.newsletter_enabled || false,
+        customScripts: dbSettings.custom_scripts || '',
+        translations: dbSettings.translations || {},
         updatedAt: dbSettings.updated_at
     };
 };
@@ -163,8 +181,13 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
                 UPDATE agency_settings 
                 SET logo_url = $1, display_name = $2, slogan = $3, primary_color = $4, 
                     contact_email = $5, contact_phone = $6, contact_address = $7, map_embed_url = $8,
+                    font_family = $9, video_url = $10, secondary_color = $11, border_radius = $12,
+                    seo_title = $13, seo_description = $14, analytics_ga_id = $15, analytics_fb_id = $16,
+                    analytics_tiktok_id = $17, og_image_url = $18, testimonials = $19, faqs = $20, 
+                    trust_stats = $21, whatsapp_number = $22, whatsapp_message = $23, newsletter_enabled = $24,
+                    custom_scripts = $25, translations = $26,
                     updated_at = CURRENT_TIMESTAMP
-                WHERE id = $9
+                WHERE id = $27
             `, [
                 settings.logoUrl || settings.logo_url || null, 
                 settings.displayName || settings.display_name || null, 
@@ -174,12 +197,36 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
                 settings.contactPhone || settings.contact_phone || null, 
                 settings.contactAddress || settings.contact_address || null, 
                 settings.mapEmbedUrl || settings.map_embed_url || null,
+                settings.fontFamily || 'Inter',
+                settings.videoUrl || null,
+                settings.secondaryColor || '#10B981',
+                settings.borderRadius || '8px',
+                settings.seoTitle || null,
+                settings.seoDescription || null,
+                settings.analyticsGaId || null,
+                settings.analyticsFbId || null,
+                settings.analyticsTiktokId || null,
+                settings.ogImageUrl || null,
+                JSON.stringify(settings.testimonials || []),
+                JSON.stringify(settings.faqs || []),
+                JSON.stringify(settings.trustStats || []),
+                settings.whatsappNumber || null,
+                settings.whatsappMessage || null,
+                settings.newsletterEnabled || false,
+                settings.customScripts || null,
+                JSON.stringify(settings.translations || {}),
                 settingsId
             ]);
         } else {
             const insertRes = await client.query(`
-                INSERT INTO agency_settings (logo_url, display_name, slogan, primary_color, contact_email, contact_phone, contact_address, map_embed_url)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                INSERT INTO agency_settings (
+                    logo_url, display_name, slogan, primary_color, contact_email, contact_phone, 
+                    contact_address, map_embed_url, font_family, video_url, secondary_color, 
+                    border_radius, seo_title, seo_description, analytics_ga_id, analytics_fb_id, 
+                    analytics_tiktok_id, og_image_url, testimonials, faqs, trust_stats, 
+                    whatsapp_number, whatsapp_message, newsletter_enabled, custom_scripts, translations
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
                 RETURNING id
             `, [
                 settings.logoUrl || settings.logo_url || null, 
@@ -189,7 +236,25 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
                 settings.contactEmail || settings.contact_email || null, 
                 settings.contactPhone || settings.contact_phone || null, 
                 settings.contactAddress || settings.contact_address || null, 
-                settings.mapEmbedUrl || settings.map_embed_url || null
+                settings.mapEmbedUrl || settings.map_embed_url || null,
+                settings.fontFamily || 'Inter',
+                settings.videoUrl || null,
+                settings.secondaryColor || '#10B981',
+                settings.borderRadius || '8px',
+                settings.seoTitle || null,
+                settings.seoDescription || null,
+                settings.analyticsGaId || null,
+                settings.analyticsFbId || null,
+                settings.analyticsTiktokId || null,
+                settings.ogImageUrl || null,
+                JSON.stringify(settings.testimonials || []),
+                JSON.stringify(settings.faqs || []),
+                JSON.stringify(settings.trustStats || []),
+                settings.whatsappNumber || null,
+                settings.whatsappMessage || null,
+                settings.newsletterEnabled || false,
+                settings.customScripts || null,
+                JSON.stringify(settings.translations || {})
             ]);
             settingsId = insertRes.rows[0].id;
         }
