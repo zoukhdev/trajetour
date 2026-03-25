@@ -181,24 +181,26 @@ app.get('/api/migrate-master', async (req, res) => {
     }
 });
 
-// TEMPORARY: Migration Route for Agency Auth
-app.get('/api/migrate-agency-auth', async (req, res) => {
+// TEMPORARY: Migration Route for Offers
+app.get('/api/migrate-offers', async (req, res) => {
     try {
-        console.log('🔄 Starting Agency Auth Migration...');
+        console.log('🔄 Starting Offers Migration...');
         const client = await pool.connect();
         try {
-            // 1. Add user_id to agencies if not exists
             await client.query(`
-                ALTER TABLE agencies 
-                ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users(id) ON DELETE SET NULL;
+                ALTER TABLE offers 
+                ADD COLUMN IF NOT EXISTS capacity INTEGER DEFAULT 0,
+                ADD COLUMN IF NOT EXISTS inclusions JSONB DEFAULT '{}'::jsonb,
+                ADD COLUMN IF NOT EXISTS room_pricing JSONB DEFAULT '[]'::jsonb,
+                ADD COLUMN IF NOT EXISTS agency_id UUID REFERENCES agencies(id) ON DELETE SET NULL,
+                ADD COLUMN IF NOT EXISTS image_url TEXT,
+                ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
             `);
-
-            // 2. Update Role Check Constraint
-            await client.query(`ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check`);
-            await client.query(`ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('admin', 'staff', 'caisser', 'agent', 'client'))`);
-
-            console.log('✅ Agency Auth Schema Migration Completed');
-            res.send('Agency Auth Schema Migration Completed');
+            await client.query(`CREATE INDEX IF NOT EXISTS idx_offers_agency_id ON offers(agency_id);`);
+            await client.query(`CREATE INDEX IF NOT EXISTS idx_offers_is_featured ON offers(is_featured);`);
+            
+            console.log('✅ Offers Schema Migration Completed');
+            res.send('Offers Schema Migration Completed Successfully');
         } finally {
             client.release();
         }
