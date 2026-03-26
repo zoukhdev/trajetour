@@ -145,7 +145,7 @@ export default function HomepageBuilder() {
         const file = e.target.files?.[0];
         if (!file) return;
         if (!file.type.startsWith('image/')) { toast.error('Please upload an image'); return; }
-        if (file.size > 2 * 1024 * 1024) { toast.error('File too large'); return; }
+        if (file.size > 2 * 1024 * 1024) { toast.error('File too large (max 2MB)'); return; }
 
         try {
             setUploading(true);
@@ -154,6 +154,24 @@ export default function HomepageBuilder() {
             toast.success('Logo uploaded!');
         } catch (error) {
             toast.error('Upload failed');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleSlideUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) { toast.error('Please upload an image'); return; }
+        if (file.size > 5 * 1024 * 1024) { toast.error('File too large (max 5MB)'); return; }
+
+        try {
+            setUploading(true);
+            const { imageUrl } = await settingsAPI.uploadHeroImage(file);
+            handleSlideChange(index, 'imageUrl', imageUrl);
+            toast.success('Slide image uploaded!');
+        } catch (error) {
+            toast.error('Slide upload failed');
         } finally {
             setUploading(false);
         }
@@ -316,7 +334,13 @@ export default function HomepageBuilder() {
                                     <button onClick={() => handleRemoveSlide(idx)} className="absolute top-2 right-2 text-red-500 p-1 opacity-0 group-hover:opacity-100 transition"><Trash2 size={16} /></button>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-3">
-                                            <input value={slide.imageUrl} onChange={(e) => handleSlideChange(idx, 'imageUrl', e.target.value)} placeholder="Image URL" className="w-full text-xs p-2 rounded border dark:bg-gray-800 dark:border-gray-700" />
+                                            <div className="flex gap-2">
+                                                <input value={slide.imageUrl} onChange={(e) => handleSlideChange(idx, 'imageUrl', e.target.value)} placeholder="Image URL" className="flex-1 text-xs p-2 rounded border dark:bg-gray-800 dark:border-gray-700" />
+                                                <label className="flex items-center justify-center p-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded cursor-pointer hover:bg-gray-50 transition min-w-[40px]">
+                                                    <ImageIcon size={14} className="text-blue-500" />
+                                                    <input type="file" onChange={(e) => handleSlideUpload(idx, e)} accept="image/*" className="hidden" />
+                                                </label>
+                                            </div>
                                             <input value={slide.title} onChange={(e) => handleSlideChange(idx, 'title', e.target.value)} placeholder="Slide Title" className="w-full text-sm font-bold p-2 bg-transparent" />
                                             <input value={slide.ctaText} onChange={(e) => handleSlideChange(idx, 'ctaText', e.target.value)} placeholder="Button Text" className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
                                         </div>

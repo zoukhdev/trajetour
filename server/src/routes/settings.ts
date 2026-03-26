@@ -125,6 +125,47 @@ router.get('/homepage', async (req, res) => {
 });
 
 /**
+ * @route   POST /api/settings/upload-hero
+ * @desc    Upload hero image to Cloudinary
+ * @access  Private (Admin only)
+ */
+router.post('/upload-hero', 
+    authMiddleware, 
+    requirePermission('manage_business'),
+    async (req, res, next) => {
+        try {
+            const { upload } = await import('../utils/fileUpload.js');
+            const uploadMiddleware = upload.single('image');
+            uploadMiddleware(req, res, (err) => {
+                if (err) return res.status(400).json({ message: 'File upload failed: ' + err.message });
+                next();
+            });
+        } catch (e) {
+            next(e);
+        }
+    },
+    async (req: any, res) => {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        try {
+            const { uploadToCloudinary } = await import('../utils/fileUpload.js');
+            const folder = `trajetour/agencies/${(req as any).tenantAgencyId || 'default'}/hero`;
+            const uploadResult = await uploadToCloudinary(req.file.buffer, folder);
+
+            res.json({ 
+                message: 'Hero image uploaded successfully', 
+                imageUrl: uploadResult.secure_url 
+            });
+        } catch (err: any) {
+            console.error('Error uploading hero image:', err.message);
+            res.status(500).json({ message: 'Error uploading to Cloudinary' });
+        }
+    }
+);
+
+/**
  * @route   POST /api/settings/upload-logo
  * @desc    Upload agency logo to Cloudinary
  * @access  Private (Admin only)

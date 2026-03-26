@@ -339,6 +339,14 @@ export const settingsAPI = {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         return response.data; // { logoUrl: '...' }
+    },
+    uploadHeroImage: async (file: File) => {
+        const formData = new FormData();
+        formData.append('image', file);
+        const response = await api.post('/settings/upload-hero', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data; // { imageUrl: '...' }
     }
 };
 
