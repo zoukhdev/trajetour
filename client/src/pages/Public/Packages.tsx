@@ -92,7 +92,7 @@ const Packages = () => {
                                 <div className="relative h-64 overflow-hidden">
                                     {/* Handle missing image by showing placeholder or random if not in DB */}
                                     <img
-                                        src={pkg.image || 'https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80'}
+                                        src={pkg.image || '/kaaba-night.png'}
                                         alt={pkg.title}
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                         onError={(e) => {
@@ -100,7 +100,7 @@ const Packages = () => {
                                             // Prevent infinite error loop if fallback also fails
                                             if (!img.dataset.errored) {
                                                 img.dataset.errored = '1';
-                                                img.src = 'https://images.unsplash.com/photo-1565552684305-7e8ce702e7b5?w=800&q=80';
+                                                img.src = '/masjid-haram-aerial.png';
                                             }
                                         }}
                                     />

@@ -6,7 +6,9 @@ const About = () => {
     return (
         <div className="bg-background-light dark:bg-background-dark">
             {/* Header Hero */}
-            <div className="relative h-[400px] flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: 'linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("https://images.unsplash.com/photo-1596726615550-934c56fd6d8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80")' }}>
+            <div className="relative h-[400px] flex items-center justify-center">
+                <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url("/hajj-hero.png")' }}></div>
+                <div className="absolute inset-0 bg-black opacity-60"></div> {/* Overlay for text readability */}
                 <div className="text-center z-10 px-4">
                     <h1 className="text-5xl font-black text-white mb-4 tracking-tight shadow-xl">{t('public.about.title')}</h1>
                     <div className="h-1 w-24 bg-primary mx-auto rounded-full"></div>
@@ -30,9 +32,7 @@ const About = () => {
                     <div className="relative">
                         <div className="absolute -inset-4 bg-primary/20 rounded-2xl rotate-3"></div>
                         <img
-                            src="https://images.unsplash.com/photo-1551041777-ed277b8dd995?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                            alt="Agency Team"
-                            className="relative rounded-2xl shadow-xl w-full h-auto object-cover transform transition hover:scale-[1.01] duration-500"
+                           src="/masjid-nabawi-green-dome.png" alt="Agency Team" className="relative rounded-2xl shadow-xl w-full h-auto object-cover transform transition hover:scale-[1.01] duration-500"
                         />
                     </div>
                 </div>

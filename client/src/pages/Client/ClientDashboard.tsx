@@ -111,7 +111,7 @@ const ClientDashboard = () => {
                             {/* Hero / Active Booking Card */}
                             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                                 <div className="relative h-48 w-full">
-                                    <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?auto=format&fit=crop&q=80&w=1000")' }}></div>
+                                    <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url("/kaaba-night.png")' }}></div>
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                     <div className="absolute bottom-4 left-4 rtl:left-auto rtl:right-4 text-white">
                                         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-green-500/90 backdrop-blur-sm text-xs font-bold mb-2">

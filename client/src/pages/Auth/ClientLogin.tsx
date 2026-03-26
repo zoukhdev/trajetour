@@ -70,7 +70,7 @@ const ClientLogin = () => {
         <div className="flex-1 flex flex-col justify-center py-10 px-4 md:px-0">
             <div className="max-w-[1200px] w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center bg-white dark:bg-[#1a2634] rounded-2xl shadow-sm overflow-hidden min-h-[600px] border border-gray-100 dark:border-gray-700">
                 {/* Left Side: Image/Visual */}
-                <div className="hidden lg:flex relative h-full w-full flex-col justify-end p-10 bg-cover bg-center" style={{ backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDntQYPE9y4Lms4JeJblVvk712-oYvnEd1oOE8pFK_eltVFIU_thj_8qZlO8VIUIijCUz6e9C6aHXRaRp1LEhcrkFcW6UiN2lUw0DLJFAS5wFEC48A-mAXM6iSOKiO74ICUnIzy8AmueoWHd8miRy2VBwTxz3or4jJ0y4dD0lZ5zhc-cQyd9orA6knF-sTbonfo_9cyCBs980YdczHCE1TA2fYphzh-_NTz-wri2qYsXvxnIUXSvqoQq11BLck5g0UVhXDizenPuksO")' }}>
+                <div className="hidden lg:flex relative h-full w-full flex-col justify-end p-10 bg-cover bg-center" style={{ backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%), url("/kaaba-night.png")' }}>
                     <div className="relative z-10 text-white">
                         <div className="mb-4">
                             <span className="material-symbols-outlined text-4xl mb-2">mosque</span>
