@@ -62,7 +62,6 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             items: [
                 { icon: Building2, label: 'Toutes les Agences', path: '/dashboard/master-agencies', permission: 'manage_business' },
                 { icon: CreditCard, label: 'Surclassements', path: '/dashboard/master-subscriptions', permission: 'manage_business' },
-                { icon: Users, label: 'Réservations', path: '/dashboard/clients', permission: 'manage_business' },
 
                 { icon: FileText, label: t('common.reports'), path: '/dashboard/reports', permission: 'view_reports' },
                 { icon: BarChart, label: 'Commissions', path: '/dashboard/reports/commissions', permission: 'view_reports' },

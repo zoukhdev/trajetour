@@ -62,6 +62,7 @@ import MyBookings from './pages/Client/MyBookings';
 import FAQ from './pages/Public/FAQ';
 import BookingWizard from './pages/Public/Booking/BookingWizard';
 import HomepageBuilder from './pages/Agency/HomepageBuilder';
+import AgencyReservationList from './pages/Agency/Reservations/AgencyReservationList';
 import AgencyLayout from './layouts/AgencyLayout';
 import ClientLayout from './layouts/ClientLayout';
 import DemoAgencyDashboard from './pages/Agency/DemoAgencyDashboard';
@@ -184,7 +185,7 @@ function App() {
                     <Route path="support/:id" element={<TicketDetails />} />
 
                     {/* Operational Modules Migrated to Agency */}
-                    <Route path="clients" element={<ProtectedRoute permission="access_clients"><ClientList /></ProtectedRoute>} />
+                    <Route path="clients" element={<ProtectedRoute permission="access_clients"><AgencyReservationList /></ProtectedRoute>} />
                     <Route path="offers" element={<ProtectedRoute permission="access_offers"><OfferList /></ProtectedRoute>} />
                     <Route path="suppliers" element={<ProtectedRoute permission="access_suppliers"><SupplierList /></ProtectedRoute>} />
                     <Route path="suppliers/:id/contracts" element={<ProtectedRoute permission="access_suppliers"><SupplierContracts /></ProtectedRoute>} />

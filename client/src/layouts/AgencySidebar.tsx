@@ -56,7 +56,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
     const menuItems = [
         { icon: LayoutDashboard, label: t('common.dashboard'), path: '/agency' },
         { icon: ShoppingCart, label: t('common.my_bookings'), path: '/agency/bookings', permission: 'access_orders' },
-        { icon: Users, label: 'Clients', path: '/agency/clients', permission: 'access_clients' },
+        { icon: Users, label: 'Réservations', path: '/agency/clients', permission: 'access_clients' },
         { icon: Package, label: 'Offres / Packs', path: '/agency/offers', permission: 'access_offers' },
         { icon: Briefcase, label: 'Fournisseurs', path: '/agency/suppliers', permission: 'access_suppliers' },
         { icon: Wallet, label: 'Caisse', path: '/agency/cash-register', permission: 'access_cash_register' },
