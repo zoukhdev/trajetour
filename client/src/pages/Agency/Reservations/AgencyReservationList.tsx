@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useData } from '../../context/DataContext';
+import { useData } from '../../../context/DataContext';
 import { Search, Plus, User, Building2, FileText } from 'lucide-react';
 import Modal from '../../../components/Modal';
 import AgencyReservationForm from './AgencyReservationForm';
@@ -11,7 +11,7 @@ const AgencyReservationList = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingClient, setEditingClient] = useState<Client | undefined>(undefined);
 
-    const filteredClients = (clients || []).filter(client => {
+    const filteredClients = (clients || []).filter((client: Client) => {
         if (!client) return false;
         return (client?.fullName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
             (client?.mobileNumber || '').includes(searchTerm);
@@ -78,7 +78,7 @@ const AgencyReservationList = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredClients.map((client) => (
+                                filteredClients.map((client: Client) => (
                                     <tr key={client.id || Math.random()} className="hover:bg-gray-50/80 transition-colors group">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
