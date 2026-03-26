@@ -100,14 +100,29 @@ api.interceptors.response.use(
                 return Promise.reject(error);
             }
 
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
+            const parts = hostname.split('.');
+
+            // Detect if we are on an agency subdomain (consistent with App.tsx)
+            let isAgencyDomain = false;
+            if (hostname.includes('.trajetour.com') && parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'app' && parts[0] !== 'api') {
+                isAgencyDomain = true;
+            } else if (hostname.includes('localhost') && parts.length > 1 && parts[0] !== 'www') {
+                isAgencyDomain = true;
+            }
+
             // Public routes — never redirect to login from these pages
-            const publicPaths = ['/', '/demo', '/about', '/contact', '/faq', '/reviews',
-                '/packages', '/agency-signup', '/register', '/login'];
-            const isPublicPage = publicPaths.some(p =>
-                window.location.pathname === p || window.location.pathname.startsWith(p + '/')
+            const publicPaths = ['/', '/about', '/contact', '/faq', '/reviews', '/packages', '/demo', '/agency-signup', '/register', '/login'];
+            
+            const isPublicPage = isAgencyDomain || publicPaths.some(p => 
+                pathname === p || pathname === p + '/' || pathname.startsWith(p + '/')
             );
 
-            if (!isPublicPage) {
+            // Dashboard routes SHOULD trigger redirect even on subdomain if they specifically target /agency or /dashboard
+            const isDashboardRoute = pathname.startsWith('/agency') || pathname.startsWith('/dashboard') || pathname.startsWith('/client');
+
+            if (!isPublicPage || (isDashboardRoute && !pathname.startsWith('/login'))) {
                 console.error(`🚫 401 Unauthorized from: ${error.config.url}. Redirecting to login.`);
                 window.location.href = '/login';
             }

@@ -155,16 +155,20 @@ const AgencyHome = () => {
         if (settings.seoDescription) updateMeta('description', settings.seoDescription);
         if (settings.ogImageUrl) updateMeta('og:image', settings.ogImageUrl, true);
 
-        // Google Analytics
+        // Google Analytics - avoid eval() CSP issues by using dataLayer directly
         if (settings.analyticsGaId) {
-            const script1 = document.createElement('script');
-            script1.async = true;
-            script1.src = `https://www.googletagmanager.com/gtag/js?id=${settings.analyticsGaId}`;
-            document.head.appendChild(script1);
-
-            const script2 = document.createElement('script');
-            script2.text = `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${settings.analyticsGaId}');`;
-            document.head.appendChild(script2);
+            // Only inject once
+            if (!document.getElementById('gtag-script')) {
+                const script1 = document.createElement('script');
+                script1.id = 'gtag-script';
+                script1.async = true;
+                script1.src = `https://www.googletagmanager.com/gtag/js?id=${settings.analyticsGaId}`;
+                document.head.appendChild(script1);
+            }
+            // Use dataLayer directly instead of eval()-based gtag()
+            (window as any).dataLayer = (window as any).dataLayer || [];
+            (window as any).dataLayer.push('js', new Date());
+            (window as any).dataLayer.push('config', settings.analyticsGaId);
         }
 
         // Custom Scripts
@@ -297,6 +301,8 @@ const AgencyHome = () => {
                                     <Plane className="text-gray-400" size={18} />
                                 </div>
                                 <select
+                                    id="search-destination"
+                                    name="destination"
                                     value={destination}
                                     onChange={(e) => setDestination(e.target.value)}
                                     className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
@@ -315,6 +321,8 @@ const AgencyHome = () => {
                                     <Calendar className="text-gray-400" size={18} />
                                 </div>
                                 <input
+                                    id="search-date"
+                                    name="departure_date"
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
@@ -329,7 +337,7 @@ const AgencyHome = () => {
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Clock className="text-gray-400" size={18} />
                                 </div>
-                                <select className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20">
+                                <select id="search-duration" name="duration" className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20">
                                     <option>10 jours</option>
                                     <option>15 jours</option>
                                     <option>21 jours</option>
@@ -564,7 +572,7 @@ const AgencyHome = () => {
                             <p className="text-gray-500">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres exclusives.</p>
                         </div>
                         <div className="w-full md:w-auto flex gap-2">
-                            <input type="email" placeholder="Votre email" className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 min-w-[250px]" />
+                            <input id="newsletter-email" name="newsletter-email" type="email" placeholder="Votre email" autoComplete="email" className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 min-w-[250px]" />
                             <button className="bg-primary text-white px-6 py-3 rounded-lg font-bold">S'abonner</button>
                         </div>
                     </div>
