@@ -284,9 +284,8 @@ export const offersAPI = {
         return response.data;
     },
     uploadImage: async (id: string, formData: FormData) => {
-        const response = await api.post(`/offers/${id}/upload`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        // Do NOT set Content-Type manually for FormData - Axios auto-sets multipart/form-data with correct boundary
+        const response = await api.post(`/offers/${id}/upload`, formData);
         return response.data;
     },
     // Room management for offers

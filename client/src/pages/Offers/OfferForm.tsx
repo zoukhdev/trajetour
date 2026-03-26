@@ -265,9 +265,17 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                     setOfferId(saved.id);
                 }
                 
-                // Upload image if selected during first step save
+                // Upload image if selected - non-blocking: if this fails we still proceed
                 if (imageFile) {
-                    await uploadOfferImage(saved.id, imageFile);
+                    try {
+                        const uploadedUrl = await uploadOfferImage(saved.id, imageFile);
+                        // Update form data with the image URL so it's reflected in state
+                        setFormData(prev => ({ ...prev, imageUrl: uploadedUrl }));
+                    } catch (uploadError) {
+                        console.warn('⚠️ Image upload failed but offer was saved. You can re-upload later.', uploadError);
+                        // Don't block the user from proceeding — show a non-intrusive warning
+                        alert('L\'offre a été enregistrée, mais l\'image n\'a pas pu être téléchargée. Vous pouvez réessayer plus tard.');
+                    }
                 }
                 
                 setCurrentStep(2);

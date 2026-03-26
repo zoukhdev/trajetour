@@ -30,13 +30,13 @@ const ClientList = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-800">Clients</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Réservations</h1>
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                     <Plus size={20} />
-                    <span>Nouveau Client</span>
+                    <span>Nouvelle Réservation</span>
                 </button>
             </div>
 
@@ -137,7 +137,7 @@ const ClientList = () => {
             <Modal
                 isOpen={isModalOpen}
                 onClose={handleClose}
-                title={editingClient ? "Modifier Client" : "Nouveau Client"}
+                title={editingClient ? "Modifier Réservation" : "Nouvelle Réservation"}
             >
                 <ClientForm onClose={handleClose} initialData={editingClient} />
             </Modal>

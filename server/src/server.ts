@@ -341,8 +341,8 @@ app.use('/api/clients', clientsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/rooms', roomsRoutes);
-app.use('/api/offers', offerHotelsRoutes); // Hotel management for offers (Specific first)
-app.use('/api/offers', offersRoutes);      // Generic offers CRUD (General second)
+app.use('/api/offers', offersRoutes);      // Generic offers CRUD (upload, create, update, etc.) MUST be first
+app.use('/api/offers', offerHotelsRoutes); // Hotel management for offers (/:offerId/hotels, etc.)
 app.use('/api/agencies', agencyRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/users', userRoutes);

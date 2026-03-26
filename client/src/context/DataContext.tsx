@@ -26,7 +26,7 @@ interface DataContextType {
     refreshOrders?: () => Promise<void>;
 
     // CRUD Operations
-    addClient: (client: Client) => Promise<void>;
+    addClient: (client: Client) => Promise<Client>;
     updateClient: (client: Client) => Promise<void>;
 
     addAgency: (agency: Agency) => Promise<void>;
@@ -283,6 +283,7 @@ export const DataProvider = ({ children }: { children: ReactNode }) => {
     const addClient = async (client: Client) => {
         const newClient = await clientsAPI.create(client);
         setClients(prev => [...prev, newClient]);
+        return newClient;
     };
     const updateClient = async (updatedClient: Client) => {
         const saved = await clientsAPI.update(updatedClient.id, updatedClient);

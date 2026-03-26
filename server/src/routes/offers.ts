@@ -8,14 +8,27 @@ import { logAudit } from '../services/auditLog.js';
 const router = express.Router();
 
 // Helper to map DB columns to API model
+const formatDate = (d: any): string => {
+    if (!d) return '';
+    // Handle both Date objects and string representations
+    if (d instanceof Date) return d.toISOString().split('T')[0];
+    const s = String(d);
+    // Already in yyyy-MM-dd format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    // Postgres often returns dates as ISO strings with time
+    if (s.includes('T')) return s.split('T')[0];
+    // Fallback: parse as Date
+    try { return new Date(s).toISOString().split('T')[0]; } catch { return ''; }
+};
+
 const mapOfferResponse = (row: any) => ({
     id: row.id,
     title: row.title,
     type: row.type,
     destination: row.destination,
     price: parseFloat(row.price),
-    startDate: row.start_date ? String(row.start_date).split('T')[0] : '',
-    endDate: row.end_date ? String(row.end_date).split('T')[0] : '',
+    startDate: formatDate(row.start_date),
+    endDate: formatDate(row.end_date),
     hotel: row.hotel,
     transport: row.transport,
     description: row.description,
