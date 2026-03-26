@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, CalendarDays, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -40,10 +41,8 @@ function formatDisplay(val: string): string {
 }
 
 function parseDisplayInput(raw: string): string {
-    // Accepts dd/MM/yyyy → yyyy-MM-dd
     const match = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     if (match) return `${match[3]}-${match[2].padStart(2, '0')}-${match[1].padStart(2, '0')}`;
-    // Also accept yyyy-MM-dd directly
     if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
     return '';
 }
@@ -61,28 +60,73 @@ export default function DatePicker({
     const [rawInput, setRawInput] = useState(value ? formatDisplay(value) : '');
     const [yearInputMode, setYearInputMode] = useState(false);
     const [yearInputVal, setYearInputVal] = useState('');
+    const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
-    const containerRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Sync rawInput when value changes externally
     useEffect(() => {
         setRawInput(value ? formatDisplay(value) : '');
     }, [value]);
 
-    // Sync calendar view to current value when opening
+    // Position the portal dropdown relative to the input
+    const computePosition = () => {
+        if (!wrapperRef.current) return;
+        const rect = wrapperRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const calendarHeight = 330;
+
+        if (spaceBelow >= calendarHeight) {
+            setDropdownStyle({
+                position: 'fixed',
+                top: rect.bottom + 6,
+                left: rect.left,
+                width: Math.max(rect.width, 280),
+                zIndex: 99999,
+            });
+        } else {
+            // open upward
+            setDropdownStyle({
+                position: 'fixed',
+                bottom: window.innerHeight - rect.top + 6,
+                left: rect.left,
+                width: Math.max(rect.width, 280),
+                zIndex: 99999,
+            });
+        }
+    };
+
     const handleOpen = () => {
         if (parsed) {
             setViewYear(parsed.getFullYear());
             setViewMonth(parsed.getMonth());
         }
+        computePosition();
         setOpen(true);
     };
+
+    // Re-position on scroll / resize while open
+    useEffect(() => {
+        if (!open) return;
+        const update = () => computePosition();
+        window.addEventListener('scroll', update, true);
+        window.addEventListener('resize', update);
+        return () => {
+            window.removeEventListener('scroll', update, true);
+            window.removeEventListener('resize', update);
+        };
+    }, [open]);
 
     // Close on outside click
     useEffect(() => {
         if (!open) return;
         const handler = (e: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+            const target = e.target as Node;
+            if (
+                wrapperRef.current && !wrapperRef.current.contains(target) &&
+                dropdownRef.current && !dropdownRef.current.contains(target)
+            ) {
                 setOpen(false);
             }
         };
@@ -114,18 +158,6 @@ export default function DatePicker({
     const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const raw = e.target.value;
         setRawInput(raw);
-
-        // Auto-insert slashes as user types digits
-        const digits = raw.replace(/\D/g, '');
-        if (digits.length === 8) {
-            const converted = parseDisplayInput(
-                `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`
-            );
-            if (converted) {
-                onChange(converted);
-            }
-        }
-
         const converted = parseDisplayInput(raw);
         if (converted) onChange(converted);
     };
@@ -156,7 +188,8 @@ export default function DatePicker({
     while (cells.length % 7 !== 0) cells.push(null);
 
     const isSelected = (day: number) =>
-        parsed && parsed.getFullYear() === viewYear &&
+        parsed &&
+        parsed.getFullYear() === viewYear &&
         parsed.getMonth() === viewMonth &&
         parsed.getDate() === day;
 
@@ -165,8 +198,123 @@ export default function DatePicker({
         today.getMonth() === viewMonth &&
         today.getDate() === day;
 
+    const calendar = (
+        <div
+            ref={dropdownRef}
+            style={dropdownStyle}
+            className="bg-white border border-gray-200 rounded-xl shadow-2xl select-none overflow-hidden"
+        >
+            {/* Header */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50">
+                <button type="button" onClick={prevMonth}
+                    className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-600">
+                    <ChevronLeft size={16} />
+                </button>
+
+                <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
+                    <span className="px-1.5 py-0.5 rounded hover:bg-primary/10 hover:text-primary transition-colors cursor-default">
+                        {MONTHS_FR[viewMonth]}
+                    </span>
+
+                    {yearInputMode ? (
+                        <input
+                            autoFocus
+                            type="number"
+                            value={yearInputVal}
+                            onChange={e => setYearInputVal(e.target.value)}
+                            onBlur={() => {
+                                const y = parseInt(yearInputVal);
+                                if (y > 1900 && y < 2200) setViewYear(y);
+                                setYearInputMode(false);
+                            }}
+                            onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                    const y = parseInt(yearInputVal);
+                                    if (y > 1900 && y < 2200) setViewYear(y);
+                                    setYearInputMode(false);
+                                }
+                                if (e.key === 'Escape') setYearInputMode(false);
+                            }}
+                            className="w-16 text-center text-sm border border-primary rounded outline-none px-1"
+                        />
+                    ) : (
+                        <span
+                            className="px-1.5 py-0.5 rounded hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer underline decoration-dotted"
+                            onClick={() => { setYearInputVal(String(viewYear)); setYearInputMode(true); }}
+                        >
+                            {viewYear}
+                        </span>
+                    )}
+                </div>
+
+                <button type="button" onClick={nextMonth}
+                    className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all text-gray-600">
+                    <ChevronRight size={16} />
+                </button>
+            </div>
+
+            {/* Day names */}
+            <div className="grid grid-cols-7 px-2 pt-2 pb-1">
+                {DAYS_FR.map(d => (
+                    <div key={d} className="text-center text-[10px] font-bold text-gray-400 uppercase py-1">
+                        {d}
+                    </div>
+                ))}
+            </div>
+
+            {/* Day cells */}
+            <div className="grid grid-cols-7 px-2 pb-2 gap-y-0.5">
+                {cells.map((day, i) => (
+                    <div key={i} className="flex items-center justify-center">
+                        {day ? (
+                            <button
+                                type="button"
+                                onClick={() => handleDayClick(day)}
+                                className={cn(
+                                    'w-8 h-8 rounded-full text-sm font-medium transition-all duration-150',
+                                    isSelected(day)
+                                        ? 'bg-primary text-white shadow-md shadow-primary/30'
+                                        : isToday(day)
+                                            ? 'border-2 border-primary text-primary font-bold'
+                                            : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
+                                )}
+                            >
+                                {day}
+                            </button>
+                        ) : (
+                            <span className="w-8 h-8" />
+                        )}
+                    </div>
+                ))}
+            </div>
+
+            {/* Quick actions */}
+            <div className="flex border-t border-gray-100 divide-x divide-gray-100">
+                <button
+                    type="button"
+                    onClick={() => {
+                        const ymd = toYMD(today);
+                        onChange(ymd);
+                        setRawInput(formatDisplay(ymd));
+                        setOpen(false);
+                    }}
+                    className="flex-1 py-2 text-xs font-semibold text-primary hover:bg-primary/5 transition-colors"
+                >
+                    Aujourd'hui
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="flex-1 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-50 transition-colors"
+                >
+                    Fermer
+                </button>
+            </div>
+        </div>
+    );
+
     return (
-        <div className={cn('relative', className)} ref={containerRef}>
+        <div className={cn('relative', className)} ref={wrapperRef}>
             {label && (
                 <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
                     {label}{required && <span className="text-red-500 ml-1">*</span>}
@@ -175,8 +323,8 @@ export default function DatePicker({
 
             {/* Input row */}
             <div className={cn(
-                'flex items-center border rounded-lg overflow-hidden transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary',
-                hasError ? 'border-red-400 bg-red-50' : 'border-gray-300 bg-white',
+                'flex items-center border rounded-lg bg-white transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary',
+                hasError ? 'border-red-400 bg-red-50' : 'border-gray-300',
                 inputClassName
             )}>
                 <input
@@ -188,14 +336,15 @@ export default function DatePicker({
                     placeholder={placeholder}
                     required={required}
                     inputMode="numeric"
-                    className="flex-1 px-3 py-2 text-sm outline-none bg-transparent placeholder-gray-400"
+                    className="flex-1 px-3 py-2 text-sm outline-none bg-transparent placeholder-gray-400 min-w-0"
                 />
                 {value && (
                     <button
                         type="button"
                         onClick={handleClear}
-                        className="px-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                        className="px-1 text-gray-400 hover:text-red-500 transition-colors shrink-0"
                         tabIndex={-1}
+                        title="Effacer"
                     >
                         <X size={14} />
                     </button>
@@ -203,130 +352,16 @@ export default function DatePicker({
                 <button
                     type="button"
                     onClick={() => open ? setOpen(false) : handleOpen()}
-                    className="px-2.5 py-2 border-l border-gray-200 hover:bg-gray-50 transition-colors text-primary"
+                    className="px-3 py-2 border-l border-gray-200 hover:bg-blue-50 transition-colors text-primary shrink-0 rounded-r-lg"
                     tabIndex={-1}
-                    aria-label="Ouvrir le calendrier"
+                    title="Ouvrir le calendrier"
                 >
-                    <CalendarDays size={17} />
+                    <CalendarDays size={18} />
                 </button>
             </div>
 
-            {/* Calendar dropdown */}
-            {open && (
-                <div className="absolute z-50 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-2xl select-none"
-                    style={{ minWidth: '280px' }}>
-
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
-                        <button type="button" onClick={prevMonth}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-600">
-                            <ChevronLeft size={16} />
-                        </button>
-
-                        <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
-                            <span
-                                className="cursor-pointer px-1.5 py-0.5 rounded hover:bg-primary/10 hover:text-primary transition-colors"
-                                onClick={() => setViewMonth(m => m)/* open month picker - future */}
-                            >
-                                {MONTHS_FR[viewMonth]}
-                            </span>
-
-                            {yearInputMode ? (
-                                <input
-                                    autoFocus
-                                    type="number"
-                                    value={yearInputVal}
-                                    onChange={e => setYearInputVal(e.target.value)}
-                                    onBlur={() => {
-                                        const y = parseInt(yearInputVal);
-                                        if (y > 1900 && y < 2200) setViewYear(y);
-                                        setYearInputMode(false);
-                                    }}
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter') {
-                                            const y = parseInt(yearInputVal);
-                                            if (y > 1900 && y < 2200) setViewYear(y);
-                                            setYearInputMode(false);
-                                        }
-                                        if (e.key === 'Escape') setYearInputMode(false);
-                                    }}
-                                    className="w-16 text-center text-sm border border-primary rounded outline-none"
-                                />
-                            ) : (
-                                <span
-                                    className="cursor-pointer px-1.5 py-0.5 rounded hover:bg-primary/10 hover:text-primary transition-colors"
-                                    onClick={() => { setYearInputVal(String(viewYear)); setYearInputMode(true); }}
-                                >
-                                    {viewYear}
-                                </span>
-                            )}
-                        </div>
-
-                        <button type="button" onClick={nextMonth}
-                            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-600">
-                            <ChevronRight size={16} />
-                        </button>
-                    </div>
-
-                    {/* Day names */}
-                    <div className="grid grid-cols-7 px-2 pt-2 pb-1">
-                        {DAYS_FR.map(d => (
-                            <div key={d} className="text-center text-[10px] font-bold text-gray-400 uppercase py-1">
-                                {d}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Day cells */}
-                    <div className="grid grid-cols-7 px-2 pb-3 gap-y-0.5">
-                        {cells.map((day, i) => (
-                            <div key={i} className="flex items-center justify-center">
-                                {day ? (
-                                    <button
-                                        type="button"
-                                        onClick={() => handleDayClick(day)}
-                                        className={cn(
-                                            'w-8 h-8 rounded-full text-sm font-medium transition-all duration-150',
-                                            isSelected(day)
-                                                ? 'bg-primary text-white shadow-md shadow-primary/30 scale-110'
-                                                : isToday(day)
-                                                    ? 'border-2 border-primary text-primary font-bold'
-                                                    : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
-                                        )}
-                                    >
-                                        {day}
-                                    </button>
-                                ) : (
-                                    <span className="w-8 h-8" />
-                                )}
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Quick actions */}
-                    <div className="flex border-t border-gray-100 divide-x divide-gray-100">
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const ymd = toYMD(today);
-                                onChange(ymd);
-                                setRawInput(formatDisplay(ymd));
-                                setOpen(false);
-                            }}
-                            className="flex-1 py-2 text-xs font-semibold text-primary hover:bg-primary/5 transition-colors rounded-bl-xl"
-                        >
-                            Aujourd'hui
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => { setOpen(false); }}
-                            className="flex-1 py-2 text-xs font-semibold text-gray-500 hover:bg-gray-50 transition-colors rounded-br-xl"
-                        >
-                            Fermer
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/* Calendar portal — renders on document.body to escape overflow:hidden */}
+            {open && createPortal(calendar, document.body)}
         </div>
     );
 }
