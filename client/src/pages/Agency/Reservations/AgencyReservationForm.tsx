@@ -4,6 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import type { Client, Order, Passenger, Room, Offer } from '../../../types';
 import { Calendar, CreditCard, Plus, Trash2, Users, AlertTriangle, Building2, TrendingUp, DollarSign } from 'lucide-react';
 import Modal from '../../../components/Modal';
+import DatePicker from '../../../components/DatePicker';
 
 interface AgencyReservationFormProps {
     onClose: () => void;
@@ -328,13 +329,12 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                     
                     {!initialData && (
                         <div className="col-span-2 md:col-span-1">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
-                            <input
-                                type="date"
+                            <DatePicker
+                                label="Date de naissance"
                                 required
                                 value={leadBirthDate}
-                                onChange={e => setLeadBirthDate(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                onChange={setLeadBirthDate}
+                                id="lead-birth-date"
                             />
                         </div>
                     )}
@@ -362,14 +362,12 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Passeport</label>
-                        <input
-                            type="date"
-                            value={formData.passportExpiry}
-                            onChange={e => setFormData({ ...formData, passportExpiry: e.target.value })}
-                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none ${
-                                passportWarning ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                            }`}
+                        <DatePicker
+                            label="Expiration Passeport"
+                            value={formData.passportExpiry || ''}
+                            onChange={val => setFormData({ ...formData, passportExpiry: val })}
+                            id="lead-passport-expiry"
+                            hasError={!!passportWarning}
                         />
                     </div>
                 </div>
@@ -481,12 +479,11 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                 />
                                             </div>
                                             <div>
-                                                <input
-                                                    type="date"
-                                                    title="Date de naissance"
+                                                <DatePicker
                                                     value={p.birthDate}
-                                                    onChange={e => updatePassenger(p.id, 'birthDate', e.target.value)}
-                                                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary outline-none"
+                                                    onChange={val => updatePassenger(p.id, 'birthDate', val)}
+                                                    placeholder="jj/mm/aaaa"
+                                                    id={`pax-birth-${p.id}`}
                                                 />
                                             </div>
                                             <div>
@@ -511,12 +508,11 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                 />
                                             </div>
                                             <div>
-                                                <input
-                                                    type="date"
-                                                    title="Expiration Passeport"
+                                                <DatePicker
                                                     value={p.passportExpiry || ''}
-                                                    onChange={e => updatePassenger(p.id, 'passportExpiry', e.target.value)}
-                                                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary outline-none"
+                                                    onChange={val => updatePassenger(p.id, 'passportExpiry', val)}
+                                                    placeholder="jj/mm/aaaa"
+                                                    id={`pax-passport-${p.id}`}
                                                 />
                                             </div>
                                             {p.assignedRoomId && (
