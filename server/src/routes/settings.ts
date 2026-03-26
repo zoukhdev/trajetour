@@ -48,7 +48,7 @@ const mapSlideToClient = (row: any) => {
         title: row.title || '',
         description: row.description || '',
         ctaText: row.cta_text || '',
-        ctaUrl: row.cta_url || '',
+        ctaUrl: row.cta_link || '',
         orderIndex: row.order_index,
         isActive: row.is_active
     };
@@ -323,7 +323,7 @@ router.post('/homepage', authMiddleware, requirePermission('manage_business'), a
             for (let i = 0; i < slides.length; i++) {
                 const slide = slides[i];
                 await client.query(`
-                    INSERT INTO agency_hero_slides (image_url, title, description, cta_text, cta_url, order_index, is_active)
+                    INSERT INTO agency_hero_slides (image_url, title, description, cta_text, cta_link, order_index, is_active)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)
                 `, [
                     slide.imageUrl || slide.image_url || null,

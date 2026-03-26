@@ -342,7 +342,10 @@ export default function HomepageBuilder() {
                                                 </label>
                                             </div>
                                             <input value={slide.title} onChange={(e) => handleSlideChange(idx, 'title', e.target.value)} placeholder="Slide Title" className="w-full text-sm font-bold p-2 bg-transparent" />
-                                            <input value={slide.ctaText} onChange={(e) => handleSlideChange(idx, 'ctaText', e.target.value)} placeholder="Button Text" className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <input value={slide.ctaText} onChange={(e) => handleSlideChange(idx, 'ctaText', e.target.value)} placeholder="Button Text" className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
+                                                <input value={slide.ctaUrl} onChange={(e) => handleSlideChange(idx, 'ctaUrl', e.target.value)} placeholder="Button URL" className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
+                                            </div>
                                         </div>
                                         <div className="bg-gray-200 dark:bg-gray-800 rounded-lg h-32 overflow-hidden relative border dark:border-gray-700">
                                             {slide.imageUrl && <img src={slide.imageUrl} className="w-full h-full object-cover" />}
