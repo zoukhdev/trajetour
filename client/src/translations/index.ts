@@ -269,7 +269,7 @@ export const translations = {
             new_booking: 'Nouvelle Réservation',
             quick_actions: {
                 book_slot: 'Réserver Place',
-                manage_clients: 'Gérer Clients',
+                manage_clients: 'Gérer Réservations',
                 reports: 'Rapports'
             },
             bookings: {
@@ -649,7 +649,7 @@ export const translations = {
             new_booking: 'حجز جديد',
             quick_actions: {
                 book_slot: 'حجز مقعد',
-                manage_clients: 'إدارة العملاء',
+                manage_clients: 'إدارة الحجوزات',
                 reports: 'التقارير'
             },
             bookings: {
