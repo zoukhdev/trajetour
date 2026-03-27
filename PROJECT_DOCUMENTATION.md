@@ -1,4 +1,4 @@
-# Wahat Alrajaa Tour - Complete Project Documentation
+# Trajetour - Complete Project Documentation
 
 ## 📋 Table of Contents
 1. [Project Overview](#project-overview)
@@ -18,7 +18,7 @@
 
 ## 🌟 Project Overview
 
-**Wahat Alrajaa Tour Management System** is a comprehensive full-stack web and mobile application designed for managing travel agency operations, specifically focused on Omra, Haj, and organized tours.
+**Trajetour Management System** is a comprehensive full-stack web and mobile application designed for managing travel agency operations, specifically focused on Omra, Haj, and organized tours.
 
 ### Purpose
 - Manage clients, bookings, and travel orders
@@ -762,8 +762,8 @@ Client runs on `http://localhost:5173`
 
 #### 5. Default Login
 ```
-Email: aimen@wrtour.com
-Password: Aimen@2025
+Email: zoukh@trajetour.com
+Password: Zoukh@2026
 ```
 
 ---

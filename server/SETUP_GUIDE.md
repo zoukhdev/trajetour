@@ -47,8 +47,8 @@ CLOUDINARY_API_SECRET=your_api_secret_here
 CLIENT_URL=http://localhost:5173
 
 # Admin credentials (you can change these)
-ADMIN_EMAIL=admin@wahat-tour.com
-ADMIN_PASSWORD=Admin123!
+ADMIN_EMAIL=zoukh@trajetour.com
+ADMIN_PASSWORD=Zoukh@2026
 ```
 
 ---
@@ -115,7 +115,7 @@ Should return:
 ```bash
 curl -X POST http://localhost:3001/api/auth/login \
   -H "Content-Type: application/json" \
-  -d "{\"email\":\"admin@wahat-tour.com\",\"password\":\"Admin123!\"}"
+  -d "{\"email\":\"zoukh@trajetour.com\",\"password\":\"Zoukh@2026\"}"
 ```
 
 Should return user info and set a cookie.

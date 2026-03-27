@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-    appId: 'com.wahatalrajaa.tour',
-    appName: 'Wahat Alrajaa Tour',
+    appId: 'com.trajetour.app',
+    appName: 'Trajetour',
     webDir: 'dist',
     server: {
         androidScheme: 'https'

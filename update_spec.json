@@ -1,4 +1,4 @@
-﻿{
+{
   "app_id": "3f2695e3-6ce4-4b2f-afa4-a6d006526668",
   "request": {
     "spec": {
@@ -35,8 +35,8 @@
             { "key": "CLOUDINARY_API_KEY", "value": "294345535736317" },
             { "key": "CLOUDINARY_API_SECRET", "value": "wjzF7RHiTM5RwkNStCbo4lK5iNk" },
             { "key": "CLIENT_URL", "value": "https://trajetour.com" },
-            { "key": "ADMIN_EMAIL", "value": "admin@wahat-tour.com" },
-            { "key": "ADMIN_PASSWORD", "value": "Admin123!" }
+            { "key": "ADMIN_EMAIL", "value": "zoukh@trajetour.com" },
+            { "key": "ADMIN_PASSWORD", "value": "Zoukh@2026" }
           ],
           "routes": [
             { "path": "/api", "preserve_path_prefix": true }

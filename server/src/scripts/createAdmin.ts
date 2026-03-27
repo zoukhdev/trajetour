@@ -21,7 +21,7 @@ async function createAdminUser() {
         console.log('\n🔄 Creating admin user...');
 
         // Hash password
-        const hashedPassword = await bcrypt.hash('Aimen@2025', 10);
+        const hashedPassword = await bcrypt.hash('Zoukh@2026', 10);
 
         // Permissions as JSON string
         const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
@@ -42,9 +42,9 @@ async function createAdminUser() {
                 permissions = EXCLUDED.permissions
             RETURNING id, email, username, role`,
             [
-                'aimen@trajetour.com',
+                'zoukh@trajetour.com',
                 hashedPassword,
-                'Aimen',
+                'Zoukh',
                 'admin',
                 permissions
             ]
@@ -56,7 +56,7 @@ async function createAdminUser() {
         console.log('👤 Username:', result.rows[0].username);
         console.log('🔑 Role:', result.rows[0].role);
         console.log('━'.repeat(50));
-        console.log('   Email: aimen@trajetour.com');
+        console.log('   Email: zoukh@trajetour.com');
         console.log('\n');
 
         process.exit(0);

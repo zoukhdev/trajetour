@@ -215,7 +215,7 @@ app.get('/api/seed-admin', async (req, res) => {
     try {
         console.log('👤 Starting Manual Admin Seeding...');
         const bcrypt = (await import('bcrypt')).default; // Dynamic import for safety
-        const hashedPassword = await bcrypt.hash('Aimen@2025', 10);
+        const hashedPassword = await bcrypt.hash('Zoukh@2026', 10);
         const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
 
         await pool.query(
@@ -223,14 +223,14 @@ app.get('/api/seed-admin', async (req, res) => {
              VALUES ($1, $2, $3, $4, $5::jsonb)
              ON CONFLICT (email) 
              DO UPDATE SET password_hash = EXCLUDED.password_hash, permissions = EXCLUDED.permissions`,
-            ['aimen@trajetour.com', hashedPassword, 'Aimen', 'admin', permissions]
+            ['zoukh@trajetour.com', hashedPassword, 'Zoukh', 'admin', permissions]
         );
 
         console.log('✅ Admin user created/updated successfully.');
         res.status(200).json({
             success: true,
-            message: 'Admin User (aimen@trajetour.com) Created/Reset Successfully!',
-            password: 'Aimen@2025'
+            message: 'Admin User (zoukh@trajetour.com) Created/Reset Successfully!',
+            password: 'Zoukh@2026'
         });
     } catch (error: any) {
         console.error('❌ One-time seeding failed:', error);
@@ -556,7 +556,7 @@ app.listen(PORT, async () => {
             // 4. Ensure Admin User Exists
             try {
                 const bcrypt = (await import('bcrypt')).default;
-                const hashedPassword = await bcrypt.hash('Aimen@2025', 10);
+                const hashedPassword = await bcrypt.hash('Zoukh@2026', 10);
                 const permissions = JSON.stringify(['manage_users', 'manage_business', 'manage_financials', 'view_reports']);
 
                 await pool.query(
@@ -564,9 +564,9 @@ app.listen(PORT, async () => {
                      VALUES ($1, $2, $3, $4, $5::jsonb)
                      ON CONFLICT (email) 
                      DO UPDATE SET password_hash = EXCLUDED.password_hash, permissions = EXCLUDED.permissions`,
-                    ['aimen@trajetour.com', hashedPassword, 'Aimen', 'admin', permissions]
+                    ['zoukh@trajetour.com', hashedPassword, 'Zoukh', 'admin', permissions]
                 );
-                console.log('✅ Admin user verified/created (aimen@trajetour.com).');
+                console.log('✅ Admin user verified/created (zoukh@trajetour.com).');
             } catch (authErr) {
                 console.error('⚠️ Failed to create admin user:', authErr);
             }

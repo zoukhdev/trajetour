@@ -1,7 +1,7 @@
 {
-    "name": "wahat-tour-server",
+    "name": "trajetour-server",
     "version": "1.0.0",
-    "description": "Backend API for Wahat Alrajaa Tour Management System",
+    "description": "Backend API for Trajetour Management System",
     "main": "dist/server.js",
     "type": "module",
     "scripts": {

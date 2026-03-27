@@ -73,7 +73,7 @@ Should see: `{"status":"ok", "database":"connected"}`
 **Body:**
 ```json
 {
-  "email": "admin@wahat-tour.com",
+  "email": "zoukh@trajetour.com",
   "password": "your-admin-password-from-env"
 }
 ```
@@ -83,7 +83,7 @@ Should see: `{"status":"ok", "database":"connected"}`
 {
   "user": {
     "id": "...",
-    "email": "admin@wahat-tour.com",
+    "email": "zoukh@trajetour.com",
     "role": "admin"
   }
 }

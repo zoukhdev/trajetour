@@ -2,7 +2,7 @@
 set "PATH=C:\Program Files\nodejs;%PATH%"
 
 echo ==========================================
-echo   WAHAT TOURS - DEV ENVIRONMENT LAUNCHER
+echo   TRAJETOUR - DEV ENVIRONMENT LAUNCHER
 echo ==========================================
 
 echo.
