@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight, HelpCircle, ChevronDown, ChevronUp, MessageCircle, Mail } from 'lucide-react';
+import { Plane, MapPin, Calendar, Star, Shield, Clock, Users, Award, CheckCircle, TrendingUp, ArrowRight, HelpCircle, ChevronDown, ChevronUp, MessageCircle, Mail, Globe } from 'lucide-react';
 import { settingsAPI } from '../../services/api';
 
 const AgencyHome = () => {
-    const {} = useLanguage();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const [destination, setDestination] = useState('omrah');
     const [date, setDate] = useState('');
@@ -103,8 +103,6 @@ const AgencyHome = () => {
         navigate(path);
     };
 
-    // Testimonials or other sections could remain hardcoded or be dynamic later
-
     const testimonials = [
         {
             name: 'Ahmed Benali',
@@ -130,8 +128,8 @@ const AgencyHome = () => {
     ];
 
     const heroImage = slides.length > 0 && slides[0].imageUrl ? slides[0].imageUrl : '/hajj-hero.png';
-    const heroTitle = slides.length > 0 && slides[0].title ? slides[0].title : 'Votre Voyage Spirituel Commence Ici';
-    const heroDescription = slides.length > 0 && slides[0].description ? slides[0].description : 'Organisation professionnelle de Omrah & Hajj avec plus de 10 ans d\'expérience';
+    const heroTitle = slides.length > 0 && slides[0].title ? slides[0].title : t('home.hero.title');
+    const heroDescription = slides.length > 0 && slides[0].description ? slides[0].description : t('home.hero.subtitle');
     const displayName = settings?.displayName || 'Trajetour';
 
     // Dynamic SEO & Scripts Injection
@@ -155,9 +153,8 @@ const AgencyHome = () => {
         if (settings.seoDescription) updateMeta('description', settings.seoDescription);
         if (settings.ogImageUrl) updateMeta('og:image', settings.ogImageUrl, true);
 
-        // Google Analytics - avoid eval() CSP issues by using dataLayer directly
+        // Google Analytics
         if (settings.analyticsGaId) {
-            // Only inject once
             if (!document.getElementById('gtag-script')) {
                 const script1 = document.createElement('script');
                 script1.id = 'gtag-script';
@@ -165,7 +162,6 @@ const AgencyHome = () => {
                 script1.src = `https://www.googletagmanager.com/gtag/js?id=${settings.analyticsGaId}`;
                 document.head.appendChild(script1);
             }
-            // Use dataLayer directly instead of eval()-based gtag()
             (window as any).dataLayer = (window as any).dataLayer || [];
             (window as any).dataLayer.push('js', new Date());
             (window as any).dataLayer.push('config', settings.analyticsGaId);
@@ -174,7 +170,7 @@ const AgencyHome = () => {
         // Custom Scripts
         if (settings.customScripts) {
             const script = document.createElement('script');
-            script.innerHTML = settings.customScripts; // Changed text to innerHTML for safety with script content
+            script.innerHTML = settings.customScripts;
             document.head.appendChild(script);
         }
 
@@ -209,7 +205,7 @@ const AgencyHome = () => {
                 }} />
             ) : null}
 
-            {/* Hero Section with Parallax or Video Background */}
+            {/* Hero Section */}
             <div className="relative w-full min-h-[750px] flex flex-col items-center justify-center px-4 bg-cover bg-center bg-no-repeat bg-fixed overflow-hidden"
                 style={{ backgroundImage: settings?.videoUrl ? 'none' : `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(0, 77, 64, 0.6) 100%), url("${heroImage}")` }}>
 
@@ -222,15 +218,13 @@ const AgencyHome = () => {
                     </div>
                 )}
 
-                {/* Animated Background Overlay */}
                 <div className="absolute inset-0 bg-primary/20 to-secondary/20 animate-pulse-slow"></div>
 
                 <div className="flex flex-col gap-8 text-center max-w-[1000px] z-10 animate-fade-in-up">
-                    {/* Badge */}
                     <div className="mx-auto">
                         <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium">
                             <Award size={16} className="text-yellow-400" />
-                            Agence Certifiée et Accréditée
+                            {t('home.hero.promo_badge')}
                         </span>
                     </div>
 
@@ -247,31 +241,31 @@ const AgencyHome = () => {
                             onClick={() => navigate('/packages')}
                             className="group inline-flex items-center justify-center rounded-xl h-14 px-10 bg-primary filter hover:brightness-110 text-white text-lg font-bold shadow-2xl shadow-primary/50 transition-all hover:scale-105"
                         >
-                            Découvrir nos Offres
-                            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+                            {t('agency_home.discover_more')}
+                            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform rtl:rotate-180" size={20} />
                         </button>
 
                         <button
                             onClick={() => navigate('/contact')}
                             className="inline-flex items-center justify-center rounded-xl h-14 px-10 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white text-lg font-bold border-2 border-white/30 transition-all hover:scale-105"
                         >
-                            Contactez-nous
+                            {t('agency_home.contact_us')}
                         </button>
                     </div>
 
                     {/* Trust Badges */}
-                    <div className="flex flex-wrap gap-8 justify-center mt-8 text-white/90 text-sm">
+                    <div className="flex flex-wrap gap-8 justify-center mt-8 text-white/90 text-sm font-bold">
                         <div className="flex items-center gap-2">
                             <Shield size={20} className="text-green-400" />
-                            <span>Paiement Sécurisé</span>
+                            <span>{t('home.hero.features.0')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <CheckCircle size={20} className="text-green-400" />
-                            <span>Licence Officielle</span>
+                            <span>{t('home.hero.features.1')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Users size={20} className="text-green-400" />
-                            <span>+5000 Pèlerins</span>
+                            <span>{t('home.hero.features.2')}</span>
                         </div>
                     </div>
                 </div>
@@ -284,18 +278,18 @@ const AgencyHome = () => {
                 </div>
             </div>
 
-            {/* Floating Search Widget */}
+            {/* Search Widget */}
             <div className="w-full px-4 -mt-20 relative z-30 flex justify-center">
                 <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-6xl border border-gray-100 dark:border-gray-700 backdrop-blur-xl">
                     <h3 className="text-xl font-bold mb-6 text-[#0e141b] dark:text-white flex items-center gap-3">
                         <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                             <MapPin className="text-primary" size={20} />
                         </div>
-                        Rechercher Votre Voyage Idéal
+                        {t('agency_home.search_packages')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div className="flex-1">
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Destination</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('home.hero.badge')}</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Plane className="text-gray-400" size={18} />
@@ -305,17 +299,17 @@ const AgencyHome = () => {
                                     name="destination"
                                     value={destination}
                                     onChange={(e) => setDestination(e.target.value)}
-                                    className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-bold"
                                 >
-                                    <option value="omrah">Makkah & Madinah (Omrah)</option>
-                                    <option value="hajj">Hajj 2026</option>
-                                    <option value="ramadan">Ramadan Special</option>
+                                    <option value="omrah">{t('agency_home.omrah')}</option>
+                                    <option value="hajj">{t('agency_home.hajj')}</option>
+                                    <option value="ramadan">{t('agency_home.ramadan')}</option>
                                 </select>
                             </div>
                         </div>
 
                         <div className="flex-1">
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Date de départ</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('agency_home.search_placeholder')}</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Calendar className="text-gray-400" size={18} />
@@ -326,22 +320,22 @@ const AgencyHome = () => {
                                     type="date"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                    className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                                    className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-bold"
                                 />
                             </div>
                         </div>
 
                         <div className="flex-1">
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Durée</label>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('sidebar.tours.tours_list')}</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Clock className="text-gray-400" size={18} />
                                 </div>
-                                <select id="search-duration" name="duration" className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20">
-                                    <option>10 jours</option>
-                                    <option>15 jours</option>
-                                    <option>21 jours</option>
-                                    <option>30 jours</option>
+                                <select id="search-duration" name="duration" className="block w-full pl-10 pr-4 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-[#0e141b] dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 font-bold">
+                                    <option>10 {t('agency_home.days')}</option>
+                                    <option>15 {t('agency_home.days')}</option>
+                                    <option>21 {t('agency_home.days')}</option>
+                                    <option>30 {t('agency_home.days')}</option>
                                 </select>
                             </div>
                         </div>
@@ -351,15 +345,15 @@ const AgencyHome = () => {
                                 onClick={handleSearch}
                                 className="w-full h-12 px-6 bg-primary filter hover:brightness-110 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:scale-105 flex items-center justify-center gap-2"
                             >
-                                Rechercher
-                                <ArrowRight size={18} />
+                                {t('common.search')}
+                                <ArrowRight size={18} className="rtl:rotate-180" />
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Dynamic Stats Counter Section */}
+            {/* Stats Counter Section */}
             <section id="stats-section" className="py-20 bg-primary text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                 <div className="max-w-7xl mx-auto px-4 relative z-10">
@@ -368,30 +362,30 @@ const AgencyHome = () => {
                             settings.trustStats.map((stat: any, idx: number) => (
                                 <div key={idx} className="text-center transform hover:scale-110 transition-transform">
                                     <div className="text-5xl font-black mb-2">{stat.value}</div>
-                                    <div className="text-white/80 text-lg font-medium">{stat.label}</div>
+                                    <div className="text-white/80 text-lg font-bold">{stat.label}</div>
                                 </div>
                             ))
                         ) : (
                             <>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><Users className="text-secondary" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><Users className="text-yellow-400" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">5,000+</div>
-                                    <div className="text-primary-100 text-lg font-medium">Pèlerins Satisfaits</div>
+                                    <div className="text-primary-100 text-lg font-bold">{t('agency_home.happy_clients')}</div>
                                 </div>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><Plane className="text-secondary" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><Plane className="text-yellow-400" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">150+</div>
-                                    <div className="text-primary-100 text-lg font-medium">Packages</div>
+                                    <div className="text-primary-100 text-lg font-bold">Packages</div>
                                 </div>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><Award className="text-secondary" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><Award className="text-yellow-400" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">10+</div>
-                                    <div className="text-primary-100 text-lg font-medium">Années d'Expérience</div>
+                                    <div className="text-primary-100 text-lg font-bold">{t('agency_home.experience')}</div>
                                 </div>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><TrendingUp className="text-secondary" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><TrendingUp className="text-yellow-400" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">98%</div>
-                                    <div className="text-primary-100 text-lg font-medium">Satisfaction</div>
+                                    <div className="text-primary-100 text-lg font-bold">{t('agency_home.satisfaction')}</div>
                                 </div>
                             </>
                         )}
@@ -403,14 +397,14 @@ const AgencyHome = () => {
             <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
-                        <span className="inline-block px-4 py-2 bg-white/20 text-white rounded-full text-sm font-bold mb-4">
-                            NOS MEILLEURES OFFRES
+                        <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-bold mb-4">
+                            {t('home.hero.promo_badge')}
                         </span>
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-                            Packages Populaires
+                            {t('agency_home.our_packages')}
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-                            Découvrez nos formules les plus demandées avec un excellent rapport qualité-prix
+                           {t('home.features.section_title')}
                         </p>
                     </div>
 
@@ -426,27 +420,27 @@ const AgencyHome = () => {
                                 </div>
                                 <div className="p-6">
                                     <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{pkg.title}</h3>
-                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-4">
+                                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-4 font-bold">
                                         <Clock size={16} />
-                                        <span className="text-sm">{pkg.duration}</span>
+                                        <span className="text-sm">{pkg.duration} {t('agency_home.days')}</span>
                                     </div>
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {pkg.features.map((feature: string, idx: number) => (
-                                            <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                                            <span key={idx} className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold">
                                                 {feature}
                                             </span>
                                         ))}
                                     </div>
                                     <div className="flex items-end justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                         <div>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">À partir de</p>
-                                            <p className="text-3xl font-black text-primary">{pkg.price} <span className="text-sm font-normal">DZD</span></p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 font-bold">{t('agency_home.from_price')}</p>
+                                            <p className="text-3xl font-black text-primary">{pkg.price} <span className="text-sm font-normal">DA</span></p>
                                         </div>
                                         <button
                                             onClick={() => navigate('/packages')}
                                             className="px-6 py-2 bg-primary filter hover:brightness-110 text-white rounded-xl font-bold transition-colors"
                                         >
-                                            Réserver
+                                            {t('agency_home.book_now')}
                                         </button>
                                     </div>
                                 </div>
@@ -459,8 +453,8 @@ const AgencyHome = () => {
                             onClick={() => navigate('/packages')}
                             className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:scale-105 transition-transform"
                         >
-                            Voir Tous les Packages
-                            <ArrowRight size={20} />
+                            {t('agency_home.discover_more')}
+                            <ArrowRight size={20} className="rtl:rotate-180" />
                         </button>
                     </div>
                 </div>
@@ -471,26 +465,26 @@ const AgencyHome = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-                            Pourquoi Choisir {displayName} ?
+                            {t('agency_home.trust_us')}
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-                            Votre confiance est notre priorité absolue
+                        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto font-bold">
+                            {t('home.hero.features.1')}
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { icon: Shield, title: 'Sécurité & Fiabilité', desc: 'Agence certifiée avec licence officielle', color: 'blue' },
-                            { icon: Users, title: 'Guides Expérimentés', desc: 'Accompagnement professionnel FR/AR', color: 'green' },
-                            { icon: Award, title: 'Qualité Premium', desc: 'Hôtels 4-5★ et services VIP', color: 'yellow' },
-                            { icon: Clock, title: 'Support 24/7', desc: 'Assistance disponible à tout moment', color: 'purple' }
+                            { icon: Shield, title: t('home.hero.features.0'), desc: t('home.hero.features.1'), color: 'blue' },
+                            { icon: Users, title: t('agency_home.happy_clients'), desc: t('home.hero.features.2'), color: 'green' },
+                            { icon: Award, title: t('agency_home.experience'), desc: t('home.hero.promo_badge'), color: 'yellow' },
+                            { icon: Clock, title: t('agency_home.satisfaction'), desc: 'Support 24/7', color: 'purple' }
                         ].map((item, idx) => (
                             <div key={idx} className="group p-6 rounded-2xl border-2 border-gray-100 dark:border-gray-700 hover:border-primary hover:shadow-xl transition-all bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-800">
-                                <div className={`w-16 h-16 bg-${item.color}-100 dark:bg-${item.color}-900/30 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                                    <item.icon className={`text-${item.color}-600 dark:text-${item.color}-400`} size={32} />
+                                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <item.icon className="text-primary" size={32} />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                                <p className="text-gray-600 dark:text-gray-400">{item.desc}</p>
+                                <p className="text-gray-600 dark:text-gray-400 font-bold">{item.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -498,14 +492,14 @@ const AgencyHome = () => {
             </section>
 
             {/* Testimonials */}
-            <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+            <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-gray-900 dark:to-gray-800">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-12">
                         <span className="inline-block px-4 py-2 bg-white dark:bg-gray-800 text-primary rounded-full text-sm font-bold mb-4 shadow-md">
-                            TÉMOIGNAGES
+                            {t('home.testimonials.badge').toUpperCase()}
                         </span>
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-4">
-                            Ce Que Disent Nos Pèlerins
+                            {t('agency_home.testimonials_title')}
                         </h2>
                     </div>
 
@@ -517,14 +511,14 @@ const AgencyHome = () => {
                                         <Star key={i} size={20} className="text-yellow-500 fill-yellow-500" />
                                     ))}
                                 </div>
-                                <p className="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed">
+                                <p className="text-gray-700 dark:text-gray-300 mb-6 italic leading-relaxed font-bold">
                                     "{testimonial.content || testimonial.text}"
                                 </p>
                                 <div className="flex items-center gap-4">
                                     <img src={testimonial.avatar || `https://ui-avatars.com/api/?name=${testimonial.name}&background=random`} alt={testimonial.name} className="w-12 h-12 rounded-full" />
                                     <div>
                                         <p className="font-bold text-gray-900 dark:text-white">{testimonial.name}</p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">{testimonial.role || testimonial.location}</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-bold">{testimonial.role || testimonial.location}</p>
                                     </div>
                                 </div>
                             </div>
@@ -533,13 +527,13 @@ const AgencyHome = () => {
                 </div>
             </section>
 
-            {/* Dynamic FAQ Section */}
+            {/* FAQ Section */}
             {settings?.faqs && settings.faqs.length > 0 && (
                 <section className="py-20 px-4 bg-white dark:bg-gray-900">
                     <div className="max-w-3xl mx-auto">
                         <div className="text-center mb-12">
-                            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">Questions Fréquentes</h2>
-                            <p className="text-gray-500">Tout ce que vous devez savoir sur nos services</p>
+                            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">{t('agency_home.faq_title')}</h2>
+                            <p className="text-gray-500 font-bold">{t('agency_home.search_placeholder')}</p>
                         </div>
                         <div className="space-y-4">
                             {settings.faqs.map((faq: any, idx: number) => (
@@ -552,7 +546,7 @@ const AgencyHome = () => {
                                         {openFaq === idx ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                     </button>
                                     {openFaq === idx && (
-                                        <div className="p-5 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-gray-100 dark:border-gray-800">
+                                        <div className="p-5 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-gray-100 dark:border-gray-800 font-bold">
                                             {faq.answer}
                                         </div>
                                     )}
@@ -569,50 +563,37 @@ const AgencyHome = () => {
                     <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-8">
                         <div className="flex-1">
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Restez Informé</h3>
-                            <p className="text-gray-500">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres exclusives.</p>
+                            <p className="text-gray-500 font-bold">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres exclusives.</p>
                         </div>
                         <div className="w-full md:w-auto flex gap-2">
-                            <input id="newsletter-email" name="newsletter-email" type="email" placeholder="Votre email" autoComplete="email" className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 min-w-[250px]" />
-                            <button className="bg-primary text-white px-6 py-3 rounded-lg font-bold">S'abonner</button>
+                            <input id="newsletter-email" name="newsletter-email" type="email" placeholder="Votre email" autoComplete="email" className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 min-w-[250px] font-bold" />
+                            <button className="bg-primary text-white px-6 py-3 rounded-lg font-bold">{t('agency_home.send_message')}</button>
                         </div>
                     </div>
                 </section>
-            )}
-
-            {/* Floating WhatsApp Button */}
-            {settings?.whatsappNumber && (
-                <a 
-                    href={`https://wa.me/${settings.whatsappNumber.replace(/[^0-9]/g, '')}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center"
-                >
-                    <MessageCircle size={28} />
-                    <span className="absolute -top-2 -left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full animate-bounce">Direct</span>
-                </a>
             )}
 
             {/* CTA Section */}
             <section className="py-20 px-4 bg-primary text-white">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-4xl md:text-5xl font-black mb-6">
-                        Prêt à Commencer Votre Voyage Spirituel ?
+                        {t('home.hero.title')}
                     </h2>
-                    <p className="text-xl text-primary-100 mb-8">
-                        Contactez-nous dès aujourd'hui pour une consultation gratuite
+                    <p className="text-xl text-primary-100 mb-8 font-bold">
+                        {t('home.hero.subtitle')}
                     </p>
                     <div className="flex flex-wrap gap-4 justify-center">
                         <button
                             onClick={() => navigate('/contact')}
                             className="px-10 py-4 bg-white text-primary rounded-xl font-bold text-lg hover:scale-105 transition-transform shadow-2xl"
                         >
-                            Demander un Devis Gratuit
+                            {t('agency_home.contact_us')}
                         </button>
                         <button
                             onClick={() => navigate('/packages')}
                             className="px-10 py-4 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white rounded-xl font-bold text-lg hover:scale-105 transition-transform"
                         >
-                            Explorer les Packages
+                            {t('agency_home.discover_more')}
                         </button>
                     </div>
                 </div>

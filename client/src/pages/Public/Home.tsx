@@ -82,48 +82,48 @@ const Home = () => {
 
     const plans = [
         {
-            name: 'Standard',
+            name: t('home.pricing.standard'),
             monthlyPrice: 2900,
             annualPrice: 24900,
             description: t('home.pricing.starter_desc'),
             highlight: false,
             features: [
-                'Up to 3 Staff Users',
-                'Max 30 Offers / Packs listings',
-                'CRM Capacity: 500 Clients',
+                `${t('home.pricing.features_list.up_to')} 3 ${t('home.pricing.features_list.staff_users')}`,
+                `${t('home.pricing.features_list.up_to')} 30 ${t('home.pricing.features_list.max_offers')}`,
+                `${t('home.pricing.features_list.crm_capacity')}: 500 ${t('common.clients')}`,
                 t('home.pricing.starter_f4'),
                 t('home.pricing.starter_f5'),
             ],
         },
         {
-            name: 'Premium',
+            name: t('home.pricing.premium'),
             monthlyPrice: 7900,
             annualPrice: 69900,
             description: t('home.pricing.pro_desc'),
             highlight: true,
             features: [
-                'Up to 10 Staff Users',
-                'Max 200 Offers / Packs listings',
-                'Unlimited Clients capacity',
-                'Custom Domain Support',
+                `${t('home.pricing.features_list.up_to')} 10 ${t('home.pricing.features_list.staff_users')}`,
+                `${t('home.pricing.features_list.up_to')} 200 ${t('home.pricing.features_list.max_offers')}`,
+                `${t('home.pricing.features_list.unlimited')} ${t('home.pricing.features_list.crm_capacity')}`,
+                t('home.pricing.features_list.custom_domain'),
                 t('home.pricing.pro_f5'),
                 t('home.pricing.pro_f6'),
                 t('home.pricing.pro_f7'),
             ],
         },
         {
-            name: 'Gold',
+            name: t('home.pricing.gold'),
             monthlyPrice: 0,
             annualPrice: 0,
             description: t('home.pricing.enterprise_desc'),
             highlight: false,
             features: [
-                'Unlimited Users / Staff',
-                'Unlimited Offers / Packs list',
-                'Unlimited Clients CRM',
-                'Custom Domain Support',
-                'White-label Theme builder',
-                'Dedicated Support channel',
+                `${t('home.pricing.features_list.unlimited')} ${t('home.pricing.features_list.staff_users')}`,
+                `${t('home.pricing.features_list.unlimited')} ${t('home.pricing.features_list.max_offers')}`,
+                `${t('home.pricing.features_list.unlimited')} ${t('home.pricing.features_list.crm_capacity')}`,
+                t('home.pricing.features_list.custom_domain'),
+                t('home.pricing.features_list.white_label'),
+                t('home.pricing.features_list.dedicated_support'),
             ],
         },
     ];
@@ -276,7 +276,7 @@ const Home = () => {
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                 <div className="bg-white/10 backdrop-blur-md rounded-full p-4 border border-white/20 shadow-2xl flex items-center gap-2 text-white font-medium">
                                     <Maximize2 size={24} />
-                                    <span>Agrandir</span>
+                                    <span>{t('common.agrandir')}</span>
                                 </div>
                             </div>
                             {/* Subtle fade effect at bottom of image if it's long */}

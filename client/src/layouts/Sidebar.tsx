@@ -58,21 +58,21 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
     const sections = [
         {
-            title: 'AGENCES & CLIENTS',
+            title: t('master_dashboard.agencies_clients'),
             items: [
-                { icon: Building2, label: 'Toutes les Agences', path: '/dashboard/master-agencies', permission: 'manage_business' },
-                { icon: CreditCard, label: 'Surclassements', path: '/dashboard/master-subscriptions', permission: 'manage_business' },
+                { icon: Building2, label: t('master_dashboard.all_agencies'), path: '/dashboard/master-agencies', permission: 'manage_business' },
+                { icon: CreditCard, label: t('master_dashboard.upgrades'), path: '/dashboard/master-subscriptions', permission: 'manage_business' },
 
                 { icon: FileText, label: t('common.reports'), path: '/dashboard/reports', permission: 'view_reports' },
-                { icon: BarChart, label: 'Commissions', path: '/dashboard/reports/commissions', permission: 'view_reports' },
-                { icon: BarChart, label: 'Revenus Master', path: '/dashboard/reports/revenue', permission: 'view_reports' },
+                { icon: BarChart, label: t('master_dashboard.commissions'), path: '/dashboard/reports/commissions', permission: 'view_reports' },
+                { icon: BarChart, label: t('master_dashboard.master_revenue'), path: '/dashboard/reports/revenue', permission: 'view_reports' },
             ]
         },
         {
-            title: 'CONFIGURATION PLATFORME',
+            title: t('master_dashboard.platform_config'),
             items: [
-                { icon: UserCircle, label: 'Utilisateurs (Master)', path: '/dashboard/users', permission: 'manage_users' },
-                { icon: Activity, label: "Journal d'activité", path: '/dashboard/logs', permission: 'manage_users' },
+                { icon: UserCircle, label: t('master_dashboard.master_users'), path: '/dashboard/users', permission: 'manage_users' },
+                { icon: Activity, label: t('master_dashboard.activity_log'), path: '/dashboard/logs', permission: 'manage_users' },
                 { icon: HelpCircle, label: t('common.support'), path: '/dashboard/support', permission: 'manage_business', badge: unreadCount },
             ]
         }
@@ -118,7 +118,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 >
                     <div className="flex flex-col gap-1 w-full items-center md:items-start">
                         <img src="/logo-stacked.png" alt="Trajetour" className="h-24 w-auto object-contain" />
-                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em] px-1 opacity-80">Tour Management System</p>
+                        <p className="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em] px-1 opacity-80">{t('master_dashboard.tour_management_system')}</p>
                     </div>
                     <button onClick={onClose} className="md:hidden text-gray-400 hover:text-gray-600">
                         <X size={24} />

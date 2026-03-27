@@ -27,7 +27,7 @@ const ClientSignup = () => {
         setLoading(true); // Set loading to true at the start of submission
 
         if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('auth.passwords_not_match'));
             setLoading(false); // Reset loading if validation fails
             return;
         }
@@ -107,7 +107,7 @@ const ClientSignup = () => {
                     <div className="flex items-start gap-2 mt-2">
                         <input type="checkbox" required className="mt-1 rounded border-gray-300 text-primary focus:ring-primary" />
                         <span className="text-xs text-[#637588] dark:text-gray-400">
-                            I agree to the <Link to="#" className="text-primary hover:underline">Terms of Service</Link> and <Link to="#" className="text-primary hover:underline">Privacy Policy</Link>.
+                            {t('auth.agree_terms')} <Link to="#" className="text-primary hover:underline">{t('common.terms')}</Link> {t('common.and')} <Link to="#" className="text-primary hover:underline">{t('common.privacy')}</Link>.
                         </span>
                     </div>
 
@@ -118,7 +118,7 @@ const ClientSignup = () => {
 
                 <div className="text-center mt-6">
                     <p className="text-sm text-[#637588] dark:text-gray-400">
-                        Already have an account?
+                        {t('auth.already_account')}
                         <Link to="/login" className="text-primary font-bold hover:underline ml-1">{t('auth.login_btn')}</Link>
                     </p>
                 </div>

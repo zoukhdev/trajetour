@@ -56,23 +56,23 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
     const menuItems = [
         { icon: LayoutDashboard, label: t('common.dashboard'), path: '/agency' },
         { icon: ShoppingCart, label: t('common.my_bookings'), path: '/agency/bookings', permission: 'access_orders' },
-        { icon: Users, label: 'Réservations', path: '/agency/clients', permission: 'access_clients' },
-        { icon: Package, label: 'Offres / Packs', path: '/agency/offers', permission: 'access_offers' },
-        { icon: Briefcase, label: 'Fournisseurs', path: '/agency/suppliers', permission: 'access_suppliers' },
-        { icon: Wallet, label: 'Caisse', path: '/agency/cash-register', permission: 'access_cash_register' },
-        { icon: CreditCard, label: 'Dépenses', path: '/agency/expenses', permission: 'access_expenses' },
-        { icon: BarChart, label: 'Rapports', path: '/agency/reports', permission: 'access_reports' },
-        { icon: Percent, label: 'Remises', path: '/agency/discounts', permission: 'access_discounts' },
-        { icon: Percent, label: 'Taxes', path: '/agency/tax', permission: 'access_discounts' }, // Use same check or separate
-        { icon: Bed, label: 'Rooming List', path: '/agency/rooming-list', permission: 'access_rooming_list' },
-        { icon: Users, label: 'Staff / Agents', path: '/agency/users', permission: 'access_users' }, // Added target item
-        { icon: CreditCard, label: 'Paiements', path: '/agency/payments', permission: 'access_cash_register' },
+        { icon: Users, label: t('common.reservations'), path: '/agency/clients', permission: 'access_clients' },
+        { icon: Package, label: t('common.offers_packs'), path: '/agency/offers', permission: 'access_offers' },
+        { icon: Briefcase, label: t('common.suppliers'), path: '/agency/suppliers', permission: 'access_suppliers' },
+        { icon: Wallet, label: t('common.cash_register'), path: '/agency/cash_register', permission: 'access_cash_register' },
+        { icon: CreditCard, label: t('common.expenses'), path: '/agency/expenses', permission: 'access_expenses' },
+        { icon: BarChart, label: t('common.reports'), path: '/agency/reports', permission: 'access_reports' },
+        { icon: Percent, label: t('common.discounts'), path: '/agency/discounts', permission: 'access_discounts' },
+        { icon: Percent, label: t('common.taxes'), path: '/agency/tax', permission: 'access_discounts' },
+        { icon: Bed, label: t('common.rooming_list'), path: '/agency/rooming-list', permission: 'access_rooming_list' },
+        { icon: Users, label: t('common.staff_agents'), path: '/agency/users', permission: 'access_users' },
+        { icon: CreditCard, label: t('common.payments'), path: '/agency/payments', permission: 'access_cash_register' },
         { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots', permission: 'access_orders' },
-        { icon: HelpCircle, label: 'Support & Aide', path: '/agency/support', badge: unreadCount },
+        { icon: HelpCircle, label: t('common.support_help'), path: '/agency/support', badge: unreadCount },
         { icon: Bell, label: t('common.notifications'), path: '/agency/notifications' },
         { icon: FileText, label: t('common.documents'), path: '/agency/documents' },
-        { icon: Globe, label: 'Personnaliser l\'Accueil', path: '/agency/homepage-builder' },
-        { icon: Globe, label: 'Page d\'accueil publique', path: '/agency/landing' },
+        { icon: Globe, label: t('common.homepage_builder'), path: '/agency/homepage-builder' },
+        { icon: Globe, label: t('common.public_landing'), path: '/agency/landing' },
     ];
 
     const filteredMenuItems = menuItems.filter(item => {
@@ -123,8 +123,8 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
                             <Plane size={24} className="-rotate-45 rtl:rotate-45" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900 dark:text-white font-display tracking-tight">Partner Portal</h1>
-                            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">Agency Dashboard</p>
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-white font-display tracking-tight">{t('common.partner_portal')}</h1>
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">{t('common.agency_dashboard_label')}</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="md:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -194,13 +194,13 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
                             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.username}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">
                                 {({
-                                    admin: 'Administrateur',
-                                    super_admin: 'Super Admin',
-                                    agent: 'Agent',
-                                    staff: 'Staff',
-                                    caisser: 'Caissier',
-                                    manager: 'Manager',
-                                } as Record<string, string>)[user?.role || ''] || user?.role || 'Agent'}
+                                    admin: t('common.administrator'),
+                                    super_admin: t('common.super_admin'),
+                                    agent: t('common.agent'),
+                                    staff: t('common.staff'),
+                                    caissier: t('common.caissier'),
+                                    manager: t('common.manager'),
+                                } as Record<string, string>)[user?.role || ''] || user?.role || t('common.agent')}
                             </p>
                         </div>
                     </div>

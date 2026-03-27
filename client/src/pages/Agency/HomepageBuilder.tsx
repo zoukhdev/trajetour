@@ -4,9 +4,11 @@ import { Save, Image as ImageIcon, Plus, Trash2, Palette, MapPin, Type, Edit3, P
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { useSubscription } from '../../context/SubscriptionContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function HomepageBuilder() {
     const { user } = useAuth();
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
@@ -69,10 +71,10 @@ export default function HomepageBuilder() {
         try {
             await offersAPI.toggleFeatured(offerId, isFeatured);
             setOffers(offers.map(o => o.id === offerId ? { ...o, isFeatured } : o));
-            toast.success(isFeatured ? 'Offer featured on homepage' : 'Offer removed from featured');
+            toast.success(isFeatured ? t('homepage_builder.toast.offer_featured') : t('homepage_builder.toast.offer_removed'));
         } catch (error) {
             console.error('Error toggling featured status:', error);
-            toast.error('Failed to update offer status');
+            toast.error(t('homepage_builder.toast.update_failed'));
         }
     };
 
@@ -90,7 +92,7 @@ export default function HomepageBuilder() {
             }
         } catch (error) {
             console.error('Error fetching homepage settings:', error);
-            toast.error('Failed to load homepage settings');
+            toast.error(t('homepage_builder.toast.load_failed'));
         } finally {
             setLoading(false);
         }
@@ -118,10 +120,10 @@ export default function HomepageBuilder() {
                 settings,
                 slides: slides.map((s, index) => ({ ...s, orderIndex: index }))
             });
-            toast.success('Homepage settings saved successfully!');
+            toast.success(t('homepage_builder.toast.save_success'));
         } catch (error) {
             console.error('Error saving settings:', error);
-            toast.error('Failed to save settings');
+            toast.error(t('homepage_builder.toast.save_failed'));
         } finally {
             setSaving(false);
         }
@@ -144,16 +146,16 @@ export default function HomepageBuilder() {
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (!file.type.startsWith('image/')) { toast.error('Please upload an image'); return; }
-        if (file.size > 2 * 1024 * 1024) { toast.error('File too large (max 2MB)'); return; }
+        if (!file.type.startsWith('image/')) { toast.error(t('homepage_builder.toast.upload_image_only')); return; }
+        if (file.size > 2 * 1024 * 1024) { toast.error(t('homepage_builder.toast.file_too_large')); return; }
 
         try {
             setUploading(true);
             const { logoUrl } = await settingsAPI.uploadLogo(file);
             setSettings({ ...settings, logoUrl });
-            toast.success('Logo uploaded!');
+            toast.success(t('homepage_builder.toast.logo_uploaded'));
         } catch (error) {
-            toast.error('Upload failed');
+            toast.error(t('homepage_builder.toast.upload_failed'));
         } finally {
             setUploading(false);
         }
@@ -162,16 +164,16 @@ export default function HomepageBuilder() {
     const handleSlideUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        if (!file.type.startsWith('image/')) { toast.error('Please upload an image'); return; }
-        if (file.size > 5 * 1024 * 1024) { toast.error('File too large (max 5MB)'); return; }
+        if (!file.type.startsWith('image/')) { toast.error(t('homepage_builder.toast.upload_image_only')); return; }
+        if (file.size > 5 * 1024 * 1024) { toast.error(t('homepage_builder.toast.file_too_large')); return; }
 
         try {
             setUploading(true);
             const { imageUrl } = await settingsAPI.uploadHeroImage(file);
             handleSlideChange(index, 'imageUrl', imageUrl);
-            toast.success('Slide image uploaded!');
+            toast.success(t('homepage_builder.toast.slide_uploaded'));
         } catch (error) {
-            toast.error('Slide upload failed');
+            toast.error(t('homepage_builder.toast.slide_upload_failed'));
         } finally {
             setUploading(false);
         }
@@ -186,8 +188,8 @@ export default function HomepageBuilder() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Homepage Personalization</h1>
-                    <p className="text-gray-500 text-sm mt-1">Manage your agency's public landing page design and content.</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('homepage_builder.title')}</h1>
+                    <p className="text-gray-500 text-sm mt-1">{t('homepage_builder.description')}</p>
                 </div>
                 <button
                     onClick={handleSave}
@@ -195,7 +197,7 @@ export default function HomepageBuilder() {
                     className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-200 dark:shadow-none disabled:opacity-50"
                 >
                     <Save size={18} />
-                    {saving ? 'Saving...' : 'Publish Changes'}
+                    {saving ? t('homepage_builder.saving') : t('homepage_builder.publish_changes')}
                 </button>
             </div>
 
@@ -206,19 +208,19 @@ export default function HomepageBuilder() {
                     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-gray-800 dark:text-gray-100">
                             <Palette size={20} className="text-blue-500" />
-                            Branding & Theme
+                            {t('homepage_builder.branding_theme')}
                         </h2>
                         
                         <div className="space-y-5">
                             {/* Logo */}
                             <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Agency Logo</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{t('homepage_builder.agency_logo')}</label>
                                 <div className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-100 dark:border-gray-700">
                                     <div className="w-12 h-12 rounded-lg bg-white dark:bg-gray-800 border dark:border-gray-700 flex items-center justify-center overflow-hidden">
                                         {settings.logoUrl ? <img src={settings.logoUrl} className="w-full h-full object-contain" /> : <ImageIcon className="text-gray-400" size={20} />}
                                     </div>
                                     <label className="text-xs font-medium bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-3 py-1.5 rounded-md cursor-pointer hover:bg-gray-50 transition">
-                                        {uploading ? '...' : 'Change'}
+                                        {uploading ? '...' : t('homepage_builder.change')}
                                         <input type="file" onChange={handleLogoUpload} accept="image/*" className="hidden" />
                                     </label>
                                 </div>
@@ -227,7 +229,7 @@ export default function HomepageBuilder() {
                             {/* Info */}
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Display Name</label>
+                                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('homepage_builder.display_name')}</label>
                                     <input
                                         type="text"
                                         value={settings.displayName}
@@ -236,7 +238,7 @@ export default function HomepageBuilder() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Slogan</label>
+                                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{t('homepage_builder.slogan')}</label>
                                     <input
                                         type="text"
                                         value={settings.slogan}
@@ -248,7 +250,7 @@ export default function HomepageBuilder() {
 
                             {/* Base Theme */}
                             <div className="pt-4 border-t dark:border-gray-700">
-                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">Primary Color</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-2">{t('homepage_builder.primary_color')}</label>
                                 <div className="flex items-center gap-3">
                                     <input type="color" value={settings.primaryColor} onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })} className="w-10 h-10 rounded border-0" />
                                     <input type="text" value={settings.primaryColor} onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })} className="flex-1 border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2 text-sm font-mono" />
@@ -258,12 +260,12 @@ export default function HomepageBuilder() {
                             {/* Premium Branding (Democratized) */}
                             <div className={`pt-4 border-t dark:border-gray-700 space-y-4`}>
                                 <div className="flex items-center justify-between">
-                                    <label className="text-xs font-semibold text-gray-500 uppercase">Premium Theme</label>
+                                    <label className="text-xs font-semibold text-gray-500 uppercase">{t('homepage_builder.premium_theme')}</label>
                                 </div>
                                 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
-                                        <label className="block text-[10px] text-gray-400 mb-1">Font Family</label>
+                                        <label className="block text-[10px] text-gray-400 mb-1">{t('homepage_builder.font_family')}</label>
                                         <select value={settings.fontFamily} onChange={(e) => setSettings({...settings, fontFamily: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2 text-xs">
                                             <option value="Inter">Inter</option>
                                             <option value="Outfit">Outfit</option>
@@ -272,18 +274,18 @@ export default function HomepageBuilder() {
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] text-gray-400 mb-1">Radius</label>
+                                        <label className="block text-[10px] text-gray-400 mb-1">{t('homepage_builder.radius')}</label>
                                         <select value={settings.borderRadius} onChange={(e) => setSettings({...settings, borderRadius: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2 text-xs">
-                                            <option value="0px">Square</option>
-                                            <option value="4px">Small</option>
-                                            <option value="8px">Medium</option>
-                                            <option value="16px">Large</option>
+                                            <option value="0px">{t('homepage_builder.radius_square')}</option>
+                                            <option value="4px">{t('homepage_builder.radius_small')}</option>
+                                            <option value="8px">{t('homepage_builder.radius_medium')}</option>
+                                            <option value="16px">{t('homepage_builder.radius_large')}</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] text-gray-400 mb-1">Hero Video URL (YouTube/Direct)</label>
+                                    <label className="block text-[10px] text-gray-400 mb-1">{t('homepage_builder.hero_video_url')}</label>
                                     <input type="text" value={settings.videoUrl || ''} onChange={(e) => setSettings({...settings, videoUrl: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2 text-xs" placeholder="https://..." />
                                 </div>
                             </div>
@@ -294,20 +296,20 @@ export default function HomepageBuilder() {
                     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-gray-800 dark:text-gray-100">
                             <MapPin size={20} className="text-green-500" />
-                            Contact & Location
+                            {t('homepage_builder.contact_location')}
                         </h2>
                         
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase">Public Email</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase">{t('homepage_builder.public_email')}</label>
                                 <input type="email" value={settings.contactEmail} onChange={(e) => setSettings({...settings, contactEmail: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2.5 text-sm" />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase">Phone Number</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase">{t('homepage_builder.phone_number')}</label>
                                 <input type="tel" value={settings.contactPhone} onChange={(e) => setSettings({...settings, contactPhone: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2.5 text-sm" />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase">Office Address</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase">{t('homepage_builder.office_address')}</label>
                                 <textarea value={settings.contactAddress} onChange={(e) => setSettings({...settings, contactAddress: e.target.value})} rows={2} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2.5 text-sm resize-none" />
                             </div>
                         </div>
@@ -321,10 +323,10 @@ export default function HomepageBuilder() {
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100">
                                 <ImageIcon size={20} className="text-purple-500" />
-                                Hero Slides
+                                {t('homepage_builder.hero_slides')}
                             </h2>
                             <button onClick={handleAddSlide} className="text-xs bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 font-bold px-3 py-1.5 rounded-lg hover:bg-purple-200 transition flex items-center gap-1">
-                                <Plus size={14} /> Add Slide
+                                <Plus size={14} /> {t('homepage_builder.add_slide')}
                             </button>
                         </div>
 
@@ -335,16 +337,16 @@ export default function HomepageBuilder() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-3">
                                             <div className="flex gap-2">
-                                                <input value={slide.imageUrl} onChange={(e) => handleSlideChange(idx, 'imageUrl', e.target.value)} placeholder="Image URL" className="flex-1 text-xs p-2 rounded border dark:bg-gray-800 dark:border-gray-700" />
+                                                <input value={slide.imageUrl} onChange={(e) => handleSlideChange(idx, 'imageUrl', e.target.value)} placeholder={t('homepage_builder.image_url')} className="flex-1 text-xs p-2 rounded border dark:bg-gray-800 dark:border-gray-700" />
                                                 <label className="flex items-center justify-center p-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded cursor-pointer hover:bg-gray-50 transition min-w-[40px]">
                                                     <ImageIcon size={14} className="text-blue-500" />
                                                     <input type="file" onChange={(e) => handleSlideUpload(idx, e)} accept="image/*" className="hidden" />
                                                 </label>
                                             </div>
-                                            <input value={slide.title} onChange={(e) => handleSlideChange(idx, 'title', e.target.value)} placeholder="Slide Title" className="w-full text-sm font-bold p-2 bg-transparent" />
+                                            <input value={slide.title} onChange={(e) => handleSlideChange(idx, 'title', e.target.value)} placeholder={t('homepage_builder.slide_title')} className="w-full text-sm font-bold p-2 bg-transparent" />
                                             <div className="grid grid-cols-2 gap-2">
-                                                <input value={slide.ctaText} onChange={(e) => handleSlideChange(idx, 'ctaText', e.target.value)} placeholder="Button Text" className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
-                                                <input value={slide.ctaUrl} onChange={(e) => handleSlideChange(idx, 'ctaUrl', e.target.value)} placeholder="Button URL" className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
+                                                <input value={slide.ctaText} onChange={(e) => handleSlideChange(idx, 'ctaText', e.target.value)} placeholder={t('homepage_builder.button_text')} className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
+                                                <input value={slide.ctaUrl} onChange={(e) => handleSlideChange(idx, 'ctaUrl', e.target.value)} placeholder={t('homepage_builder.button_url')} className="w-full text-xs p-2 rounded border dark:bg-gray-800" />
                                             </div>
                                         </div>
                                         <div className="bg-gray-200 dark:bg-gray-800 rounded-lg h-32 overflow-hidden relative border dark:border-gray-700">
@@ -363,14 +365,14 @@ export default function HomepageBuilder() {
                     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <h2 className="text-lg font-bold mb-6 flex items-center gap-2 text-gray-800 dark:text-gray-100">
                             <Star size={20} className="text-amber-500" />
-                            Featured Offers on Homepage
+                            {t('homepage_builder.featured_offers')}
                         </h2>
                         {loadingOffers ? (
                             <div className="text-center py-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto"></div></div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
                                 {offers.length === 0 ? (
-                                    <p className="col-span-2 text-center text-gray-500 py-10">No published packages found.</p>
+                                    <p className="col-span-2 text-center text-gray-500 py-10">{t('homepage_builder.no_offers_found')}</p>
                                 ) : (
                                     offers.map(offer => (
                                         <div key={offer.id} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${offer.isFeatured ? 'bg-amber-50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/50 shadow-sm' : 'bg-gray-50 dark:bg-gray-900/40 border-gray-100 dark:border-gray-700'}`}>
@@ -401,7 +403,7 @@ export default function HomepageBuilder() {
             <div className={`grid grid-cols-1 lg:grid-cols-3 gap-8`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><ShieldCheck size={20} className="text-blue-500" /> Trust Stats</h2>
+                        <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><ShieldCheck size={20} className="text-blue-500" /> {t('homepage_builder.trust_stats')}</h2>
                         <button onClick={() => setSettings({...settings, trustStats: [...settings.trustStats, {label: '', value: ''}]})} className="p-1 text-blue-600 hover:bg-blue-50 rounded"><Plus size={18} /></button>
                     </div>
                     <div className="space-y-3">
@@ -421,8 +423,8 @@ export default function HomepageBuilder() {
 
                 <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 text-sm">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><HelpCircle size={20} className="text-amber-500" /> Manage FAQ</h2>
-                        <button onClick={() => setSettings({...settings, faqs: [...settings.faqs, {question: '', answer: ''}]})} className="text-xs bg-amber-50 text-amber-600 font-bold px-3 py-1.5 rounded-lg border border-amber-100">Add Question</button>
+                        <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><HelpCircle size={20} className="text-amber-500" /> {t('homepage_builder.manage_faq')}</h2>
+                        <button onClick={() => setSettings({...settings, faqs: [...settings.faqs, {question: '', answer: ''}]})} className="text-xs bg-amber-50 text-amber-600 font-bold px-3 py-1.5 rounded-lg border border-amber-100">{t('homepage_builder.add_question')}</button>
                     </div>
                     <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                         {settings.faqs.map((faq, i) => (
@@ -430,10 +432,10 @@ export default function HomepageBuilder() {
                                 <button onClick={() => setSettings({...settings, faqs: settings.faqs.filter((_, idx) => idx !== i)})} className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 p-1"><Trash2 size={14} /></button>
                                 <input value={faq.question} onChange={(e) => {
                                     const next = [...settings.faqs]; next[i].question = e.target.value; setSettings({...settings, faqs: next});
-                                }} placeholder="Question?" className="w-full font-bold bg-transparent mb-2 outline-none border-b border-gray-200 dark:border-gray-700 pb-1" />
+                                }} placeholder={t('homepage_builder.placeholder_question')} className="w-full font-bold bg-transparent mb-2 outline-none border-b border-gray-200 dark:border-gray-700 pb-1" />
                                 <textarea value={faq.answer} onChange={(e) => {
                                     const next = [...settings.faqs]; next[i].answer = e.target.value; setSettings({...settings, faqs: next});
-                                }} placeholder="Provide a detailed answer..." className="w-full text-xs text-gray-500 bg-transparent resize-none outline-none" rows={2} />
+                                }} placeholder={t('homepage_builder.placeholder_answer')} className="w-full text-xs text-gray-500 bg-transparent resize-none outline-none" rows={2} />
                             </div>
                         ))}
                     </div>
@@ -443,8 +445,8 @@ export default function HomepageBuilder() {
             {/* Testimonials - Democratized */}
             <div className={`bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700`}>
                 <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><MessageSquare size={20} className="text-indigo-500" /> Customer Testimonials</h2>
-                    <button onClick={() => setSettings({...settings, testimonials: [...settings.testimonials, {name: '', role: '', content: '', avatar: ''}]})} className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition">Add Review</button>
+                    <h2 className="text-lg font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100"><MessageSquare size={20} className="text-indigo-500" /> {t('homepage_builder.testimonials')}</h2>
+                    <button onClick={() => setSettings({...settings, testimonials: [...settings.testimonials, {name: '', role: '', content: '', avatar: ''}]})} className="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-md shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 transition">{t('homepage_builder.add_review')}</button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {settings.testimonials.map((t, i) => (
@@ -455,11 +457,11 @@ export default function HomepageBuilder() {
                                     {t.avatar ? <img src={t.avatar} className="w-full h-full rounded-full object-cover" /> : <Star size={20} className="text-amber-400" fill="currentColor" />}
                                 </div>
                                 <div className="flex-1">
-                                    <input value={t.name} onChange={(e) => { const next = [...settings.testimonials]; next[i].name = e.target.value; setSettings({...settings, testimonials: next}); }} className="w-full text-sm font-bold bg-transparent outline-none" placeholder="Client Name" />
-                                    <input value={t.role} onChange={(e) => { const next = [...settings.testimonials]; next[i].role = e.target.value; setSettings({...settings, testimonials: next}); }} className="w-full text-[10px] text-gray-400 uppercase tracking-tighter" placeholder="Verified Traveler" />
+                                    <input value={t.name} onChange={(e) => { const next = [...settings.testimonials]; next[i].name = e.target.value; setSettings({...settings, testimonials: next}); }} className="w-full text-sm font-bold bg-transparent outline-none" placeholder={t('homepage_builder.placeholder_client_name')} />
+                                    <input value={t.role} onChange={(e) => { const next = [...settings.testimonials]; next[i].role = e.target.value; setSettings({...settings, testimonials: next}); }} className="w-full text-[10px] text-gray-400 uppercase tracking-tighter" placeholder={t('homepage_builder.placeholder_role')} />
                                 </div>
                             </div>
-                            <textarea value={t.content} onChange={(e) => { const next = [...settings.testimonials]; next[i].content = e.target.value; setSettings({...settings, testimonials: next}); }} className="w-full text-xs text-gray-500 bg-transparent resize-none italic leading-relaxed" rows={4} placeholder="What did they say about your service?" />
+                            <textarea value={t.content} onChange={(e) => { const next = [...settings.testimonials]; next[i].content = e.target.value; setSettings({...settings, testimonials: next}); }} className="w-full text-xs text-gray-500 bg-transparent resize-none italic leading-relaxed" rows={4} placeholder={t('homepage_builder.placeholder_testimonial')} />
                         </div>
                     ))}
                 </div>
@@ -468,23 +470,23 @@ export default function HomepageBuilder() {
             {/* Bottom Grid: SEO & Conversion - Democratized */}
             <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8`}>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                    <h2 className="text-lg font-bold mb-6 flex items-center gap-2"><Search size={20} className="text-red-500" /> SEO & Social Metadata</h2>
+                    <h2 className="text-lg font-bold mb-6 flex items-center gap-2"><Search size={20} className="text-red-500" /> {t('homepage_builder.seo_social')}</h2>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Landing Page Title</label>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">{t('homepage_builder.landing_page_title')}</label>
                             <input value={settings.seoTitle || ''} onChange={(e) => setSettings({...settings, seoTitle: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2.5 text-sm" placeholder="e.g. Best Travel Agency in Paris" />
                         </div>
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Meta Description (for Google)</label>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">{t('homepage_builder.meta_description')}</label>
                             <textarea value={settings.seoDescription || ''} onChange={(e) => setSettings({...settings, seoDescription: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2.5 text-sm resize-none" rows={3} placeholder="Briefly describe what makes your agency unique..." />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Analytics (GTag ID)</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">{t('homepage_builder.analytics_id')}</label>
                                 <input value={settings.analyticsGaId || ''} onChange={(e) => setSettings({...settings, analyticsGaId: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2 text-xs" placeholder="G-XXXXXX" />
                             </div>
                             <div>
-                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">OG Image (1200x630)</label>
+                                <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">{t('homepage_builder.og_image')}</label>
                                 <input value={settings.ogImageUrl || ''} onChange={(e) => setSettings({...settings, ogImageUrl: e.target.value})} className="w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900 rounded-lg p-2 text-xs" placeholder="URL of image for Facebook/Twitter sharing" />
                             </div>
                         </div>
@@ -492,14 +494,14 @@ export default function HomepageBuilder() {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-                    <h2 className="text-lg font-bold mb-6 flex items-center gap-2"><Megaphone size={20} className="text-green-500" /> Conversion & Leads</h2>
+                    <h2 className="text-lg font-bold mb-6 flex items-center gap-2"><Megaphone size={20} className="text-green-500" /> {t('homepage_builder.conversion_leads')}</h2>
                     <div className="space-y-5">
                         <div className="flex items-center justify-between p-4 bg-green-50/50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-900/30">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-green-100 dark:bg-green-800/40 rounded-full text-green-600"><Phone size={20} /></div>
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400">WhatsApp Button</p>
-                                    <p className="text-[10px] text-gray-500">Enable floating contact button</p>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-green-700 dark:text-green-400">{t('homepage_builder.whatsapp_button')}</p>
+                                    <p className="text-[10px] text-gray-500">{t('homepage_builder.whatsapp_desc')}</p>
                                 </div>
                             </div>
                             <input value={settings.whatsappNumber || ''} onChange={(e) => setSettings({...settings, whatsappNumber: e.target.value})} className="w-40 text-xs p-2 border-0 bg-white dark:bg-gray-800 rounded-lg shadow-inner shadow-gray-100 dark:shadow-none" placeholder="+212..." />
@@ -509,8 +511,8 @@ export default function HomepageBuilder() {
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-blue-100 dark:bg-blue-800/40 rounded-full text-blue-600"><Mail size={20} /></div>
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">Newsletter Widget</p>
-                                    <p className="text-[10px] text-gray-500">Collect leads in your footer</p>
+                                    <p className="text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-blue-400">{t('homepage_builder.newsletter_widget')}</p>
+                                    <p className="text-[10px] text-gray-500">{t('homepage_builder.newsletter_desc')}</p>
                                 </div>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
@@ -520,7 +522,7 @@ export default function HomepageBuilder() {
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-1"><Layout size={12} /> Custom Tracking Scripts (Head/Body)</label>
+                            <label className="block text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-1"><Layout size={12} /> {t('homepage_builder.custom_scripts')}</label>
                             <textarea value={settings.customScripts || ''} onChange={(e) => setSettings({...settings, customScripts: e.target.value})} className="w-full border-none bg-gray-950 text-green-500 font-mono text-[10px] p-4 rounded-xl shadow-inner shadow-black" rows={4} placeholder="<script> (e.g. Meta Pixel, Hotjar...) </script>" />
                         </div>
                     </div>

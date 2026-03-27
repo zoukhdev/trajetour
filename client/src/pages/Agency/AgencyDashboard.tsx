@@ -32,7 +32,7 @@ const AgencyDashboard = () => {
 
             } catch (err) {
                 console.error('Failed to fetch agency dashboard data:', err);
-                setError('Failed to load dashboard data. Please try again later.');
+                setError(t('common.error_occurred') || 'Failed to load dashboard data. Please try again later.');
             } finally {
                 setLoading(false);
             }
@@ -85,7 +85,7 @@ const AgencyDashboard = () => {
                         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
                             {t('agency_dashboard.welcome')}, {agency?.name || user?.username || user?.email?.split('@')[0]}
                         </h1>
-                        <p className="text-slate-500 dark:text-slate-400 mt-1">Trajetour Partner Portal • {agency?.type || 'Partenaire'}</p>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1">{t('agency_dashboard.portal_name')} • {agency?.type || t('agency_dashboard.partner_type')}</p>
                     </div>
                     <Link
                         to="/agency/new-booking"
@@ -111,7 +111,7 @@ const AgencyDashboard = () => {
                         <div className="text-3xl font-black text-slate-900 dark:text-white">{(agency?.currentCredit || 0).toLocaleString()} DA</div>
                         <div className="mt-2 text-sm text-slate-500 font-medium flex items-center gap-1">
                             <span className="material-symbols-outlined text-sm">info</span>
-                            {agency?.subscription || 'Standard'} Plan
+                            {agency?.subscription || 'Standard'} {t('agency_dashboard.plan')}
                         </div>
                     </div>
 
@@ -123,7 +123,7 @@ const AgencyDashboard = () => {
                             </div>
                         </div>
                         <div className="text-3xl font-black text-slate-900 dark:text-white">{activeBookings}</div>
-                        <div className="mt-2 text-sm text-slate-500 font-medium">Total bookings: {orders.length}</div>
+                        <div className="mt-2 text-sm text-slate-500 font-medium">{t('agency_dashboard.total_bookings_count')}: {orders.length}</div>
                     </div>
 
                     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
@@ -136,7 +136,7 @@ const AgencyDashboard = () => {
                         <div className="text-3xl font-black text-slate-900 dark:text-white">{totalCommission.toLocaleString()} DA</div>
                         <div className="mt-2 text-sm text-green-500 font-medium flex items-center gap-1">
                             <span className="material-symbols-outlined text-sm">trending_up</span>
-                            Lifetime earnings
+                            {t('agency_dashboard.earnings_lifetime')}
                         </div>
                     </div>
                 </div>
@@ -158,7 +158,7 @@ const AgencyDashboard = () => {
                             </div>
                             <div>
                                 <h3 className="font-bold text-slate-900 dark:text-white">{t(action.title)}</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Click to access</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('agency_dashboard.click_to_access')}</p>
                             </div>
                             <span className="material-symbols-outlined text-slate-300 ml-auto group-hover:text-primary transition-colors rtl:rotate-180">arrow_forward</span>
                         </Link>
@@ -168,7 +168,7 @@ const AgencyDashboard = () => {
                 {/* Recent Bookings Table */}
                 <div className="mt-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Agency Bookings</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('agency_dashboard.recent_bookings_title')}</h3>
                         <Link to="/agency/bookings" className="text-sm font-bold text-primary hover:text-primary-700">{t('client_dashboard.view_all')}</Link>
                     </div>
 
@@ -201,7 +201,12 @@ const AgencyDashboard = () => {
                                                 order.status === 'Non payé' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
                                                     'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
                                                 }`}>
-                                                {order.status}
+                                                {order.status === 'Payé' ? t('common.status_paid') :
+                                                 order.status === 'Non payé' ? t('common.status_unpaid') :
+                                                 order.status === 'Paiement partiel' ? t('common.status_partial') :
+                                                 order.status === 'Remboursé' ? t('common.status_refunded') :
+                                                 order.status === 'Annulé' ? t('common.status_cancelled') :
+                                                 order.status}
                                             </span>
                                         </td>
                                         <td className="p-4">

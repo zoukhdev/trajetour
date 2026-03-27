@@ -3,8 +3,10 @@ import { Search, Filter, Eye, Calendar } from 'lucide-react';
 import Modal from '../../components/Modal';
 import { paymentsAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 const AgencyPayments = () => {
+    const { t, language } = useLanguage();
     const { user } = useAuth();
     const [payments, setPayments] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -52,9 +54,9 @@ const AgencyPayments = () => {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-900 font-display">Paiements de Mes Clients</h1>
+                <h1 className="text-2xl font-bold text-gray-900 font-display">{t('agency_dashboard.payments_title')}</h1>
                 <button onClick={() => fetchPayments()} className="p-2 bg-gray-100 rounded hover:bg-gray-200">
-                    Actualiser
+                    {t('agency_dashboard.refresh')}
                 </button>
             </div>
 
@@ -65,7 +67,7 @@ const AgencyPayments = () => {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                         <input
                             type="text"
-                            placeholder="Rechercher par client..."
+                            placeholder={t('agency_dashboard.search_client')}
                             value={debouncedSearch}
                             onChange={(e) => setDebouncedSearch(e.target.value)}
                             className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
@@ -79,10 +81,10 @@ const AgencyPayments = () => {
                             setPagination(prev => ({ ...prev, page: 1 }));
                         }}
                     >
-                        <option value="">Tous les statuts</option>
-                        <option value="pending">En Attente (Validation)</option>
-                        <option value="validated">Validés</option>
-                        <option value="rejected">Rejetés</option>
+                        <option value="">{t('agency_dashboard.all_statuses')}</option>
+                        <option value="pending">{t('agency_dashboard.status_waiting_validation')}</option>
+                        <option value="validated">{t('agency_dashboard.status_validated')}</option>
+                        <option value="rejected">{t('agency_dashboard.status_rejected')}</option>
                     </select>
                 </div>
 
@@ -90,19 +92,19 @@ const AgencyPayments = () => {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50/50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
                             <tr>
-                                <th className="px-6 py-4">Réf</th>
-                                <th className="px-6 py-4">Date</th>
-                                <th className="px-6 py-4">Client</th>
-                                <th className="px-6 py-4">Montant (DZD)</th>
-                                <th className="px-6 py-4">Mode</th>
-                                <th className="px-6 py-4">Preuve</th>
-                                <th className="px-6 py-4">Statut</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-6 py-4">{t('agency_dashboard.bookings.ref')}</th>
+                                <th className="px-6 py-4">{t('agency_dashboard.bookings.date')}</th>
+                                <th className="px-6 py-4">{t('agency_dashboard.client')}</th>
+                                <th className="px-6 py-4">{t('common.amount')} (DZD)</th>
+                                <th className="px-6 py-4">{t('agency_dashboard.mode')}</th>
+                                <th className="px-6 py-4">{t('agency_dashboard.proof')}</th>
+                                <th className="px-6 py-4">{t('agency_dashboard.bookings.status')}</th>
+                                <th className="px-6 py-4 text-right">{t('agency_dashboard.bookings.actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
-                                <tr><td colSpan={8} className="p-8 text-center">Chargement...</td></tr>
+                                <tr><td colSpan={8} className="p-8 text-center">{t('common.loading')}...</td></tr>
                             ) : payments.length === 0 ? (
                                 <tr>
                                     <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
@@ -110,7 +112,7 @@ const AgencyPayments = () => {
                                             <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
                                                 <Filter size={24} />
                                             </div>
-                                            <p className="font-medium">Aucun paiement trouvé</p>
+                                            <p className="font-medium">{t('agency_dashboard.no_bookings_found')}</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -141,10 +143,10 @@ const AgencyPayments = () => {
                                         <td className="px-6 py-4">
                                             {payment.receiptUrl ? (
                                                 <button onClick={() => setViewingPayment(payment)} className="text-blue-600 hover:underline flex items-center gap-1 text-xs">
-                                                    <Eye size={12} /> Voir
+                                                    <Eye size={12} /> {t('agency_dashboard.view')}
                                                 </button>
                                             ) : (
-                                                <span className="text-gray-400 text-xs italic">Aucun</span>
+                                                <span className="text-gray-400 text-xs italic">{t('agency_dashboard.none')}</span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4">
@@ -154,7 +156,7 @@ const AgencyPayments = () => {
                                                     ? 'bg-green-50 text-green-700 border-green-100'
                                                     : 'bg-red-50 text-red-700 border-red-100'
                                                 }`}>
-                                                {(payment.isValidated === null || payment.isValidated === undefined) ? 'En Attente' : payment.isValidated ? 'Validé' : 'Rejeté'}
+                                                {(payment.isValidated === null || payment.isValidated === undefined) ? t('agency_dashboard.waiting') : payment.isValidated ? t('agency_dashboard.validated') : t('agency_dashboard.rejected')}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -180,13 +182,13 @@ const AgencyPayments = () => {
                             disabled={pagination.page <= 1}
                             onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                             className="px-3 py-1 border rounded disabled:opacity-50"
-                        >Précédent</button>
-                        <span className="text-sm text-gray-600">Page {pagination.page} sur {pagination.totalPages}</span>
+                        >{t('agency_dashboard.previous')}</button>
+                        <span className="text-sm text-gray-600">{t('agency_dashboard.page_info', { page: pagination.page, total: pagination.totalPages })}</span>
                         <button
                             disabled={pagination.page >= pagination.totalPages}
                             onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                             className="px-3 py-1 border rounded disabled:opacity-50"
-                        >Suivant</button>
+                        >{t('agency_dashboard.next')}</button>
                     </div>
                 </div>
             </div>
@@ -194,24 +196,24 @@ const AgencyPayments = () => {
             <Modal
                 isOpen={!!viewingPayment}
                 onClose={() => setViewingPayment(undefined)}
-                title="Détails du Paiement"
+                title={t('agency_dashboard.payment_details')}
             >
                 {viewingPayment && (
                     <div className="space-y-6">
                         <div className="flex justify-between items-start border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-lg font-bold text-gray-900">Paiement #{viewingPayment.id.substr(0, 8)}</h3>
+                                <h3 className="text-lg font-bold text-gray-900">{t('agency_dashboard.payment_id')} #{viewingPayment.id.substr(0, 8)}</h3>
                                 <p className="text-sm text-gray-500">{new Date(viewingPayment.paymentDate).toLocaleDateString()} {new Date(viewingPayment.paymentDate).toLocaleTimeString()}</p>
                             </div>
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                {Number(viewingPayment.amountDZD).toLocaleString('fr-DZ', { style: 'currency', currency: 'DZD' })}
+                                {Number(viewingPayment.amountDZD).toLocaleString(language === 'ar' ? 'ar-DZ' : 'fr-DZ', { style: 'currency', currency: 'DZD' })}
                             </span>
                         </div>
 
                         {/* Receipt Image */}
                         {viewingPayment.receiptUrl && (
                             <div className="bg-gray-100 p-2 rounded-lg border border-gray-200">
-                                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">Preuve de Paiement</p>
+                                <p className="text-xs font-semibold text-gray-500 mb-2 uppercase">{t('agency_dashboard.proof_of_payment')}</p>
                                 <a href={viewingPayment.receiptUrl} target="_blank" rel="noopener noreferrer">
                                     <img
                                         src={viewingPayment.receiptUrl}
@@ -224,28 +226,28 @@ const AgencyPayments = () => {
 
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div className="p-3 bg-gray-50 rounded-lg">
-                                <span className="block text-gray-500 mb-1">Client</span>
+                                <span className="block text-gray-500 mb-1">{t('agency_dashboard.client')}</span>
                                 <span className="font-semibold text-gray-900">{viewingPayment.clientName}</span>
                             </div>
                             <div className="p-3 bg-gray-50 rounded-lg">
-                                <span className="block text-gray-500 mb-1">Commande</span>
+                                <span className="block text-gray-500 mb-1">{t('agency_dashboard.order')}</span>
                                 <span className="font-semibold text-gray-900">CMD-{viewingPayment.orderId ? viewingPayment.orderId.substr(0, 6) : 'N/A'}</span>
                             </div>
                             <div className="p-3 bg-gray-50 rounded-lg">
-                                <span className="block text-gray-500 mb-1">Mode de paiement</span>
+                                <span className="block text-gray-500 mb-1">{t('agency_dashboard.payment_method')}</span>
                                 <span className="font-semibold text-gray-900">{viewingPayment.method}</span>
                             </div>
                             <div className="p-3 bg-gray-50 rounded-lg">
-                                <span className="block text-gray-500 mb-1">Statut</span>
+                                <span className="block text-gray-500 mb-1">{t('agency_dashboard.validation_status')}</span>
                                 <span className={`font-semibold ${(viewingPayment.isValidated === null || viewingPayment.isValidated === undefined) ? 'text-orange-600' : viewingPayment.isValidated ? 'text-green-600' : 'text-red-600'}`}>
-                                    {(viewingPayment.isValidated === null || viewingPayment.isValidated === undefined) ? 'En Attente de Validation' : viewingPayment.isValidated ? 'Validé par Admin' : 'Rejeté'}
+                                    {(viewingPayment.isValidated === null || viewingPayment.isValidated === undefined) ? t('agency_dashboard.validation_waiting') : viewingPayment.isValidated ? t('agency_dashboard.validated_by_admin') : t('agency_dashboard.rejected')}
                                 </span>
                             </div>
                         </div>
 
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                             <p className="text-sm text-blue-800">
-                                <strong>Note:</strong> Seul l'administrateur peut valider ou rejeter les paiements. Vous pouvez consulter l'état et les détails des paiements de vos clients ici.
+                                {t('agency_dashboard.payment_note')}
                             </p>
                         </div>
 
@@ -254,7 +256,7 @@ const AgencyPayments = () => {
                                 onClick={() => setViewingPayment(undefined)}
                                 className="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
                             >
-                                Fermer
+                                {t('agency_dashboard.close')}
                             </button>
                         </div>
                     </div>

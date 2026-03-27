@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useSubscription } from '../context/SubscriptionContext';
 import { useAuth } from '../context/AuthContext';
 import { masterAPI } from '../services/api';
+import { useLanguage } from '../context/LanguageContext';
 import {
     Clock, CheckCircle2, XCircle, AlertTriangle, CreditCard,
     Shield, Zap, Crown, LogOut, RefreshCw, Phone, Mail, Globe, UploadCloud, FileImage
@@ -17,76 +18,77 @@ const PLAN_CONFIG: Record<string, {
     features: string[];
 }> = {
     Basic: {
-        label: 'Basic',
+        label: 'auth.plans.basic',
         price: '2 900',
         priceYear: '29 000',
         gradient: 'from-slate-600 to-slate-800',
         icon: <Shield className="w-6 h-6" />,
         color: 'slate',
         features: [
-            '3 utilisateurs maximum',
-            'Gestion des dossiers voyageurs',
-            'Rapports de base',
-            'Support par email',
-            'Dashboard partenaire',
-            'Backup quotidien',
+            'gate.features.users_3',
+            'gate.features.dossiers',
+            'gate.features.reports_basic',
+            'gate.features.support_email',
+            'gate.features.partner_dashboard',
+            'gate.features.backup',
         ],
     },
     Pro: {
-        label: 'Pro',
+        label: 'auth.plans.pro',
         price: '5 900',
         priceYear: '59 000',
         gradient: 'from-blue-600 to-indigo-700',
         icon: <Zap className="w-6 h-6" />,
         color: 'blue',
         features: [
-            '10 utilisateurs maximum',
-            'Toutes les fonctionnalités Basic',
-            'Rapports avancés & analytics',
-            'Gestion caisse & comptabilité',
-            'Support prioritaire',
-            'Intégrations avancées',
+            'gate.features.users_10',
+            'gate.features.all_basic',
+            'gate.features.reports_advanced',
+            'gate.features.accounting',
+            'gate.features.support_priority',
+            'gate.features.integrations',
         ],
     },
     Enterprise: {
-        label: 'Enterprise',
+        label: 'auth.plans.enterprise',
         price: '12 900',
         priceYear: '129 000',
         gradient: 'from-purple-600 to-violet-800',
         icon: <Crown className="w-6 h-6" />,
         color: 'purple',
         features: [
-            'Utilisateurs illimités',
-            'Toutes les fonctionnalités Pro',
-            'API personnalisée & webhooks',
-            'Marque blanche disponible',
-            'Manager dédié 24/7',
-            'SLA garanti 99.9%',
+            'gate.features.users_unlimited',
+            'gate.features.all_pro',
+            'gate.features.webhooks',
+            'gate.features.white_label',
+            'gate.features.support_247',
+            'gate.features.sla',
         ],
     },
 };
 
 const StatusBanner = ({ status, rejectionReason }: { status: string; rejectionReason?: string | null }) => {
+    const { t } = useLanguage();
     const configs = {
         PENDING: {
             bg: 'bg-amber-50 border-amber-200',
             icon: <Clock className="w-5 h-5 text-amber-600 shrink-0" />,
-            title: 'Votre dossier est en cours d\'examen',
-            desc: 'Notre équipe examine votre demande d\'inscription. Vous serez notifié par email dès qu\'une décision sera prise, généralement sous 24 heures ouvrables.',
+            title: t('gate.status.pending_title'),
+            desc: t('gate.status.pending_desc'),
             textColor: 'text-amber-800',
         },
         REJECTED: {
             bg: 'bg-red-50 border-red-200',
             icon: <XCircle className="w-5 h-5 text-red-600 shrink-0" />,
-            title: 'Votre demande a été rejetée',
-            desc: rejectionReason || 'Pour plus d\'informations, veuillez contacter notre équipe de support.',
+            title: t('gate.status.rejected_title'),
+            desc: rejectionReason || t('gate.status.rejected_desc_default'),
             textColor: 'text-red-800',
         },
         SUSPENDED: {
             bg: 'bg-orange-50 border-orange-200',
             icon: <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0" />,
-            title: 'Compte temporairement suspendu',
-            desc: 'Votre accès a été suspendu. Contactez le support pour régulariser votre situation.',
+            title: t('gate.status.suspended_title'),
+            desc: t('gate.status.suspended_desc'),
             textColor: 'text-orange-800',
         },
     };
@@ -105,6 +107,7 @@ const StatusBanner = ({ status, rejectionReason }: { status: string; rejectionRe
 };
 
 const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
+    const { t, language } = useLanguage();
     const { subscription, loading, isLocked, refetch } = useSubscription();
     const { logout, user } = useAuth();
     const [uploading, setUploading] = useState(false);
@@ -119,7 +122,7 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
             await refetch();
         } catch (err) {
             console.error('Failed to upload proof:', err);
-            alert("Erreur lors de l'envoi de la preuve. Assurez-vous que l'image est valide et réessayez.");
+            alert(t('gate.error_upload'));
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
@@ -135,7 +138,7 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
             <div className="flex-1 flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                    <p className="text-gray-500 font-medium">Chargement de votre espace...</p>
+                    <p className="text-gray-500 font-medium">{t('gate.loading_space')}</p>
                 </div>
             </div>
         );
@@ -155,7 +158,7 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                     <div>
                         <span className="font-black text-gray-900 text-lg">Trajetour</span>
                         <span className="ml-2 text-xs bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200">
-                            {status === 'PENDING' ? '⏳ En attente' : status === 'REJECTED' ? '❌ Rejetée' : '⚠️ Suspendue'}
+                            {status === 'PENDING' ? t('gate.step_pending') : status === 'REJECTED' ? t('gate.step_rejected') : t('gate.step_suspended')}
                         </span>
                     </div>
                 </div>
@@ -165,14 +168,14 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                         className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition"
                     >
                         <RefreshCw size={14} />
-                        Actualiser
+                        {t('gate.refresh')}
                     </button>
                     <button
                         onClick={logout}
                         className="flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-50 transition font-medium"
                     >
                         <LogOut size={14} />
-                        Déconnexion
+                        {t('gate.logout')}
                     </button>
                 </div>
             </div>
@@ -183,9 +186,9 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                     {/* Welcome Header */}
                     <div className="text-center mb-2">
                         <h1 className="text-3xl font-black text-gray-900">
-                            Bienvenue, {subscription?.name || user?.username} 👋
+                            {t('gate.welcome')}, {subscription?.name || user?.username} 👋
                         </h1>
-                        <p className="text-gray-500 mt-1">Votre espace partenaire Trajetour est prêt — il attend juste votre approbation.</p>
+                        <p className="text-gray-500 mt-1">{t('gate.ready_approval')}</p>
                     </div>
 
                     {/* Status Banner */}
@@ -197,8 +200,8 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                         <div className="p-8">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-2">Votre abonnement</p>
-                                    <h2 className="text-4xl font-black">Plan {plan.label}</h2>
+                                    <p className="text-white/70 text-sm font-semibold uppercase tracking-widest mb-2">{t('gate.your_subscription')}</p>
+                                    <h2 className="text-4xl font-black">{t('gate.plan')} {t(plan.label)}</h2>
                                     <p className="text-white/70 mt-1 text-sm">
                                         {subscription?.subdomain}.trajetour.com
                                     </p>
@@ -213,37 +216,37 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                             {/* Pricing */}
                             <div className="mt-8 flex items-end gap-6 flex-wrap">
                                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
-                                    <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">Mensuel</p>
+                                    <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-1">{t('gate.monthly')}</p>
                                     <div className="flex items-baseline gap-1">
                                         <span className="text-4xl font-black">{plan.price}</span>
                                         <span className="text-lg font-medium text-white/70">DA</span>
                                     </div>
-                                    <p className="text-white/50 text-xs mt-1">par mois / HT</p>
+                                    <p className="text-white/50 text-xs mt-1">{t('gate.per_month')}</p>
                                 </div>
                                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 py-4 border border-white/20">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <p className="text-white/60 text-xs font-semibold uppercase tracking-wider">Annuel</p>
-                                        <span className="bg-green-400/20 text-green-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-green-400/30">-17%</span>
+                                        <p className="text-white/60 text-xs font-semibold uppercase tracking-wider">{t('gate.annually')}</p>
+                                        <span className="bg-green-400/20 text-green-300 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-green-400/30">{t('gate.off')}</span>
                                     </div>
                                     <div className="flex items-baseline gap-1">
                                         <span className="text-4xl font-black">{plan.priceYear}</span>
                                         <span className="text-lg font-medium text-white/70">DA</span>
                                     </div>
-                                    <p className="text-white/50 text-xs mt-1">par an / HT</p>
+                                    <p className="text-white/50 text-xs mt-1">{t('gate.per_year')}</p>
                                 </div>
                             </div>
                         </div>
 
                         {/* Features */}
                         <div className="bg-black/20 backdrop-blur-sm px-8 py-6">
-                            <p className="text-white/60 text-xs font-bold uppercase tracking-widest mb-4">Ce qui est inclus dans votre plan</p>
+                            <p className="text-white/60 text-xs font-bold uppercase tracking-widest mb-4">{t('gate.included_features')}</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {plan.features.map((feat, i) => (
                                     <div key={i} className="flex items-center gap-3">
                                         <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                                             <CheckCircle2 className="w-3 h-3 text-white" />
                                         </div>
-                                        <span className="text-sm text-white/90">{feat}</span>
+                                        <span className="text-sm text-white/90">{t(feat)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -254,28 +257,28 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                     <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
                         <h3 className="font-black text-gray-900 text-xl mb-6 flex items-center gap-2">
                             <CreditCard className="w-5 h-5 text-blue-600" />
-                            Comment activer votre tableau de bord ?
+                            {t('gate.how_to_activate')}
                         </h3>
                         <div className="space-y-5">
                             {[
                                 {
                                     step: '1',
-                                    title: 'Examen de votre dossier',
-                                    desc: 'Notre équipe vérifie les informations de votre agence. Ce processus dure généralement moins de 24h.',
+                                    title: t('gate.step_1_title'),
+                                    desc: t('gate.step_1_desc'),
                                     done: status !== 'PENDING',
                                     active: status === 'PENDING',
                                 },
                                 {
                                     step: '2',
-                                    title: `Règlement de l'abonnement — ${plan.price} DA/mois`,
-                                    desc: 'À réception de votre approbation, effectuez le paiement de votre premier mois d\'abonnement par virement ou en agence.',
+                                    title: `${t('gate.step_2_title')} — ${plan.price} DA/${t('dashboard.overview.month_short')}`,
+                                    desc: t('gate.step_2_desc'),
                                     done: status === 'ACTIVE',
                                     active: status === 'REJECTED',
                                 },
                                 {
                                     step: '3',
-                                    title: 'Activation complète',
-                                    desc: 'Votre tableau de bord complet est déverrouillé. Commencez à gérer vos dossiers, clients et finances.',
+                                    title: t('gate.step_3_title'),
+                                    desc: t('gate.step_3_desc'),
                                     done: false,
                                     active: false,
                                 },
@@ -310,10 +313,10 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8">
                             <h3 className="font-black text-gray-900 text-xl mb-4 flex items-center gap-2">
                                 <CreditCard className="w-5 h-5 text-indigo-600" />
-                                Preuve de paiement
+                                {t('gate.payment_proof')}
                             </h3>
                             <p className="text-gray-500 text-sm mb-6">
-                                Si vous effectuez un paiement par virement ou versement, vous pouvez nous transmettre la preuve ici pour accélérer l'activation de votre compte.
+                                {t('gate.payment_proof_desc')}
                             </p>
                             
                             {subscription?.payment_proof_url ? (
@@ -322,8 +325,8 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                                         <CheckCircle2 size={24} />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-emerald-900 text-lg">Preuve envoyée avec succès !</h4>
-                                        <p className="text-emerald-700 mt-1 text-sm font-medium">Nous validerons votre compte au plus vite.</p>
+                                        <h4 className="font-bold text-emerald-900 text-lg">{t('gate.proof_sent')}</h4>
+                                        <p className="text-emerald-700 mt-1 text-sm font-medium">{t('gate.proof_sent_desc')}</p>
                                     </div>
                                     <div className="ml-auto w-16 h-16 rounded-lg overflow-hidden border border-emerald-200 shadow-sm hidden sm:block bg-white">
                                         <a href={subscription.payment_proof_url} target="_blank" rel="noopener noreferrer">
@@ -346,13 +349,13 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
                                     {uploading ? (
                                         <div className="flex flex-col items-center justify-center text-blue-600">
                                             <RefreshCw className="w-10 h-10 animate-spin mb-3" />
-                                            <p className="font-bold">Téléchargement en cours...</p>
+                                            <p className="font-bold">{t('gate.uploading')}</p>
                                         </div>
                                     ) : (
                                         <div className="flex flex-col items-center justify-center text-gray-400 group-hover:text-blue-500 transition">
                                             <UploadCloud className="w-10 h-10 mb-3" />
-                                            <p className="font-bold text-gray-600 group-hover:text-blue-600 text-lg">Cliquez pour ajouter votre reçu</p>
-                                            <p className="text-sm mt-1">Formats acceptés : JPG, PNG, PDF</p>
+                                            <p className="font-bold text-gray-600 group-hover:text-blue-600 text-lg">{t('gate.click_to_add_receipt')}</p>
+                                            <p className="text-sm mt-1">{t('gate.accepted_formats')}</p>
                                         </div>
                                     )}
                                 </div>
@@ -362,27 +365,27 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
 
                     {/* Contact Support */}
                     <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl shadow-blue-900/20">
-                        <h3 className="font-black text-xl mb-2">Besoin d'aide ?</h3>
-                        <p className="text-blue-100 text-sm mb-6">Notre équipe est disponible pour répondre à toutes vos questions concernant votre inscription.</p>
+                        <h3 className="font-black text-xl mb-2">{t('gate.need_help')}</h3>
+                        <p className="text-blue-100 text-sm mb-6">{t('gate.help_desc')}</p>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <a href="tel:+213XXXXXXXXX" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-3 transition border border-white/20 group">
                                 <Phone className="w-5 h-5 opacity-80 group-hover:scale-110 transition-transform" />
                                 <div>
-                                    <p className="text-xs text-blue-200 font-medium">Téléphone</p>
+                                    <p className="text-xs text-blue-200 font-medium">{t('gate.phone')}</p>
                                     <p className="text-sm font-bold">Support</p>
                                 </div>
                             </a>
                             <a href="mailto:support@trajetour.com" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-3 transition border border-white/20 group">
                                 <Mail className="w-5 h-5 opacity-80 group-hover:scale-110 transition-transform" />
                                 <div>
-                                    <p className="text-xs text-blue-200 font-medium">Email</p>
+                                    <p className="text-xs text-blue-200 font-medium">{t('gate.email')}</p>
                                     <p className="text-sm font-bold">support@trajetour.com</p>
                                 </div>
                             </a>
                             <a href="https://trajetour.com" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-3 transition border border-white/20 group">
                                 <Globe className="w-5 h-5 opacity-80 group-hover:scale-110 transition-transform" />
                                 <div>
-                                    <p className="text-xs text-blue-200 font-medium">Site web</p>
+                                    <p className="text-xs text-blue-200 font-medium">{t('gate.website')}</p>
                                     <p className="text-sm font-bold">trajetour.com</p>
                                 </div>
                             </a>
@@ -391,7 +394,7 @@ const PendingApprovalGate = ({ children }: { children: React.ReactNode }) => {
 
                     {/* Footer */}
                     <div className="text-center text-xs text-gray-400 pb-6">
-                        Inscrit le {subscription?.created_at ? new Date(subscription.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}
+                        {t('gate.registered_on')} {subscription?.created_at ? new Date(subscription.created_at).toLocaleDateString(language === 'ar' ? 'ar-DZ' : 'fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}
                         {' · '}
                         {subscription?.subdomain}.trajetour.com
                     </div>

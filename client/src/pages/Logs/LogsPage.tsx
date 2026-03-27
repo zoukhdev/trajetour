@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 
 const LogsPage = () => {
-    const { language } = useLanguage();
+    const { t, language, direction } = useLanguage();
     const [logs, setLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -103,10 +103,10 @@ const LogsPage = () => {
                     let formattedValue: any = value;
                     if (typeof value === 'boolean') {
                         formattedValue = value ?
-                            <span className="text-green-600 font-medium">Oui</span> :
-                            <span className="text-red-600 font-medium">Non</span>;
+                            <span className="text-green-600 font-medium">{t('audit_logs.yes')}</span> :
+                            <span className="text-red-600 font-medium">{t('audit_logs.no')}</span>;
                     } else if (value === null || value === undefined) {
-                        formattedValue = <span className="text-gray-400">N/A</span>;
+                        formattedValue = <span className="text-gray-400">{t('audit_logs.na')}</span>;
                     } else if (typeof value === 'object') {
                         formattedValue = JSON.stringify(value); // Keep nested objects as JSON string for now
                     }
@@ -122,16 +122,27 @@ const LogsPage = () => {
         );
     };
 
+    const getActionLabel = (action: string) => {
+        switch (action) {
+            case 'CREATE': return t('audit_logs.action_create');
+            case 'UPDATE': return t('audit_logs.action_update');
+            case 'DELETE': return t('audit_logs.action_delete');
+            case 'LOGIN': return t('audit_logs.action_login');
+            case 'LOGOUT': return t('audit_logs.action_logout');
+            default: return action;
+        }
+    };
+
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="space-y-6" dir={direction}>
+            <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 ${direction === 'rtl' ? 'text-right' : 'text-left'}`}>
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 font-display flex items-center gap-2">
                         <Activity className="text-primary" />
-                        Journal d'activité
+                        {t('audit_logs.title')}
                     </h1>
                     <p className="text-gray-500 text-sm mt-1">
-                        Surveillez toutes les actions effectuées dans le système
+                        {t('audit_logs.subtitle')}
                     </p>
                 </div>
             </div>
@@ -139,18 +150,18 @@ const LogsPage = () => {
             {/* Filters */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end">
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Utilisateur</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('audit_logs.filter_user')}</label>
                     <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                        <User className={`absolute ${direction === 'rtl' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-gray-400`} size={16} />
                         <select
                             value={selectedUser}
                             onChange={(e) => {
                                 setSelectedUser(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            className={`w-full ${direction === 'rtl' ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4'} py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none`}
                         >
-                            <option value="">Tous les utilisateurs</option>
+                            <option value="">{t('audit_logs.all_users')}</option>
                             {users.map(u => (
                                 <option key={u.id} value={u.id}>{u.username} ({u.role})</option>
                             ))}
@@ -159,29 +170,29 @@ const LogsPage = () => {
                 </div>
 
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('audit_logs.filter_action')}</label>
                     <div className="relative">
-                        <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                        <Filter className={`absolute ${direction === 'rtl' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 text-gray-400`} size={16} />
                         <select
                             value={selectedAction}
                             onChange={(e) => {
                                 setSelectedAction(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            className={`w-full ${direction === 'rtl' ? 'pr-10 pl-4 text-right' : 'pl-10 pr-4'} py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none`}
                         >
-                            <option value="">Toutes les actions</option>
-                            <option value="CREATE">Création</option>
-                            <option value="UPDATE">Modification</option>
-                            <option value="DELETE">Suppression</option>
-                            <option value="LOGIN">Connexion</option>
-                            <option value="LOGOUT">Déconnexion</option>
+                            <option value="">{t('audit_logs.all_actions')}</option>
+                            <option value="CREATE">{t('audit_logs.action_create')}</option>
+                            <option value="UPDATE">{t('audit_logs.action_update')}</option>
+                            <option value="DELETE">{t('audit_logs.action_delete')}</option>
+                            <option value="LOGIN">{t('audit_logs.action_login')}</option>
+                            <option value="LOGOUT">{t('audit_logs.action_logout')}</option>
                         </select>
                     </div>
                 </div>
 
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date Début</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('audit_logs.filter_date_start')}</label>
                     <input
                         type="date"
                         value={startDate}
@@ -189,12 +200,12 @@ const LogsPage = () => {
                             setStartDate(e.target.value);
                             setPage(1);
                         }}
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className={`w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 ${direction === 'rtl' ? 'text-right' : 'text-left'}`}
                     />
                 </div>
 
                 <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date Fin</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('audit_logs.filter_date_end')}</label>
                     <input
                         type="date"
                         value={endDate}
@@ -202,7 +213,7 @@ const LogsPage = () => {
                             setEndDate(e.target.value);
                             setPage(1);
                         }}
-                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className={`w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 ${direction === 'rtl' ? 'text-right' : 'text-left'}`}
                     />
                 </div>
             </div>
@@ -213,24 +224,24 @@ const LogsPage = () => {
                     <table className="w-full">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date & Heure</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Entité</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Détails</th>
+                                <th className={`px-6 py-4 ${direction === 'rtl' ? 'text-right font-arabic' : 'text-left'} text-xs font-semibold text-gray-500 uppercase tracking-wider`}>{t('audit_logs.table_date')}</th>
+                                <th className={`px-6 py-4 ${direction === 'rtl' ? 'text-right font-arabic' : 'text-left'} text-xs font-semibold text-gray-500 uppercase tracking-wider`}>{t('audit_logs.table_user')}</th>
+                                <th className={`px-6 py-4 ${direction === 'rtl' ? 'text-right font-arabic' : 'text-left'} text-xs font-semibold text-gray-500 uppercase tracking-wider`}>{t('audit_logs.table_action')}</th>
+                                <th className={`px-6 py-4 ${direction === 'rtl' ? 'text-right font-arabic' : 'text-left'} text-xs font-semibold text-gray-500 uppercase tracking-wider`}>{t('audit_logs.table_entity')}</th>
+                                <th className={`px-6 py-4 ${direction === 'rtl' ? 'text-right font-arabic' : 'text-left'} text-xs font-semibold text-gray-500 uppercase tracking-wider`}>{t('audit_logs.table_details')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                        Chargement des logs...
+                                        {t('audit_logs.loading')}
                                     </td>
                                 </tr>
                             ) : logs.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
-                                        Aucune activité trouvée pour ces filtres.
+                                        {t('audit_logs.no_logs')}
                                     </td>
                                 </tr>
                             ) : (
@@ -248,7 +259,7 @@ const LogsPage = () => {
                                                     {(log.username || '?').substring(0, 2).toUpperCase()}
                                                 </div>
                                                 <div>
-                                                    <div className="text-sm font-medium text-gray-900">{log.username || 'Inconnu'}</div>
+                                                    <div className="text-sm font-medium text-gray-900">{log.username || t('audit_logs.unknown_user')}</div>
                                                     <div className="text-xs text-gray-500 capitalize">{log.role}</div>
                                                 </div>
                                             </div>
@@ -259,7 +270,7 @@ const LogsPage = () => {
                                                     log.action === 'DELETE' ? 'bg-red-50 text-red-700 border-red-100' :
                                                         'bg-gray-50 text-gray-700 border-gray-100'
                                                 }`}>
-                                                {log.action}
+                                                {getActionLabel(log.action)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -286,17 +297,17 @@ const LogsPage = () => {
                         disabled={page === 1}
                         className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        <ChevronLeft size={20} />
+                        {direction === 'rtl' ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
                     </button>
                     <span className="text-sm font-medium text-gray-600">
-                        Page {page} sur {totalPages}
+                        {t('audit_logs.page_info', { page, total: totalPages })}
                     </span>
                     <button
                         onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages}
                         className="p-2 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        <ChevronRight size={20} />
+                        {direction === 'rtl' ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
                     </button>
                 </div>
             </div>

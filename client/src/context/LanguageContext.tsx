@@ -6,7 +6,7 @@ interface LanguageContextType {
     language: Language;
     direction: 'ltr' | 'rtl';
     setLanguage: (lang: Language) => void;
-    t: (key: string) => string;
+    t: (key: string, variables?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -34,19 +34,25 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
         }
     }, [language, direction]);
 
-    const t = (path: string) => {
+    const t = (path: string, variables?: Record<string, string | number>) => {
         const keys = path.split('.');
-        let value: any = translations[language];
+        let value: any = (translations as any)[language];
 
         for (const key of keys) {
             if (value && value[key]) {
                 value = value[key];
             } else {
-                return path; // Fallback to key if not found
+                return path;
             }
         }
 
-        return value as string;
+        let result = value as string;
+        if (variables) {
+            Object.entries(variables).forEach(([key, val]) => {
+                result = result.replace(`{${key}}`, val.toString());
+            });
+        }
+        return result;
     };
 
     return (

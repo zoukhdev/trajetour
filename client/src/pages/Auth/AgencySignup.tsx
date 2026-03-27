@@ -37,7 +37,7 @@ const AgencySignup = () => {
         setLoading(true);
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match');
+            setError(t('auth.passwords_not_match'));
             setLoading(false);
             return;
         }
@@ -51,7 +51,7 @@ const AgencySignup = () => {
                 .replace(/^-|-$/g, '');
 
             if (formData.paymentMethod !== 'Espèces' && !paymentProofFile) {
-                setError('Veuillez joindre une preuve de paiement (Reçu).');
+                setError(t('auth.payment_proof_required') || 'Veuillez joindre une preuve de paiement (Reçu).');
                 setLoading(false);
                 return;
             }
@@ -98,16 +98,16 @@ const AgencySignup = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">Demande envoyée ! ✅</h2>
+                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-3">{t('auth.application_submitted')}</h2>
                         <p className="text-slate-600 dark:text-slate-300 mb-5 max-w-md mx-auto">
-                            Votre demande d'inscription a été soumise avec succès. Notre équipe va examiner votre dossier.
+                            {t('auth.application_success_desc')}
                         </p>
 
                         <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-5 mb-4 text-left max-w-sm mx-auto space-y-3">
                             <div className="flex items-start gap-3">
                                 <span className="text-xl">🔗</span>
                                 <div>
-                                    <p className="font-bold text-primary-800 dark:text-primary-300 text-sm">Votre lien de connexion unique</p>
+                                    <p className="font-bold text-primary-800 dark:text-primary-300 text-sm">{t('auth.unique_login_link')}</p>
                                     <a
                                         href={(() => {
                                             const currentHost = window.location.host;
@@ -137,7 +137,7 @@ const AgencySignup = () => {
                                             }
                                         })()}
                                     </a>
-                                    <p className="text-xs text-primary-600 dark:text-primary-500 mt-1">📌 Sauvegardez ce lien dans vos favoris</p>
+                                    <p className="text-xs text-primary-600 dark:text-primary-500 mt-1">📌 {t('auth.save_link_favorites')}</p>
                                 </div>
                             </div>
                         </div>
@@ -146,15 +146,15 @@ const AgencySignup = () => {
                             <div className="flex items-start gap-3">
                                 <span className="text-xl">⏳</span>
                                 <div>
-                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">Examen sous 24h ouvrables</p>
-                                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">Vous recevrez une confirmation par email une fois approuvé.</p>
+                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('auth.review_time')}</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">{t('auth.review_desc')}</p>
                                 </div>
                             </div>
                             <div className="flex items-start gap-3 border-t border-amber-100 dark:border-amber-800 pt-3">
                                 <span className="text-xl">📤</span>
                                 <div>
-                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">Preuve de paiement manquante ?</p>
-                                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">Connectez-vous via votre lien ci-dessus et téléchargez votre reçu depuis votre tableau de bord.</p>
+                                    <p className="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('auth.missing_proof')}</p>
+                                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">{t('auth.missing_proof_desc')}</p>
                                 </div>
                             </div>
                         </div>
@@ -178,9 +178,10 @@ const AgencySignup = () => {
                                 className="btn-primary inline-flex items-center justify-center h-11 px-8 text-sm font-bold"
                             >
                                 Se connecter maintenant
+                                {t('auth.login_now')}
                             </a>
                             <Link to="/" className="inline-flex items-center justify-center h-11 px-8 text-sm font-bold border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                                Retour à l'accueil
+                                {t('common.back_to_home')}
                             </Link>
                         </div>
                     </div>
@@ -251,7 +252,7 @@ const AgencySignup = () => {
 
                     {/* Plan Selection */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">Subscription Plan</h3>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">{t('auth.subscription_plan')}</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {['Basic', 'Pro', 'Enterprise'].map((planOption) => (
                                 <div 
@@ -260,10 +261,10 @@ const AgencySignup = () => {
                                     className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${formData.plan === planOption ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'}`}
                                 >
                                     <div className={`font-bold text-lg mb-1 ${formData.plan === planOption ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>
-                                        {planOption}
+                                        {t(`auth.plans.${planOption.toLowerCase()}`)}
                                     </div>
                                     <div className="text-xs text-slate-500 dark:text-slate-400">
-                                        {planOption === 'Basic' ? 'Start small, grow big.' : planOption === 'Pro' ? 'For growing businesses.' : 'Advanced features.'}
+                                        {t(`auth.plans.${planOption.toLowerCase()}_desc`)}
                                     </div>
                                 </div>
                             ))}
@@ -272,19 +273,23 @@ const AgencySignup = () => {
 
                     {/* Payment Method Selection */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">Méthode de Paiement (Payment Method)</h3>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-gray-200 border-b pb-2 border-gray-100 dark:border-gray-700">{t('auth.payment_method')}</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {['Espèces', 'Virement Bancaire', 'BaridiMob'].map((method) => (
+                            {[
+                                { name: 'Espèces', key: 'cash' },
+                                { name: 'Virement Bancaire', key: 'bank' },
+                                { name: 'BaridiMob', key: 'baridimob' }
+                            ].map((method) => (
                                 <div 
-                                    key={method}
-                                    onClick={() => setFormData({ ...formData, paymentMethod: method })}
-                                    className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${formData.paymentMethod === method ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'}`}
+                                    key={method.name}
+                                    onClick={() => setFormData({ ...formData, paymentMethod: method.name })}
+                                    className={`cursor-pointer rounded-xl border-2 p-4 text-center transition-all ${formData.paymentMethod === method.name ? 'border-primary bg-primary/5 dark:bg-primary/10' : 'border-gray-200 dark:border-gray-700 hover:border-primary/50'}`}
                                 >
-                                    <div className={`font-bold text-[15px] mb-1 ${formData.paymentMethod === method ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>
-                                        {method}
+                                    <div className={`font-bold text-[15px] mb-1 ${formData.paymentMethod === method.name ? 'text-primary' : 'text-slate-800 dark:text-slate-200'}`}>
+                                        {t(`auth.${method.key}`)}
                                     </div>
                                     <div className="text-xs text-slate-500 dark:text-slate-400">
-                                        {method === 'Espèces' ? 'Paiement en espèces au bureau' : method === 'Virement Bancaire' ? 'Virement bancaire classique' : 'Transfert rapide (Edahabia)'}
+                                        {t(`auth.payment_methods.${method.key}_desc`)}
                                     </div>
                                 </div>
                             ))}
@@ -295,8 +300,8 @@ const AgencySignup = () => {
                     {formData.paymentMethod !== 'Espèces' && (
                         <div className="space-y-4 p-5 bg-primary-50/50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-900 rounded-xl">
                             <div>
-                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-gray-200 mb-1">Preuve de paiement (Reçu) <span className="text-red-500">*</span></h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Veuillez joindre une capture d'écran, un reçu ou un PDF confirmant votre paiement.</p>
+                                <h3 className="text-[15px] font-bold text-slate-800 dark:text-gray-200 mb-1">{t('auth.payment_proof')} <span className="text-red-500">*</span></h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{t('auth.payment_proof_desc')}</p>
                                 
                                 <div className="flex items-center justify-center w-full">
                                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-lg cursor-pointer bg-slate-50 dark:bg-slate-800 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
@@ -305,12 +310,12 @@ const AgencySignup = () => {
                                                 <>
                                                     <svg className="w-8 h-8 mb-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                                     <p className="text-sm font-semibold text-green-600 truncate max-w-full">{paymentProofFile.name}</p>
-                                                    <p className="text-xs text-slate-500 hidden sm:block">Cliquez pour remplacer</p>
+                                                    <p className="text-xs text-slate-500 hidden sm:block">{t('auth.click_to_replace')}</p>
                                                 </>
                                             ) : (
                                                 <>
                                                     <svg className="w-8 h-8 mb-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                                    <p className="mb-2 text-sm text-slate-500 dark:text-slate-400"><span className="font-semibold">Cliquez pour uploader image/pdf</span> ou glissez le fichier ici</p>
+                                                    <p className="mb-2 text-sm text-slate-500 dark:text-slate-400"><span className="font-semibold">{t('auth.click_to_upload')}</span> {t('auth.or_drag_drop')}</p>
                                                 </>
                                             )}
                                         </div>
@@ -326,7 +331,7 @@ const AgencySignup = () => {
                     )}
 
                     <button disabled={loading} className="btn-primary h-12 w-full text-base font-bold mt-4 disabled:opacity-50">
-                        {loading ? 'Processing...' : t('auth.submit_application')}
+                        {loading ? t('common.loading') : t('auth.submit_application')}
                     </button>
 
                     <p className="text-center text-sm text-slate-500">

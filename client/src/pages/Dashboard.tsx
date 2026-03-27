@@ -11,13 +11,13 @@ const Dashboard = () => {
         <div className="space-y-6 overflow-x-hidden w-full">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 font-display">SaaS Backoffice</h1>
-                    <p className="text-gray-500 text-sm mt-1">Bienvenue sur le panneau de configuration principal Trajetour</p>
+                    <h1 className="text-2xl font-bold text-gray-900 font-display">{t('master_dashboard.backoffice_title')}</h1>
+                    <p className="text-gray-500 text-sm mt-1">{t('master_dashboard.backoffice_subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 bg-white px-4 py-2 rounded-lg border border-gray-100 shadow-sm">
                     <Calendar size={16} className="text-primary" />
                     <span className="font-medium">
-                        {new Date().toLocaleDateString('fr-FR', {
+                        {new Date().toLocaleDateString(t('common.lang') === 'ar' ? 'ar-SA' : 'fr-FR', {
                             weekday: 'long',
                             year: 'numeric',
                             month: 'long',
@@ -31,9 +31,9 @@ const Dashboard = () => {
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-6">
                     <TrendingUp size={40} />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Centre de Contrôle Trajetour</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('master_dashboard.control_center_title')}</h2>
                 <p className="text-gray-500 max-w-md">
-                    Gérez vos agences locataires, approuvez les nouvelles inscriptions et surveillez les rapports de revenus via le menu latéral.
+                    {t('master_dashboard.control_center_desc')}
                 </p>
             </div>
 

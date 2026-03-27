@@ -104,7 +104,7 @@ const ClientLogin = () => {
                             {t('auth.welcome_back')}
                         </h1>
                         <p className="text-[#637588] dark:text-gray-400 text-sm font-normal leading-normal">
-                            Veuillez vous connecter pour accéder à votre espace
+                            {t('auth.enter_details')}
                         </p>
                     </div>
 
@@ -170,8 +170,8 @@ const ClientLogin = () => {
                                 <Link className="text-primary font-bold hover:underline ml-1" to="/register">{t('auth.register_link')}</Link>
                             </p>
                             <p className="text-[#637588] dark:text-gray-400 text-sm mt-3 border-t border-gray-100 dark:border-gray-800 pt-3">
-                                Vous êtes une agence ? 
-                                <Link className="text-primary font-bold hover:underline ml-1" to="/register/agency">Inscrivez-vous ici</Link>
+                                {t('auth.agency_prompt')} 
+                                <Link className="text-primary font-bold hover:underline ml-1" to="/register/agency">{t('auth.agency_link')}</Link>
                             </p>
                         </div>
                     </form>

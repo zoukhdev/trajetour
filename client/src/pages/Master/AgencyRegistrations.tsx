@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import MasterAgencyForm from './MasterAgencyForm';
+import { useLanguage } from '../../context/LanguageContext';
 import toast from 'react-hot-toast';
 
 interface Agency {
@@ -33,14 +34,15 @@ const PLAN_STYLES: Record<string, { bg: string; text: string; border: string; ic
     Enterprise: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', icon: '👑' },
 };
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-    PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-400', label: 'En attente' },
-    ACTIVE: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', label: 'Approuvée' },
-    REJECTED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500', label: 'Rejetée' },
-    SUSPENDED: { bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400', label: 'Suspendue' },
+const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
+    PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-400' },
+    ACTIVE: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+    REJECTED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
+    SUSPENDED: { bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400' },
 };
 
 const AgencyRegistrations = () => {
+    const { t } = useLanguage();
     const [agencies, setAgencies] = useState<Agency[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<string>('ALL');
@@ -69,15 +71,15 @@ const AgencyRegistrations = () => {
     }, [fetchAgencies]);
 
     const handleApprove = async (agency: Agency) => {
-        if (!window.confirm(`Approuver l'agence "${agency.name}" (plan ${agency.plan}) ?`)) return;
+        if (!window.confirm(t('master_dashboard.agencies.confirm.approve').replace('{name}', agency.name).replace('{plan}', agency.plan))) return;
         setActionLoading(agency.id);
         try {
             await masterAPI.updateAgencyStatus(agency.id, 'ACTIVE');
             await fetchAgencies();
-            toast.success('Agence approuvée avec succès');
+            toast.success(t('master_dashboard.agencies.toasts.approved'));
         } catch (err: any) {
             console.error('Approve failed:', err);
-            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de l\'approbation');
+            toast.error(err.response?.data?.error || err.response?.data?.message || t('common.error'));
         } finally {
             setActionLoading(null);
         }
@@ -91,42 +93,42 @@ const AgencyRegistrations = () => {
             setRejectModal({ open: false, agency: null });
             setRejectionReason('');
             await fetchAgencies();
-            toast.success('Agence rejetée');
+            toast.success(t('master_dashboard.agencies.toasts.rejected'));
         } catch (err: any) {
             console.error('Reject failed:', err);
-            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors du rejet');
+            toast.error(err.response?.data?.error || err.response?.data?.message || t('common.error'));
         } finally {
             setActionLoading(null);
         }
     };
 
     const handleSuspend = async (agency: Agency) => {
-        if (!window.confirm(`Suspendre l'agence "${agency.name}" ?`)) return;
+        if (!window.confirm(t('master_dashboard.agencies.confirm.suspend').replace('{name}', agency.name))) return;
         setActionLoading(agency.id);
         try {
             await masterAPI.updateAgencyStatus(agency.id, 'SUSPENDED');
             await fetchAgencies();
             setDetailModal(null);
-            toast.success('Agence suspendue');
+            toast.success(t('master_dashboard.agencies.toasts.suspended'));
         } catch (err: any) {
             console.error('Suspend failed:', err);
-            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suspension');
+            toast.error(err.response?.data?.error || err.response?.data?.message || t('common.error'));
         } finally {
             setActionLoading(null);
         }
     };
 
     const handleDelete = async (agency: Agency) => {
-        if (!window.confirm(`Voulez-vous DÉFINITIVEMENT SUPPRIMER l'agence "${agency.name}" de la plateforme SaaS ?\nCeci supprimera l'accès au domaine.`)) return;
+        if (!window.confirm(t('master_dashboard.agencies.confirm.delete').replace('{name}', agency.name))) return;
         setActionLoading(agency.id);
         try {
             await masterAPI.deleteAgency(agency.id);
             await fetchAgencies();
             setDetailModal(null);
-            toast.success('Agence supprimée');
+            toast.success(t('master_dashboard.agencies.toasts.deleted'));
         } catch (err: any) {
             console.error('Delete failed:', err);
-            toast.error(err.response?.data?.error || err.response?.data?.message || 'Erreur lors de la suppression');
+            toast.error(err.response?.data?.error || err.response?.data?.message || t('common.error'));
         } finally {
             setActionLoading(null);
         }
@@ -137,8 +139,9 @@ const AgencyRegistrations = () => {
         try {
             await masterAPI.sendProofReminder(agency.id);
             setReminderSent(prev => ({ ...prev, [agency.id]: true }));
+            toast.success(t('master_dashboard.agencies.toasts.reminder_sent'));
         } catch (err: any) {
-            alert(err?.response?.data?.error || 'Erreur lors de l\'envoi de l\'email.');
+            toast.error(err?.response?.data?.error || t('common.error'));
         } finally {
             setReminderLoading(null);
         }
@@ -168,9 +171,9 @@ const AgencyRegistrations = () => {
                         <span className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
                             <Building2 size={22} />
                         </span>
-                        Toutes les Agences
+                        {t('master_dashboard.agencies.title')}
                     </h1>
-                    <p className="text-gray-500 mt-1 ml-1">Gérez l'ensemble des agences locataires et validez les inscriptions.</p>
+                    <p className="text-gray-500 mt-1 ml-1">{t('master_dashboard.agencies.subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
@@ -179,14 +182,14 @@ const AgencyRegistrations = () => {
                         className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium shadow-sm"
                     >
                         <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                        Actualiser
+                        {t('master_dashboard.subscriptions.refresh')}
                     </button>
                     <button
                         onClick={() => setIsAddModalOpen(true)}
                         className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-bold font-medium shadow-sm transition"
                     >
                         <Plus size={18} />
-                        Ajouter
+                        {t('master_dashboard.agencies.add_agency')}
                     </button>
                 </div>
             </div>
@@ -194,10 +197,10 @@ const AgencyRegistrations = () => {
             {/* Stats Row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {[
-                    { key: 'ALL', label: 'Total', color: 'blue', icon: Globe },
-                    { key: 'PENDING', label: 'En attente', color: 'amber', icon: Clock },
-                    { key: 'ACTIVE', label: 'Approuvées', color: 'emerald', icon: CheckCircle2 },
-                    { key: 'REJECTED', label: 'Rejetées', color: 'red', icon: XCircle },
+                    { key: 'ALL', label: t('common.all'), color: 'blue', icon: Globe },
+                    { key: 'PENDING', label: t('master_dashboard.agencies.status.pending'), color: 'amber', icon: Clock },
+                    { key: 'ACTIVE', label: t('master_dashboard.agencies.status.active'), color: 'emerald', icon: CheckCircle2 },
+                    { key: 'REJECTED', label: t('master_dashboard.agencies.status.rejected'), color: 'red', icon: XCircle },
                 ].map(({ key, label, color, icon: Icon }) => (
                     <button
                         key={key}
@@ -230,7 +233,7 @@ const AgencyRegistrations = () => {
                                 : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-300'
                         }`}
                     >
-                        {s === 'ALL' ? 'Toutes' : STATUS_STYLES[s]?.label || s}
+                        {s === 'ALL' ? t('common.all') : t(`master_dashboard.agencies.status.${s.toLowerCase()}`)}
                         {s !== 'ALL' && (
                             <span className="ml-1.5 opacity-70">({agencies.filter(a => a.status === s).length})</span>
                         )}
@@ -248,9 +251,9 @@ const AgencyRegistrations = () => {
             ) : filteredAgencies.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-dashed border-gray-300 py-20 flex flex-col items-center justify-center text-gray-400">
                     <Globe size={48} className="mb-4 opacity-30" />
-                    <p className="text-lg font-semibold">Aucune agence trouvée</p>
+                    <p className="text-lg font-semibold">{t('master_dashboard.agencies.no_agencies')}</p>
                     <p className="text-sm mt-1">
-                        {filter === 'PENDING' ? 'Aucune demande en attente.' : `Aucune agence avec le statut "${filter}".`}
+                        {t('master_dashboard.agencies.no_agencies_desc')}
                     </p>
                 </div>
             ) : (
@@ -316,7 +319,7 @@ const AgencyRegistrations = () => {
                                             {/* Status Badge */}
                                             <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${status.bg} ${status.text}`}>
                                                 <span className={`w-1.5 h-1.5 rounded-full ${status.dot} animate-${agency.status === 'PENDING' ? 'pulse' : 'none'}`} />
-                                                {status.label}
+                                                {t(`master_dashboard.agencies.status.${agency.status.toLowerCase()}`)}
                                             </span>
                                             {/* Plan Badge */}
                                             <span className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${plan.bg} ${plan.text} ${plan.border}`}>
@@ -370,7 +373,7 @@ const AgencyRegistrations = () => {
                                             : 'bg-amber-50 text-amber-700'
                                     }`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${agency.db_provisioned_at ? 'bg-emerald-500' : 'bg-amber-400 animate-pulse'}`} />
-                                        {agency.db_provisioned_at ? '✅ Base de données provisionnée' : '⏳ Base de données en cours de provisionnement...'}
+                                        {agency.db_provisioned_at ? `✅ ${t('master_dashboard.agencies.form.submit')}` : `⏳ ${t('master_dashboard.agencies.form.submitting')}`}
                                     </div>
 
                                     {/* Footer */}
@@ -390,16 +393,16 @@ const AgencyRegistrations = () => {
                                                         disabled={isLoading}
                                                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold transition disabled:opacity-50"
                                                     >
-                                                        <XCircle size={13} /> Rejeter
+                                                        <XCircle size={13} /> {t('master_dashboard.agencies.actions.reject')}
                                                     </button>
                                                     <button
                                                         onClick={() => handleApprove(agency)}
                                                         disabled={isLoading || !agency.db_provisioned_at}
-                                                        title={!agency.db_provisioned_at ? "Attendez que la base de données soit provisionnée" : "Approuver cette agence"}
+                                                        title={!agency.db_provisioned_at ? t('master_dashboard.agencies.form.submitting') : t('master_dashboard.agencies.actions.approve')}
                                                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-semibold transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         {isLoading ? <RefreshCw size={12} className="animate-spin" /> : <CheckCircle2 size={13} />}
-                                                        Approuver
+                                                        {t('master_dashboard.agencies.actions.approve')}
                                                     </button>
                                                 </>
                                             )}
@@ -409,7 +412,7 @@ const AgencyRegistrations = () => {
                                                     disabled={isLoading}
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 text-xs font-semibold transition disabled:opacity-50"
                                                 >
-                                                    Suspendre
+                                                    {t('master_dashboard.agencies.actions.suspend')}
                                                 </button>
                                             )}
                                             {(agency.status === 'REJECTED' || agency.status === 'SUSPENDED') && (
@@ -418,7 +421,7 @@ const AgencyRegistrations = () => {
                                                     disabled={isLoading}
                                                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition disabled:opacity-50"
                                                 >
-                                                    Réactiver
+                                                    {t('master_dashboard.agencies.actions.activate')}
                                                 </button>
                                             )}
                                         </div>
@@ -439,18 +442,18 @@ const AgencyRegistrations = () => {
                                 <XCircle size={22} />
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900 text-lg">Rejeter la demande</h3>
+                                <h3 className="font-bold text-gray-900 text-lg">{t('master_dashboard.agencies.confirm.reject')}</h3>
                                 <p className="text-sm text-gray-500">{rejectModal.agency.name}</p>
                             </div>
                         </div>
 
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Motif du rejet <span className="text-gray-400">(optionnel)</span>
+                            {t('master_dashboard.agencies.details.rejection_reason')} <span className="text-gray-400">{t('master_dashboard.subscriptions.rejection_modal.reason_optional')}</span>
                         </label>
                         <textarea
                             value={rejectionReason}
                             onChange={e => setRejectionReason(e.target.value)}
-                            placeholder="Ex: Documents manquants, informations incorrectes..."
+                            placeholder={t('master_dashboard.subscriptions.rejection_modal.placeholder')}
                             rows={4}
                             className="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition"
                         />
@@ -459,7 +462,7 @@ const AgencyRegistrations = () => {
                                 onClick={() => { setRejectModal({ open: false, agency: null }); setRejectionReason(''); }}
                                 className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition"
                             >
-                                Annuler
+                                {t('common.cancel')}
                             </button>
                             <button
                                 onClick={handleReject}
@@ -467,7 +470,7 @@ const AgencyRegistrations = () => {
                                 className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {actionLoading ? <RefreshCw size={15} className="animate-spin" /> : null}
-                                Confirmer le rejet
+                                {t('master_dashboard.subscriptions.rejection_modal.confirm')}
                             </button>
                         </div>
                     </div>
@@ -499,42 +502,41 @@ const AgencyRegistrations = () => {
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left rtl:text-right">
                             <div className="space-y-4">
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Contact</p>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{t('master_dashboard.agencies.table.contact')}</p>
                                     <p className="text-sm font-medium text-gray-900">{detailModal.contact_name}</p>
                                     <p className="text-sm text-gray-600">{detailModal.owner_email}</p>
                                     <p className="text-sm text-gray-600">{detailModal.phone}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Adresse</p>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{t('master_dashboard.agencies.details.address')}</p>
                                     <p className="text-sm text-gray-800">{detailModal.address}</p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Plan choisi</p>
-                                    <p className="text-sm font-bold text-gray-900">{detailModal.plan} <span className="text-gray-500 font-normal">({PLAN_PRICES[detailModal.plan]})</span></p>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{t('master_dashboard.agencies.details.reg_info')}</p>
+                                    <p className="text-sm font-bold text-gray-900">{detailModal.plan}</p>
                                 </div>
                             </div>
 
                             <div className="space-y-4">
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Méthode de Paiement</p>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{t('master_dashboard.agencies.details.payment_method')}</p>
                                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-sm font-medium bg-blue-100 text-blue-800">
-                                        {detailModal.payment_method || 'Non spécifié'}
+                                        {detailModal.payment_method || t('common.undefined')}
                                     </span>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Statut actuel</p>
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{t('master_dashboard.agencies.table.status')}</p>
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-bold ${STATUS_STYLES[detailModal.status]?.bg} ${STATUS_STYLES[detailModal.status]?.text}`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${STATUS_STYLES[detailModal.status]?.dot}`} />
-                                        {STATUS_STYLES[detailModal.status]?.label}
+                                        {t(`master_dashboard.agencies.status.${detailModal.status.toLowerCase()}`)}
                                     </span>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Dates</p>
-                                    <p className="text-sm text-gray-600">Inscription: {new Date(detailModal.created_at).toLocaleString('fr-FR')}</p>
-                                    {detailModal.status_updated_at && <p className="text-sm text-gray-600">Modifié: {new Date(detailModal.status_updated_at).toLocaleString('fr-FR')}</p>}
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{t('master_dashboard.agencies.table.date')}</p>
+                                    <p className="text-sm text-gray-600">{new Date(detailModal.created_at).toLocaleString()}</p>
                                 </div>
                             </div>
                         </div>
@@ -542,7 +544,7 @@ const AgencyRegistrations = () => {
                         {/* Payment Proof Section */}
                         <div className="border-t border-gray-100 pt-6 mb-6">
                             <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider flex items-center gap-2 mb-4">
-                                <CreditCard size={16} /> Preuve de paiement
+                                <CreditCard size={16} /> {t('master_dashboard.agencies.details.payment_proof')}
                             </h3>
                             {detailModal.payment_proof_url ? (
                                 <div className="space-y-2">
@@ -571,15 +573,15 @@ const AgencyRegistrations = () => {
                                 <div className="bg-amber-50 border border-dashed border-amber-300 rounded-xl p-5 space-y-3">
                                     <div className="flex items-center gap-2 text-amber-700 font-semibold text-sm">
                                         <AlertTriangle size={16} />
-                                        Aucune preuve de paiement soumise par l'agence.
+                                        {t('master_dashboard.agencies.details.no_proof')}
                                     </div>
                                     <p className="text-xs text-amber-600">
-                                        Envoyez un email de rappel à {detailModal.owner_email} pour les inviter à se connecter et télécharger leur reçu.
+                                        {t('master_dashboard.agencies.actions.reminder')} - {detailModal.owner_email}
                                     </p>
                                     {reminderSent[detailModal.id] ? (
                                         <div className="flex items-center gap-2 text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                                             <CheckCircle2 size={13} />
-                                            Email de rappel envoyé à {detailModal.owner_email}
+                                            {t('master_dashboard.agencies.toasts.reminder_sent')} -> {detailModal.owner_email}
                                         </div>
                                     ) : (
                                         <button
@@ -604,7 +606,7 @@ const AgencyRegistrations = () => {
                                 disabled={!!actionLoading}
                                 className="px-4 py-2 rounded-xl flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 font-bold transition text-sm"
                             >
-                                <Trash2 size={16} /> Supprimer
+                                <Trash2 size={16} /> {t('master_dashboard.agencies.actions.delete')}
                             </button>
                             
                             <div className="flex gap-3">
@@ -615,15 +617,15 @@ const AgencyRegistrations = () => {
                                             disabled={!!actionLoading}
                                             className="px-5 py-2.5 rounded-xl bg-red-50 text-red-600 font-bold hover:bg-red-100 transition"
                                         >
-                                            Rejeter
+                                            {t('master_dashboard.agencies.actions.reject')}
                                         </button>
                                         <button
                                             onClick={() => handleApprove(detailModal)}
                                             disabled={!!actionLoading || !detailModal.db_provisioned_at}
-                                            title={!detailModal.db_provisioned_at ? "Attendez que la base de données soit provisionnée" : "Approuver cette agence"}
+                                            title={!detailModal.db_provisioned_at ? t('master_dashboard.agencies.form.submitting') : t('master_dashboard.agencies.actions.approve')}
                                             className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
-                                            Approuver l'agence
+                                            {t('master_dashboard.agencies.actions.approve')}
                                         </button>
                                     </>
                                 )}
@@ -633,7 +635,7 @@ const AgencyRegistrations = () => {
                                         disabled={!!actionLoading}
                                         className="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-bold hover:bg-gray-200 transition"
                                     >
-                                        Suspendre l'agence
+                                        {t('master_dashboard.agencies.actions.suspend')}
                                     </button>
                                 )}
                                 {(detailModal.status === 'REJECTED' || detailModal.status === 'SUSPENDED') && (
@@ -642,7 +644,7 @@ const AgencyRegistrations = () => {
                                         disabled={!!actionLoading}
                                         className="px-5 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition disabled:opacity-50"
                                     >
-                                        Réactiver l'agence
+                                        {t('master_dashboard.agencies.actions.activate')}
                                     </button>
                                 )}
                             </div>
@@ -654,7 +656,7 @@ const AgencyRegistrations = () => {
             <Modal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
-                title="Ajouter une Agence (Provisionnement manuel)"
+                title={t('master_dashboard.agencies.add_agency')}
             >
                 <MasterAgencyForm onSuccess={() => {
                     setIsAddModalOpen(false);

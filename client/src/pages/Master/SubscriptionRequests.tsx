@@ -3,6 +3,7 @@ import { masterAPI } from '../../services/api';
 import {
     CheckCircle2, XCircle, Clock, RefreshCw, AlertTriangle, Building2, CreditCard, ChevronRight
 } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface SubscriptionRequest {
     id: string;
@@ -18,10 +19,10 @@ interface SubscriptionRequest {
     agency_subdomain: string;
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string; label: string }> = {
-    PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-400', label: 'En attente' },
-    APPROVED: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', label: 'Approuvée' },
-    REJECTED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500', label: 'Rejetée' },
+const STATUS_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
+    PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-400' },
+    APPROVED: { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500' },
+    REJECTED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
 };
 
 const PLAN_STYLES: Record<string, { bg: string; text: string; border: string }> = {
@@ -31,6 +32,7 @@ const PLAN_STYLES: Record<string, { bg: string; text: string; border: string }> 
 };
 
 const SubscriptionRequests = () => {
+    const { t } = useLanguage();
     const [requests, setRequests] = useState<SubscriptionRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -55,7 +57,7 @@ const SubscriptionRequests = () => {
     }, [fetchRequests]);
 
     const handleUpdateStatus = async (id: string, status: 'APPROVED' | 'REJECTED', notes?: string) => {
-        if (status === 'APPROVED' && !window.confirm('Êtes-vous sûr de vouloir APPROUVER ce surclassement ?\nLe plan de l\'agence sera modifié immédiatement.')) return;
+        if (status === 'APPROVED' && !window.confirm(t('master_dashboard.subscriptions.confirm.approve'))) return;
         
         setActionLoading(id);
         try {
@@ -67,7 +69,7 @@ const SubscriptionRequests = () => {
             }
         } catch (err) {
             console.error('Failed to update request status:', err);
-            alert('Erreur lors de la mise à jour de la demande.');
+            alert(t('common.error'));
         } finally {
             setActionLoading(null);
         }
@@ -84,9 +86,9 @@ const SubscriptionRequests = () => {
                         <span className="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
                             <CreditCard size={22} />
                         </span>
-                        Demandes de Surclassement
+                        {t('master_dashboard.subscriptions.title')}
                     </h1>
-                    <p className="text-gray-500 mt-1 ml-1">Gérez les demandes de changement de plan d'abonnement des agences.</p>
+                    <p className="text-gray-500 mt-1 ml-1">{t('master_dashboard.subscriptions.subtitle')}</p>
                 </div>
                 <button
                     onClick={fetchRequests}
@@ -94,7 +96,7 @@ const SubscriptionRequests = () => {
                     className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition font-medium shadow-sm"
                 >
                     <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-                    Actualiser
+                    {t('master_dashboard.subscriptions.refresh')}
                 </button>
             </div>
 
@@ -110,7 +112,7 @@ const SubscriptionRequests = () => {
                                 : 'bg-transparent text-gray-600 hover:bg-gray-50'
                         }`}
                     >
-                        {s === 'ALL' ? 'Toutes' : STATUS_STYLES[s]?.label || s}
+                        {s === 'ALL' ? t('common.all') : t(`master_dashboard.agencies.status.${s.toLowerCase()}`)}
                         <span className="ml-1.5 opacity-70">
                             ({s === 'ALL' ? requests.length : requests.filter(r => r.status === s).length})
                         </span>
@@ -128,8 +130,8 @@ const SubscriptionRequests = () => {
             ) : filteredRequests.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-dashed border-gray-300 py-20 flex flex-col items-center justify-center text-gray-400">
                     <CreditCard size={48} className="mb-4 opacity-30" />
-                    <p className="text-lg font-semibold">Aucune demande trouvée</p>
-                    <p className="text-sm mt-1">Vous êtes à jour !</p>
+                    <p className="text-lg font-semibold">{t('master_dashboard.subscriptions.no_requests')}</p>
+                    <p className="text-sm mt-1">{t('master_dashboard.subscriptions.no_requests_desc')}</p>
                 </div>
             ) : (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-100">
@@ -164,20 +166,20 @@ const SubscriptionRequests = () => {
 
                                     {request.notes && (
                                         <div className="bg-slate-50 rounded-xl p-3 text-sm text-gray-600 max-w-xl">
-                                            <p className="font-semibold text-xs text-gray-400 uppercase mb-1">Note de l'agence :</p>
+                                            <p className="font-semibold text-xs text-gray-400 uppercase mb-1">{t('master_dashboard.subscriptions.notes_label')}</p>
                                             {request.notes}
                                         </div>
                                     )}
 
                                     <div className="flex items-center gap-4 text-xs text-gray-400">
-                                        <span>Demandé le: {new Date(request.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                                        <span>{t('master_dashboard.agencies.table.date')}: {new Date(request.created_at).toLocaleString()}</span>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-row md:flex-col items-end gap-3 justify-between md:justify-end">
                                     <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${status.bg} ${status.text}`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                                        {status.label}
+                                        {t(`master_dashboard.agencies.status.${request.status.toLowerCase()}`)}
                                     </span>
 
                                     {request.status === 'PENDING' && (
@@ -187,7 +189,7 @@ const SubscriptionRequests = () => {
                                                 disabled={isLoading}
                                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-semibold transition"
                                             >
-                                                <XCircle size={14} /> Rejeter
+                                                <XCircle size={14} /> {t('master_dashboard.agencies.actions.reject')}
                                             </button>
                                             <button
                                                 onClick={() => handleUpdateStatus(request.id, 'APPROVED')}
@@ -195,7 +197,7 @@ const SubscriptionRequests = () => {
                                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-semibold transition shadow-sm"
                                             >
                                                 {isLoading ? <RefreshCw size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                                                Approuver
+                                                {t('master_dashboard.agencies.actions.approve')}
                                             </button>
                                         </div>
                                     )}
@@ -215,18 +217,18 @@ const SubscriptionRequests = () => {
                                 <XCircle size={22} />
                             </div>
                             <div>
-                                <h3 className="font-bold text-gray-900 text-lg">Rejeter la demande</h3>
+                                <h3 className="font-bold text-gray-900 text-lg">{t('master_dashboard.subscriptions.rejection_modal.title')}</h3>
                                 <p className="text-sm text-gray-500">{rejectModal.request.agency_name}</p>
                             </div>
                         </div>
 
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Motif du rejet <span className="text-gray-400">(optionnel)</span>
+                            {t('master_dashboard.subscriptions.rejection_modal.reason')} <span className="text-gray-400">{t('master_dashboard.subscriptions.rejection_modal.reason_optional')}</span>
                         </label>
                         <textarea
                             value={rejectionReason}
                             onChange={e => setRejectionReason(e.target.value)}
-                            placeholder="Ex: Solde insuffisant, etc..."
+                            placeholder={t('master_dashboard.subscriptions.rejection_modal.placeholder')}
                             rows={4}
                             className="w-full border border-gray-100 rounded-xl p-3 text-sm resize-none outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition"
                         />
@@ -235,7 +237,7 @@ const SubscriptionRequests = () => {
                                 onClick={() => { setRejectModal({ open: false, request: null }); setRejectionReason(''); }}
                                 className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-gray-700 font-semibold hover:bg-gray-50 transition"
                             >
-                                Annuler
+                                {t('common.cancel')}
                             </button>
                             <button
                                 onClick={() => handleUpdateStatus(rejectModal.request!.id, 'REJECTED', rejectionReason)}
@@ -243,7 +245,7 @@ const SubscriptionRequests = () => {
                                 className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {actionLoading ? <RefreshCw size={15} className="animate-spin" /> : null}
-                                Confirmer le rejet
+                                {t('master_dashboard.subscriptions.rejection_modal.confirm')}
                             </button>
                         </div>
                     </div>

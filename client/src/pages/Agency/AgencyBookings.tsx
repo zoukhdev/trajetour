@@ -110,11 +110,11 @@ const AgencyBookings = () => {
                                 }}
                                 className="h-11 pl-10 pr-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary"
                             >
-                                <option value="all">Tous les statuts</option>
-                                <option value="pending">En attente</option>
-                                <option value="confirmed">Confirmé</option>
-                                <option value="completed">Terminé</option>
-                                <option value="cancelled">Annulé</option>
+                                <option value="all">{t('agency_dashboard.all_statuses')}</option>
+                                <option value="pending">{t('agency_dashboard.status_pending')}</option>
+                                <option value="confirmed">{t('agency_dashboard.status_confirmed')}</option>
+                                <option value="completed">{t('agency_dashboard.status_completed')}</option>
+                                <option value="cancelled">{t('agency_dashboard.status_cancelled')}</option>
                             </select>
                         </div>
                     </div>
@@ -122,7 +122,7 @@ const AgencyBookings = () => {
 
                 {/* Results Summary */}
                 <div className="mb-4 text-sm text-slate-600 dark:text-slate-400">
-                    {filteredOrders.length} réservation(s) trouvée(s)
+                    {filteredOrders.length} {t('agency_dashboard.results_found')}
                 </div>
 
                 {/* Loading State */}
@@ -138,9 +138,9 @@ const AgencyBookings = () => {
                     <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-12">
                         <div className="flex flex-col items-center justify-center text-slate-400">
                             <Calendar size={48} className="mb-4" />
-                            <p className="text-lg font-medium">Aucune réservation trouvée</p>
+                            <p className="text-lg font-medium">{t('agency_dashboard.no_bookings_found')}</p>
                             <p className="text-sm mt-2">
-                                {searchTerm ? 'Essayez de modifier vos critères de recherche' : 'Vos clients n\'ont pas encore de réservations'}
+                                {searchTerm ? t('agency_dashboard.search_no_results') : t('agency_dashboard.no_bookings_desc')}
                             </p>
                         </div>
                     </div>
@@ -155,7 +155,7 @@ const AgencyBookings = () => {
                                             <th className="p-4">{t('agency_dashboard.bookings.ref')}</th>
                                             <th className="p-4">{t('agency_dashboard.bookings.client')}</th>
                                             <th className="p-4">{t('agency_dashboard.bookings.package')}</th>
-                                            <th className="p-4">Prix Total</th>
+                                            <th className="p-4">{t('agency_dashboard.total_price')}</th>
                                             <th className="p-4">{t('agency_dashboard.bookings.status')}</th>
                                             <th className="p-4">{t('agency_dashboard.bookings.date')}</th>
                                             <th className="p-4 text-end">{t('agency_dashboard.bookings.actions')}</th>
@@ -178,7 +178,12 @@ const AgencyBookings = () => {
                                                 </td>
                                                 <td className="p-4">
                                                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getStatusColor(order.status)}`}>
-                                                        {order.status || 'N/A'}
+                                                        {order.status === 'Payé' ? t('common.status_paid') :
+                                                         order.status === 'Non payé' ? t('common.status_unpaid') :
+                                                         order.status === 'Paiement partiel' ? t('common.status_partial') :
+                                                         order.status === 'Remboursé' ? t('common.status_refunded') :
+                                                         order.status === 'Annulé' ? t('common.status_cancelled') :
+                                                         order.status}
                                                     </span>
                                                 </td>
                                                 <td className="p-4 text-slate-500">
@@ -201,23 +206,23 @@ const AgencyBookings = () => {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="mt-6 flex justify-center gap-2">
+                            <div className="mt-6 flex justify-center items-center gap-4">
                                 <button
                                     onClick={() => setPage(p => Math.max(1, p - 1))}
                                     disabled={page === 1}
                                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                 >
-                                    Précédent
+                                    {t('agency_dashboard.previous')}
                                 </button>
-                                <span className="px-4 py-2 text-slate-600 dark:text-slate-400">
-                                    Page {page} sur {totalPages}
+                                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                                    {t('agency_dashboard.page_info', { page, total: totalPages })}
                                 </span>
                                 <button
                                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                                     disabled={page === totalPages}
                                     className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                                 >
-                                    Suivant
+                                    {t('agency_dashboard.next')}
                                 </button>
                             </div>
                         )}
