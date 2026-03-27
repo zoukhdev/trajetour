@@ -78,7 +78,11 @@ const SupplierList = () => {
                 {filteredSuppliers.map((supplier) => (
                     <div
                         key={supplier.id}
-                        onClick={() => navigate(`/suppliers/${supplier.id}/contracts`)}
+                        onClick={() => {
+                            const isAgency = window.location.pathname.startsWith('/agency');
+                            const basePath = isAgency ? '/agency' : '/dashboard';
+                            navigate(`${basePath}/suppliers/${supplier.id}/contracts`);
+                        }}
                         className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group cursor-pointer"
                     >
                         <div className="flex justify-between items-start mb-4">
@@ -155,7 +159,9 @@ const SupplierList = () => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate(`/suppliers/${supplier.id}/contracts`);
+                                const isAgency = window.location.pathname.startsWith('/agency');
+                                const basePath = isAgency ? '/agency' : '/dashboard';
+                                navigate(`${basePath}/suppliers/${supplier.id}/contracts`);
                             }}
                             className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors text-sm font-medium"
                         >

@@ -14,10 +14,14 @@ const contractIcons: Record<ContractType, React.ReactNode> = {
     'Food': <Utensils className="w-5 h-5" />
 };
 
+import { getAgencyPath } from '../../lib/tenant';
+
 export default function SupplierContracts() {
     const { id: supplierId } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const isAgency = window.location.pathname.startsWith('/agency') || window.location.hostname.includes('.');
+    const backPath = isAgency ? getAgencyPath('/suppliers') : '/dashboard/suppliers';
 
     const [contracts, setContracts] = useState<SupplierContract[]>([]);
     const [supplierName, setSupplierName] = useState('');
@@ -107,7 +111,7 @@ export default function SupplierContracts() {
                 return (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div><span className="font-medium">Quantité:</span> {details.quantity} visas</div>
-                        <div><span className="font-medium">Prix/visa:</span> {details.pricePerVisa}</div>
+                        <div><span className="font-medium">Prix/visa:</span> {Number(details.pricePerVisa).toLocaleString('fr-DZ')}</div>
                         <div><span className="font-medium">Type:</span> {details.visaType}</div>
                         <div><span className="font-medium">Pays:</span> {details.country}</div>
                         {details.processingDays && (
@@ -120,7 +124,7 @@ export default function SupplierContracts() {
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div><span className="font-medium">Type:</span> {details.vehicleType}</div>
                         <div><span className="font-medium">Quantité:</span> {details.quantity}</div>
-                        <div><span className="font-medium">Prix/unité:</span> {details.pricePerUnit}</div>
+                        <div><span className="font-medium">Prix/unité:</span> {Number(details.pricePerUnit).toLocaleString('fr-DZ')}</div>
                         <div><span className="font-medium">Itinéraire:</span> {details.route}</div>
                         <div><span className="font-medium">Début:</span> {details.dateFrom}</div>
                         <div><span className="font-medium">Fin:</span> {details.dateTo}</div>
@@ -171,7 +175,7 @@ export default function SupplierContracts() {
             {/* Header */}
             <div className="mb-6">
                 <button
-                    onClick={() => navigate('/suppliers')}
+                    onClick={() => navigate(backPath)}
                     className="flex items-center text-blue-600 hover:text-blue-700 mb-4"
                 >
                     <ArrowLeft className="w-4 h-4 mr-1" />
@@ -259,10 +263,10 @@ export default function SupplierContracts() {
                                                 {new Date(contract.datePurchased).toLocaleDateString('fr-FR')}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {contract.contractValue.toLocaleString('fr-DZ')} {contract.paymentCurrency}
+                                                {Number(contract.contractValue).toLocaleString('fr-DZ')} {contract.paymentCurrency}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                                {contract.contractValueDzd.toLocaleString('fr-DZ')} DA
+                                                {Number(contract.contractValueDzd).toLocaleString('fr-DZ')} DA
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                                                 <div className="flex items-center justify-end gap-2">
