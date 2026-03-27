@@ -635,6 +635,10 @@ export const masterAPI = {
     updateRequestStatus: async (id: string, status: string, notes?: string) => {
         const response = await api.put(`/subscriptions/requests/${id}`, { status, notes });
         return response.data;
+    },
+    sendBroadcast: async (data: { subject: string; message: string; target: string }) => {
+        const response = await api.post('/master/broadcast', data);
+        return response.data;
     }
 };
 

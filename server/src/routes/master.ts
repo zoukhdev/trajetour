@@ -683,4 +683,90 @@ router.post('/agencies/:id/send-proof-reminder',
     }
 );
 
+// ─── POST /broadcast ─────────────────────────────────────────────────────────
+// Master only: mass broadcast emails to active/all agencies
+router.post('/broadcast',
+    authMiddleware,
+    requirePermission('manage_users'),
+    async (req: Request, res, next) => {
+        try {
+            const { subject, message, target } = req.body; // target: 'ALL', 'ACTIVE', 'PENDING'
+
+            let query = 'SELECT email as owner_email, name as company_name, contact_name FROM agencies'; 
+            // Wait, looking at getAgencies, columns are owner_email, name, contact_name
+            const params: any[] = [];
+            
+            if (target && target !== 'ALL') {
+                query += ' WHERE status = $1';
+                params.push(target);
+            }
+            
+            const result = await masterPool.query(query, params);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ error: 'No agencies found matching criteria.' });
+            }
+
+            if (!process.env.RESEND_API_KEY) {
+                return res.status(503).json({ error: 'Email service not configured.' });
+            }
+
+            // Using Bcc to send mass email
+            const bccList = result.rows.map((r: any) => r.owner_email).filter(Boolean);
+            
+            if (bccList.length === 0) {
+                return res.status(404).json({ error: 'No valid email addresses found.' });
+            }
+
+            // Chunk BCC list if > 50 (Resend limits)
+            const CHUNK_SIZE = 49;
+            for (let i = 0; i < bccList.length; i += CHUNK_SIZE) {
+                const chunk = bccList.slice(i, i + CHUNK_SIZE);
+                
+                await resend.emails.send({
+                    from: 'Trajetour <hello@trajetour.com>',
+                    to: ['hello@trajetour.com'], // Primary recipient
+                    bcc: chunk,
+                    reply_to: 'hello@trajetour.com',
+                    subject: subject,
+                    html: `
+                        <!DOCTYPE html>
+                        <html>
+                        <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+                        <body style="margin:0;padding:0;background-color:#F8FAFC;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#F8FAFC;padding:40px 20px;">
+                                <tr><td align="center">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid #E2E8F0;">
+                                        <tr><td style="padding:40px;">
+                                            <h1 style="margin:0 0 16px 0;font-size:22px;font-weight:700;color:#0F172A;text-align:left;">Communication Officielle Trajetour</h1>
+                                            
+                                            <div style="font-size:16px;line-height:1.6;color:#475569;margin-bottom:24px;white-space:pre-wrap;">${message}</div>
+                                            
+                                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                <tr><td align="left">
+                                                    <p style="margin:0;font-size:15px;color:#0F172A;font-weight:600;">L'équipe Trajetour</p>
+                                                    <a href="https://trajetour.com" style="margin:0;font-size:14px;color:#2563EB;">trajetour.com</a>
+                                                </td></tr>
+                                            </table>
+                                        </td></tr>
+                                    </table>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;">
+                                        <tr><td align="center" style="padding-top:24px;">
+                                            <p style="margin:0;font-size:13px;color:#94A3B8;">Ce message a été envoyé à tous les partenaires Trajetour.</p>
+                                        </td></tr>
+                                    </table>
+                                </td></tr>
+                            </table>
+                        </body></html>
+                    `
+                });
+            }
+
+            console.log(`📧 Mass broadcast sent to ${bccList.length} agencies`);
+            res.json({ success: true, message: `Email diffusé avec succès à ${bccList.length} agences.` });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 export default router;

@@ -625,6 +625,12 @@ export const translations = {
             master_users: 'Utilisateurs (Master)',
             activity_log: "Journal d'activité",
             tour_management_system: "Système de Gestion de Tourisme",
+            active_agencies: 'Agences Actives',
+            pending_approval: 'Attente Approbation',
+            total_subscriptions: 'Abonnements',
+            open_tickets: 'Tickets Ouverts',
+            revenue_growth: 'Croissance des Revenus',
+            agencies_overview: 'Aperçu des Agences',
 
             // Master - Agencies Management
             agencies: {
@@ -1487,6 +1493,12 @@ export const translations = {
             master_users: 'المستخدمين (الإدارة)',
             activity_log: 'سجل العمليات',
             tour_management_system: 'نظام إدارة السياحة',
+            active_agencies: 'الوكالات النشطة',
+            pending_approval: 'في انتظار الموافقة',
+            total_subscriptions: 'الاشتراكات',
+            open_tickets: 'التذاكر المفتوحة',
+            revenue_growth: 'نمو الإيرادات',
+            agencies_overview: 'نظرة عامة على الوكالات',
 
             // Master - Agencies Management
             agencies: {
