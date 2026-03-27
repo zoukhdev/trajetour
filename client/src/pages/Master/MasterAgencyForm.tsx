@@ -9,7 +9,8 @@ interface Props {
 }
 
 const MasterAgencyForm = ({ onSuccess, onCancel }: Props) => {
-    const { t, isRTL } = useLanguage();
+    const { t, direction } = useLanguage();
+    const isRTL = direction === 'rtl';
     const [formData, setFormData] = useState({
         name: '',
         subdomain: '',

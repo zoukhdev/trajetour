@@ -142,7 +142,7 @@ export interface Payment {
     isValidated?: boolean; // Admin validation status
 }
 
-export type OrderStatus = 'Payé' | 'Non payé' | 'Partiel';
+export type OrderStatus = 'Payé' | 'Non payé' | 'Partiel' | 'Paiement partiel' | 'Remboursé' | 'Annulé';
 
 export interface Order {
     id: string;
