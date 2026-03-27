@@ -65,22 +65,26 @@ const PublicLayout = () => {
                     <div className="flex items-center gap-4">
                         <Link to="/" className="flex items-center gap-2">
                             {settings?.logoUrl ? (
-                                <img src={settings.logoUrl} alt={displayName} className="h-8 w-auto object-contain" />
+                                <img src={settings.logoUrl} alt={displayName} className="h-10 w-auto object-contain" />
                             ) : (
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white font-black text-sm">
-                                    {displayName.charAt(0)}
-                                </div>
+                                isAgencyDomain ? (
+                                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-black text-sm">
+                                        {displayName.charAt(0)}
+                                    </div>
+                                ) : (
+                                    <img src="/logo.png" alt="Trajetour" className="h-10 w-auto object-contain" />
+                                )
                             )}
-                            <h2 className="text-gray-900 text-xl font-bold leading-tight tracking-[-0.015em]">{displayName}</h2>
+                            {isAgencyDomain && <h2 className="text-gray-900 text-xl font-bold leading-tight tracking-[-0.015em]">{displayName}</h2>}
                         </Link>
                     </div>
 
                     <nav className="hidden lg:flex items-center gap-8">
-                        <a href="/#features" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.saas_nav.features')}</a>
-                        <a href="/#pricing" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.saas_nav.pricing')}</a>
-                        <Link to="/demo" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.saas_nav.demo')}</Link>
-                        <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.nav.about')}</Link>
-                        <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium">{t('public.nav.contact')}</Link>
+                        <a href="/#features" className="text-gray-600 hover:text-primary transition-colors text-sm font-medium">{t('public.saas_nav.features')}</a>
+                        <a href="/#pricing" className="text-gray-600 hover:text-primary transition-colors text-sm font-medium">{t('public.saas_nav.pricing')}</a>
+                        <Link to="/demo" className="text-gray-600 hover:text-primary transition-colors text-sm font-medium">{t('public.saas_nav.demo')}</Link>
+                        <Link to="/about" className="text-gray-600 hover:text-primary transition-colors text-sm font-medium">{t('public.nav.about')}</Link>
+                        <Link to="/contact" className="text-gray-600 hover:text-primary transition-colors text-sm font-medium">{t('public.nav.contact')}</Link>
                     </nav>
 
                     <div className="flex items-center gap-3">
@@ -88,10 +92,10 @@ const PublicLayout = () => {
                             {language === 'fr' ? 'AR' : 'FR'}
                         </button>
 
-                        <Link to="/demo" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-4 border-2 border-blue-200 text-blue-600 hover:bg-blue-50 transition-colors text-sm font-bold">
+                        <Link to="/demo" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-4 border-2 border-primary/20 text-primary hover:bg-primary/5 transition-colors text-sm font-bold">
                             {t('public.saas_nav.demo')}
                         </Link>
-                        <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-200">
+                        <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold shadow-lg shadow-primary/20">
                             {t('public.saas_nav.get_started')}
                         </Link>
                         {isAuthenticated ? (
@@ -121,7 +125,7 @@ const PublicLayout = () => {
                             <button onClick={toggleLanguage} className="py-2 px-3 bg-gray-100 rounded-lg text-sm font-bold">
                                 {language === 'fr' ? 'AR' : 'FR'}
                             </button>
-                            <Link to="/agency-signup" className="flex-1 text-center py-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-xl text-sm font-bold">
+                            <Link to="/agency-signup" className="flex-1 text-center py-2 bg-primary text-white rounded-xl text-sm font-bold">
                                 {t('public.saas_nav.get_started')}
                             </Link>
                             <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold">
@@ -144,11 +148,15 @@ const PublicLayout = () => {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-primary mb-2">
                                 {settings?.logoUrl ? (
-                                    <img src={settings.logoUrl} alt={displayName} className="h-8 w-auto object-contain brightness-0 invert" />
+                                    <img src={settings.logoUrl} alt={displayName} className="h-10 w-auto object-contain brightness-0 invert" />
                                 ) : (
-                                    <span className="material-symbols-outlined text-3xl">mosque</span>
+                                    isAgencyDomain ? (
+                                        <span className="material-symbols-outlined text-3xl">mosque</span>
+                                    ) : (
+                                        <img src="/logo.png" alt="Trajetour" className="h-10 w-auto object-contain brightness-0 invert" />
+                                    )
                                 )}
-                                <h2 className="text-white text-xl font-bold">{displayName}</h2>
+                                {isAgencyDomain && <h2 className="text-white text-xl font-bold">{displayName}</h2>}
                             </div>
                             <p className="text-gray-400 text-sm leading-relaxed">{settings?.slogan || t('public.footer.desc')}</p>
                         </div>

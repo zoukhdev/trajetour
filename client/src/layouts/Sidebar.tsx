@@ -117,11 +117,14 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     }}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
-                            <Plane size={24} className="-rotate-45 rtl:rotate-45" />
+                        <div className="w-10 h-10 bg-white dark:bg-[#1a2634] rounded-xl flex items-center justify-center overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
+                            <img src="/logo-icon.png" alt="Trajetour Icon" className="w-8 h-8 object-contain" />
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900 font-display tracking-tight">Trajetour</h1>
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-white font-display tracking-tight flex items-center">
+                                <span className="text-[#004D40]">traje</span>
+                                <span className="text-[#D4AF37]">tour</span>
+                            </h1>
                             <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Tour Management</p>
                         </div>
                     </div>
