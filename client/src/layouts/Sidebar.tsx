@@ -96,12 +96,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             <div className={cn(
                 "h-screen w-64 bg-surface border-r border-gray-100 flex flex-col shadow-sm z-50 transition-transform duration-300",
                 // Mobile: use transform for slide-in/out
-                "fixed md:translate-x-0",
+                "fixed md:relative md:translate-x-0 outline-none",
                 // RTL: position from right, LTR: position from left
                 language === 'ar' ? (
-                    isOpen ? "right-0 translate-x-0" : "right-0 translate-x-full"
+                    isOpen ? "right-0 translate-x-0" : "right-0 translate-x-full md:translate-x-0"
                 ) : (
-                    isOpen ? "left-0 translate-x-0" : "left-0 -translate-x-full"
+                    isOpen ? "left-0 translate-x-0" : "left-0 -translate-x-full md:translate-x-0"
                 ),
                 // RTL: border on left, LTR: border on right
                 language === 'ar' ? "border-l border-r-0" : "border-r border-l-0"

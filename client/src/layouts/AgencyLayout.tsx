@@ -7,10 +7,14 @@ import PullToRefresh from '../components/PullToRefresh';
 import OfflineIndicator from '../components/OfflineIndicator';
 import { SubscriptionProvider } from '../context/SubscriptionContext';
 import PendingApprovalGate from '../components/PendingApprovalGate';
+import { cn } from '../lib/utils';
+
+import { useLanguage } from '../context/LanguageContext';
 
 const AgencyLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { refreshData } = useData();
+    const { t } = useLanguage();
 
     return (
         <SubscriptionProvider>
@@ -20,7 +24,7 @@ const AgencyLayout = () => {
                     <div className="flex flex-1 w-full overflow-hidden">
                         <AgencySidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-                        <main className="flex-1 md:ml-64 transition-all duration-300 w-full overflow-x-hidden">
+                        <main className="flex-1 transition-all duration-300 overflow-x-hidden">
                             {/* Mobile Header */}
                             <div
                                 className="md:hidden bg-white dark:bg-[#1a2634] border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 z-30 shadow-sm"
@@ -31,7 +35,7 @@ const AgencyLayout = () => {
                                     paddingBottom: '1rem'
                                 }}
                             >
-                                <div className="font-bold text-blue-600 dark:text-blue-400 font-display text-lg">Partner Portal</div>
+                                <div className="font-bold text-blue-600 dark:text-blue-400 font-display text-lg">{t('common.partner_portal')}</div>
                                 <button
                                     onClick={() => setIsSidebarOpen(true)}
                                     className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg"

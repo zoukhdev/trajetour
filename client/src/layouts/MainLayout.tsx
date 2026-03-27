@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { cn } from '../lib/utils';
+import { useLanguage } from '../context/LanguageContext';
 
 import { useData } from '../context/DataContext';
 import PullToRefresh from '../components/PullToRefresh';
@@ -11,6 +13,7 @@ import OfflineIndicator from '../components/OfflineIndicator';
 const MainLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { refreshData } = useData();
+    const { t } = useLanguage();
 
     return (
         <div className="flex min-h-screen bg-gray-50 w-full overflow-x-hidden flex-col">
@@ -19,7 +22,7 @@ const MainLayout = () => {
                 <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
 
-                <main className="flex-1 md:ml-64 transition-all duration-300 w-full overflow-x-hidden">
+                <main className="flex-1 transition-all duration-300 overflow-x-hidden">
                     {/* Mobile Header with Safe Area */}
                     <div
                         className="md:hidden bg-white border-b border-gray-100 flex items-center justify-between sticky top-0 z-30 shadow-sm"

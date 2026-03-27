@@ -75,6 +75,9 @@ export const translations = {
             terms: 'Conditions d\'Utilisation',
             privacy: 'Politique de Confidentialité',
             and: 'et',
+            reservations: 'Réservations',
+            cash_register: 'Caisse',
+            taxes: 'Taxes',
         },
         dashboard: {
             welcome: 'Bienvenue',
@@ -934,6 +937,9 @@ export const translations = {
             terms: 'شروط الخدمة',
             privacy: 'سياسة الخصوصية',
             and: 'و',
+            reservations: 'الحجوزات',
+            cash_register: 'الصندوق',
+            taxes: 'الضرائب',
         },
         dashboard: {
             welcome: 'مرحباً',

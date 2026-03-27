@@ -5,10 +5,13 @@ import ClientSidebar from './ClientSidebar';
 import { useData } from '../context/DataContext';
 import PullToRefresh from '../components/PullToRefresh';
 import OfflineIndicator from '../components/OfflineIndicator';
+import { cn } from '../lib/utils';
+import { useLanguage } from '../context/LanguageContext';
 
 const ClientLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { refreshData } = useData();
+    const { t } = useLanguage();
 
     return (
         <div className="flex min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900/20 w-full overflow-x-hidden flex-col">
@@ -16,7 +19,7 @@ const ClientLayout = () => {
             <div className="flex flex-1 w-full overflow-hidden">
                 <ClientSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-                <main className="flex-1 md:ml-64 transition-all duration-300 w-full overflow-x-hidden">
+                <main className="flex-1 transition-all duration-300 overflow-x-hidden">
                     {/* Mobile Header */}
                     <div
                         className="md:hidden bg-white dark:bg-[#1a2634] border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 z-30 shadow-sm"

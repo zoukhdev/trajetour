@@ -43,11 +43,11 @@ const ClientSidebar = ({ isOpen, onClose }: ClientSidebarProps) => {
 
             <div className={cn(
                 "h-screen w-64 bg-white dark:bg-[#1a2634] border-r border-gray-100 dark:border-gray-700 flex flex-col shadow-lg z-50 transition-transform duration-300",
-                "fixed md:translate-x-0",
+                "fixed md:relative md:translate-x-0 outline-none",
                 language === 'ar' ? (
-                    isOpen ? "right-0 translate-x-0" : "right-0 translate-x-full"
+                    isOpen ? "right-0 translate-x-0" : "right-0 translate-x-full md:translate-x-0"
                 ) : (
-                    isOpen ? "left-0 translate-x-0" : "left-0 -translate-x-full"
+                    isOpen ? "left-0 translate-x-0" : "left-0 -translate-x-full md:translate-x-0"
                 ),
                 language === 'ar' ? "border-l border-r-0" : "border-r border-l-0"
             )}>
