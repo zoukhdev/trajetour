@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { getAgencyPath } from '../../lib/tenant';
 import { ordersAPI } from '../../services/api';
 import type { Order } from '../../types';
 import { Search, Filter, Calendar } from 'lucide-react';
@@ -191,7 +192,7 @@ const AgencyBookings = () => {
                                                 </td>
                                                 <td className="p-4 text-end">
                                                     <button
-                                                        onClick={() => navigate(`/agency/bookings/${order.id}`)}
+                                                        onClick={() => navigate(getAgencyPath(`/bookings/${order.id}`))}
                                                         className="text-primary hover:text-blue-700 font-medium text-sm transition-colors"
                                                     >
                                                         {t('agency_dashboard.bookings.view')}

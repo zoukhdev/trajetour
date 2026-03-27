@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { packagesAPI, ordersAPI, clientsAPI } from '../../../services/api';
+import { getAgencyPath } from '../../../lib/tenant';
 import { useAuth } from '../../../context/AuthContext';
 import { calculateAge, getAgeCategory, calculatePassengerPrice, getAgeCategoryLabel } from '../../../utils/ageUtils';
 
@@ -220,7 +221,7 @@ const BookingWizard = () => {
             // Redirect to success or dashboard
             // Redirect to success or dashboard based on role
             if (user?.agencyId || user?.role === 'agent') {
-                navigate('/agency/bookings', { state: { successMessage: 'Booking created successfully!' } });
+                navigate(getAgencyPath('/bookings'), { state: { successMessage: 'Booking created successfully!' } });
             } else {
                 navigate('/dashboard/client', { state: { successMessage: 'Booking created successfully!' } });
             }

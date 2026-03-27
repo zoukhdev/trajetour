@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { supportAPI } from '../../services/api';
 import { ArrowLeft, Send, CheckCircle, AlertCircle, Clock, User, UserCircle, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
+import { getAgencyPath } from '../../lib/tenant';
 import { fr, arSA } from 'date-fns/locale';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -81,7 +82,7 @@ export default function TicketDetails() {
     if (loading) return <div className="p-8 text-center text-gray-500">{t('support_tickets.loading')}</div>;
     if (!ticket) return <div className="p-8 text-center text-gray-500">{t('support_tickets.ticket_not_found')}</div>;
 
-    const basePath = location.pathname.startsWith('/dashboard') ? '/dashboard/support' : '/agency/support';
+    const basePath = location.pathname.startsWith('/dashboard') ? '/dashboard/support' : getAgencyPath('/support');
 
     return (
         <div className="max-w-4xl mx-auto h-[calc(100vh-6rem)] flex flex-col pt-6 pb-6 px-4" dir={direction}>

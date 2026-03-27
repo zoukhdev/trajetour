@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom';
+import { getAgencyPath } from '../lib/tenant';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useState, useEffect } from 'react';
@@ -54,25 +55,25 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
     }, []);
 
     const menuItems = [
-        { icon: LayoutDashboard, label: t('common.dashboard'), path: '/agency' },
-        { icon: ShoppingCart, label: t('common.my_bookings'), path: '/agency/bookings', permission: 'access_orders' },
-        { icon: Users, label: t('common.reservations'), path: '/agency/clients', permission: 'access_clients' },
-        { icon: Package, label: t('common.offers_packs'), path: '/agency/offers', permission: 'access_offers' },
-        { icon: Briefcase, label: t('common.suppliers'), path: '/agency/suppliers', permission: 'access_suppliers' },
-        { icon: Wallet, label: t('common.cash_register'), path: '/agency/cash_register', permission: 'access_cash_register' },
-        { icon: CreditCard, label: t('common.expenses'), path: '/agency/expenses', permission: 'access_expenses' },
-        { icon: BarChart, label: t('common.reports'), path: '/agency/reports', permission: 'access_reports' },
-        { icon: Percent, label: t('common.discounts'), path: '/agency/discounts', permission: 'access_discounts' },
-        { icon: Percent, label: t('common.taxes'), path: '/agency/tax', permission: 'access_discounts' },
-        { icon: Bed, label: t('common.rooming_list'), path: '/agency/rooming-list', permission: 'access_rooming_list' },
-        { icon: Users, label: t('common.staff_agents'), path: '/agency/users', permission: 'access_users' },
-        { icon: CreditCard, label: t('common.payments'), path: '/agency/payments', permission: 'access_cash_register' },
-        { icon: Calendar, label: t('common.slot_booking'), path: '/agency/slots', permission: 'access_orders' },
-        { icon: HelpCircle, label: t('common.support_help'), path: '/agency/support', badge: unreadCount },
-        { icon: Bell, label: t('common.notifications'), path: '/agency/notifications' },
-        { icon: FileText, label: t('common.documents'), path: '/agency/documents' },
-        { icon: Globe, label: t('common.homepage_builder'), path: '/agency/homepage-builder' },
-        { icon: Globe, label: t('common.public_landing'), path: '/agency/landing' },
+        { icon: LayoutDashboard, label: t('common.dashboard'), path: getAgencyPath('/') },
+        { icon: ShoppingCart, label: t('common.my_bookings'), path: getAgencyPath('/bookings'), permission: 'access_orders' },
+        { icon: Users, label: t('common.reservations'), path: getAgencyPath('/clients'), permission: 'access_clients' },
+        { icon: Package, label: t('common.offers_packs'), path: getAgencyPath('/offers'), permission: 'access_offers' },
+        { icon: Briefcase, label: t('common.suppliers'), path: getAgencyPath('/suppliers'), permission: 'access_suppliers' },
+        { icon: Wallet, label: t('common.cash_register'), path: getAgencyPath('/cash_register'), permission: 'access_cash_register' },
+        { icon: CreditCard, label: t('common.expenses'), path: getAgencyPath('/expenses'), permission: 'access_expenses' },
+        { icon: BarChart, label: t('common.reports'), path: getAgencyPath('/reports'), permission: 'access_reports' },
+        { icon: Percent, label: t('common.discounts'), path: getAgencyPath('/discounts'), permission: 'access_discounts' },
+        { icon: Percent, label: t('common.taxes'), path: getAgencyPath('/tax'), permission: 'access_discounts' },
+        { icon: Bed, label: t('common.rooming_list'), path: getAgencyPath('/rooming-list'), permission: 'access_rooming_list' },
+        { icon: Users, label: t('common.staff_agents'), path: getAgencyPath('/users'), permission: 'access_users' },
+        { icon: CreditCard, label: t('common.payments'), path: getAgencyPath('/payments'), permission: 'access_cash_register' },
+        { icon: Calendar, label: t('common.slot_booking'), path: getAgencyPath('/slots'), permission: 'access_orders' },
+        { icon: HelpCircle, label: t('common.support_help'), path: getAgencyPath('/support'), badge: unreadCount },
+        { icon: Bell, label: t('common.notifications'), path: getAgencyPath('/notifications') },
+        { icon: FileText, label: t('common.documents'), path: getAgencyPath('/documents') },
+        { icon: Globe, label: t('common.homepage_builder'), path: getAgencyPath('/homepage-builder') },
+        { icon: Globe, label: t('common.public_landing'), path: getAgencyPath('/landing') },
     ];
 
     const filteredMenuItems = menuItems.filter(item => {
@@ -99,12 +100,12 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
             />
 
             <div className={cn(
-                "h-screen w-64 bg-white dark:bg-[#1a2634] border-r border-gray-100 dark:border-gray-700 flex flex-col shadow-lg z-50 transition-transform duration-300",
-                "fixed md:relative md:translate-x-0 outline-none",
+                "h-screen w-64 bg-white dark:bg-[#1a2634] border-gray-100 dark:border-gray-700 flex flex-col shadow-lg z-50 transition-all duration-300 flex-shrink-0",
+                "fixed md:relative outline-none",
                 language === 'ar' ? (
-                    isOpen ? "right-0 translate-x-0" : "right-0 translate-x-full md:translate-x-0"
+                    isOpen ? "right-0 translate-x-0" : "right-0 translate-x-full md:translate-x-0 md:right-auto"
                 ) : (
-                    isOpen ? "left-0 translate-x-0" : "left-0 -translate-x-full md:translate-x-0"
+                    isOpen ? "left-0 translate-x-0" : "left-0 -translate-x-full md:translate-x-0 md:left-auto"
                 ),
                 language === 'ar' ? "border-l border-r-0" : "border-r border-l-0"
             )}>

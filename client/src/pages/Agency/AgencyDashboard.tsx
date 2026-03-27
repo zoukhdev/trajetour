@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getAgencyPath } from '../../lib/tenant';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { agenciesAPI, ordersAPI } from '../../services/api';
@@ -88,7 +89,7 @@ const AgencyDashboard = () => {
                         <p className="text-slate-500 dark:text-slate-400 mt-1">{t('agency_dashboard.portal_name')} • {agency?.type || t('agency_dashboard.partner_type')}</p>
                     </div>
                     <Link
-                        to="/agency/new-booking"
+                        to={getAgencyPath('/new-booking')}
                         className="bg-primary hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg shadow-primary/20 transition flex items-center gap-2 w-fit"
                     >
                         <span className="material-symbols-outlined text-[20px]">add</span>
@@ -144,9 +145,9 @@ const AgencyDashboard = () => {
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { title: 'agency_dashboard.quick_actions.book_slot', icon: 'flight', color: 'bg-primary', link: '/agency/slots' },
-                        { title: 'agency_dashboard.quick_actions.manage_clients', icon: 'groups', color: 'bg-secondary', link: '/agency/clients' },
-                        { title: 'agency_dashboard.quick_actions.reports', icon: 'bar_chart', color: 'bg-primary-700', link: '/agency/reports' }
+                        { title: 'agency_dashboard.quick_actions.book_slot', icon: 'flight', color: 'bg-primary', link: getAgencyPath('/slots') },
+                        { title: 'agency_dashboard.quick_actions.manage_clients', icon: 'groups', color: 'bg-secondary', link: getAgencyPath('/clients') },
+                        { title: 'agency_dashboard.quick_actions.reports', icon: 'bar_chart', color: 'bg-primary-700', link: getAgencyPath('/reports') }
                     ].map((action, i) => (
                         <Link
                             key={i}
@@ -169,7 +170,7 @@ const AgencyDashboard = () => {
                 <div className="mt-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('agency_dashboard.recent_bookings_title')}</h3>
-                        <Link to="/agency/bookings" className="text-sm font-bold text-primary hover:text-primary-700">{t('client_dashboard.view_all')}</Link>
+                        <Link to={getAgencyPath('/bookings')} className="text-sm font-bold text-primary hover:text-primary-700">{t('client_dashboard.view_all')}</Link>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -211,7 +212,7 @@ const AgencyDashboard = () => {
                                         </td>
                                         <td className="p-4">
                                             <Link
-                                                to={`/agency/bookings/${order.id}`}
+                                                to={getAgencyPath(`/bookings/${order.id}`)}
                                                 className="text-primary hover:text-primary-700"
                                             >
                                                 <span className="material-symbols-outlined text-xl">visibility</span>

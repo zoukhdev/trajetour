@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Calendar, AlertTriangle, FileCheck, Upload, Phone } from 'lucide-react';
+import { getAgencyPath } from '../../lib/tenant';
 
 interface DocumentReminder {
     id: string;
@@ -210,7 +211,7 @@ const DocumentReminders = () => {
 
                                     {/* Actions */}
                                     <button
-                                        onClick={() => window.location.href = `/agency/bookings/${item.id}`}
+                                        onClick={() => window.location.href = getAgencyPath(`/bookings/${item.id}`)}
                                         className="w-full h-10 bg-primary hover:bg-blue-600 text-white font-bold rounded-lg transition flex items-center justify-center gap-2"
                                     >
                                         <Upload size={16} />

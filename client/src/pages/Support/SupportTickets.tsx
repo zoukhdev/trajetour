@@ -5,6 +5,7 @@ import { Plus, MessageSquare, Clock, CheckCircle, Search, User, AlertCircle, X, 
 import { format } from 'date-fns';
 import { fr, arSA } from 'date-fns/locale';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { getAgencyPath } from '../../lib/tenant';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface Ticket {
@@ -35,7 +36,7 @@ export default function SupportTickets() {
     const location = useLocation();
 
     const isMasterDashboard = location.pathname.startsWith('/dashboard');
-    const basePath = isMasterDashboard ? '/dashboard/support' : '/agency/support';
+    const basePath = isMasterDashboard ? '/dashboard/support' : getAgencyPath('/support');
     const isAdmin = isMasterDashboard && (user?.role === 'admin' || user?.role === 'super_admin') && !user?.agencyId;
 
     useEffect(() => {

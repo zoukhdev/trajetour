@@ -21,7 +21,7 @@ const AgencyLayout = () => {
             <PendingApprovalGate>
                 <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20 w-full overflow-x-hidden flex-col">
                     <OfflineIndicator />
-                    <div className="flex flex-1 w-full overflow-hidden">
+                    <div className="flex flex-1 w-full overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
                         <AgencySidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
                         <main className="flex-1 transition-all duration-300 overflow-x-hidden">
