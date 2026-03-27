@@ -726,7 +726,7 @@ router.post('/broadcast',
                     from: 'Trajetour <hello@trajetour.com>',
                     to: ['hello@trajetour.com'], // Primary recipient
                     bcc: chunk,
-                    reply_to: 'hello@trajetour.com',
+                    replyTo: 'hello@trajetour.com',
                     subject: subject,
                     html: `
                         <!DOCTYPE html>
