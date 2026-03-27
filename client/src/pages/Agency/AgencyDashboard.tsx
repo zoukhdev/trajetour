@@ -89,7 +89,7 @@ const AgencyDashboard = () => {
                         <p className="text-slate-500 dark:text-slate-400 mt-1">{t('agency_dashboard.portal_name')} • {agency?.type || t('agency_dashboard.partner_type')}</p>
                     </div>
                     <Link
-                        to={getAgencyPath('/new-booking')}
+                        to={getAgencyPath('/clients')}
                         className="bg-primary hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg shadow-primary/20 transition flex items-center gap-2 w-fit"
                     >
                         <span className="material-symbols-outlined text-[20px]">add</span>
