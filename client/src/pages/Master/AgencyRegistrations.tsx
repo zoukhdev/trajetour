@@ -581,7 +581,7 @@ const AgencyRegistrations = () => {
                                     {reminderSent[detailModal.id] ? (
                                         <div className="flex items-center gap-2 text-xs text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
                                             <CheckCircle2 size={13} />
-                                            {t('master_dashboard.agencies.toasts.reminder_sent')} -> {detailModal.owner_email}
+                                            {t('master_dashboard.agencies.toasts.reminder_sent')} → {detailModal.owner_email}
                                         </div>
                                     ) : (
                                         <button
