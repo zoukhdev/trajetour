@@ -41,9 +41,9 @@ const About = () => {
                     <h2 className="text-3xl font-bold text-center text-[#0e141b] dark:text-white mb-12">{t('public.about.values')}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {[
-                            { title: 'public.about.v1', icon: 'verified_user', color: 'text-blue-500' },
-                            { title: 'public.about.v2', icon: 'handshake', color: 'text-green-500' },
-                            { title: 'public.about.v3', icon: 'diamond', color: 'text-purple-500' }
+                            { title: 'public.about.v1', icon: 'verified_user', color: 'text-primary' },
+                            { title: 'public.about.v2', icon: 'handshake', color: 'text-secondary' },
+                            { title: 'public.about.v3', icon: 'diamond', color: 'text-[#00695C]' }
                         ].map((v, i) => (
                             <div key={i} className="flex flex-col items-center text-center group">
                                 <div className={`size-20 rounded-2xl bg-gray-50 dark:bg-gray-900 ${v.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-inner`}>

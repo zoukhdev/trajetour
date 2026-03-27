@@ -54,15 +54,15 @@ const Home = () => {
             icon: LayoutDashboard,
             title: t('home.features.f1_title'),
             desc: t('home.features.f1_desc'),
-            color: 'bg-blue-100 text-blue-600',
-            border: 'border-blue-200',
+            color: 'bg-primary-100 text-primary-900',
+            border: 'border-primary-200',
         },
         {
             icon: Globe,
             title: t('home.features.f2_title'),
             desc: t('home.features.f2_desc'),
-            color: 'bg-violet-100 text-violet-600',
-            border: 'border-violet-200',
+            color: 'bg-secondary-100 text-secondary-900',
+            border: 'border-secondary-200',
         },
         {
             icon: Users,
@@ -75,8 +75,8 @@ const Home = () => {
             icon: BarChart3,
             title: t('home.features.f4_title'),
             desc: t('home.features.f4_desc'),
-            color: 'bg-orange-100 text-orange-600',
-            border: 'border-orange-200',
+            color: 'bg-amber-100 text-amber-600',
+            border: 'border-amber-200',
         },
     ];
 
@@ -132,21 +132,21 @@ const Home = () => {
         {
             name: 'Karim Benali',
             role: t('home.testimonials.t1_role'),
-            avatar: 'https://ui-avatars.com/api/?name=Karim+Benali&background=3b82f6&color=fff&size=80',
+            avatar: 'https://ui-avatars.com/api/?name=Karim+Benali&background=004D40&color=fff&size=80',
             rating: 5,
             text: t('home.testimonials.t1_text'),
         },
         {
             name: 'Samira Hadj',
             role: t('home.testimonials.t2_role'),
-            avatar: 'https://ui-avatars.com/api/?name=Samira+Hadj&background=8b5cf6&color=fff&size=80',
+            avatar: 'https://ui-avatars.com/api/?name=Samira+Hadj&background=D4AF37&color=fff&size=80',
             rating: 5,
             text: t('home.testimonials.t2_text'),
         },
         {
             name: 'Youcef Mansouri',
             role: t('home.testimonials.t3_role'),
-            avatar: 'https://ui-avatars.com/api/?name=Youcef+Mansouri&background=10b981&color=fff&size=80',
+            avatar: 'https://ui-avatars.com/api/?name=Youcef+Mansouri&background=00897b&color=fff&size=80',
             rating: 5,
             text: t('home.testimonials.t3_text'),
         },
@@ -157,10 +157,10 @@ const Home = () => {
         <div className="relative w-full overflow-x-hidden bg-white">
 
             {/* ─── HERO ──────────────────────────────────────────────── */}
-            <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 pt-24 pb-20 overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white">
+            <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 pt-24 pb-20 overflow-hidden bg-gradient-to-b from-primary-50 via-white to-white">
                 {/* Soft background blobs */}
-                <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-100 rounded-full blur-[120px] opacity-50 -translate-y-1/2" />
-                <div className="absolute top-1/2 right-0 w-96 h-96 bg-violet-100 rounded-full blur-[100px] opacity-40" />
+                <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary-100/50 rounded-full blur-[120px] opacity-30 -translate-y-1/2" />
+                <div className="absolute top-1/2 right-0 w-96 h-96 bg-secondary-100/40 rounded-full blur-[100px] opacity-20" />
 
                 {/* Grid pattern */}
                 <div
@@ -169,14 +169,14 @@ const Home = () => {
                 />
 
                 <div className="relative z-10 text-center max-w-5xl mx-auto">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-sm font-semibold mb-8">
-                        <Sparkles size={14} className="text-blue-500" />
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary-200 bg-primary-50 text-primary-900 text-sm font-semibold mb-8">
+                        <Sparkles size={14} className="text-secondary" />
                         {t('home.hero.badge')}
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight tracking-tight mb-6">
                         {t('home.hero.title_start')}{' '}
-                        <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             {t('home.hero.title_highlight')}
                         </span>
                     </h1>
@@ -189,16 +189,16 @@ const Home = () => {
                     <div className="flex flex-wrap gap-4 justify-center mb-16">
                         <button
                             onClick={() => navigate('/agency-signup')}
-                            className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white text-lg font-bold rounded-2xl transition-all shadow-xl shadow-blue-200 hover:shadow-blue-300 hover:scale-105"
+                            className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-primary-800 hover:brightness-110 text-white text-lg font-bold rounded-2xl transition-all shadow-xl shadow-primary/20 hover:shadow-primary/30 hover:scale-105"
                         >
                             {t('home.hero.cta_primary')}
                             <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
                         </button>
                         <button
                             onClick={() => navigate('/demo')}
-                            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-gray-200 hover:border-blue-300 bg-white hover:bg-blue-50 text-gray-700 hover:text-blue-700 text-lg font-bold rounded-2xl transition-all shadow-sm"
+                            className="inline-flex items-center gap-2 px-8 py-4 border-2 border-gray-200 hover:border-primary-300 bg-white hover:bg-primary-50 text-gray-700 hover:text-primary text-lg font-bold rounded-2xl transition-all shadow-sm"
                         >
-                            <Play size={18} className="text-blue-500" />
+                            <Play size={18} className="text-primary" />
                             {t('home.hero.cta_demo')}
                         </button>
                     </div>
@@ -235,7 +235,7 @@ const Home = () => {
                                     onClick={() => setActiveScreenshot(idx)}
                                     className={`px-5 py-2.5 text-sm md:text-base font-bold rounded-xl transition-all duration-300 whitespace-nowrap ${
                                         activeScreenshot === idx
-                                            ? 'text-blue-700 bg-white shadow-sm ring-1 ring-gray-100 flex-1'
+                                            ? 'text-primary bg-white shadow-sm ring-1 ring-gray-100 flex-1'
                                             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 flex-1'
                                     }`}
                                 >
@@ -285,7 +285,7 @@ const Home = () => {
                     </div>
 
                     {/* Shadow glow underneath */}
-                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[85%] h-24 bg-blue-500/20 blur-3xl rounded-[100%]" />
+                    <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[85%] h-24 bg-primary/20 blur-3xl rounded-[100%]" />
                 </div>
             </section>
 
@@ -293,8 +293,8 @@ const Home = () => {
             <section id="stats-counter" className="py-20 px-4 bg-white border-y border-gray-100">
                 <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                     {[
-                        { value: counters.agencies + '+', label: t('home.stats.agencies'), icon: Building2, color: 'text-blue-600 bg-blue-50' },
-                        { value: counters.bookings.toLocaleString() + '+', label: t('home.stats.bookings'), icon: Plane, color: 'text-violet-600 bg-violet-50' },
+                        { value: counters.agencies + '+', label: t('home.stats.agencies'), icon: Building2, color: 'text-primary bg-primary-50' },
+                        { value: counters.bookings.toLocaleString() + '+', label: t('home.stats.bookings'), icon: Plane, color: 'text-secondary bg-secondary-50' },
                         { value: counters.revenue + '%', label: t('home.stats.satisfaction'), icon: TrendingUp, color: 'text-emerald-600 bg-emerald-50' },
                     ].map((stat, i) => (
                         <div key={i} className="flex flex-col items-center gap-4">
@@ -312,7 +312,7 @@ const Home = () => {
             <section id="features" className="py-24 px-4 bg-gray-50">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16">
-                        <span className="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm font-bold mb-4">
+                        <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 text-primary-900 text-sm font-bold mb-4">
                             {t('home.features.section_badge')}
                         </span>
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
@@ -354,9 +354,9 @@ const Home = () => {
                             { icon: Shield, label: t('home.features.pill7') },
                             { icon: Zap, label: t('home.features.pill8') },
                         ].map((item, i) => (
-                            <div key={i} className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-blue-100 transition-all">
-                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-                                    <item.icon size={16} className="text-blue-600" />
+                            <div key={i} className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-primary-100 transition-all">
+                                <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center flex-shrink-0">
+                                    <item.icon size={16} className="text-primary" />
                                 </div>
                                 <span className="text-gray-600 text-sm font-medium">{item.label}</span>
                             </div>
@@ -409,8 +409,8 @@ const Home = () => {
                                 <h3 className="text-xl font-bold text-gray-900 mb-3">{item.title}</h3>
                                 <p className="text-gray-500 leading-relaxed">{item.desc}</p>
                                 {i < 2 && (
-                                    <div className="hidden md:flex absolute -right-3 top-12 w-6 h-6 bg-blue-100 rounded-full items-center justify-center z-10">
-                                        <ChevronRight size={14} className="text-blue-600" />
+                                    <div className="hidden md:flex absolute -right-3 top-12 w-6 h-6 bg-primary-100 rounded-full items-center justify-center z-10">
+                                        <ChevronRight size={14} className="text-primary" />
                                     </div>
                                 )}
                             </div>
@@ -438,7 +438,7 @@ const Home = () => {
                                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${billingAnnual ? 'translate-x-7' : 'translate-x-1'}`} />
                             </button>
                             <span className={`text-sm font-semibold ${billingAnnual ? 'text-gray-900' : 'text-gray-400'}`}>
-                                {t('home.pricing.annual')} <span className="text-emerald-600 font-bold">(-20%)</span>
+                                {t('home.pricing.annual')} <span className="text-primary font-bold">(-20%)</span>
                             </span>
                         </div>
                     </div>
@@ -486,7 +486,7 @@ const Home = () => {
                                 <button
                                     onClick={() => navigate(plan.monthlyPrice === 0 ? '/contact' : '/agency-signup')}
                                     className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${plan.highlight
-                                        ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-md'
+                                        ? 'bg-white text-primary hover:bg-primary-50 shadow-md'
                                         : 'bg-gray-900 text-white hover:bg-gray-800'
                                         }`}
                                 >
@@ -533,18 +533,18 @@ const Home = () => {
             </section>
 
             {/* ─── CTA ───────────────────────────────────────────────── */}
-            <section className="py-24 px-4 bg-gradient-to-br from-blue-600 to-violet-600">
+            <section className="py-24 px-4 bg-gradient-to-br from-primary to-primary-800">
                 <div className="max-w-4xl mx-auto text-center">
                     <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
                         {t('home.cta.title')}
                     </h2>
-                    <p className="text-blue-100 text-xl mb-10">
+                    <p className="text-primary-100 text-xl mb-10">
                         {t('home.cta.subtitle')}
                     </p>
                     <div className="flex flex-wrap gap-4 justify-center">
                         <button
                             onClick={() => navigate('/agency-signup')}
-                            className="group inline-flex items-center gap-2 px-10 py-4 bg-white text-blue-600 font-bold text-lg rounded-2xl hover:bg-blue-50 transition-all shadow-2xl hover:scale-105"
+                            className="group inline-flex items-center gap-2 px-10 py-4 bg-white text-primary font-bold text-lg rounded-2xl hover:bg-primary-50 transition-all shadow-2xl hover:scale-105"
                         >
                             {t('home.cta.btn_primary')}
                             <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
@@ -556,7 +556,7 @@ const Home = () => {
                             {t('home.cta.btn_demo')}
                         </Link>
                     </div>
-                    <p className="text-blue-200 text-sm mt-6">{t('home.cta.disclaimer')}</p>
+                    <p className="text-primary-200 text-sm mt-6">{t('home.cta.disclaimer')}</p>
                 </div>
             </section>
         </div>

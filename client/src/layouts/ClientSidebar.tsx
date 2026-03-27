@@ -62,7 +62,7 @@ const ClientSidebar = ({ isOpen, onClose }: ClientSidebarProps) => {
                     }}
                 >
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
                             <Plane size={24} className="-rotate-45 rtl:rotate-45" />
                         </div>
                         <div>
@@ -85,7 +85,7 @@ const ClientSidebar = ({ isOpen, onClose }: ClientSidebarProps) => {
                             className={({ isActive }) => cn(
                                 "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group",
                                 isActive
-                                    ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/25"
+                                    ? "bg-gradient-to-r from-primary to-primary-700 text-white shadow-md shadow-primary/25"
                                     : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white"
                             )}
                         >
@@ -114,18 +114,18 @@ const ClientSidebar = ({ isOpen, onClose }: ClientSidebarProps) => {
                             <Languages size={18} />
                             <span>{language === 'fr' ? 'Français' : 'العربية'}</span>
                         </div>
-                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded">
+                        <span className="text-xs font-bold text-primary dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 px-2 py-0.5 rounded">
                             {language === 'fr' ? 'FR' : 'AR'}
                         </span>
                     </button>
 
                     {/* User Info */}
                     <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 shadow-sm">
-                        <div className="w-8 h-8 rounded-full bg-emerald-500/10 dark:bg-emerald-400/10 flex items-center justify-center overflow-hidden border border-emerald-500/10">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 dark:bg-primary/10 flex items-center justify-center overflow-hidden border border-primary/10">
                             {user?.avatar ? (
                                 <img src={user.avatar} alt="User" className="w-full h-full object-cover" />
                             ) : (
-                                <UserCircle size={20} className="text-emerald-600 dark:text-emerald-400" />
+                                <UserCircle size={20} className="text-primary dark:text-primary-400" />
                             )}
                         </div>
                         <div className="flex-1 min-w-0">

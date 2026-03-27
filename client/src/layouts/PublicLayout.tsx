@@ -194,7 +194,7 @@ const PublicLayout = () => {
                             <p className="text-gray-400 text-sm mb-4">{t('public.footer.newsletter_desc')}</p>
                             <form className="flex flex-col gap-3" onSubmit={(e) => e.preventDefault()}>
                                 <input className="bg-gray-800 border-none rounded-lg h-10 px-4 text-sm text-white focus:ring-1 focus:ring-primary placeholder:text-gray-500" placeholder="Email" type="email" />
-                                <button className="bg-primary hover:bg-blue-600 text-white font-bold h-10 rounded-lg text-sm transition-colors">{t('public.footer.subscribe')}</button>
+                                <button className="bg-primary hover:bg-primary-700 text-white font-bold h-10 rounded-lg text-sm transition-colors">{t('public.footer.subscribe')}</button>
                             </form>
                         </div>
                     </div>

@@ -106,26 +106,23 @@ const AgencyHome = () => {
     // Testimonials or other sections could remain hardcoded or be dynamic later
 
     const testimonials = [
-        {
             name: 'Ahmed Benali',
             location: 'Oran, Algérie',
             rating: 5,
             text: 'Une expérience spirituelle inoubliable. L\'organisation était parfaite du début à la fin.',
-            avatar: 'https://ui-avatars.com/api/?name=Ahmed+Benali&background=3b82f6&color=fff'
+            avatar: 'https://ui-avatars.com/api/?name=Ahmed+Benali&background=004D40&color=fff'
         },
-        {
             name: 'Fatima Zerrouqi',
             location: 'Alger, Algérie',
             rating: 5,
             text: 'Service exceptionnel, guide très professionnel. Je recommande vivement Trajetour!',
-            avatar: 'https://ui-avatars.com/api/?name=Fatima+Zerrouqi&background=10b981&color=fff'
+            avatar: 'https://ui-avatars.com/api/?name=Fatima+Zerrouqi&background=D4AF37&color=fff'
         },
-        {
             name: 'Mohamed Kaci',
             location: 'Constantine, Algérie',
             rating: 5,
             text: 'Prix compétitifs et qualité au rendez-vous. Mon Hajj s\'est déroulé sans aucun problème.',
-            avatar: 'https://ui-avatars.com/api/?name=Mohamed+Kaci&background=f59e0b&color=fff'
+            avatar: 'https://ui-avatars.com/api/?name=Mohamed+Kaci&background=00695C&color=fff'
         }
     ];
 
@@ -195,8 +192,8 @@ const AgencyHome = () => {
                 <style dangerouslySetInnerHTML={{
                     __html: `
                         :root {
-                            --primary-color: ${settings.primaryColor || '#3b82f6'};
-                            --secondary-color: ${settings.secondaryColor || '#10b981'};
+                            --primary-color: ${settings.primaryColor || '#004D40'};
+                            --secondary-color: ${settings.secondaryColor || '#D4AF37'};
                             --border-radius: ${settings.borderRadius || '12px'};
                         }
                         .agency-home { font-family: '${settings.fontFamily || 'Inter'}', sans-serif !important; }
@@ -211,7 +208,7 @@ const AgencyHome = () => {
 
             {/* Hero Section with Parallax or Video Background */}
             <div className="relative w-full min-h-[750px] flex flex-col items-center justify-center px-4 bg-cover bg-center bg-no-repeat bg-fixed overflow-hidden"
-                style={{ backgroundImage: settings?.videoUrl ? 'none' : `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(59, 130, 246, 0.6) 100%), url("${heroImage}")` }}>
+                style={{ backgroundImage: settings?.videoUrl ? 'none' : `linear-gradient(135deg, rgba(17, 25, 33, 0.7) 0%, rgba(0, 77, 64, 0.6) 100%), url("${heroImage}")` }}>
 
                 {settings?.videoUrl && (
                     <div className="absolute inset-0 z-0">
@@ -223,7 +220,7 @@ const AgencyHome = () => {
                 )}
 
                 {/* Animated Background Overlay */}
-                <div className="absolute inset-0 bg-primary/20 to-purple-600/20 animate-pulse-slow"></div>
+                <div className="absolute inset-0 bg-primary/20 to-secondary/20 animate-pulse-slow"></div>
 
                 <div className="flex flex-col gap-8 text-center max-w-[1000px] z-10 animate-fade-in-up">
                     {/* Badge */}
@@ -368,30 +365,30 @@ const AgencyHome = () => {
                             settings.trustStats.map((stat: any, idx: number) => (
                                 <div key={idx} className="text-center transform hover:scale-110 transition-transform">
                                     <div className="text-5xl font-black mb-2">{stat.value}</div>
-                                    <div className="text-blue-100 text-lg font-medium">{stat.label}</div>
+                                    <div className="text-white/80 text-lg font-medium">{stat.label}</div>
                                 </div>
                             ))
                         ) : (
                             <>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><Users className="text-yellow-400" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><Users className="text-secondary" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">5,000+</div>
-                                    <div className="text-blue-100 text-lg font-medium">Pèlerins Satisfaits</div>
+                                    <div className="text-primary-100 text-lg font-medium">Pèlerins Satisfaits</div>
                                 </div>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><Plane className="text-yellow-400" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><Plane className="text-secondary" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">150+</div>
-                                    <div className="text-blue-100 text-lg font-medium">Packages</div>
+                                    <div className="text-primary-100 text-lg font-medium">Packages</div>
                                 </div>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><Award className="text-yellow-400" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><Award className="text-secondary" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">10+</div>
-                                    <div className="text-blue-100 text-lg font-medium">Années d'Expérience</div>
+                                    <div className="text-primary-100 text-lg font-medium">Années d'Expérience</div>
                                 </div>
                                 <div className="text-center transform hover:scale-110 transition-transform">
-                                    <div className="flex items-center justify-center mb-4"><TrendingUp className="text-yellow-400" size={48} /></div>
+                                    <div className="flex items-center justify-center mb-4"><TrendingUp className="text-secondary" size={48} /></div>
                                     <div className="text-5xl font-black mb-2">98%</div>
-                                    <div className="text-blue-100 text-lg font-medium">Satisfaction</div>
+                                    <div className="text-primary-100 text-lg font-medium">Satisfaction</div>
                                 </div>
                             </>
                         )}
@@ -598,7 +595,7 @@ const AgencyHome = () => {
                     <h2 className="text-4xl md:text-5xl font-black mb-6">
                         Prêt à Commencer Votre Voyage Spirituel ?
                     </h2>
-                    <p className="text-xl text-blue-100 mb-8">
+                    <p className="text-xl text-primary-100 mb-8">
                         Contactez-nous dès aujourd'hui pour une consultation gratuite
                     </p>
                     <div className="flex flex-wrap gap-4 justify-center">

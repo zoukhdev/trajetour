@@ -158,7 +158,7 @@ const ClientLogin = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <button className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-blue-700 text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm">
+                        <button className="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-primary-700 text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] transition-colors shadow-sm">
                             <span className="truncate">{t('auth.login_btn')}</span>
                             <span className="material-symbols-outlined text-[20px] rtl:rotate-180">arrow_forward</span>
                         </button>

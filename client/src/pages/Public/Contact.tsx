@@ -41,7 +41,7 @@ const Contact = () => {
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('public.contact.message')}</label>
                                         <textarea rows={4} className="w-full p-4 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary outline-none transition-all resize-none" required></textarea>
                                     </div>
-                                    <button className="h-14 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30 text-lg">
+                                    <button className="h-14 bg-primary hover:brightness-110 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/30 text-lg">
                                         {t('public.contact.send')}
                                     </button>
                                 </>
@@ -62,7 +62,7 @@ const Contact = () => {
                                     </div>
                                     <div>
                                         <p className="font-bold text-lg mb-1">Our Office</p>
-                                        <p className="text-blue-100 leading-relaxed">123 Pilgrim Street, Es-Senia<br />Oran, Algeria</p>
+                                        <p className="text-primary-100 leading-relaxed">123 Pilgrim Street, Es-Senia<br />Oran, Algeria</p>
                                     </div>
                                 </li>
                                 <li className="flex items-start gap-4">
@@ -71,7 +71,7 @@ const Contact = () => {
                                     </div>
                                     <div>
                                         <p className="font-bold text-lg mb-1">Phone</p>
-                                        <p className="text-blue-100" dir="ltr">+213 550 32 30 20</p>
+                                        <p className="text-primary-100" dir="ltr">+213 550 32 30 20</p>
                                     </div>
                                 </li>
                                 <li className="flex items-start gap-4">
@@ -80,14 +80,14 @@ const Contact = () => {
                                     </div>
                                     <div>
                                         <p className="font-bold text-lg mb-1">Email</p>
-                                        <p className="text-blue-100">contact@trajetour.com</p>
+                                        <p className="text-primary-100">contact@trajetour.com</p>
                                     </div>
                                 </li>
                             </ul>
                         </div>
 
                         <div className="relative z-10 mt-12">
-                            <p className="text-blue-100 text-sm">Working Hours: Sat - Thu, 9:00 AM - 5:00 PM</p>
+                            <p className="text-primary-100 text-sm">Working Hours: Sat - Thu, 9:00 AM - 5:00 PM</p>
                         </div>
                     </div>
                 </div>

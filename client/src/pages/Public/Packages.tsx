@@ -150,8 +150,8 @@ const Packages = () => {
                                         ))}
                                     </ul>
 
-                                    <Link to={`/book/${pkg.id}`} className="w-full h-12 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
-                                        <span>{t('public.packages.view_details')}</span>
+                                    <Link to={`/book/${pkg.id}`} className="w-full h-12 bg-primary hover:brightness-110 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                                         <span>{t('public.packages.view_details')}</span>
                                         <span className="material-symbols-outlined text-sm rtl:rotate-180">arrow_forward</span>
                                     </Link>
                                 </div>

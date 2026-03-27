@@ -90,7 +90,7 @@ const AgencySignup = () => {
 
     return (
         <div className="flex px-4 py-8 min-h-screen bg-background-light dark:bg-background-dark items-center justify-center">
-            <div className="max-w-[700px] w-full bg-white dark:bg-[#1a2634] rounded-2xl shadow-xl p-8 md:p-12 border border-blue-100 dark:border-gray-700">
+            <div className="max-w-[700px] w-full bg-white dark:bg-[#1a2634] rounded-2xl shadow-xl p-8 md:p-12 border border-primary-100 dark:border-gray-700">
                 {isSuccess ? (
                     <div className="text-center py-8">
                         <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -103,11 +103,11 @@ const AgencySignup = () => {
                             Votre demande d'inscription a été soumise avec succès. Notre équipe va examiner votre dossier.
                         </p>
 
-                        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5 mb-4 text-left max-w-sm mx-auto space-y-3">
+                        <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-5 mb-4 text-left max-w-sm mx-auto space-y-3">
                             <div className="flex items-start gap-3">
                                 <span className="text-xl">🔗</span>
                                 <div>
-                                    <p className="font-bold text-blue-800 dark:text-blue-300 text-sm">Votre lien de connexion unique</p>
+                                    <p className="font-bold text-primary-800 dark:text-primary-300 text-sm">Votre lien de connexion unique</p>
                                     <a
                                         href={(() => {
                                             const currentHost = window.location.host;
@@ -123,7 +123,7 @@ const AgencySignup = () => {
                                         })()}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs font-mono text-blue-600 dark:text-blue-400 hover:underline break-all"
+                                        className="text-xs font-mono text-primary-600 dark:text-primary-400 hover:underline break-all"
                                     >
                                         {(() => {
                                             const currentHost = window.location.host;
@@ -137,7 +137,7 @@ const AgencySignup = () => {
                                             }
                                         })()}
                                     </a>
-                                    <p className="text-xs text-blue-600 dark:text-blue-500 mt-1">📌 Sauvegardez ce lien dans vos favoris</p>
+                                    <p className="text-xs text-primary-600 dark:text-primary-500 mt-1">📌 Sauvegardez ce lien dans vos favoris</p>
                                 </div>
                             </div>
                         </div>
@@ -293,7 +293,7 @@ const AgencySignup = () => {
 
                     {/* Conditional Payment Proof Upload */}
                     {formData.paymentMethod !== 'Espèces' && (
-                        <div className="space-y-4 p-5 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900 rounded-xl">
+                        <div className="space-y-4 p-5 bg-primary-50/50 dark:bg-primary-900/10 border border-primary-100 dark:border-primary-900 rounded-xl">
                             <div>
                                 <h3 className="text-[15px] font-bold text-slate-800 dark:text-gray-200 mb-1">Preuve de paiement (Reçu) <span className="text-red-500">*</span></h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Veuillez joindre une capture d'écran, un reçu ou un PDF confirmant votre paiement.</p>

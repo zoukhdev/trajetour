@@ -46,10 +46,8 @@ export default {
         surface: '#ffffff',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Plus Jakarta Sans', 'Manrope', 'Outfit', 'sans-serif'],
-        'public': ['Plus Jakarta Sans', 'sans-serif'],
-        'dashboard': ['Manrope', 'sans-serif'],
+        sans: ['"Public Sans"', 'system-ui', 'sans-serif'],
+        display: ['"Public Sans"', 'sans-serif'],
       },
       boxShadow: {
         'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02)',

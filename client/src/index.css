@@ -16,15 +16,11 @@
 
   /* Font classes */
   .font-sans {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Public Sans', sans-serif;
   }
 
   .font-display {
-    font-family: 'Outfit', sans-serif;
-  }
-
-  .font-arabic {
-    font-family: 'Cairo', sans-serif;
+    font-family: 'Public Sans', sans-serif;
   }
 
   h1,
