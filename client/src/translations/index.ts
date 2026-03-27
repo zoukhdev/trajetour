@@ -764,6 +764,11 @@ export const translations = {
                 voucher: 'Voucher',
                 profile: 'Profil'
             },
+            my_bookings: {
+                title: 'Mes Réservations',
+                upcoming: 'À venir',
+                past: 'Passées',
+                details: 'Détails',
                 download: 'Télécharger'
             }
         },
