@@ -133,7 +133,8 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <nav className="flex-1 p-4 space-y-6 overflow-y-auto">
                     {/* Dashboard Link */}
                     <NavLink
-                        to="/"
+                        to="/dashboard"
+                        end
                         onClick={() => onClose?.()}
                         className={({ isActive }) => cn(
                             "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden",

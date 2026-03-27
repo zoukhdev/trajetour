@@ -1,18 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 const ClientLogin = () => {
+    const { t } = useLanguage();
+    const { user, login, isAuthenticated } = useAuth();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useAuth();
-    const navigate = useNavigate();
     const [error, setError] = useState('');
-    const { t } = useLanguage();
 
     const [searchParams] = useSearchParams();
     const redirectIdx = searchParams.get('redirect');
+
+    // Auto-redirect if already logged in
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff' || user.role === 'caisser') {
+                if (user.tenantId && user.tenantId !== 'default') {
+                    navigate('/agency');
+                } else {
+                    navigate('/dashboard');
+                }
+            } else if (user.role === 'agent') {
+                navigate('/agency');
+            } else {
+                navigate('/client');
+            }
+        }
+    }, [isAuthenticated, user, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

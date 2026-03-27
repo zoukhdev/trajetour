@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { settingsAPI } from '../services/api';
 
 const hostname = window.location.hostname;
@@ -15,6 +16,7 @@ if (hostname.includes('.trajetour.com') && parts.length > 2 && parts[0] !== 'www
 const PublicLayout = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { t, language, setLanguage, direction } = useLanguage();
+    const { isAuthenticated, user } = useAuth();
     const [settings, setSettings] = useState<any>(null);
 
     useEffect(() => {
@@ -92,9 +94,15 @@ const PublicLayout = () => {
                         <Link to="/agency-signup" className="hidden md:flex items-center justify-center overflow-hidden rounded-xl h-9 px-5 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 transition-colors text-white text-sm font-bold shadow-lg shadow-blue-200">
                             {t('public.saas_nav.get_started')}
                         </Link>
-                        <Link to="/login/agency" className="flex items-center justify-center rounded-xl h-9 px-4 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-bold text-sm">
-                            {t('public.nav.login')}
-                        </Link>
+                        {isAuthenticated ? (
+                             <Link to={user?.role === 'client' ? '/client' : (user?.tenantId && user?.tenantId !== 'default' ? '/agency' : '/dashboard')} className="flex items-center justify-center rounded-xl h-9 px-4 bg-primary text-white hover:bg-primary/90 transition-colors font-bold text-sm">
+                                {t('common.dashboard')}
+                            </Link>
+                        ) : (
+                            <Link to="/login/agency" className="flex items-center justify-center rounded-xl h-9 px-4 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-bold text-sm">
+                                {t('public.nav.login')}
+                            </Link>
+                        )}
                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden flex items-center justify-center rounded-lg h-10 w-10 text-gray-700">
                             <span className="material-symbols-outlined">menu</span>
                         </button>
