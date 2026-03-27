@@ -106,18 +106,21 @@ const AgencyHome = () => {
     // Testimonials or other sections could remain hardcoded or be dynamic later
 
     const testimonials = [
+        {
             name: 'Ahmed Benali',
             location: 'Oran, Algérie',
             rating: 5,
             text: 'Une expérience spirituelle inoubliable. L\'organisation était parfaite du début à la fin.',
             avatar: 'https://ui-avatars.com/api/?name=Ahmed+Benali&background=004D40&color=fff'
         },
+        {
             name: 'Fatima Zerrouqi',
             location: 'Alger, Algérie',
             rating: 5,
             text: 'Service exceptionnel, guide très professionnel. Je recommande vivement Trajetour!',
             avatar: 'https://ui-avatars.com/api/?name=Fatima+Zerrouqi&background=D4AF37&color=fff'
         },
+        {
             name: 'Mohamed Kaci',
             location: 'Constantine, Algérie',
             rating: 5,
