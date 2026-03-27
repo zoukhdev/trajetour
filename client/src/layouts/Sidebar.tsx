@@ -117,7 +117,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     }}
                 >
                     <div className="flex flex-col gap-1 w-full items-center md:items-start">
-                        <img src="/logo-stacked.png" alt="Trajetour" className="h-28 w-auto object-contain" />
+                        <img src="/logo-stacked.png" alt="Trajetour" className="h-24 w-auto object-contain" />
                         <p className="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em] px-1 opacity-80">Tour Management System</p>
                     </div>
                     <button onClick={onClose} className="md:hidden text-gray-400 hover:text-gray-600">
