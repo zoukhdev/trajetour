@@ -65,14 +65,14 @@ const PublicLayout = () => {
                     <div className="flex items-center gap-4">
                         <Link to="/" className="flex items-center gap-2">
                             {settings?.logoUrl ? (
-                                <img src={settings.logoUrl} alt={displayName} className="h-10 w-auto object-contain" />
+                                <img src={settings.logoUrl} alt={displayName} className="h-12 w-auto object-contain" />
                             ) : (
                                 isAgencyDomain ? (
                                     <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-black text-sm">
                                         {displayName.charAt(0)}
                                     </div>
                                 ) : (
-                                    <img src="/logo.png" alt="Trajetour" className="h-10 w-auto object-contain" />
+                                    <img src="/logo.png" alt="Trajetour" className="h-14 w-auto object-contain py-1" />
                                 )
                             )}
                             {isAgencyDomain && <h2 className="text-gray-900 text-xl font-bold leading-tight tracking-[-0.015em]">{displayName}</h2>}
@@ -148,12 +148,12 @@ const PublicLayout = () => {
                         <div className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-primary mb-2">
                                 {settings?.logoUrl ? (
-                                    <img src={settings.logoUrl} alt={displayName} className="h-10 w-auto object-contain brightness-0 invert" />
+                                    <img src={settings.logoUrl} alt={displayName} className="h-12 w-auto object-contain brightness-0 invert" />
                                 ) : (
                                     isAgencyDomain ? (
                                         <span className="material-symbols-outlined text-3xl">mosque</span>
                                     ) : (
-                                        <img src="/logo.png" alt="Trajetour" className="h-10 w-auto object-contain brightness-0 invert" />
+                                        <img src="/logo.png" alt="Trajetour" className="h-20 w-auto object-contain brightness-0 invert" />
                                     )
                                 )}
                                 {isAgencyDomain && <h2 className="text-white text-xl font-bold">{displayName}</h2>}

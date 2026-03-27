@@ -116,17 +116,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         paddingBottom: '1.5rem'
                     }}
                 >
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white dark:bg-[#1a2634] rounded-xl flex items-center justify-center overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
-                            <img src="/logo-icon.png" alt="Trajetour Icon" className="w-8 h-8 object-contain" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-900 dark:text-white font-display tracking-tight flex items-center">
-                                <span className="text-[#004D40]">traje</span>
-                                <span className="text-[#D4AF37]">tour</span>
-                            </h1>
-                            <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Tour Management</p>
-                        </div>
+                    <div className="flex flex-col gap-1">
+                        <img src="/logo.png" alt="Trajetour" className="h-16 w-auto object-contain self-start" />
+                        <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider px-2">Tour Management System</p>
                     </div>
                     <button onClick={onClose} className="md:hidden text-gray-400 hover:text-gray-600">
                         <X size={24} />
