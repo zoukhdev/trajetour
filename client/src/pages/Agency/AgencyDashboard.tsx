@@ -6,6 +6,8 @@ import { useAuth } from '../../context/AuthContext';
 import { agenciesAPI, ordersAPI } from '../../services/api';
 import type { Agency, Order } from '../../types';
 import SubscriptionStatus from '../../components/SubscriptionStatus';
+import ExchangeRateManager from '../../components/ExchangeRateManager';
+import { useExchangeRates } from '../../context/ExchangeRateContext';
 
 const AgencyDashboard = () => {
     const { t } = useLanguage();
@@ -231,6 +233,13 @@ const AgencyDashboard = () => {
                         </table>
                     </div>
                 </div>
+
+                {/* Exchange Rates Widget */}
+                {user?.role === 'admin' && (
+                    <div className="mt-8">
+                        <ExchangeRateManager />
+                    </div>
+                )}
             </div>
         </div>
     );

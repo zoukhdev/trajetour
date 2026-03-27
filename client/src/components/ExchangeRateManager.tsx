@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useExchangeRates } from '../context/ExchangeRateContext';
+import { useLanguage } from '../context/LanguageContext';
 import { DollarSign, TrendingUp, Calendar, Edit2, Trash2, AlertTriangle } from 'lucide-react';
 
 const ExchangeRateManager = () => {
@@ -10,6 +11,7 @@ const ExchangeRateManager = () => {
         getRateForDate,
         deleteRate
     } = useExchangeRates();
+    const { t } = useLanguage();
 
     const [sarRate, setSarRate] = useState(currentRates?.SAR.toString() || '36.5');
     const [eurRate, setEurRate] = useState(currentRates?.EUR.toString() || '245');
@@ -75,7 +77,7 @@ const ExchangeRateManager = () => {
             <div className="bg-gradient-to-r from-blue-500 to-primary p-6 rounded-xl text-white">
                 <div className="flex items-center gap-2 mb-4">
                     <TrendingUp size={24} />
-                    <h2 className="text-xl font-bold">Current Exchange Rates</h2>
+                    <h2 className="text-xl font-bold">{t('dashboard.exchange_rates')}</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
@@ -98,7 +100,7 @@ const ExchangeRateManager = () => {
                 <div className="flex items-center gap-2 mb-4">
                     <DollarSign size={20} className="text-primary" />
                     <h3 className="text-lg font-semibold text-gray-900">
-                        {editingId ? 'Update' : 'Set'} Daily Exchange Rate
+                        {editingId ? t('common.edit') : t('common.add')} {t('dashboard.exchange_rates')}
                     </h3>
                 </div>
 
@@ -108,7 +110,7 @@ const ExchangeRateManager = () => {
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 <Calendar size={16} className="inline mr-1" />
-                                Date
+                                {t('common.date')}
                             </label>
                             <input
                                 type="date"
@@ -174,7 +176,7 @@ const ExchangeRateManager = () => {
                             type="submit"
                             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                         >
-                            {editingId ? 'Update Rate' : 'Save Rate'}
+                            {editingId ? t('common.save') : t('common.add')}
                         </button>
                         {editingId && (
                             <button
@@ -188,7 +190,7 @@ const ExchangeRateManager = () => {
                                 }}
                                 className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
                             >
-                                Cancel
+                                {t('common.cancel')}
                             </button>
                         )}
                     </div>
@@ -205,7 +207,7 @@ const ExchangeRateManager = () => {
             {/* Rate History Table */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Rate History</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('dashboard.exchange_rates')} (History)</h3>
                     <input
                         type="text"
                         placeholder="Search by date (YYYY-MM-DD)..."
@@ -219,11 +221,11 @@ const ExchangeRateManager = () => {
                     <table className="w-full">
                         <thead className="bg-gray-50/50 text-gray-500 text-xs uppercase tracking-wider font-semibold">
                             <tr>
-                                <th className="px-6 py-4 text-left">Date</th>
+                                <th className="px-6 py-4 text-left">{t('common.date')}</th>
                                 <th className="px-6 py-4 text-right">SAR → DZD</th>
                                 <th className="px-6 py-4 text-right">EUR → DZD</th>
                                 <th className="px-6 py-4 text-right">USD → DZD</th>
-                                <th className="px-6 py-4 text-left">Created By</th>
+                                <th className="px-6 py-4 text-left">Set By</th>
                                 <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
