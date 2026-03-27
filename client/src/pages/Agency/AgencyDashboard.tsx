@@ -62,7 +62,7 @@ const AgencyDashboard = () => {
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{error}</h2>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-6 px-6 py-2 bg-primary text-white font-bold rounded-lg transition hover:bg-blue-600"
+                        className="mt-6 px-6 py-2 bg-primary text-white font-bold rounded-lg transition hover:bg-primary-700"
                     >
                         {t('common.retry') || 'Retry'}
                     </button>
@@ -89,7 +89,7 @@ const AgencyDashboard = () => {
                     </div>
                     <Link
                         to="/agency/new-booking"
-                        className="bg-primary hover:bg-blue-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg shadow-blue-500/20 transition flex items-center gap-2 w-fit"
+                        className="bg-primary hover:bg-primary-700 text-white font-bold py-2.5 px-6 rounded-lg shadow-lg shadow-primary/20 transition flex items-center gap-2 w-fit"
                     >
                         <span className="material-symbols-outlined text-[20px]">add</span>
                         {t('agency_dashboard.new_booking')}
@@ -104,7 +104,7 @@ const AgencyDashboard = () => {
                     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
                         <div className="flex items-center justify-between mb-4">
                             <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.balance')}</div>
-                            <div className="size-10 rounded-full bg-blue-50 dark:bg-slate-800 flex items-center justify-center text-primary">
+                            <div className="size-10 rounded-full bg-primary/10 dark:bg-slate-800 flex items-center justify-center text-primary">
                                 <span className="material-symbols-outlined">account_balance_wallet</span>
                             </div>
                         </div>
@@ -144,16 +144,16 @@ const AgencyDashboard = () => {
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { title: 'agency_dashboard.quick_actions.book_slot', icon: 'flight', color: 'bg-blue-500', link: '/agency/slots' },
-                        { title: 'agency_dashboard.quick_actions.manage_clients', icon: 'groups', color: 'bg-purple-500', link: '/agency/clients' },
-                        { title: 'agency_dashboard.quick_actions.reports', icon: 'bar_chart', color: 'bg-indigo-500', link: '/agency/reports' }
+                        { title: 'agency_dashboard.quick_actions.book_slot', icon: 'flight', color: 'bg-primary', link: '/agency/slots' },
+                        { title: 'agency_dashboard.quick_actions.manage_clients', icon: 'groups', color: 'bg-secondary', link: '/agency/clients' },
+                        { title: 'agency_dashboard.quick_actions.reports', icon: 'bar_chart', color: 'bg-primary-700', link: '/agency/reports' }
                     ].map((action, i) => (
                         <Link
                             key={i}
                             to={action.link}
                             className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition group text-left"
                         >
-                            <div className={`size-12 rounded-lg ${action.color} text-white flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform`}>
+                            <div className={`size-12 rounded-lg ${action.color} text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform`}>
                                 <span className="material-symbols-outlined">{action.icon}</span>
                             </div>
                             <div>
@@ -169,7 +169,7 @@ const AgencyDashboard = () => {
                 <div className="mt-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Agency Bookings</h3>
-                        <Link to="/agency/bookings" className="text-sm font-bold text-primary hover:text-blue-700">{t('client_dashboard.view_all')}</Link>
+                        <Link to="/agency/bookings" className="text-sm font-bold text-primary hover:text-primary-700">{t('client_dashboard.view_all')}</Link>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -207,7 +207,7 @@ const AgencyDashboard = () => {
                                         <td className="p-4">
                                             <Link
                                                 to={`/agency/bookings/${order.id}`}
-                                                className="text-primary hover:text-blue-700"
+                                                className="text-primary hover:text-primary-700"
                                             >
                                                 <span className="material-symbols-outlined text-xl">visibility</span>
                                             </Link>
