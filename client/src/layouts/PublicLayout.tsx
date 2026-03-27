@@ -65,14 +65,14 @@ const PublicLayout = () => {
                     <div className="flex items-center gap-4">
                         <Link to="/" className="flex items-center gap-2">
                             {settings?.logoUrl ? (
-                                <img src={settings.logoUrl} alt={displayName} className="h-12 w-auto object-contain" />
+                                <img src={settings.logoUrl} alt={displayName} className="h-15 w-auto object-contain" />
                             ) : (
                                 isAgencyDomain ? (
                                     <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-black text-sm">
                                         {displayName.charAt(0)}
                                     </div>
                                 ) : (
-                                    <img src="/logo.png" alt="Trajetour" className="h-12 w-auto object-contain" />
+                                    <img src="/logo.png" alt="Trajetour" className="h-16 w-auto object-contain" />
                                 )
                             )}
                             {isAgencyDomain && <h2 className="text-gray-900 text-xl font-bold leading-tight tracking-[-0.015em]">{displayName}</h2>}
