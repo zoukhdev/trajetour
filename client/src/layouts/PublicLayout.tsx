@@ -88,7 +88,7 @@ const PublicLayout = () => {
                     </nav>
 
                     <div className="flex items-center gap-3">
-                        <button onClick={toggleLanguage} className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors font-bold text-sm text-gray-600">
+                        <button onClick={toggleLanguage} className="hidden lg:flex items-center justify-center h-9 w-9 rounded-lg hover:bg-gray-100 transition-colors font-bold text-sm text-gray-600">
                             {language === 'fr' ? 'AR' : 'FR'}
                         </button>
 
@@ -99,11 +99,11 @@ const PublicLayout = () => {
                             {t('public.saas_nav.get_started')}
                         </Link>
                         {isAuthenticated ? (
-                             <Link to={user?.role === 'client' ? '/client' : (user?.tenantId && user?.tenantId !== 'default' ? '/agency' : '/dashboard')} className="flex items-center justify-center rounded-xl h-9 px-4 bg-primary text-white hover:bg-primary/90 transition-colors font-bold text-sm">
+                             <Link to={user?.role === 'client' ? '/client' : (user?.tenantId && user?.tenantId !== 'default' ? '/agency' : '/dashboard')} className="hidden lg:flex items-center justify-center rounded-xl h-9 px-4 bg-primary text-white hover:bg-primary/90 transition-colors font-bold text-sm">
                                 {t('common.dashboard')}
                             </Link>
                         ) : (
-                            <Link to="/login/agency" className="flex items-center justify-center rounded-xl h-9 px-4 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-bold text-sm">
+                            <Link to="/login/agency" className="hidden lg:flex items-center justify-center rounded-xl h-9 px-4 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors font-bold text-sm">
                                 {t('public.nav.login')}
                             </Link>
                         )}
@@ -125,12 +125,20 @@ const PublicLayout = () => {
                             <button onClick={toggleLanguage} className="py-2 px-3 bg-gray-100 rounded-lg text-sm font-bold">
                                 {language === 'fr' ? 'AR' : 'FR'}
                             </button>
-                            <Link to="/agency-signup" className="flex-1 text-center py-2 bg-primary text-white rounded-xl text-sm font-bold">
-                                {t('public.saas_nav.get_started')}
-                            </Link>
-                            <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold">
-                                {t('public.nav.login')}
-                            </Link>
+                            {isAuthenticated ? (
+                                <Link to={user?.role === 'client' ? '/client' : (user?.tenantId && user?.tenantId !== 'default' ? '/agency' : '/dashboard')} className="flex-1 text-center py-2 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20" onClick={() => setIsMenuOpen(false)}>
+                                    {t('common.dashboard')}
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link to="/agency-signup" className="flex-1 text-center py-2 bg-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/20" onClick={() => setIsMenuOpen(false)}>
+                                        {t('public.saas_nav.get_started')}
+                                    </Link>
+                                    <Link to="/login/agency" className="flex-1 text-center py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold" onClick={() => setIsMenuOpen(false)}>
+                                        {t('public.nav.login')}
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </div>
                 )}

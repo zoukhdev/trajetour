@@ -174,7 +174,7 @@ const Home = () => {
                         {t('home.hero.badge')}
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight tracking-tight mb-6">
+                    <h1 className="text-4xl md:text-7xl font-black text-gray-900 leading-tight tracking-tight mb-6 px-2">
                         {t('home.hero.title_start')}{' '}
                         <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                             {t('home.hero.title_highlight')}
@@ -223,8 +223,8 @@ const Home = () => {
                 <div className="relative z-10 w-full max-w-6xl mx-auto mt-16 px-4">
                     
                     {/* Tabs / Selectors */}
-                    <div className="flex justify-center mb-8 relative z-20">
-                        <div className="inline-flex bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-gray-200">
+                    <div className="flex justify-start md:justify-center mb-8 relative z-20 overflow-x-auto pb-4 md:pb-0 no-scrollbar">
+                        <div className="inline-flex bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-sm border border-gray-200 min-w-max mx-auto">
                             {[
                                 { id: 0, label: t('home.dashboard_preview.tab_dashboard'), img: '/demo-dashboard-main.png' },
                                 { id: 1, label: t('home.dashboard_preview.tab_stats'), img: '/demo-dashboard-stats.png' },
