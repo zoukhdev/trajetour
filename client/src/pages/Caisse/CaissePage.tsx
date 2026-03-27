@@ -133,7 +133,7 @@ const CaissePage = () => {
                                 </div>
                                 <div className="flex items-baseline gap-1">
                                     <p className="text-2xl font-bold text-gray-900">
-                                        {account.balance.toLocaleString()}
+                                        {Number(account.balance).toLocaleString()}
                                     </p>
                                     <span className="text-sm font-semibold text-gray-500">{account.currency}</span>
                                 </div>
@@ -161,7 +161,7 @@ const CaissePage = () => {
                             <p className="text-2xl font-bold">
                                 {bankAccounts
                                     .filter(a => a.currency === 'DZD')
-                                    .reduce((sum, a) => sum + a.balance, 0)
+                                    .reduce((sum, a) => sum + Number(a.balance), 0)
                                     .toLocaleString()} DZD
                             </p>
                             <p className="text-xs opacity-60 mt-1">
@@ -177,7 +177,7 @@ const CaissePage = () => {
                             <p className="text-xl font-bold">
                                 {bankAccounts
                                     .filter(a => a.currency === 'SAR')
-                                    .reduce((sum, a) => sum + a.balance, 0)
+                                    .reduce((sum, a) => sum + Number(a.balance), 0)
                                     .toLocaleString()} SAR
                             </p>
                             <p className="text-xs opacity-60">
@@ -196,7 +196,7 @@ const CaissePage = () => {
                             <p className="text-xl font-bold">
                                 {bankAccounts
                                     .filter(a => a.currency === 'EUR')
-                                    .reduce((sum, a) => sum + a.balance, 0)
+                                    .reduce((sum, a) => sum + Number(a.balance), 0)
                                     .toLocaleString()} EUR
                             </p>
                             <p className="text-xs opacity-60">
@@ -217,9 +217,9 @@ const CaissePage = () => {
                             {bankAccounts
                                 .reduce((sum, account) => {
                                     if (account.currency === 'DZD') {
-                                        return sum + account.balance;
+                                        return sum + Number(account.balance);
                                     } else {
-                                        return sum + (account.balanceDZD || 0);
+                                        return sum + Number(account.balanceDZD || 0);
                                     }
                                 }, 0)
                                 .toLocaleString()} DZD
@@ -329,11 +329,11 @@ const CaissePage = () => {
                                             }`}>
                                             <div className="flex flex-col items-end">
                                                 <span>
-                                                    {t.type === 'IN' ? '+' : '-'}{t.amount.toLocaleString()} {t.currency}
+                                                    {t.type === 'IN' ? '+' : '-'}{Number(t.amount).toLocaleString()} {t.currency}
                                                 </span>
                                                 {t.currency !== 'DZD' && (
                                                     <span className="text-xs text-gray-500 font-normal">
-                                                        ≈ {t.amountDZD?.toLocaleString()} DZD
+                                                        ≈ {Number(t.amountDZD || 0).toLocaleString()} DZD
                                                     </span>
                                                 )}
                                             </div>

@@ -60,7 +60,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
         { icon: Users, label: t('common.reservations'), path: getAgencyPath('/clients'), permission: 'access_clients' },
         { icon: Package, label: t('common.offers_packs'), path: getAgencyPath('/offers'), permission: 'access_offers' },
         { icon: Briefcase, label: t('common.suppliers'), path: getAgencyPath('/suppliers'), permission: 'access_suppliers' },
-        { icon: Wallet, label: t('common.cash_register'), path: getAgencyPath('/cash_register'), permission: 'access_cash_register' },
+        { icon: Wallet, label: t('common.cash_register'), path: getAgencyPath('/cash-register'), permission: 'access_cash_register' },
         { icon: CreditCard, label: t('common.expenses'), path: getAgencyPath('/expenses'), permission: 'access_expenses' },
         { icon: BarChart, label: t('common.reports'), path: getAgencyPath('/reports'), permission: 'access_reports' },
         { icon: Percent, label: t('common.discounts'), path: getAgencyPath('/discounts'), permission: 'access_discounts' },

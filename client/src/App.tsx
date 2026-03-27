@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -190,6 +190,7 @@ function App() {
                     <Route path="suppliers" element={<ProtectedRoute permission="access_suppliers"><SupplierList /></ProtectedRoute>} />
                     <Route path="suppliers/:id/contracts" element={<ProtectedRoute permission="access_suppliers"><SupplierContracts /></ProtectedRoute>} />
                     <Route path="cash-register" element={<ProtectedRoute permission="access_cash_register"><CaissePage /></ProtectedRoute>} />
+                    <Route path="cash_register" element={<Navigate to="../cash-register" replace />} />
                     <Route path="expenses" element={<ProtectedRoute permission="access_expenses"><ExpenseList /></ProtectedRoute>} />
                     <Route path="guide-expenses" element={<ProtectedRoute permission="access_expenses"><GuideExpenseList /></ProtectedRoute>} />
                     <Route path="reports" element={<ProtectedRoute permission="access_reports"><ReportsPage /></ProtectedRoute>} />
