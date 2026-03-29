@@ -12,6 +12,7 @@ import { useExchangeRates } from '../../context/ExchangeRateContext';
 const AgencyDashboard = () => {
     const { t } = useLanguage();
     const { user } = useAuth();
+    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
     const [agency, setAgency] = useState<Agency | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -100,72 +101,81 @@ const AgencyDashboard = () => {
                 </div>
 
                 {/* Subscription Status Banner */}
-                <SubscriptionStatus />
+                {isAdmin && <SubscriptionStatus />}
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.balance')}</div>
-                            <div className="size-10 rounded-full bg-primary/10 dark:bg-slate-800 flex items-center justify-center text-primary">
-                                <span className="material-symbols-outlined">account_balance_wallet</span>
+                {isAdmin && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.balance')}</div>
+                                <div className="size-10 rounded-full bg-primary/10 dark:bg-slate-800 flex items-center justify-center text-primary">
+                                    <span className="material-symbols-outlined">account_balance_wallet</span>
+                                </div>
+                            </div>
+                            <div className="text-3xl font-black text-slate-900 dark:text-white">{(agency?.currentCredit || 0).toLocaleString()} DA</div>
+                            <div className="mt-2 text-sm text-slate-500 font-medium flex items-center gap-1">
+                                <span className="material-symbols-outlined text-sm">info</span>
+                                {agency?.subscription || 'Standard'} {t('agency_dashboard.plan')}
                             </div>
                         </div>
-                        <div className="text-3xl font-black text-slate-900 dark:text-white">{(agency?.currentCredit || 0).toLocaleString()} DA</div>
-                        <div className="mt-2 text-sm text-slate-500 font-medium flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">info</span>
-                            {agency?.subscription || 'Standard'} {t('agency_dashboard.plan')}
-                        </div>
-                    </div>
 
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.active_bookings')}</div>
-                            <div className="size-10 rounded-full bg-orange-50 dark:bg-slate-800 flex items-center justify-center text-orange-500">
-                                <span className="material-symbols-outlined">airplane_ticket</span>
+                        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.active_bookings')}</div>
+                                <div className="size-10 rounded-full bg-orange-50 dark:bg-slate-800 flex items-center justify-center text-orange-500">
+                                    <span className="material-symbols-outlined">airplane_ticket</span>
+                                </div>
                             </div>
+                            <div className="text-3xl font-black text-slate-900 dark:text-white">{activeBookings}</div>
+                            <div className="mt-2 text-sm text-slate-500 font-medium">{t('agency_dashboard.total_bookings_count')}: {orders.length}</div>
                         </div>
-                        <div className="text-3xl font-black text-slate-900 dark:text-white">{activeBookings}</div>
-                        <div className="mt-2 text-sm text-slate-500 font-medium">{t('agency_dashboard.total_bookings_count')}: {orders.length}</div>
-                    </div>
 
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.commission')}</div>
-                            <div className="size-10 rounded-full bg-green-50 dark:bg-slate-800 flex items-center justify-center text-green-500">
-                                <span className="material-symbols-outlined">payments</span>
+                        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="text-slate-500 dark:text-slate-400 font-medium">{t('agency_dashboard.commission')}</div>
+                                <div className="size-10 rounded-full bg-green-50 dark:bg-slate-800 flex items-center justify-center text-green-500">
+                                    <span className="material-symbols-outlined">payments</span>
+                                </div>
+                            </div>
+                            <div className="text-3xl font-black text-slate-900 dark:text-white">{totalCommission.toLocaleString()} DA</div>
+                            <div className="mt-2 text-sm text-green-500 font-medium flex items-center gap-1">
+                                <span className="material-symbols-outlined text-sm">trending_up</span>
+                                {t('agency_dashboard.earnings_lifetime')}
                             </div>
                         </div>
-                        <div className="text-3xl font-black text-slate-900 dark:text-white">{totalCommission.toLocaleString()} DA</div>
-                        <div className="mt-2 text-sm text-green-500 font-medium flex items-center gap-1">
-                            <span className="material-symbols-outlined text-sm">trending_up</span>
-                            {t('agency_dashboard.earnings_lifetime')}
-                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { title: 'agency_dashboard.quick_actions.book_slot', icon: 'flight', color: 'bg-primary', link: getAgencyPath('/slots') },
-                        { title: 'agency_dashboard.quick_actions.manage_clients', icon: 'groups', color: 'bg-secondary', link: getAgencyPath('/clients') },
-                        { title: 'agency_dashboard.quick_actions.reports', icon: 'bar_chart', color: 'bg-primary-700', link: getAgencyPath('/reports') }
-                    ].map((action, i) => (
-                        <Link
-                            key={i}
-                            to={action.link}
-                            className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition group text-left"
-                        >
-                            <div className={`size-12 rounded-lg ${action.color} text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform`}>
-                                <span className="material-symbols-outlined">{action.icon}</span>
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-slate-900 dark:text-white">{t(action.title)}</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('agency_dashboard.click_to_access')}</p>
-                            </div>
-                            <span className="material-symbols-outlined text-slate-300 ml-auto group-hover:text-primary transition-colors rtl:rotate-180">arrow_forward</span>
-                        </Link>
-                    ))}
+                        { title: 'agency_dashboard.quick_actions.book_slot', icon: 'flight', color: 'bg-primary', link: getAgencyPath('/slots'), permission: 'access_orders' },
+                        { title: 'agency_dashboard.quick_actions.manage_clients', icon: 'groups', color: 'bg-secondary', link: getAgencyPath('/clients'), permission: 'access_clients' },
+                        { title: 'agency_dashboard.quick_actions.reports', icon: 'bar_chart', color: 'bg-primary-700', link: getAgencyPath('/reports'), permission: 'access_reports' }
+                    ].map((action, i) => {
+                        // Check permissions
+                        if (action.permission && !isAdmin && !user?.permissions?.includes(action.permission as any)) {
+                            return null;
+                        }
+
+                        return (
+                            <Link
+                                key={i}
+                                to={action.link}
+                                className="flex items-center gap-4 p-5 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition group text-left"
+                            >
+                                <div className={`size-12 rounded-lg ${action.color} text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform`}>
+                                    <span className="material-symbols-outlined">{action.icon}</span>
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 dark:text-white">{t(action.title)}</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('agency_dashboard.click_to_access')}</p>
+                                </div>
+                                <span className="material-symbols-outlined text-slate-300 ml-auto group-hover:text-primary transition-colors rtl:rotate-180">arrow_forward</span>
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* Recent Bookings Table */}
