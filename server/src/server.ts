@@ -595,6 +595,17 @@ app.listen(PORT, async () => {
             } catch (err) {
                 console.error('⚠️ Failed to update users table schema:', err);
             }
+
+            // 4c. Add must_change_password flag (for admin-created staff accounts)
+            try {
+                await pool.query(`
+                    ALTER TABLE users
+                    ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE;
+                `);
+                console.log('✅ Users must_change_password column verified.');
+            } catch (err) {
+                console.error('⚠️ Failed to add must_change_password column:', err);
+            }
         } catch (err) {
             console.error('❌ Database migration failed:', err);
         }

@@ -18,7 +18,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
         const { email, password } = req.body;
 
         const result = await pool.query(
-            'SELECT id, email, username, password_hash, role, permissions FROM users WHERE email = $1',
+            'SELECT id, email, username, password_hash, role, permissions, must_change_password FROM users WHERE email = $1',
             [email]
         );
 
@@ -101,7 +101,8 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
             clientId,
             agencyId,
             tenantId: currentTenant,
-            token
+            token,
+            mustChangePassword: user.must_change_password === true
         });
     } catch (error) {
         console.error('❌ Login Error Details:', error);
@@ -258,6 +259,37 @@ router.post('/register-agency', validate(registerAgencySchema), async (req, res,
         next(error);
     } finally {
         client.release();
+    }
+});
+
+// Change Password (first-login forced change)
+// Requires the user to be authenticated (valid cookie token)
+router.post('/change-password', async (req, res, next) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: 'Not authenticated' });
+        }
+
+        const { verifyToken: verify } = await import('../utils/jwt.js');
+        const decoded = verify(token);
+
+        const { newPassword } = req.body;
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 6 caractères.' });
+        }
+
+        const newHash = await hashPassword(newPassword);
+
+        await pool.query(
+            'UPDATE users SET password_hash = $1, must_change_password = FALSE WHERE id = $2',
+            [newHash, decoded.id]
+        );
+
+        res.json({ message: 'Mot de passe mis à jour avec succès.' });
+    } catch (error) {
+        console.error('❌ Change Password Error:', error);
+        next(error);
     }
 });
 

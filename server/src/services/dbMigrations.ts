@@ -130,6 +130,12 @@ export async function migrateTenantDatabase(pool: pkg.Pool) {
             );
         `);
 
+        // Users: first-login forced password change flag
+        await pool.query(`
+            ALTER TABLE users
+            ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE;
+        `);
+
         console.log('✅ Tenant-level migrations completed.');
 
     } catch (error) {

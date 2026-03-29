@@ -118,8 +118,8 @@ router.post('/',
             const code = generateShortId();
 
             const result = await client.query(
-                `INSERT INTO users (username, email, password_hash, role, permissions, code, agency_id)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7)
+                `INSERT INTO users (username, email, password_hash, role, permissions, code, agency_id, must_change_password)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, TRUE)
                  RETURNING *`,
                 [username, email, hashedPassword, role, JSON.stringify(permissions || []), code, agencyId || null]
             );

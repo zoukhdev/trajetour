@@ -4,7 +4,7 @@ import { authAPI } from '../services/api';
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<User>;
+    login: (email: string, password: string) => Promise<User & { mustChangePassword?: boolean }>;
     logout: () => void;
     isAuthenticated: boolean;
     hasPermission: (permission: Permission) => boolean;
@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Don't check auth if already on login page
-        if (window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register')) {
+        if (window.location.pathname.startsWith('/login') || window.location.pathname.startsWith('/register') || window.location.pathname.startsWith('/set-password')) {
             setLoading(false);
             return;
         }
@@ -40,10 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         checkAuth();
     }, []);
 
-    const login = async (email: string, password: string): Promise<User> => {
+    const login = async (email: string, password: string): Promise<User & { mustChangePassword?: boolean }> => {
         try {
             const userData = await authAPI.login(email, password);
-            setUser(userData);
+            // Only store user in state if they don't NEED to change password first
+            if (!userData.mustChangePassword) {
+                setUser(userData);
+            }
             return userData;
         } catch (error) {
             console.error('Login failed:', error);

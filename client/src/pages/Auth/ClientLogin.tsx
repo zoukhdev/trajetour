@@ -37,6 +37,12 @@ const ClientLogin = () => {
             const user = await login(email, password);
             if (!user) return; // Should not happen since we throw now
 
+            // If the user must change their password (temp password from admin), redirect immediately
+            if (user.mustChangePassword) {
+                navigate('/set-password');
+                return;
+            }
+
             // Single unified redirection structure based on strictly defined roles
             if (user.role === 'super_admin' || user.role === 'admin' || user.role === 'staff' || user.role === 'caisser') {
                 if (user.tenantId && user.tenantId !== 'default') {
