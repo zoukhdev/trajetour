@@ -235,6 +235,7 @@ const OfferList = () => {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 title={editingOffer ? "Modifier l'Offre" : "Nouvelle Offre"}
+                size="3xl"
             >
                 <OfferForm onClose={handleCloseModal} initialData={editingOffer} />
             </Modal>

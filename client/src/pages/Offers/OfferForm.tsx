@@ -202,9 +202,15 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                 } as Offer;
                 await updateOffer(finalOffer);
                 
-                // Final image upload if changed at the very end (though we do it in Step 1 too)
+                // Only upload if imageFile is still set AND wasn't already uploaded in Step 1
+                // (imageFile is cleared after a successful Step 1 upload)
                 if (imageFile) {
-                    await uploadOfferImage(offerId, imageFile);
+                    try {
+                        await uploadOfferImage(offerId, imageFile);
+                    } catch (uploadErr) {
+                        console.warn('⚠️ Image upload failed at finalize step, but offer was saved.', uploadErr);
+                        // Non-fatal – offer data is saved, image can be re-uploaded later
+                    }
                 }
             }
             onClose();
@@ -271,6 +277,8 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                         const uploadedUrl = await uploadOfferImage(saved.id, imageFile);
                         // Update form data with the image URL so it's reflected in state
                         setFormData(prev => ({ ...prev, imageUrl: uploadedUrl }));
+                        // Clear imageFile so Step 2 finalize doesn't try to re-upload
+                        setImageFile(null);
                     } catch (uploadError) {
                         console.warn('⚠️ Image upload failed but offer was saved. You can re-upload later.', uploadError);
                         // Don't block the user from proceeding — show a non-intrusive warning
@@ -326,7 +334,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                                     <select
@@ -412,7 +420,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Date de départ</label>
                             <input
@@ -437,7 +445,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Disponibilité</label>
                             <input
@@ -457,7 +465,7 @@ const OfferForm = ({ onClose, initialData }: OfferFormProps) => {
 
 
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Transport</label>
                             <select
