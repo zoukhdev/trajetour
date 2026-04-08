@@ -185,8 +185,8 @@ const AgencyDashboard = () => {
                         <Link to={getAgencyPath('/bookings')} className="text-sm font-bold text-primary hover:text-primary-700">{t('client_dashboard.view_all')}</Link>
                     </div>
 
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
+                    <div className="overflow-x-auto w-full">
+                        <table className="w-full text-left border-collapse min-w-[800px]">
                             <thead>
                                 <tr className="bg-slate-50 dark:bg-slate-800/50">
                                     <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">{t('agency_dashboard.bookings.ref')}</th>

@@ -212,7 +212,7 @@ const Dashboard = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
                     {/* Revenue Line Chart */}
                     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:col-span-2 relative overflow-hidden group">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                             <div>
                                 <h3 className="font-bold text-gray-900 flex items-center gap-2">
                                     <BarChart2 className="text-primary" size={20} />
@@ -220,23 +220,25 @@ const Dashboard = () => {
                                 </h3>
                                 <p className="text-sm text-gray-500 mt-1">Évolution du revenu récurrent sur 6 mois</p>
                             </div>
-                            <div className="bg-primary/5 text-primary px-4 py-2 rounded-lg font-bold">
+                            <div className="bg-primary/5 text-primary px-4 py-2 rounded-lg font-bold shrink-0">
                                 +{stats.totalMRR.toLocaleString()} DZD <span className="text-xs font-normal">ce mois</span>
                             </div>
                         </div>
-                        <div className="h-[250px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={stats.revenueData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dx={-10} tickFormatter={(val) => `${val/1000}k`} />
-                                    <Tooltip 
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                        formatter={(value: any) => [`${value.toLocaleString()} DZD`, 'MRR']}
-                                    />
-                                    <Line type="monotone" dataKey="revenue" stroke="#37e6b0" strokeWidth={4} dot={{ r: 4, fill: '#37e6b0', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 0 }} />
-                                </LineChart>
-                            </ResponsiveContainer>
+                        <div className="overflow-x-auto w-full no-scrollbar pb-2">
+                            <div className="h-[250px] min-w-[500px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <LineChart data={stats.revenueData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dx={-10} tickFormatter={(val) => `${val/1000}k`} />
+                                        <Tooltip 
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                            formatter={(value: any) => [`${value.toLocaleString()} DZD`, 'MRR']}
+                                        />
+                                        <Line type="monotone" dataKey="revenue" stroke="#37e6b0" strokeWidth={4} dot={{ r: 4, fill: '#37e6b0', strokeWidth: 0 }} activeDot={{ r: 6, strokeWidth: 0 }} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                     </div>
 
@@ -287,12 +289,12 @@ const Dashboard = () => {
                             {stats.recentAgencies.length > 0 ? (
                                 <ul className="divide-y divide-gray-50">
                                     {stats.recentAgencies.map((agency: any) => (
-                                        <li key={agency.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                                            <div>
-                                                <p className="font-medium text-gray-900">{agency.company_name}</p>
-                                                <p className="text-xs text-gray-500">{agency.subdomain}.trajetour.com</p>
+                                        <li key={agency.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors gap-4">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-medium text-gray-900 truncate">{agency.company_name}</p>
+                                                <p className="text-xs text-gray-500 truncate">{agency.subdomain}.trajetour.com</p>
                                             </div>
-                                            <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                                            <span className={`px-2 py-1 text-xs rounded-full font-medium whitespace-nowrap shrink-0 ${
                                                 agency.status === 'active' ? 'bg-green-100 text-green-700' :
                                                 agency.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                                                 'bg-gray-100 text-gray-700'
@@ -321,14 +323,14 @@ const Dashboard = () => {
                             {stats.recentTickets.length > 0 ? (
                                 <ul className="divide-y divide-gray-50">
                                     {stats.recentTickets.map((ticket: any) => (
-                                        <li key={ticket.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors">
-                                            <div className="flex flex-col gap-1 max-w-[70%]">
+                                        <li key={ticket.id} className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors gap-4">
+                                            <div className="min-w-0 flex-1 flex flex-col gap-1">
                                                 <p className="font-medium text-gray-900 truncate">{ticket.title}</p>
                                                 <p className="text-xs text-gray-500">
                                                     {new Date(ticket.created_at).toLocaleDateString()}
                                                 </p>
                                             </div>
-                                            <Link to={`/dashboard/support/${ticket.id}`} className="text-xs bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-medium transition-colors">
+                                            <Link to={`/dashboard/support/${ticket.id}`} className="text-xs shrink-0 bg-primary/10 text-primary hover:bg-primary/20 px-3 py-1.5 rounded-lg font-medium transition-colors">
                                                 Traiter
                                             </Link>
                                         </li>

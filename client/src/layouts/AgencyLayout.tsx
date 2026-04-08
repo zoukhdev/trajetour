@@ -29,9 +29,9 @@ const AgencyLayout = () => {
                             <div
                                 className="md:hidden bg-white dark:bg-[#1a2634] border-b border-gray-100 dark:border-gray-700 flex items-center justify-between sticky top-0 z-30 shadow-sm"
                                 style={{
-                                    paddingTop: 'max(env(safe-area-inset-top), 4.5rem)',
-                                    paddingLeft: 'max(env(safe-area-inset-left), 1rem)',
-                                    paddingRight: 'max(env(safe-area-inset-right), 1rem)',
+                                    paddingTop: 'max(env(safe-area-inset-top), 1rem)',
+                                    paddingLeft: 'max(env(safe-area-inset-left), 1.25rem)',
+                                    paddingRight: 'max(env(safe-area-inset-right), 1.25rem)',
                                     paddingBottom: '1rem'
                                 }}
                             >

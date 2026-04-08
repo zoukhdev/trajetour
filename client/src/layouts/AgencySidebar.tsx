@@ -57,7 +57,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
     const menuItems = [
         { icon: LayoutDashboard, label: t('common.dashboard'), path: getAgencyPath('/') },
         { icon: ShoppingCart, label: t('common.my_bookings'), path: getAgencyPath('/bookings'), permission: 'access_orders' },
-        { icon: Users, label: t('common.reservations'), path: getAgencyPath('/clients'), permission: 'access_clients' },
+        { icon: Users, label: t('common.clients'), path: getAgencyPath('/clients'), permission: 'access_clients' },
         { icon: Package, label: t('common.offers_packs'), path: getAgencyPath('/offers'), permission: 'access_offers' },
         { icon: Briefcase, label: t('common.suppliers'), path: getAgencyPath('/suppliers'), permission: 'access_suppliers' },
         { icon: Wallet, label: t('common.cash_register'), path: getAgencyPath('/cash-register'), permission: 'access_cash_register' },
@@ -93,7 +93,7 @@ const AgencySidebar = ({ isOpen, onClose }: AgencySidebarProps) => {
             {/* Mobile Overlay */}
             <div
                 className={cn(
-                    "fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300",
+                    "fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300",
                     isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
                 )}
                 onClick={onClose}

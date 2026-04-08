@@ -54,14 +54,14 @@ const DemoAgencyDashboard = () => {
         <div className="min-h-screen bg-[#050914] text-white flex flex-col">
 
             {/* ── Demo Banner ── */}
-            <div className="bg-gradient-to-r from-primary to-secondary px-4 py-2.5 flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                    <Sparkles size={14} />
-                    <span className="font-medium text-white">Mode Démonstration — Explorez toutes les fonctionnalités</span>
+            <div className="bg-gradient-to-r from-primary to-secondary px-4 py-2.5 flex flex-col sm:flex-row items-center justify-between text-sm gap-2 sm:gap-0">
+                <div className="flex items-center gap-2 text-center sm:text-left">
+                    <Sparkles size={14} className="shrink-0" />
+                    <span className="font-medium text-white text-xs sm:text-sm">Mode Démonstration — Explorez toutes les fonctionnalités</span>
                 </div>
                 <button
                     onClick={() => navigate('/agency-signup')}
-                    className="bg-white text-primary font-bold px-4 py-1 rounded-full text-xs hover:bg-white/90 transition-colors"
+                    className="bg-white text-primary font-bold px-4 py-1 rounded-full flex-shrink-0 text-xs hover:bg-white/90 transition-colors whitespace-nowrap"
                 >
                     Créer mon compte →
                 </button>
@@ -121,22 +121,22 @@ const DemoAgencyDashboard = () => {
                 <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
                     {/* Header */}
-                    <header className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a1020]">
+                    <header className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-white/5 bg-[#0a1020]">
                         <div className="flex items-center gap-3">
                             <button onClick={() => setSidebarOpen(true)} className="md:hidden text-gray-400 hover:text-white">
                                 <Menu size={20} />
                             </button>
                             <div>
-                                <h1 className="text-lg font-bold text-white">Tableau de bord</h1>
-                                <p className="text-xs text-secondary-400 font-medium tracking-wide">Bienvenue, Mohammed — {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                                <h1 className="text-base sm:text-lg font-bold text-white">Tableau de bord</h1>
+                                <p className="hidden sm:block text-xs text-secondary-400 font-medium tracking-wide">Bienvenue, Mohammed — {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <button className="relative w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <button className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors">
                                 <Bell size={16} className="text-gray-400" />
-                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+                                <span className="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 h-2 bg-red-500 rounded-full" />
                             </button>
-                            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
+                            <div className="flex items-center gap-2 px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
                                 <img src={`https://ui-avatars.com/api/?name=Mohammed+Demo&background=004D40&color=D4AF37&size=32`} className="w-7 h-7 rounded-full" alt="User" />
                                 <span className="text-sm font-medium text-white hidden md:block">Mohammed Demo</span>
                                 <ChevronDown size={14} className="text-gray-500 hidden md:block" />
@@ -175,7 +175,7 @@ const DemoAgencyDashboard = () => {
                                                     <stat.icon size={16} className={stat.color === 'primary' ? 'text-primary-400' : 'text-secondary-400'} />
                                                 </div>
                                             </div>
-                                            <p className="text-2xl font-black text-white mb-2">{stat.value}</p>
+                                            <p className="text-xl sm:text-2xl font-black text-white mb-2 truncate" title={stat.value}>{stat.value}</p>
                                             <div className={`flex items-center gap-1 text-xs font-semibold ${stat.up ? 'text-emerald-400' : 'text-red-400'}`}>
                                                 {stat.up ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                                                 {stat.change} vs mois dernier
@@ -198,7 +198,7 @@ const DemoAgencyDashboard = () => {
                                             </div>
                                         </div>
                                         {/* Bar chart */}
-                                        <div className="flex items-end gap-2 h-32">
+                                        <div className="flex items-end gap-1 sm:gap-2 h-32 overflow-x-auto no-scrollbar pb-2">
                                             {chartData.map((h, i) => (
                                                 <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
                                                     <div
@@ -234,15 +234,15 @@ const DemoAgencyDashboard = () => {
                                 </div>
 
                                 {/* Recent Bookings Table Preview */}
-                                <div className="rounded-2xl border border-white/5 bg-[#0d1526] overflow-hidden">
+                                <div className="rounded-2xl border border-white/5 bg-[#0d1526] overflow-hidden flex flex-col">
                                     <div className="flex items-center justify-between px-6 py-4 border-b border-white/5">
                                         <h3 className="font-bold text-white">Réservations récentes</h3>
                                         <button onClick={() => setActiveNav(2)} className="text-secondary-400 text-xs font-bold hover:text-secondary-300 transition-colors flex items-center gap-1">
                                             Voir tout <ArrowRight size={12} />
                                         </button>
                                     </div>
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-sm">
+                                    <div className="overflow-x-auto w-full">
+                                        <table className="w-full text-sm min-w-[600px]">
                                             <thead>
                                                 <tr className="border-b border-white/5">
                                                     <th className="text-left px-6 py-3 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Référence</th>
@@ -377,18 +377,19 @@ const DemoAgencyDashboard = () => {
                                     ))}
                                 </div>
 
-                                <div className="rounded-2xl border border-white/5 bg-[#0d1526] overflow-hidden">
-                                    <table className="w-full text-sm">
-                                        <thead>
-                                            <tr className="bg-white/2 border-b border-white/5">
-                                                <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Référence</th>
-                                                <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Client / Voyageur</th>
-                                                <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Offre / Service</th>
-                                                <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Statut</th>
-                                                <th className="text-right px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Total</th>
-                                                <th className="px-6 py-4"></th>
-                                            </tr>
-                                        </thead>
+                                <div className="rounded-2xl border border-white/5 bg-[#0d1526] overflow-hidden flex flex-col">
+                                    <div className="overflow-x-auto w-full">
+                                        <table className="w-full text-sm min-w-[800px]">
+                                            <thead>
+                                                <tr className="bg-white/2 border-b border-white/5">
+                                                    <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Référence</th>
+                                                    <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Client / Voyageur</th>
+                                                    <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Offre / Service</th>
+                                                    <th className="text-left px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Statut</th>
+                                                    <th className="text-right px-6 py-4 text-[11px] font-bold text-gray-600 uppercase tracking-wider">Total</th>
+                                                    <th className="px-6 py-4"></th>
+                                                </tr>
+                                            </thead>
                                         <tbody>
                                             {demoBookings.map((b, i) => (
                                                 <tr key={i} className="border-b border-white/3 hover:bg-white/2 transition-colors group">
@@ -430,20 +431,21 @@ const DemoAgencyDashboard = () => {
                                             ))}
                                         </tbody>
                                     </table>
+                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {/* Action buttons (common for all views or just for dashboard) */}
                         {activeNav !== 2 && (
-                            <div className="mt-8 p-6 rounded-2xl border border-secondary/20 bg-gradient-to-r from-primary/10 to-secondary/10">
-                                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="mt-8 p-4 sm:p-6 rounded-2xl border border-secondary/20 bg-gradient-to-r from-primary/10 to-secondary/10">
+                                <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
                                     <div>
                                         <h3 className="text-white font-bold text-lg">Vous aimez ce que vous voyez ?</h3>
                                         <p className="text-gray-400 text-sm">Créez votre agence en moins de 5 minutes et accédez à toutes les fonctionnalités.</p>
                                     </div>
-                                    <div className="flex gap-3 flex-shrink-0">
-                                        <Link to="/" className="px-5 py-2.5 border border-white/20 text-white text-sm font-bold rounded-xl hover:bg-white/10 transition-colors">
+                                    <div className="flex flex-wrap justify-center md:justify-end gap-3 flex-shrink-0">
+                                        <Link to="/" className="px-4 sm:px-5 py-2 sm:py-2.5 border border-white/20 text-white text-sm font-bold rounded-xl hover:bg-white/10 transition-colors">
                                             En savoir plus
                                         </Link>
                                         <button

@@ -287,7 +287,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="col-span-2">
+                    <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Type de Client</label>
                         <div className="flex gap-4">
                             <label className="flex items-center gap-2 cursor-pointer">
@@ -315,7 +315,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                         </div>
                     </div>
 
-                    <div className="col-span-2 md:col-span-1">
+                    <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Nom Complet *</label>
                         <input
                             type="text"
@@ -328,7 +328,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                     </div>
                     
                     {!initialData && (
-                        <div className="col-span-2 md:col-span-1">
+                        <div className="col-span-1">
                             <DatePicker
                                 label="Date de naissance"
                                 required
@@ -339,7 +339,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                         </div>
                     )}
 
-                    <div className="col-span-2">
+                    <div className="col-span-1 md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de Mobile *</label>
                         <input
                             type="tel"
@@ -351,7 +351,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                         />
                     </div>
 
-                    <div>
+                    <div className="col-span-1">
                         <label className="block text-sm font-medium text-gray-700 mb-1">N° Passeport</label>
                         <input
                             type="text"
@@ -361,7 +361,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                         />
                     </div>
 
-                    <div>
+                    <div className="col-span-1">
                         <DatePicker
                             label="Expiration Passeport"
                             value={formData.passportExpiry || ''}
@@ -414,7 +414,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                         )}
                         
                         {offerHotels.length > 0 && leadRoomId && (
-                            <div className="col-span-2 md:col-span-1">
+                            <div className="col-span-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Prix Lead ({calculateAgeCategory(leadBirthDate)})</label>
                                 <div className="flex relative">
                                     <input
@@ -459,8 +459,8 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                         >
                                             <Trash2 size={18} />
                                         </button>
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mr-6">
-                                            <div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pr-6 sm:pr-8 md:pr-10">
+                                            <div className="col-span-1">
                                                 <input
                                                     type="text"
                                                     placeholder="Prénom"
@@ -469,7 +469,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                     className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary outline-none"
                                                 />
                                             </div>
-                                            <div>
+                                            <div className="col-span-1">
                                                 <input
                                                     type="text"
                                                     placeholder="Nom"
@@ -478,7 +478,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                     className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary outline-none"
                                                 />
                                             </div>
-                                            <div>
+                                            <div className="col-span-1">
                                                 <DatePicker
                                                     value={p.birthDate}
                                                     onChange={val => updatePassenger(p.id, 'birthDate', val)}
@@ -486,7 +486,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                     id={`pax-birth-${p.id}`}
                                                 />
                                             </div>
-                                            <div>
+                                            <div className="col-span-1">
                                                 <select
                                                     value={p.assignedRoomId || ''}
                                                     onChange={e => updatePassenger(p.id, 'assignedRoomId', e.target.value)}
@@ -498,7 +498,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                     ))}
                                                 </select>
                                             </div>
-                                            <div>
+                                            <div className="col-span-1">
                                                 <input
                                                     type="text"
                                                     placeholder="N° Passeport"
@@ -507,7 +507,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                     className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-primary outline-none"
                                                 />
                                             </div>
-                                            <div>
+                                            <div className="col-span-1">
                                                 <DatePicker
                                                     value={p.passportExpiry || ''}
                                                     onChange={val => updatePassenger(p.id, 'passportExpiry', val)}
@@ -516,7 +516,7 @@ const AgencyReservationForm = ({ onClose, initialData }: AgencyReservationFormPr
                                                 />
                                             </div>
                                             {p.assignedRoomId && (
-                                                <div className="col-span-2">
+                                                <div className="col-span-1 sm:col-span-2 lg:col-span-2">
                                                     <div className="flex relative items-center gap-2">
                                                         <span className="text-xs bg-gray-200 px-2 pl-3 py-1 rounded font-bold shrink-0">{p.ageCategory}</span>
                                                         <input
