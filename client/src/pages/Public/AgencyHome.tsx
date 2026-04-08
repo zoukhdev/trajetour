@@ -288,8 +288,8 @@ const AgencyHome = () => {
                         {t('agency_home.search_packages')}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div className="flex-1">
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('home.hero.badge')}</label>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Type de voyage</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Plane className="text-gray-400" size={18} />
@@ -308,7 +308,7 @@ const AgencyHome = () => {
                             </div>
                         </div>
 
-                        <div className="flex-1">
+                        <div>
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('agency_home.search_placeholder')}</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -325,8 +325,8 @@ const AgencyHome = () => {
                             </div>
                         </div>
 
-                        <div className="flex-1">
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{t('sidebar.tours.tours_list')}</label>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Durée</label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Clock className="text-gray-400" size={18} />
