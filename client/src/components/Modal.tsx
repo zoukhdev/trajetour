@@ -7,9 +7,10 @@ interface ModalProps {
     onClose: () => void;
     title: string;
     children: ReactNode;
+    size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | 'full';
 }
 
-const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
+const Modal = ({ isOpen, onClose, title, children, size = 'lg' }: ModalProps) => {
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -30,6 +31,20 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
 
     if (!isOpen) return null;
 
+    const sizeClasses = {
+        sm: 'max-w-sm',
+        md: 'max-w-md',
+        lg: 'max-w-lg',
+        xl: 'max-w-xl',
+        '2xl': 'max-w-2xl',
+        '3xl': 'max-w-3xl',
+        '4xl': 'max-w-4xl',
+        '5xl': 'max-w-5xl',
+        full: 'max-w-[95vw]',
+    };
+
+    const maxWClass = sizeClasses[size] || 'max-w-lg';
+
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
             {/* Backdrop - higher opacity and better transition */}
@@ -39,7 +54,7 @@ const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
             />
 
             {/* Modal Content - Restricted height and internal scrolling */}
-            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] my-8 flex flex-col transform transition-all duration-300 scale-100 opacity-100 animate-in fade-in zoom-in-95">
+            <div className={`relative bg-white rounded-2xl shadow-2xl w-full ${maxWClass} max-h-[90vh] my-8 flex flex-col transform transition-all duration-300 scale-100 opacity-100 animate-in fade-in zoom-in-95`}>
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-100 shrink-0">
                     <h2 className="text-xl font-bold text-gray-900 font-display">{title}</h2>

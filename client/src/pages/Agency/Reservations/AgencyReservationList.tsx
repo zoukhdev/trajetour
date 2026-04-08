@@ -138,6 +138,7 @@ const AgencyReservationList = () => {
                 isOpen={isModalOpen}
                 onClose={handleClose}
                 title={editingClient ? "Modifier Réservation" : "Nouvelle Réservation"}
+                size="4xl"
             >
                 <AgencyReservationForm onClose={handleClose} initialData={editingClient} />
             </Modal>
